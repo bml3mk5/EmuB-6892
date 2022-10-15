@@ -1,0 +1,35 @@
+//
+// Version Information resources
+//
+#include <windows.h>
+#include <commctrl.h>
+#include <richedit.h>
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION     0,1,0,0
+    PRODUCTVERSION  0,1,0,0
+    FILEOS          VOS_NT_WINDOWS32
+    FILETYPE        VFT_DLL
+    FILESUBTYPE     VFT2_UNKNOWN
+    FILEFLAGSMASK   0x3F
+    FILEFLAGS       0
+{
+	BLOCK "StringFileInfo"
+	{
+		BLOCK "041103a4"
+		{
+			VALUE "FileVersion", "0.1.0.0\0"
+			VALUE "ProductVersion", "0.1.0.0\0"
+			VALUE "FileDescription", "Dynamic Loader for Microsoft Media Foundation\0"
+			VALUE "LegalCopyright", "Copyright (c) 2016 Sasaji\0"
+			VALUE "OriginalFilename", "mmf_loader.dll\0"
+			VALUE "ProductName", "MMF Loader\0"
+			VALUE "InternalName", "MMF Loader\0"
+		}
+	}
+	BLOCK "VarFileInfo"
+	{
+		VALUE "Translation", 0x0411, 0x03A4
+	}
+}

@@ -1,0 +1,40 @@
+--- SDL2_net-2.0.0-orig/SDL_net.h	Sat Aug 10 10:41:30 2013
++++ SDL2_net-2.0.0/SDL_net.h	Fri May 08 00:17:58 2015
+@@ -138,7 +138,7 @@
+    SDLNet_ResolveHost() are already in the correct form).
+    The newly created socket is returned, or NULL if there was an error.
+ */
+-extern DECLSPEC TCPsocket SDLCALL SDLNet_TCP_Open(IPaddress *ip);
++extern DECLSPEC TCPsocket SDLCALL SDLNet_TCP_Open(IPaddress *ip, SDL_bool is_server);
+ 
+ /* Accept an incoming connection on the given server socket.
+    The newly created socket is returned, or NULL if there was an error.
+--- SDL2_net-2.0.0-orig/SDLnetTCP.c	Sat Aug 10 10:41:30 2013
++++ SDL2_net-2.0.0/SDLnetTCP.c	Fri May 08 00:16:58 2015
+@@ -43,7 +43,7 @@
+    otherwise a TCP connection to the remote host and port is attempted.
+    The newly created socket is returned, or NULL if there was an error.
+ */
+-TCPsocket SDLNet_TCP_Open(IPaddress *ip)
++TCPsocket SDLNet_TCP_Open(IPaddress *ip, SDL_bool is_server)
+ {
+     TCPsocket sock;
+     struct sockaddr_in sock_addr;
+@@ -63,7 +63,7 @@
+     }
+ 
+     /* Connect to remote, or bind locally, as appropriate */
+-    if ( (ip->host != INADDR_NONE) && (ip->host != INADDR_ANY) ) {
++    if ( (is_server != SDL_TRUE) && (ip->host != INADDR_NONE) && (ip->host != INADDR_ANY) ) {
+ 
+     // #########  Connecting to remote
+ 
+@@ -85,7 +85,7 @@
+ 
+         memset(&sock_addr, 0, sizeof(sock_addr));
+         sock_addr.sin_family = AF_INET;
+-        sock_addr.sin_addr.s_addr = INADDR_ANY;
++        sock_addr.sin_addr.s_addr = ip->host;
+         sock_addr.sin_port = ip->port;
+ 
+ /*

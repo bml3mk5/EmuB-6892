@@ -1,0 +1,72 @@
+*** SDL_net-1.2.8-orig/SDL_net.h	Mon Jan 16 01:20:10 2012
+--- SDL_net-1.2.8/SDL_net.h	Fri Dec 13 14:58:03 2013
+***************
+*** 120,126 ****
+     SDLNet_ResolveHost() are already in the correct form).
+     The newly created socket is returned, or NULL if there was an error.
+  */
+! extern DECLSPEC TCPsocket SDLCALL SDLNet_TCP_Open(IPaddress *ip);
+  
+  /* Accept an incoming connection on the given server socket.
+     The newly created socket is returned, or NULL if there was an error.
+--- 120,126 ----
+     SDLNet_ResolveHost() are already in the correct form).
+     The newly created socket is returned, or NULL if there was an error.
+  */
+! extern DECLSPEC TCPsocket SDLCALL SDLNet_TCP_Open(IPaddress *ip, SDL_bool is_server);
+  
+  /* Accept an incoming connection on the given server socket.
+     The newly created socket is returned, or NULL if there was an error.
+*** SDL_net-1.2.8-orig/SDLnetTCP.c	Mon Jan 16 01:20:10 2012
+--- SDL_net-1.2.8/SDLnetTCP.c	Fri Dec 13 14:58:03 2013
+***************
+*** 43,49 ****
+     otherwise a TCP connection to the remote host and port is attempted.
+     The newly created socket is returned, or NULL if there was an error.
+  */
+! TCPsocket SDLNet_TCP_Open(IPaddress *ip)
+  {
+  	TCPsocket sock;
+  	struct sockaddr_in sock_addr;
+--- 43,49 ----
+     otherwise a TCP connection to the remote host and port is attempted.
+     The newly created socket is returned, or NULL if there was an error.
+  */
+! TCPsocket SDLNet_TCP_Open(IPaddress *ip, SDL_bool is_server)
+  {
+  	TCPsocket sock;
+  	struct sockaddr_in sock_addr;
+***************
+*** 63,69 ****
+  	}
+  
+  	/* Connect to remote, or bind locally, as appropriate */
+! 	if ( (ip->host != INADDR_NONE) && (ip->host != INADDR_ANY) ) {
+  
+  	// #########  Connecting to remote
+  	
+--- 63,69 ----
+  	}
+  
+  	/* Connect to remote, or bind locally, as appropriate */
+! 	if ( (is_server != SDL_TRUE) && (ip->host != INADDR_NONE) && (ip->host != INADDR_ANY) ) {
+  
+  	// #########  Connecting to remote
+  	
+***************
+*** 85,91 ****
+  
+  		memset(&sock_addr, 0, sizeof(sock_addr));
+  		sock_addr.sin_family = AF_INET;
+! 		sock_addr.sin_addr.s_addr = INADDR_ANY;
+  		sock_addr.sin_port = ip->port;
+  
+  /*
+--- 85,91 ----
+  
+  		memset(&sock_addr, 0, sizeof(sock_addr));
+  		sock_addr.sin_family = AF_INET;
+! 		sock_addr.sin_addr.s_addr = ip->host;
+  		sock_addr.sin_port = ip->port;
+  
+  /*

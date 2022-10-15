@@ -1,0 +1,134 @@
+#
+# wxWidgets + SDL
+# for MacOSX  
+#
+export
+
+include mk_deps.mk
+
+GUI_TYPE:=GUI_TYPE_WXWIDGETS
+
+SUBCPU_CARD:=
+
+BUILDDIR_BASE:=./build
+SH_BUILDDIR:=$(BUILDDIR_BASE)/shared_wx_dbgr
+ST_BUILDDIR:=$(BUILDDIR_BASE)/static_wx_dbgr
+DBG_BUILDDIR:=$(BUILDDIR_BASE)/debug_wx_dbgr
+
+SH_INSTALLDIR:=../ReleaseWxSHDbgr/$(VMNAME).app
+ST_INSTALLDIR:=../ReleaseWxSTDbgr/$(VMNAME).app
+DBG_INSTALLDIR:=../DebugWxSHDbgr/$(VMNAME).app
+
+CDEFS_BASE:=-D$(VMTARGET) -DUSE_OPENGL -D_UNICODE -DUSE_WX -DUSE_DEBUGGER -D$(GUI_TYPE)
+SH_CDEFS:=$(CDEFS_BASE)
+ST_CDEFS:=$(CDEFS_BASE)
+DBG_CDEFS:=$(CDEFS_BASE) -D_DEBUG -D_DEBUG_LOG
+ifneq ($(SUBCPU_CARD),)
+	SH_CDEFS:=$(SH_CDEFS) -DUSE_$(SUBCPU_CARD)
+	ST_CDEFS:=$(ST_CDEFS) -DUSE_$(SUBCPU_CARD)
+	DBG_CDEFS:=$(DBG_CDEFS) -DUSE_$(SUBCPU_CARD)
+endif
+
+#ARCH:=-arch i386
+#ARCH:=-arch x86_64
+ARCH:=-arch i386 -arch x86_64
+
+WXDIR:=$(HOME)/Devel/wxWidgets-3.1.0
+WXCONFIG_SH:=$(WXDIR)/build_release_shared_unicode/wx-config
+WXCONFIG_ST:=$(WXDIR)/build_release_static_unicode/wx-config
+WXCONFIG_DBG:=$(WXDIR)/build_debug_static_unicode/wx-config
+
+SDL_CFLAGS:=$(shell sdl-config --cflags)
+
+st_exe: SDL_LDFLAGS:=$(shell sdl-config --static-libs)
+st_exe: WX_CFLAGS:=$(shell $(WXCONFIG_ST) --cppflags)
+st_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_ST) --libs all --static)
+
+dbg_exe: SDL_LDFLAGS:=$(shell sdl-config --static-libs)
+dbg_exe: WX_CFLAGS:=$(shell $(WXCONFIG_DBG) --cppflags --debug)
+dbg_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_DBG) --libs all --debug)
+
+sh_exe: SDL_LDFLAGS:=$(shell sdl-config --libs)
+sh_exe: WX_CFLAGS:=$(shell $(WXCONFIG_SH) --cppflags)
+sh_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_SH) --libs all)
+
+SH_CFLAGS=-Wall -O2 $(SDL_CFLAGS) $(WX_CFLAGS) -I/opt/X11/include -I./include
+ST_CFLAGS=-Wall -O2 $(SDL_CFLAGS) $(WX_CFLAGS) -I/opt/X11/include -I./include
+DBG_CFLAGS=-g -Wall -O0 $(SDL_CFLAGS) $(WX_CFLAGS) -I/opt/X11/include -I./include
+
+LOCALLIBDIR:=/usr/local/lib
+SDLLIBS:=$(LOCALLIBDIR)/libSDLmain.a $(LOCALLIBDIR)/libSDL.a
+# SDLLIBS:=$(LOCALLIBDIR)/libSDL_ttf.a
+# FREETYPELIBS:=$(LOCALLIBDIR)/libfreetype.a
+
+SH_LDFLAGS=$(ARCH) -dead_strip $(SDL_LDFLAGS) $(WX_LDFLAGS) -lm -lz -lbz2 -liconv -Wl,-framework,OpenGL -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,IOKit -Wl,-framework,AudioUnit -Wl,-framework,ForceFeedback -Wl,-framework,QTKit
+ST_LDFLAGS=$(ARCH) -dead_strip $(SDL_LDFLAGS) $(WX_LDFLAGS) -lm -lz -lbz2 -liconv -Wl,-framework,OpenGL -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,IOKit -Wl,-framework,AudioUnit -Wl,-framework,ForceFeedback -Wl,-framework,QTKit
+DBG_LDFLAGS=$(ARCH) $(SDL_LDFLAGS) $(WX_LDFLAGS) -lm -lz -lbz2 -L/usr/X11/lib -liconv -Wl,-framework,OpenGL -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,IOKit -Wl,-framework,AudioUnit -Wl,-framework,ForceFeedback -Wl,-framework,QTKit
+
+CONTDIR:=Contents
+EXEDIR:=$(CONTDIR)/MacOS
+RESDIR:=$(CONTDIR)/Resources
+
+LIBS_BASE:=$(SDLLIBS)
+
+SH_LIBS:=
+ST_LIBS:=$(LIBS_BASE) $(FREETYPELIBS)
+DBG_LIBS:=$(LIBS_BASE) $(FREETYPELIBS)
+
+#
+#
+#
+
+all: sh_exe
+
+sh_exe: export INSTALLDIR:=$(SH_INSTALLDIR)
+sh_exe: export BUILDDIR:=$(SH_BUILDDIR)
+sh_exe: export LIBS:=$(SH_LIBS)
+sh_exe: export LDFLAGS:=$(SH_LDFLAGS)
+sh_exe: export CDEFS:=$(SH_CDEFS)
+sh_exe: export CFLAGS:=$(SH_CFLAGS)
+sh_exe: export CXXFLAGS:=$(SH_CFLAGS)
+
+st_exe: export INSTALLDIR:=$(ST_INSTALLDIR)
+st_exe: export BUILDDIR:=$(ST_BUILDDIR)
+st_exe: export LIBS:=$(ST_LIBS)
+st_exe: export LDFLAGS:=$(ST_LDFLAGS)
+st_exe: export CDEFS:=$(ST_CDEFS)
+st_exe: export CFLAGS:=$(ST_CFLAGS)
+st_exe: export CXXFLAGS:=$(ST_CFLAGS)
+
+dbg_exe: export INSTALLDIR:=$(DBG_INSTALLDIR)
+dbg_exe: export BUILDDIR:=$(DBG_BUILDDIR)
+dbg_exe: export LIBS:=$(DBG_LIBS)
+dbg_exe: export LDFLAGS:=$(DBG_LDFLAGS)
+dbg_exe: export CDEFS:=$(DBG_CDEFS)
+dbg_exe: export CFLAGS:=$(DBG_CFLAGS)
+dbg_exe: export CXXFLAGS:=$(DBG_CFLAGS)
+
+sh_exe st_exe dbg_exe:
+	$(MAKE) -f mk_mac_wx.mk $(TARGET)
+
+install: sh_install
+
+sh_install st_install dbg_install: export TARGET:=install
+
+sh_install: sh_exe
+
+st_install: st_exe
+
+dbg_install: dbg_exe
+
+clean: sh_clean
+
+sh_clean:
+	rm -rf $(SH_BUILDDIR)
+
+st_clean:
+	rm -rf $(ST_BUILDDIR)
+
+dbg_clean:
+	rm -rf $(DBG_BUILDDIR)
+
+clean_all:
+	rm -rf $(BUILDDIR)
+

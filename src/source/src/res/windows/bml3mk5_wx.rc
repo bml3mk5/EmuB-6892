@@ -1,0 +1,36 @@
+#include "../../version.h"
+
+// Version Information resources
+1 VERSIONINFO
+FILEVERSION     APP_VER_MAJOR,APP_VER_MINOR,APP_VER_REV,APP_VER_BUILD
+PRODUCTVERSION  APP_VER_MAJOR,APP_VER_MINOR,APP_VER_REV,APP_VER_BUILD
+FILEFLAGSMASK   0x0000003F
+FILEFLAGS       0x00000000
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "041103a4"
+        {
+            VALUE "FileVersion", APP_VERSION "\0"
+#ifdef USE_DEBUGGER
+			VALUE "ProductVersion", APP_VERSION ""PLATFORM" with Debugger\0"
+#else
+			VALUE "ProductVersion", APP_VERSION ""PLATFORM"\0"
+#endif
+            VALUE "FileDescription", APP_NAME "\0"
+            VALUE "LegalCopyright", APP_COPYRIGHT "\0"
+            VALUE "OriginalFilename", APP_FILENAME "\0"
+            VALUE "ProductName", APP_NAME "\0"
+            VALUE "InternalName", APP_INTERNAME "\0"
+        }
+    }
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0411, 0x03A4
+    }
+}
+
+// Icon
+bml3mk5 ICON "bml3mk5.ico"
+
+#include <wx/msw/wx.rc>

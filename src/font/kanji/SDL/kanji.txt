@@ -1,0 +1,256 @@
+            ˆ¾Œ¾ˆÞŒÞ    ¾”¾Þ”Þ
+        ˆŸŒŸˆ¿Œ¿ˆßŒßŸ”Ÿ¿”¿ß”ß
+        ˆ Œ ˆÀŒÀˆàŒà ” À”Àà”à
+        ˆ¡Œ¡ˆÁŒÁˆáŒá¡”¡Á”Áá”á
+        ˆ¢Œ¢ˆÂŒÂˆâŒâ¢”¢Â”Ââ”â
+        ˆ£Œ£ˆÃŒÃˆãŒã£”£Ã”Ãã”ã
+        ˆ¤Œ¤ˆÄŒÄˆäŒä¤”¤Ä”Ää”ä
+        ˆ¥Œ¥ˆÅŒÅˆåŒå¥”¥Å”Åå”å
+        ˆ¦Œ¦ˆÆŒÆˆæŒæ¦”¦Æ”Ææ”æ
+        ˆ§Œ§ˆÇŒÇˆçŒç§”§Ç”Çç”ç
+        ˆ¨Œ¨ˆÈŒÈˆèŒè¨”¨È”Èè”è
+        ˆ©Œ©ˆÉŒÉˆéŒé©”©É”Éé”é
+        ˆªŒªˆÊŒÊˆêŒêª”ªÊ”Êê”ê
+        ˆ«Œ«ˆËŒËˆëŒë«”«Ë”Ëë”ë
+        ˆ¬Œ¬ˆÌŒÌˆìŒì¬”¬Ì”Ìì”ì
+        ˆ­Œ­ˆÍŒÍˆíŒí­”­Í”Íí”í
+        ˆ®Œ®ˆÎŒÎˆîŒî®”®Î”Îî”î
+        ˆ¯Œ¯ˆÏŒÏˆïŒï¯”¯Ï”Ïï”ï
+        ˆ°Œ°ˆÐŒÐˆðŒð°”°Ð”Ðð”ð
+        ˆ±Œ±ˆÑŒÑˆñŒñ±”±Ñ”Ññ”ñ
+        ˆ²Œ²ˆÒŒÒˆòŒò²”²Ò”Òò”ò
+        ˆ³Œ³ˆÓŒÓˆóŒó³”³Ó”Óó”ó
+        ˆ´Œ´ˆÔŒÔˆôŒô´”´Ô”Ôô”ô
+        ˆµŒµˆÕŒÕˆõŒõµ”µÕ”Õõ”õ
+        ˆ¶Œ¶ˆÖŒÖˆöŒö¶”¶Ö”Öö”ö
+        ˆ·Œ·ˆ×Œ×ˆ÷Œ÷·”·×”×÷”÷
+        ˆ¸Œ¸ˆØŒØˆøŒø¸”¸Ø”Øø”ø
+        ˆ¹Œ¹ˆÙŒÙˆùŒù¹”¹Ù”Ùù”ù
+        ˆºŒºˆÚŒÚˆúŒúº”ºÚ”Úú”ú
+        ˆ»Œ»ˆÛŒÛˆûŒû»”»Û”Ûû”û
+        ˆ¼Œ¼ˆÜŒÜˆüŒü¼”¼Ü”Üü”ü
+        ˆ½Œ½ˆÝŒÝ    ½”½Ý”Ý    
+  €_      ‰__‰€€    ‘_•_‘€•€
+@`  ‰@@‰``‰‘@•@‘`•`‘•
+A‚a  ‰AA‰aa‰‚‚‘A•A‘a•a‘‚•‚
+Bƒb  ‰BB‰bb‰ƒƒ‘B•B‘b•b‘ƒ•ƒ
+C„c  ‰CC‰cc‰„„‘C•C‘c•c‘„•„
+D…d  ‰DD‰dd‰……‘D•D‘d•d‘…•…
+E†e  ‰EE‰ee‰††‘E•E‘e•e‘†•†
+F‡f  ‰FF‰ff‰‡‡‘F•F‘f•f‘‡•‡
+Gˆg  ‰GG‰gg‰ˆˆ‘G•G‘g•g‘ˆ•ˆ
+H‰h  ‰HH‰hh‰‰‰‘H•H‘h•h‘‰•‰
+IŠi  ‰II‰ii‰ŠŠ‘I•I‘i•i‘Š•Š
+J‹j  ‰JJ‰jj‰‹‹‘J•J‘j•j‘‹•‹
+KŒk  ‰KK‰kk‰ŒŒ‘K•K‘k•k‘Œ•Œ
+Ll  ‰LL‰ll‰‘L•L‘l•l‘•
+MŽm  ‰MM‰mm‰ŽŽ‘M•M‘m•m‘Ž•Ž
+Nn  ‰NN‰nn‰‘N•N‘n•n‘•
+Oo  ‰OO‰oo‰‘O•O‘o•o‘•
+P‘p  ‰PP‰pp‰‘‘‘P•P‘p•p‘‘•‘
+Q’q  ‰QQ‰qq‰’’‘Q•Q‘q•q‘’•’
+R“r  ‰RR‰rr‰““‘R•R‘r•r‘“•“
+S”s  ‰SS‰ss‰””‘S•S‘s•s‘”•”
+T•t  ‰TT‰tt‰••‘T•T‘t•t‘•••
+U–u  ‰UU‰uu‰––‘U•U‘u•u‘–•–
+V—v  ‰VV‰vv‰——‘V•V‘v•v‘—•—
+W˜w  ‰WW‰ww‰˜˜‘W•W‘w•w‘˜•˜
+X™x  ‰XX‰xx‰™™‘X•X‘x•x‘™•™
+Yšy  ‰YY‰yy‰šš‘Y•Y‘y•y‘š•š
+Z›z  ‰ZZ‰zz‰››‘Z•Z‘z•z‘›•›
+[œ{  ‰[[‰{{‰œœ‘[•[‘{•{‘œ•œ
+\|  ‰\\‰||‰‘\•\‘|•|‘•
+]ž}  ‰]]‰}}‰žž‘]•]‘}•}‘ž•ž
+^  ~  ‰^^‰~~    ‘^•^‘~•~    
+  Þ¾      ‰¾¾‰ÞÞ    ‘¾•¾‘Þ•Þ
+Ÿß¿  ‰ŸŸ‰¿¿‰ßß‘Ÿ•Ÿ‘¿•¿‘ß•ß
+ à    ‰  ‰ÀÀ‰àà‘ • ‘À•À‘à•à
+¡á    ‰¡¡‰ÁÁ‰áá‘¡•¡‘Á•Á‘á•á
+¢â    ‰¢¢‰ÂÂ‰ââ‘¢•¢‘Â•Â‘â•â
+£ã    ‰££‰ÃÃ‰ãã‘£•£‘Ã•Ã‘ã•ã
+¤ä    ‰¤¤‰ÄÄ‰ää‘¤•¤‘Ä•Ä‘ä•ä
+¥å    ‰¥¥‰ÅÅ‰åå‘¥•¥‘Å•Å‘å•å
+¦æ    ‰¦¦‰ÆÆ‰ææ‘¦•¦‘Æ•Æ‘æ•æ
+§ç    ‰§§‰ÇÇ‰çç‘§•§‘Ç•Ç‘ç•ç
+¨èÈ  ‰¨¨‰ÈÈ‰èè‘¨•¨‘È•È‘è•è
+©  É  ‰©©‰ÉÉ‰éé‘©•©‘É•É‘é•é
+ª  Ê  ‰ªª‰ÊÊ‰êê‘ª•ª‘Ê•Ê‘ê•ê
+«  Ë  ‰««‰ËË‰ëë‘«•«‘Ë•Ë‘ë•ë
+¬  Ì  ‰¬¬‰ÌÌ‰ìì‘¬•¬‘Ì•Ì‘ì•ì
+    Í  ‰­­‰ÍÍ‰íí‘­•­‘Í•Í‘í•í
+    Î  ‰®®‰ÎÎ‰îî‘®•®‘Î•Î‘î•î
+        ‰¯¯‰ÏÏ‰ïï‘¯•¯‘Ï•Ï‘ï•ï
+  ð    ‰°°‰ÐÐ‰ðð‘°•°‘Ð•Ð‘ð•ð
+  ñ    ‰±±‰ÑÑ‰ññ‘±•±‘Ñ•Ñ‘ñ•ñ
+  ò    ‰²²‰ÒÒ‰òò‘²•²‘Ò•Ò‘ò•ò
+  ó    ‰³³‰ÓÓ‰óó‘³•³‘Ó•Ó‘ó•ó
+  ô    ‰´´‰ÔÔ‰ôô‘´•´‘Ô•Ô‘ô•ô
+  õ    ‰µµ‰ÕÕ‰õõ‘µ•µ‘Õ•Õ‘õ•õ
+  ö    ‰¶¶‰ÖÖ‰öö‘¶•¶‘Ö•Ö‘ö•ö
+  ÷    ‰··‰××‰÷÷‘·•·‘×•×‘÷•÷
+¸      ‰¸¸‰ØØ‰øø‘¸•¸‘Ø•Ø‘ø•ø
+¹      ‰¹¹‰ÙÙ‰ùù‘¹•¹‘Ù•Ù‘ù•ù
+º  Ú  ‰ºº‰ÚÚ‰úú‘º•º‘Ú•Ú‘ú•ú
+»  Û  ‰»»‰ÛÛ‰ûû‘»•»‘Û•Û‘û•û
+¼üÜ  ‰¼¼‰ÜÜ‰üü‘¼•¼‘Ü•Ü‘ü•ü
+½  Ý  ‰½½‰ÝÝ    ‘½•½‘Ý•Ý    
+            Š_Ž_Š€Ž€    ’_–_’€–€
+  ‚‚`  Š@Ž@Š`Ž`ŠŽ’@–@’`–`’–
+  ‚‚‚a  ŠAŽAŠaŽaŠ‚Ž‚’A–A’a–a’‚–‚
+  ‚ƒ‚b  ŠBŽBŠbŽbŠƒŽƒ’B–B’b–b’ƒ–ƒ
+  ‚„‚c  ŠCŽCŠcŽcŠ„Ž„’C–C’c–c’„–„
+  ‚…‚d  ŠDŽDŠdŽdŠ…Ž…’D–D’d–d’…–…
+  ‚†‚e  ŠEŽEŠeŽeŠ†Ž†’E–E’e–e’†–†
+  ‚‡‚f  ŠFŽFŠfŽfŠ‡Ž‡’F–F’f–f’‡–‡
+  ‚ˆ‚g  ŠGŽGŠgŽgŠˆŽˆ’G–G’g–g’ˆ–ˆ
+  ‚‰‚h  ŠHŽHŠhŽhŠ‰Ž‰’H–H’h–h’‰–‰
+  ‚Š‚i  ŠIŽIŠiŽiŠŠŽŠ’I–I’i–i’Š–Š
+  ‚‹‚j  ŠJŽJŠjŽjŠ‹Ž‹’J–J’j–j’‹–‹
+  ‚Œ‚k  ŠKŽKŠkŽkŠŒŽŒ’K–K’k–k’Œ–Œ
+  ‚‚l  ŠLŽLŠlŽlŠŽ’L–L’l–l’–
+  ‚Ž‚m  ŠMŽMŠmŽmŠŽŽŽ’M–M’m–m’Ž–Ž
+  ‚‚n  ŠNŽNŠnŽnŠŽ’N–N’n–n’–
+‚O‚‚o  ŠOŽOŠoŽoŠŽ’O–O’o–o’–
+‚P‚‘‚p  ŠPŽPŠpŽpŠ‘Ž‘’P–P’p–p’‘–‘
+‚Q‚’‚q  ŠQŽQŠqŽqŠ’Ž’’Q–Q’q–q’’–’
+‚R‚“‚r  ŠRŽRŠrŽrŠ“Ž“’R–R’r–r’“–“
+‚S‚”‚s  ŠSŽSŠsŽsŠ”Ž”’S–S’s–s’”–”
+‚T‚•‚t  ŠTŽTŠtŽtŠ•Ž•’T–T’t–t’•–•
+‚U‚–‚u  ŠUŽUŠuŽuŠ–Ž–’U–U’u–u’–––
+‚V‚—‚v  ŠVŽVŠvŽvŠ—Ž—’V–V’v–v’—–—
+‚W‚˜‚w  ŠWŽWŠwŽwŠ˜Ž˜’W–W’w–w’˜–˜
+‚X‚™‚x  ŠXŽXŠxŽxŠ™Ž™’X–X’x–x’™–™
+  ‚š‚y  ŠYŽYŠyŽyŠšŽš’Y–Y’y–y’š–š
+        ŠZŽZŠzŽzŠ›Ž›’Z–Z’z–z’›–›
+        Š[Ž[Š{Ž{ŠœŽœ’[–[’{–{’œ–œ
+        Š\Ž\Š|Ž|ŠŽ’\–\’|–|’–
+        Š]Ž]Š}Ž}ŠžŽž’]–]’}–}’ž–ž
+        Š^Ž^Š~Ž~    ’^–^’~–~    
+  ‚Þ‚¾      Š¾Ž¾ŠÞŽÞ    ’¾–¾’Þ–Þ
+‚Ÿ‚ß‚¿  ŠŸŽŸŠ¿Ž¿ŠßŽß’Ÿ–Ÿ’¿–¿’ß–ß
+‚ ‚à‚À  Š Ž ŠÀŽÀŠàŽà’ – ’À–À’à–à
+‚¡‚á‚Á  Š¡Ž¡ŠÁŽÁŠáŽá’¡–¡’Á–Á’á–á
+‚¢‚â‚Â  Š¢Ž¢ŠÂŽÂŠâŽâ’¢–¢’Â–Â’â–â
+‚£‚ã‚Ã  Š£Ž£ŠÃŽÃŠãŽã’£–£’Ã–Ã’ã–ã
+‚¤‚ä‚Ä  Š¤Ž¤ŠÄŽÄŠäŽä’¤–¤’Ä–Ä’ä–ä
+‚¥‚å‚Å  Š¥Ž¥ŠÅŽÅŠåŽå’¥–¥’Å–Å’å–å
+‚¦‚æ‚Æ  Š¦Ž¦ŠÆŽÆŠæŽæ’¦–¦’Æ–Æ’æ–æ
+‚§‚ç‚Ç  Š§Ž§ŠÇŽÇŠçŽç’§–§’Ç–Ç’ç–ç
+‚¨‚è‚È  Š¨Ž¨ŠÈŽÈŠèŽè’¨–¨’È–È’è–è
+‚©‚é‚É  Š©Ž©ŠÉŽÉŠéŽé’©–©’É–É’é–é
+‚ª‚ê‚Ê  ŠªŽªŠÊŽÊŠêŽê’ª–ª’Ê–Ê’ê–ê
+‚«‚ë‚Ë  Š«Ž«ŠËŽËŠëŽë’«–«’Ë–Ë’ë–ë
+‚¬‚ì‚Ì  Š¬Ž¬ŠÌŽÌŠìŽì’¬–¬’Ì–Ì’ì–ì
+‚­‚í‚Í  Š­Ž­ŠÍŽÍŠíŽí’­–­’Í–Í’í–í
+‚®‚î‚Î  Š®Ž®ŠÎŽÎŠîŽî’®–®’Î–Î’î–î
+‚¯‚ï‚Ï  Š¯Ž¯ŠÏŽÏŠïŽï’¯–¯’Ï–Ï’ï–ï
+‚°‚ð‚Ð  Š°Ž°ŠÐŽÐŠðŽð’°–°’Ð–Ð’ð–ð
+‚±‚ñ‚Ñ  Š±Ž±ŠÑŽÑŠñŽñ’±–±’Ñ–Ñ’ñ–ñ
+‚²  ‚Ò  Š²Ž²ŠÒŽÒŠòŽò’²–²’Ò–Ò’ò–ò
+‚³  ‚Ó  Š³Ž³ŠÓŽÓŠóŽó’³–³’Ó–Ó’ó–ó
+‚´  ‚Ô  Š´Ž´ŠÔŽÔŠôŽô’´–´’Ô–Ô’ô–ô
+‚µ  ‚Õ  ŠµŽµŠÕŽÕŠõŽõ’µ–µ’Õ–Õ’õ–õ
+‚¶  ‚Ö  Š¶Ž¶ŠÖŽÖŠöŽö’¶–¶’Ö–Ö’ö–ö
+‚·  ‚×  Š·Ž·Š×Ž×Š÷Ž÷’·–·’×–×’÷–÷
+‚¸  ‚Ø  Š¸Ž¸ŠØŽØŠøŽø’¸–¸’Ø–Ø’ø–ø
+‚¹  ‚Ù  Š¹Ž¹ŠÙŽÙŠùŽù’¹–¹’Ù–Ù’ù–ù
+‚º  ‚Ú  ŠºŽºŠÚŽÚŠúŽú’º–º’Ú–Ú’ú–ú
+‚»  ‚Û  Š»Ž»ŠÛŽÛŠûŽû’»–»’Û–Û’û–û
+‚¼  ‚Ü  Š¼Ž¼ŠÜŽÜŠüŽü’¼–¼’Ü–Ü’ü–ü
+‚½  ‚Ý  Š½Ž½ŠÝŽÝ    ’½–½’Ý–Ý    
+  ƒ€ƒ_      ‹__‹€€    “_—_“€—€
+ƒ@ƒƒ`  ‹@@‹``‹“@—@“`—`“—
+ƒAƒ‚ƒa  ‹AA‹aa‹‚‚“A—A“a—a“‚—‚
+ƒBƒƒƒb  ‹BB‹bb‹ƒƒ“B—B“b—b“ƒ—ƒ
+ƒCƒ„ƒc  ‹CC‹cc‹„„“C—C“c—c“„—„
+ƒDƒ…ƒd  ‹DD‹dd‹……“D—D“d—d“…—…
+ƒEƒ†ƒe  ‹EE‹ee‹††“E—E“e—e“†—†
+ƒFƒ‡ƒf  ‹FF‹ff‹‡‡“F—F“f—f“‡—‡
+ƒGƒˆƒg  ‹GG‹gg‹ˆˆ“G—G“g—g“ˆ—ˆ
+ƒHƒ‰ƒh  ‹HH‹hh‹‰‰“H—H“h—h“‰—‰
+ƒIƒŠƒi  ‹II‹ii‹ŠŠ“I—I“i—i“Š—Š
+ƒJƒ‹ƒj  ‹JJ‹jj‹‹‹“J—J“j—j“‹—‹
+ƒKƒŒƒk  ‹KK‹kk‹ŒŒ“K—K“k—k“Œ—Œ
+ƒLƒƒl  ‹LL‹ll‹“L—L“l—l“—
+ƒMƒŽƒm  ‹MM‹mm‹ŽŽ“M—M“m—m“Ž—Ž
+ƒNƒƒn  ‹NN‹nn‹“N—N“n—n“—
+ƒOƒƒo  ‹OO‹oo‹“O—O“o—o“—
+ƒPƒ‘ƒp  ‹PP‹pp‹‘‘“P—P“p—p“‘—‘
+ƒQƒ’ƒq  ‹QQ‹qq‹’’“Q—Q“q—q“’—’
+ƒRƒ“ƒr  ‹RR‹rr‹“““R—R“r—r““—“
+ƒSƒ”ƒs  ‹SS‹ss‹””“S—S“s—s“”—”
+ƒTƒ•ƒt  ‹TT‹tt‹••“T—T“t—t“•—•
+ƒUƒ–ƒu  ‹UU‹uu‹––“U—U“u—u“–—–
+ƒV  ƒv  ‹VV‹vv‹——“V—V“v—v“———
+ƒW  ƒw  ‹WW‹ww‹˜˜“W—W“w—w“˜—˜
+ƒX  ƒx  ‹XX‹xx‹™™“X—X“x—x“™—™
+ƒY  ƒy  ‹YY‹yy‹šš“Y—Y“y—y“š—š
+ƒZ  ƒz  ‹ZZ‹zz‹››“Z—Z“z—z“›—›
+ƒ[  ƒ{  ‹[[‹{{‹œœ“[—[“{—{“œ—œ
+ƒ\  ƒ|  ‹\\‹||‹“\—\“|—|“—
+ƒ]  ƒ}  ‹]]‹}}‹žž“]—]“}—}“ž—ž
+ƒ^  ƒ~  ‹^^‹~~    “^—^“~—~    
+            ‹¾¾‹ÞÞ    “¾—¾“Þ—Þ
+ƒŸ  ƒ¿  ‹ŸŸ‹¿¿‹ßß“Ÿ—Ÿ“¿—¿“ß—ß
+ƒ   ƒÀ  ‹  ‹ÀÀ‹àà“ — “À—À“à—à
+ƒ¡  ƒÁ  ‹¡¡‹ÁÁ‹áá“¡—¡“Á—Á“á—á
+ƒ¢  ƒÂ  ‹¢¢‹ÂÂ‹ââ“¢—¢“Â—Â“â—â
+ƒ£  ƒÃ  ‹££‹ÃÃ‹ãã“£—£“Ã—Ã“ã—ã
+ƒ¤  ƒÄ  ‹¤¤‹ÄÄ‹ää“¤—¤“Ä—Ä“ä—ä
+ƒ¥  ƒÅ  ‹¥¥‹ÅÅ‹åå“¥—¥“Å—Å“å—å
+ƒ¦  ƒÆ  ‹¦¦‹ÆÆ‹ææ“¦—¦“Æ—Æ“æ—æ
+ƒ§  ƒÇ  ‹§§‹ÇÇ‹çç“§—§“Ç—Ç“ç—ç
+ƒ¨  ƒÈ  ‹¨¨‹ÈÈ‹èè“¨—¨“È—È“è—è
+ƒ©  ƒÉ  ‹©©‹ÉÉ‹éé“©—©“É—É“é—é
+ƒª  ƒÊ  ‹ªª‹ÊÊ‹êê“ª—ª“Ê—Ê“ê—ê
+ƒ«  ƒË  ‹««‹ËË‹ëë“«—«“Ë—Ë“ë—ë
+ƒ¬  ƒÌ  ‹¬¬‹ÌÌ‹ìì“¬—¬“Ì—Ì“ì—ì
+ƒ­  ƒÍ  ‹­­‹ÍÍ‹íí“­—­“Í—Í“í—í
+ƒ®  ƒÎ  ‹®®‹ÎÎ‹îî“®—®“Î—Î“î—î
+ƒ¯  ƒÏ  ‹¯¯‹ÏÏ‹ïï“¯—¯“Ï—Ï“ï—ï
+ƒ°  ƒÐ  ‹°°‹ÐÐ‹ðð“°—°“Ð—Ð“ð—ð
+ƒ±  ƒÑ  ‹±±‹ÑÑ‹ññ“±—±“Ñ—Ñ“ñ—ñ
+ƒ²  ƒÒ  ‹²²‹ÒÒ‹òò“²—²“Ò—Ò“ò—ò
+ƒ³  ƒÓ  ‹³³‹ÓÓ‹óó“³—³“Ó—Ó“ó—ó
+ƒ´  ƒÔ  ‹´´‹ÔÔ‹ôô“´—´“Ô—Ô“ô—ô
+ƒµ  ƒÕ  ‹µµ‹ÕÕ‹õõ“µ—µ“Õ—Õ“õ—õ
+ƒ¶  ƒÖ  ‹¶¶‹ÖÖ‹öö“¶—¶“Ö—Ö“ö—ö
+        ‹··‹××‹÷÷“·—·“×—×“÷—÷
+        ‹¸¸‹ØØ‹øø“¸—¸“Ø—Ø“ø—ø
+        ‹¹¹‹ÙÙ‹ùù“¹—¹“Ù—Ù“ù—ù
+        ‹ºº‹ÚÚ‹úú“º—º“Ú—Ú“ú—ú
+        ‹»»‹ÛÛ‹ûû“»—»“Û—Û“û—û
+        ‹¼¼‹ÜÜ‹üü“¼—¼“Ü—Ü“ü—ü
+        ‹½½‹ÝÝ    “½—½“Ý—Ý    
+  „€„_      Œ__Œ€€    ”_˜_”€  
+„@„„`  Œ@@Œ``Œ”@˜@”`˜`”  
+„A„‚    ŒAAŒaaŒ‚‚”A˜A”a˜a”‚  
+„B„ƒ    ŒBBŒbbŒƒƒ”B˜B”b˜b”ƒ  
+„C„„    ŒCCŒccŒ„„”C˜C”c˜c”„  
+„D„…    ŒDDŒddŒ……”D˜D”d˜d”…  
+„E„†    ŒEEŒeeŒ††”E˜E”e˜e”†  
+„F„‡    ŒFFŒffŒ‡‡”F˜F”f˜f”‡  
+„G„ˆ    ŒGGŒggŒˆˆ”G˜G”g˜g”ˆ  
+„H„‰    ŒHHŒhhŒ‰‰”H˜H”h˜h”‰  
+„I„Š    ŒIIŒiiŒŠŠ”I˜I”i˜i”Š  
+„J„‹    ŒJJŒjjŒ‹‹”J˜J”j˜j”‹  
+„K„Œ    ŒKKŒkkŒŒŒ”K˜K”k˜k”Œ  
+„L„    ŒLLŒllŒ”L˜L”l˜l”  
+„M„Ž    ŒMMŒmmŒŽŽ”M˜M”m˜m”Ž  
+„N„    ŒNNŒnnŒ”N˜N”n˜n”  
+„O„    ŒOOŒooŒ”O˜O”o˜o”  
+„P„‘„p  ŒPPŒppŒ‘‘”P˜P”p˜p”‘  
+„Q  „q  ŒQQŒqqŒ’’”Q˜Q”q˜q”’  
+„R  „r  ŒRRŒrrŒ““”R˜R”r˜r”“  
+„S  „s  ŒSSŒssŒ”””S˜S”s  ””  
+„T  „t  ŒTTŒttŒ••”T˜T”t  ”•  
+„U  „u  ŒUUŒuuŒ––”U˜U”u  ”–  
+„V  „v  ŒVVŒvvŒ——”V˜V”v  ”—  
+„W  „w  ŒWWŒwwŒ˜˜”W˜W”w  ”˜  
+„X  „x  ŒXXŒxxŒ™™”X˜X”x  ”™  
+„Y  „y  ŒYYŒyyŒšš”Y˜Y”y  ”š  
+„Z  „z  ŒZZŒzzŒ››”Z˜Z”z  ”›  
+„[  „{  Œ[[Œ{{Œœœ”[˜[”{  ”œ  
+„\  „|  Œ\\Œ||Œ”\˜\”|  ”  
+„]  „}  Œ]]Œ}}Œžž”]˜]”}  ”ž  
+„^  „~  Œ^^Œ~~    ”^˜^”~      

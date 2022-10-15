@@ -1,0 +1,941 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\GUI Header Files">
+      <UniqueIdentifier>{ca6412ae-50d6-4719-bb6a-f92d59e298cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GUI Header Files\Agar">
+      <UniqueIdentifier>{93fcb0ae-2af2-41c3-b6e3-ad9b101931b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GUI Header Files\windows">
+      <UniqueIdentifier>{8e04496c-f4fe-4784-967d-d2afd6eaa6bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSD Header Files">
+      <UniqueIdentifier>{181b5f2e-db13-488f-b768-4cb2f5b29728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSD Header Files\SDL">
+      <UniqueIdentifier>{2f9dfd90-9c15-4920-a9d4-c30b8d64d905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VIDEO Header Files">
+      <UniqueIdentifier>{8b1e2d4c-4a9d-4a61-907d-0620a8391076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VIDEO Header Files\ffmpeg">
+      <UniqueIdentifier>{2f9a3bdc-4248-4453-9ef2-72f74ce48db7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VIDEO Header Files\vfw">
+      <UniqueIdentifier>{27e9a20e-4e2c-47b5-b792-197e41e892d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VIDEO Header Files\wave">
+      <UniqueIdentifier>{cfa929de-ad68-4f2f-8a00-040da3fc3268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VIDEO Header Files\windows">
+      <UniqueIdentifier>{d4f1ac52-32e5-4f81-a827-9a1cf341788c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VM Common Header Files">
+      <UniqueIdentifier>{2c3b8670-a2b4-48e2-b79d-98b3b5b00e26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VM Common Header Files\fmgen">
+      <UniqueIdentifier>{bbdb8e39-ef70-4ec0-bc31-5ff2e3f7d6d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VM Driver Header Files">
+      <UniqueIdentifier>{f2c5d346-f631-426b-87b9-7431e0fafc54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GUI Source Files">
+      <UniqueIdentifier>{e0251a6b-ace3-419c-baff-6c67d6e2afc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI Source Files\Agar">
+      <UniqueIdentifier>{c16ea3f0-65cc-4986-ac82-38f29d71c2c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI Source Files\windows">
+      <UniqueIdentifier>{f1c4555e-9a4d-46d5-9479-36300b68d46a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OSD Source Files">
+      <UniqueIdentifier>{18be9624-cbb7-427e-b575-028c34491efd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OSD Source Files\SDL">
+      <UniqueIdentifier>{19ac4d0d-5ae9-4f9f-a72b-660a2bdd875f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VIDEO Source Files">
+      <UniqueIdentifier>{92cb596f-6ae6-411f-b83d-5cbe136563af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VIDEO Source Files\ffmpeg">
+      <UniqueIdentifier>{63b1e069-9430-4b43-bb63-cc50729004d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VIDEO Source Files\vfw">
+      <UniqueIdentifier>{fccdfe05-eda7-4c95-a963-f941fa9c1a39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VIDEO Source Files\wave">
+      <UniqueIdentifier>{318b1421-af88-4c54-a038-198ce8d4c5a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VIDEO Source Files\windows">
+      <UniqueIdentifier>{4c12c153-9857-4028-8395-5004bbfb4481}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VM Common Source Files">
+      <UniqueIdentifier>{2576e36f-c300-4d87-af06-c7cb34544dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VM Common Source Files\fmgen">
+      <UniqueIdentifier>{7fbb53e3-acd8-45c4-add5-5fd9918f02f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VM Driver Source Files">
+      <UniqueIdentifier>{6b2c1421-7e2e-427b-86d2-28fe5900333f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSD Header Files\windows">
+      <UniqueIdentifier>{bfb93e75-5944-44c3-b7c1-0753df46ec63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OSD Source Files\windows">
+      <UniqueIdentifier>{c52665b7-fd18-4f71-a4db-014fded57e6a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\cchar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cmutex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpixfmt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\curtime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\debugger_bpoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\debugger_socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\debugger_symbol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\depend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\fifo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\fileio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\labels.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\msgs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\simple_ini.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\gui_base.cpp">
+      <Filter>Source Files\GUI Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\gui_keybinddata.cpp">
+      <Filter>Source Files\GUI Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\sdl2_ledbox.cpp">
+      <Filter>Source Files\GUI Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_config_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_dir_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_file_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_gui.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_gui_base.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_gui_config.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_keybind_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_recaud_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_recvid_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_seldrv_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\agar\ag_volume_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\Agar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\windows\win_gui.cpp">
+      <Filter>Source Files\GUI Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\windows\win_ledbox.cpp">
+      <Filter>Source Files\GUI Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\windows\win_vkeyboard.cpp">
+      <Filter>Source Files\GUI Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\emumsg.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\d88_files.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\debugger_console.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\disk_parser.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\emu.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\emu_input.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\emu_input_keysym.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\emu_screen.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\emu_sound.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\logging.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\simple_clocale.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\windowmode.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_cbitmap.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_ccolor.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_csurface.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_debugger_console.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_emu.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_input.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_input_keysym.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_ledboxbase.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_main.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_msgboard.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_parseopt.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_screen.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_screenmode.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_socket.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_sound.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_timer.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\SDL\sdl_vkeyboardbase.cpp">
+      <Filter>Source Files\OSD Source Files\SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\rec_audio.cpp">
+      <Filter>Source Files\VIDEO Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\rec_video.cpp">
+      <Filter>Source Files\VIDEO Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\ffmpeg\ffm_loadlib.cpp">
+      <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\ffmpeg\ffm_rec_audio.cpp">
+      <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\ffmpeg\ffm_rec_video.cpp">
+      <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\vfw\vfw_rec_video.cpp">
+      <Filter>Source Files\VIDEO Source Files\vfw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\wave\wav_rec_audio.cpp">
+      <Filter>Source Files\VIDEO Source Files\wave</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\windows\win_bitmap.cpp">
+      <Filter>Source Files\VIDEO Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\windows\win_rec_video.cpp">
+      <Filter>Source Files\VIDEO Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\acia.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\ay38910.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\debugger.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\debugger_base.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\device.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\disk.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\event.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\hd46505.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\mb8866.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\mc6809.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\mc6809dasm.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\mc6843.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\msm58321.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\noise.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\parsewav.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_datas.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_defs.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_dft.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_file.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_format.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_param.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_parse.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_parsecar.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_parsewav.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\paw_util.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\pia.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\via.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\fmgen\fmgen.cpp">
+      <Filter>Source Files\VM Common Source Files\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\fmgen\fmtimer.cpp">
+      <Filter>Source Files\VM Common Source Files\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\fmgen\opm.cpp">
+      <Filter>Source Files\VM Common Source Files\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\fmgen\opna.cpp">
+      <Filter>Source Files\VM Common Source Files\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\fmgen\psg.cpp">
+      <Filter>Source Files\VM Common Source Files\fmgen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\bml3mk5.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\board.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\cmt.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\comm.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\display.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\floppy.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\kanji.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\keyboard.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\keyrecord.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\l3basic.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\memory.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\printer.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\psg9c.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\psgc.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\registers.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\rtc.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\sound.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\bml3mk5\timer.cpp">
+      <Filter>Source Files\VM Driver Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\opengl.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\screenmode.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\windows\win_uart.cpp">
+      <Filter>Source Files\OSD Source Files\windows</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\cbitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cchar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ccolor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clocale.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cmutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cpixfmt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cptrlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\csurface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\curtime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\d88_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\debugger_bpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\debugger_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\debugger_socket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\debugger_symbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\depend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\fifo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\fileio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\keycode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\labels.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\loadlibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\msgs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\parseopt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rec_video_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\simple_ini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\gui.h">
+      <Filter>Header Files\GUI Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\gui_base.h">
+      <Filter>Header Files\GUI Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\gui_keybinddata.h">
+      <Filter>Header Files\GUI Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\ledbox.h">
+      <Filter>Header Files\GUI Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\sdl2_ledbox.h">
+      <Filter>Header Files\GUI Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\vkeyboard.h">
+      <Filter>Header Files\GUI Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\vkeyboard_bml3mk5.h">
+      <Filter>Header Files\GUI Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_config_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_dir_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_file_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_gui.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_gui_base.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_keybind_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_recaud_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_recvid_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_seldrv_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\agar\ag_volume_dlg.h">
+      <Filter>Header Files\GUI Header Files\Agar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\windows\win_gui.h">
+      <Filter>Header Files\GUI Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\windows\win_ledbox.h">
+      <Filter>Header Files\GUI Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\windows\win_vkeyboard.h">
+      <Filter>Header Files\GUI Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\emu.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\emu_osd.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\emumsg.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\logging.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\msgboard.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\d88_files.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\debugger_console.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\disk_parser.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\emu_input.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\screenmode.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\simple_clocale.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\windowmode.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_cbitmap.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_ccolor.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_common.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_csurface.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_debugger_console.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_emu.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_input.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_ledboxbase.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_main.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_msgboard.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_parseopt.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_screenmode.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\SDL\sdl_vkeyboardbase.h">
+      <Filter>Header Files\OSD Header Files\SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\windows\win_uart.h">
+      <Filter>Header Files\OSD Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\rec_audio.h">
+      <Filter>Header Files\VIDEO Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\rec_video.h">
+      <Filter>Header Files\VIDEO Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\ffmpeg\ffm_loadlib.h">
+      <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\ffmpeg\ffm_rec_audio.h">
+      <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\ffmpeg\ffm_rec_video.h">
+      <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\vfw\vfw_rec_video.h">
+      <Filter>Header Files\VIDEO Header Files\vfw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\wave\wav_rec_audio.h">
+      <Filter>Header Files\VIDEO Header Files\wave</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\windows\win_bitmap.h">
+      <Filter>Header Files\VIDEO Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\windows\win_rec_video.h">
+      <Filter>Header Files\VIDEO Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\acia.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\ay38910.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\debugger.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\debugger_base.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\device.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\disk.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\event.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\floppy_defs.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\hd46505.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\mb8866.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\mc6809.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\mc6809_consts.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\mc6809dasm.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\mc6843.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\msm58321.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\noise.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\parsewav.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_datas.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_defs.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_dft.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_file.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_format.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_param.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_parse.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_parsecar.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_parsewav.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\paw_util.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\pia.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\via.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\vm.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\vm_defs.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\diag.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\fmgen.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\fmgeninl.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\fmtimer.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\headers.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\misc.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\opm.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\opna.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\psg.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\fmgen\types.h">
+      <Filter>Header Files\VM Common Header Files\fmgen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\bml3mk5.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\bml3mk5_defs.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\board.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\cmt.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\comm.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\display.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\displaysub.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\floppy.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\kanji.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\keyboard.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\keyboard_bind.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\keyrecord.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\l3basic.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\memory.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\memory_readio.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\memory_writeio.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\printer.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\psg9c.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\psgc.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\registers.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\rtc.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\sound.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\bml3mk5\timer.h">
+      <Filter>Header Files\VM Driver Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\res\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\opengl.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\src\res\windows\bml3mk5.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

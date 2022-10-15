@@ -1,0 +1,520 @@
+*** agar-1.4.1-orig/core/config.c	Tue Feb 22 14:01:52 2011
+--- agar-1.4.1/core/config.c	Wed Jul 25 18:45:16 2012
+***************
+*** 43,48 ****
+--- 43,49 ----
+  #endif
+  
+  #include <string.h>
++ #include <ctype.h>
+  #if defined(HAVE_GETPWUID) && defined(HAVE_GETUID)
+  #include <pwd.h>
+  #endif
+***************
+*** 239,251 ****
+--- 240,272 ----
+  	char file[AG_PATHNAME_MAX];
+  	char *dir, *pathp = path;
+  	int rv;
++ #ifdef _WIN32
++ 	char drive_letter = '\0';
++ #endif
+  
+  	AG_GetString(agConfig, path_key, path, path_len);
+  
+  	for (dir = Strsep(&pathp, ":");
+  	     dir != NULL;
+  	     dir = Strsep(&pathp, ":")) {
++ #ifdef _WIN32
++ 		if (isalpha(*dir) && strlen(dir) == 1) {
++ 			/* drive letter */
++ 			drive_letter = *dir;
++ 			continue;
++ 		}
++ 		if (drive_letter != '\0') {
++ 			file[0] = drive_letter;
++ 			file[1] = ':';
++ 			file[2] = '\0';
++ 		} else {
++ 			file[0] = '\0';
++ 		}
++ 		drive_letter = '\0';
++ 		Strlcat(file, dir, sizeof(file));
++ #else
+  		Strlcpy(file, dir, sizeof(file));
++ #endif
+  
+  		if (name[0] != AG_PATHSEPCHAR) {
+  			Strlcat(file, AG_PATHSEP, sizeof(file));
+*** agar-1.4.1-orig/gui/dir_dlg.c	Sun Feb 06 12:16:35 2011
+--- agar-1.4.1/gui/dir_dlg.c	Thu Mar 19 19:32:43 2015
+***************
+*** 582,595 ****
+--- 582,606 ----
+  {
+  	AG_DirDlg *dd = AG_SELF();
+  
++ #ifdef _WIN32
++ 	char cwd_tmp[AG_PATHNAME_MAX];
++ #endif
++ 	
+  	if (!(dd->flags & AG_DIRDLG_RESET_ONSHOW)) {
+  		return;
+  	}
+  	dd->flags &= ~(AG_DIRDLG_RESET_ONSHOW);
+  
+  	AG_WidgetFocus(dd->tbInput);
++ #ifdef _WIN32
++ 	memcpy(cwd_tmp, dd->cwd, AG_PATHNAME_MAX);
++ 	RefreshShortcuts(dd, 1);
++ 	AG_DirDlgSetDirectoryS(dd, cwd_tmp);
++ 	RefreshListing(dd);
++ #else
+  	RefreshListing(dd);
+  	RefreshShortcuts(dd, 1);
++ #endif
+  }
+  
+  /* Move to the specified directory (format string). */
+***************
+*** 620,628 ****
+  	} else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') {
+  		if (!AG_PathIsFilesystemRoot(dd->cwd)) {
+  			Strlcpy(ncwd, dd->cwd, sizeof(ncwd));
+! 			if ((c = strrchr(ncwd, AG_PATHSEPCHAR)) != NULL) {
+! 				*c = '\0';
+! 			}
+  			if (c == &ncwd[0]) {
+  				ncwd[0] = AG_PATHSEPCHAR;
+  				ncwd[1] = '\0';
+--- 631,641 ----
+  	} else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') {
+  		if (!AG_PathIsFilesystemRoot(dd->cwd)) {
+  			Strlcpy(ncwd, dd->cwd, sizeof(ncwd));
+! 			do {
+! 				if ((c = strrchr(ncwd, AG_PATHSEPCHAR)) != NULL) {
+! 					*c = '\0';
+! 				}
+! 			} while (*(c+1) == '\0' || (*(c+1) == '.' && *(c+2) == '\0'));
+  			if (c == &ncwd[0]) {
+  				ncwd[0] = AG_PATHSEPCHAR;
+  				ncwd[1] = '\0';
+*** agar-1.4.1-orig/gui/file_dlg.c	Sun Feb 06 12:16:35 2011
+--- agar-1.4.1/gui/file_dlg.c	Wed Jul 25 17:05:29 2012
+***************
+*** 790,795 ****
+--- 790,798 ----
+  	AG_FileDlg *fd = AG_SELF();
+  	AG_TlistItem *it;
+  	int w, wMax = 0, nItems = 0;
++ #ifdef _WIN32
++ 	char cwd_tmp[AG_PATHNAME_MAX];
++ #endif
+  	
+  	if (!(fd->flags & AG_FILEDLG_RESET_ONSHOW)) {
+  		return;
+***************
+*** 797,804 ****
+--- 800,814 ----
+  	fd->flags &= ~(AG_FILEDLG_RESET_ONSHOW);
+  
+  	AG_WidgetFocus(fd->tbFile);
++ #ifdef _WIN32
++ 	memcpy(cwd_tmp, fd->cwd, AG_PATHNAME_MAX);
++ 	RefreshShortcuts(fd, 1);
++ 	AG_FileDlgSetDirectoryS(fd, cwd_tmp);
++ 	RefreshListing(fd);
++ #else
+  	RefreshListing(fd);
+  	RefreshShortcuts(fd, 1);
++ #endif
+  	AG_PostEvent(NULL, fd->comTypes, "combo-selected", "%p", NULL);
+  
+  	AG_COMBO_FOREACH(it, fd->comTypes) {
+***************
+*** 837,845 ****
+  	} else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') {
+  		if (!AG_PathIsFilesystemRoot(fd->cwd)) {
+  			Strlcpy(ncwd, fd->cwd, sizeof(ncwd));
+! 			if ((c = strrchr(ncwd, AG_PATHSEPCHAR)) != NULL) {
+! 				*c = '\0';
+! 			}
+  			if (c == &ncwd[0]) {
+  				ncwd[0] = AG_PATHSEPCHAR;
+  				ncwd[1] = '\0';
+--- 847,857 ----
+  	} else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') {
+  		if (!AG_PathIsFilesystemRoot(fd->cwd)) {
+  			Strlcpy(ncwd, fd->cwd, sizeof(ncwd));
+! 			do {
+! 				if ((c = strrchr(ncwd, AG_PATHSEPCHAR)) != NULL) {
+! 					*c = '\0';
+! 				}
+! 			} while (*(c+1) == '\0' || (*(c+1) == '.' && *(c+2) == '\0'));
+  			if (c == &ncwd[0]) {
+  				ncwd[0] = AG_PATHSEPCHAR;
+  				ncwd[1] = '\0';
+*** agar-1.4.1-orig/gui/menu.c	Sun Feb 06 12:16:35 2011
+--- agar-1.4.1/gui/menu.c	Tue Aug 18 22:38:24 2015
+***************
+*** 167,173 ****
+  		x += WIDGET(parentWidget)->rView.x1;
+  		y += WIDGET(parentWidget)->rView.y1;
+  		winParent = WIDGET(parentWidget)->window;
+! 
+  		if (WIDGET(winParent)->drv != NULL &&
+  		    AGDRIVER_MULTIPLE(WIDGET(winParent)->drv)) {
+  			/* Convert to absolute coordinates */
+--- 167,175 ----
+  		x += WIDGET(parentWidget)->rView.x1;
+  		y += WIDGET(parentWidget)->rView.y1;
+  		winParent = WIDGET(parentWidget)->window;
+! 		if (winParent == NULL) {
+! 			return (NULL);
+! 		}
+  		if (WIDGET(winParent)->drv != NULL &&
+  		    AGDRIVER_MULTIPLE(WIDGET(winParent)->drv)) {
+  			/* Convert to absolute coordinates */
+***************
+*** 201,206 ****
+--- 203,211 ----
+  	/* Attach the MenuItem to this view. */
+  	mi->view = mv;
+  
++ 	if (winParent != NULL) {
++ 		AG_WindowAttach(winParent, win);
++ 	}
+  	AG_WindowFocus(win);
+  
+  	AG_WindowSetGeometry(win, x, y, -1,-1);
+***************
+*** 1047,1053 ****
+  {
+  	AG_ObjectLock(mi->pmenu);
+  	if (mi->poll != NULL) {
+! 		AG_MenuItemFreeChildren(mi);
+  		AG_PostEvent(mi, mi->pmenu, mi->poll->name, NULL);
+  	}
+  	AG_ObjectUnlock(mi->pmenu);
+--- 1052,1058 ----
+  {
+  	AG_ObjectLock(mi->pmenu);
+  	if (mi->poll != NULL) {
+! /*		AG_MenuItemFreeChildren(mi); */
+  		AG_PostEvent(mi, mi->pmenu, mi->poll->name, NULL);
+  	}
+  	AG_ObjectUnlock(mi->pmenu);
+*** agar-orig/include/agar/gui/drv_sw.h	Wed May 16 17:02:36 2012
+--- agar/include/agar/gui/drv_sw.h	Mon Dec 16 23:26:15 2013
+***************
+*** 12,17 ****
+--- 12,18 ----
+  	/* Create or attach to a graphics display */
+  	int  (*openVideo)(void *drv, Uint w, Uint h, int depth, Uint flags);
+  	int  (*openVideoContext)(void *drv, void *ctx, Uint flags);
++ 	int  (*setVideoContext)(void *drv, void *ctx);
+  	void (*closeVideo)(void *drv);
+  	/* Resize the display */
+  	int  (*videoResize)(void *drv, Uint w, Uint h);
+***************
+*** 81,86 ****
+--- 82,88 ----
+  extern DECLSPEC void AG_WM_BackgroundPopupMenu(AG_DriverSw *);
+  extern DECLSPEC void AG_WM_CommitWindowFocus(struct ag_window *);
+  extern DECLSPEC int AG_ResizeDisplay(int, int);
++ extern DECLSPEC void AG_PostResizeDisplay(AG_DriverSw *);
+  extern DECLSPEC void AG_SetVideoResizeCallback(void (*)(Uint, Uint));
+  extern DECLSPEC void AG_WM_LimitWindowToView(struct ag_window *);
+  extern DECLSPEC void AG_WM_LimitWindowToDisplaySize(AG_Driver *, struct ag_size_alloc *);
+*** agar-orig/include/agar/gui/gui.h	Wed May 16 17:02:38 2012
+--- agar/include/agar/gui/gui.h	Mon Dec 16 23:26:11 2013
+***************
+*** 40,45 ****
+--- 40,46 ----
+  extern DECLSPEC int AG_InitVideo(int, int, int, Uint);
+  #ifdef HAVE_SDL
+  extern DECLSPEC int AG_InitVideoSDL(void *, Uint);
++ extern DECLSPEC int AG_SetVideoSurfaceSDL(void *);
+  #endif
+  extern DECLSPEC int AG_InitGUI(Uint);
+  extern DECLSPEC int AG_InitGUIGlobals(void);
+*** agar-orig/gui/drv_sdl_common.c	Sun Feb 06 12:16:35 2011
+--- agar/gui/drv_sdl_common.c	Mon Dec 16 23:25:38 2013
+***************
+*** 116,121 ****
+--- 116,140 ----
+  	return (-1);
+  }
+  
++ /*
++  * Reattach to a different SDL display surface.
++  */
++ int
++ AG_SetVideoSurfaceSDL(void *pDisplay)
++ {
++ 	if (agDriverSw == NULL ||
++ 	    !(agDriverOps->flags & AG_DRIVER_SDL)) {
++ 		AG_SetError("Current driver is not an SDL driver");
++ 		return (-1);
++ 	}
++ 	if (AGDRIVER_SW_CLASS(agDriverSw)->setVideoContext(agDriverSw,
++ 	    pDisplay) == -1) {
++ 		return (-1);
++ 	}
++ 	AG_PostResizeDisplay(agDriverSw);
++ 	return (0);
++ }
++ 
+  /* Return the corresponding Agar PixelFormat structure for a SDL_Surface. */
+  AG_PixelFormat *
+  AG_SDL_GetPixelFormat(SDL_Surface *su)
+*** agar-orig/gui/drv_sdlfb.c	Sun Feb 06 12:16:36 2011
+--- agar/gui/drv_sdlfb.c	Mon Dec 16 23:25:38 2013
+***************
+*** 1453,1458 ****
+--- 1453,1479 ----
+  	SDL_UpdateRect(sfb->s, 0, 0, sfb->s->w, sfb->s->h);
+  }
+  
++ static int
++ SDLFB_SetVideoContext(void *obj, void *pSurface)
++ {
++ 	AG_DriverSDLFB *sfb = obj;
++ 	AG_DriverSw *dsw = obj;
++ 	SDL_Surface *su = pSurface;
++ 	AG_ClipRect *cr0;
++ 
++ 	sfb->s = su;
++ 	dsw->w = su->w;
++ 	dsw->h = su->h;
++ 	dsw->depth = (Uint)su->format->BitsPerPixel;
++ 	
++ 	/* Update clipping rectangle 0. */
++ 	cr0 = &sfb->clipRects[0];
++ 	cr0->r.w = su->w;
++ 	cr0->r.h = su->h;
++ 	return (0);
++ }
++ 
++ 
+  AG_DriverSwClass agDriverSDLFB = {
+  	{
+  		{
+***************
+*** 1533,1538 ****
+--- 1554,1560 ----
+  	0,
+  	SDLFB_OpenVideo,
+  	SDLFB_OpenVideoContext,
++ 	SDLFB_SetVideoContext,
+  	SDLFB_CloseVideo,
+  	SDLFB_VideoResize,
+  	SDLFB_VideoCapture,
+*** agar-orig/gui/drv_sdlgl.c	Fri Mar 18 10:07:36 2011
+--- agar/gui/drv_sdlgl.c	Mon Dec 16 23:25:39 2013
+***************
+*** 775,780 ****
+--- 775,800 ----
+  	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  }
+  
++ static int
++ SDLGL_SetVideoContext(void *obj, void *pSurface)
++ {
++ 	AG_DriverSDLGL *sgl = obj;
++ 	AG_DriverSw *dsw = obj;
++ 	SDL_Surface *su = pSurface;
++ 	AG_ClipRect *cr0;
++ 
++ 	sgl->s = su;
++ 	dsw->w = su->w;
++ 	dsw->h = su->h;
++ 	dsw->depth = (Uint)su->format->BitsPerPixel;
++ 	
++ 	/* Update clipping rectangle 0. */
++ 	cr0 = &sgl->clipRects[0];
++ 	cr0->r.w = su->w;
++ 	cr0->r.h = su->h;
++ 	return (0);
++ }
++ 
+  AG_DriverSwClass agDriverSDLGL = {
+  	{
+  		{
+***************
+*** 855,860 ****
+--- 875,881 ----
+  	0,
+  	SDLGL_OpenVideo,
+  	SDLGL_OpenVideoContext,
++ 	SDLGL_SetVideoContext,
+  	SDLGL_CloseVideo,
+  	SDLGL_VideoResize,
+  	SDLGL_VideoCapture,
+*** agar-orig/gui/drv_sw.c	Sun Feb 06 12:16:35 2011
+--- agar/gui/drv_sw.c	Mon Dec 16 23:25:41 2013
+***************
+*** 146,168 ****
+  	    AGDRIVER(dsw)->mouse->y + 4);
+  }
+  
+! /* Resize a video display to the specified dimensions. */
+! int
+! AG_ResizeDisplay(int w, int h)
+  {
+  	AG_Window *win;
+  
+! 	if (agDriverSw == NULL) {
+! 		AG_SetError("AG_ResizeDisplay() is only applicable to "
+! 		            "single-window graphics drivers");
+! 		return (-1);
+! 	}
+! 	if (AGDRIVER_SW_CLASS(agDriverSw)->videoResize(agDriverSw,
+! 	    (Uint)w, (Uint)h) == -1)
+! 		return (-1);
+! 
+! 	/* Update the Agar window geometries. */
+! 	AG_FOREACH_WINDOW(win, agDriverSw) {
+  		AG_SizeAlloc a;
+  
+  		a.x = WIDGET(win)->x;
+--- 146,161 ----
+  	    AGDRIVER(dsw)->mouse->y + 4);
+  }
+  
+! /*
+!  * Update Agar window geometries following a display resize (for
+!  * single-window drivers).
+!  */
+! void
+! AG_PostResizeDisplay(AG_DriverSw *dsw)
+  {
+  	AG_Window *win;
+  
+! 	AG_FOREACH_WINDOW(win, dsw) {
+  		AG_SizeAlloc a;
+  
+  		a.x = WIDGET(win)->x;
+***************
+*** 177,201 ****
+  		} else {
+  			if (win->flags & AG_WINDOW_HMAXIMIZE) {
+  				a.x = 0;
+! 				a.w = agDriverSw->w;
+  			} else {
+! 				if (a.x+a.w > agDriverSw->w) {
+! 					a.x = agDriverSw->w - a.w;
+  					if (a.x < 0) {
+  						a.x = 0;
+! 						a.w = agDriverSw->w;
+  					}
+  				}
+  			}
+  			if (win->flags & AG_WINDOW_VMAXIMIZE) {
+  				a.y = 0;
+! 				a.h = agDriverSw->h;
+  			} else {
+! 				if (a.y+a.h > agDriverSw->h) {
+! 					a.y = agDriverSw->h - a.h;
+  					if (a.y < 0) {
+  						a.y = 0;
+! 						a.h = agDriverSw->w;
+  					}
+  				}
+  			}
+--- 170,194 ----
+  		} else {
+  			if (win->flags & AG_WINDOW_HMAXIMIZE) {
+  				a.x = 0;
+! 				a.w = dsw->w;
+  			} else {
+! 				if (a.x+a.w > dsw->w) {
+! 					a.x = dsw->w - a.w;
+  					if (a.x < 0) {
+  						a.x = 0;
+! 						a.w = dsw->w;
+  					}
+  				}
+  			}
+  			if (win->flags & AG_WINDOW_VMAXIMIZE) {
+  				a.y = 0;
+! 				a.h = dsw->h;
+  			} else {
+! 				if (a.y+a.h > dsw->h) {
+! 					a.y = dsw->h - a.h;
+  					if (a.y < 0) {
+  						a.y = 0;
+! 						a.h = dsw->w;
+  					}
+  				}
+  			}
+***************
+*** 204,212 ****
+  		}
+  		AG_ObjectUnlock(win);
+  	}
+! 	if (agVideoResizeCallback != NULL) {
+! 		agVideoResizeCallback(w, h);
+  	}
+  	return (0);
+  }
+  
+--- 197,220 ----
+  		}
+  		AG_ObjectUnlock(win);
+  	}
+! 	if (agVideoResizeCallback != NULL)
+! 		agVideoResizeCallback(dsw->w, dsw->h);
+! }
+! 
+! /* Resize a video display to the specified dimensions. */
+! int
+! AG_ResizeDisplay(int w, int h)
+! {
+! 	if (agDriverSw == NULL) {
+! 		AG_SetError("AG_ResizeDisplay() is only applicable to "
+! 		            "single-window graphics drivers");
+! 		return (-1);
+! 	}
+! 	if (AGDRIVER_SW_CLASS(agDriverSw)->videoResize(agDriverSw,
+! 	    (Uint)w, (Uint)h) == -1) {
+! 		return (-1);
+  	}
++ 	AG_PostResizeDisplay(agDriverSw);
+  	return (0);
+  }
+  
+*** agar-orig/gui/drv_sw.h	Sun Feb 06 12:16:35 2011
+--- agar/gui/drv_sw.h	Mon Dec 16 23:25:41 2013
+***************
+*** 12,17 ****
+--- 12,18 ----
+  	/* Create or attach to a graphics display */
+  	int  (*openVideo)(void *drv, Uint w, Uint h, int depth, Uint flags);
+  	int  (*openVideoContext)(void *drv, void *ctx, Uint flags);
++ 	int  (*setVideoContext)(void *drv, void *ctx);
+  	void (*closeVideo)(void *drv);
+  	/* Resize the display */
+  	int  (*videoResize)(void *drv, Uint w, Uint h);
+***************
+*** 82,87 ****
+--- 83,89 ----
+  void AG_WM_BackgroundPopupMenu(AG_DriverSw *);
+  void AG_WM_CommitWindowFocus(struct ag_window *);
+  int  AG_ResizeDisplay(int, int);
++ void AG_PostResizeDisplay(AG_DriverSw *);
+  void AG_SetVideoResizeCallback(void (*)(Uint, Uint));
+  void AG_WM_LimitWindowToView(struct ag_window *);
+  void AG_WM_LimitWindowToDisplaySize(AG_Driver *, struct ag_size_alloc *);
+*** agar-orig/gui/gui.h	Wed May 16 17:02:38 2012
+--- agar/gui/gui.h	Mon Dec 16 23:26:11 2013
+***************
+*** 43,48 ****
+--- 43,49 ----
+  int        AG_InitVideo(int, int, int, Uint);
+  #ifdef HAVE_SDL
+  int        AG_InitVideoSDL(void *, Uint);
++ int        AG_SetVideoSurfaceSDL(void *);
+  #endif
+  int        AG_InitGUI(Uint);
+  int        AG_InitGUIGlobals(void);

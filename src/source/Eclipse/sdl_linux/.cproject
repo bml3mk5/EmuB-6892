@@ -1,0 +1,1618 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+    	
+    <storageModule moduleId="org.eclipse.cdt.core.settings">
+        		
+        <cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167" moduleId="org.eclipse.cdt.core.settings" name="DebugS1G3_Dbgr">
+                				
+                <externalSettings>
+                    					
+                    <externalSetting/>
+                    				
+                </externalSettings>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="(deprecated) using SDL and GTK3 with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167" name="DebugS1G3_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+                    					
+                    <folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167." name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.263711676" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+                            							
+                            <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.966276356" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+                            							
+                            <builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.430421549" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1750362407" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+                                								
+                                <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1968620879" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.2109296667" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2067980085" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} `pkg-config gtk+-3.0 --cflags` ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1808990042" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+                                								
+                                <option id="gnu.cpp.compiler.option.optimization.level.1982156283" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1706828231" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.22406491" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+                                    									
+                                    <listOptionValue builtIn="false" value="_BML3MK5"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_OPENGL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GETTEXT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG_LOG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GUI_TYPE_GTK_X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_REENTRANT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL_GLEXT_PROTOTYPES"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1513715655" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.1388939415" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.other.other.168933712" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1867074462" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1066045964" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config gtk+-3.0 --libs`" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.2055783613" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.771844028" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib64"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/lib"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.277419536" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL_ttf"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="freetype"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="pthread"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="dl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="m"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="png"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.link.option.flags.927903899" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.2043309655" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.237075273" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+                                    									
+                                    <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+                                    									
+                                    <additionalInput kind="additionalinput" paths="$(LIBS)"/>
+                                    								
+                                </inputType>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.archiver.19410010" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.assembler.370014252" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.assembler.input.467454444" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+                                							
+                            </tool>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="video/wxwidgets|video/qt|video/mmf|osd/wxwidgets|osd/qt|gui/wxwidgets|gui/qt|osd/windows|osd/mac|osd/gnu_clocale.cpp|gui/agar/|gui/cocoa/|gui/windows/|gui/sdl2_ledbox.cpp|gui/sdl2_ledbox.h|osd/gtk/|video/avkit/|video/cocoa/|video/qtkit/|video/vfw/|video/windows/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+                        					
+                    </sourceEntries>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        		
+        <cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818" moduleId="org.eclipse.cdt.core.settings" name="DebugG3S1">
+                				
+                <externalSettings>
+                    					
+                    <externalSetting/>
+                    				
+                </externalSettings>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using GTK3 and SDL1" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818" name="DebugG3S1" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+                    					
+                    <folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818." name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.2056918836" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+                            							
+                            <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.784160156" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+                            							
+                            <builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.873132226" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.866416476" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+                                								
+                                <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1516720872" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.1018459179" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.987666273" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.c.compiler.option.dialect.std.666325909" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.839935949" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} `pkg-config gtk+-3.0 --cflags` ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.664718292" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+                                								
+                                <option id="gnu.cpp.compiler.option.optimization.level.477104456" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1026288524" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.418855260" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+                                    									
+                                    <listOptionValue builtIn="false" value="_BML3MK5"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_OPENGL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GETTEXT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GTK"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG_LOG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GUI_TYPE_GTK_X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_REENTRANT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL_GLEXT_PROTOTYPES"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.993881209" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.1432435072" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.other.other.1825591066" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1286220909" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.linker.659317770" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config gtk+-3.0 --libs`" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1093012745" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.2119416765" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib64"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/lib"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.1189940463" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL_ttf"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="freetype"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="pthread"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="dl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="m"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="png"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.link.option.flags.1231485704" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.1584440825" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.191983382" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+                                    									
+                                    <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+                                    									
+                                    <additionalInput kind="additionalinput" paths="$(LIBS)"/>
+                                    								
+                                </inputType>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.archiver.1061742063" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.assembler.967752770" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.assembler.input.750184463" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+                                							
+                            </tool>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="video/wxwidgets|video/qt|video/mmf|osd/wxwidgets|osd/qt|gui/wxwidgets|gui/qt|osd/windows|osd/mac|osd/gnu_clocale.cpp|gui/agar/|gui/cocoa/|gui/windows/|gui/sdl2_ledbox.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_screen.cpp|video/avkit/|video/cocoa/|video/qtkit/|video/vfw/|video/windows/|osd/SDL/sdl_screenmode.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+                        					
+                    </sourceEntries>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        		
+        <cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178" moduleId="org.eclipse.cdt.core.settings" name="ReleaseG3S1_Dbgr">
+                				
+                <externalSettings>
+                    					
+                    <externalSetting/>
+                    				
+                </externalSettings>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using GTK3 and SDL1 with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178" name="ReleaseG3S1_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+                    					
+                    <folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178." name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1395861648" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+                            							
+                            <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.766977574" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+                            							
+                            <builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.2066679957" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1909119691" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+                                								
+                                <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1469457623" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.more" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.1579824721" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.735285301" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.c.compiler.option.dialect.std.349089628" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1629259567" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} `pkg-config gtk+-3.0 --cflags` ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.816627748" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+                                								
+                                <option id="gnu.cpp.compiler.option.optimization.level.1983318170" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.more" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1771764962" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1298446719" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+                                    									
+                                    <listOptionValue builtIn="false" value="_BML3MK5"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_OPENGL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GETTEXT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GTK"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GUI_TYPE_GTK_X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_REENTRANT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL_GLEXT_PROTOTYPES"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1959089042" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.1795829526" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.other.other.830555465" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.138376197" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.linker.916052485" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config gtk+-3.0 --libs`" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1780303063" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.2125639897" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib64"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/lib"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.60041070" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL_ttf"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="freetype"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="pthread"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="dl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="m"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="png"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.link.option.flags.2034751229" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.1343549200" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+                                								
+                                <option id="gnu.cpp.link.option.strip.314293790" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1305392359" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+                                    									
+                                    <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+                                    									
+                                    <additionalInput kind="additionalinput" paths="$(LIBS)"/>
+                                    								
+                                </inputType>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.archiver.2109402078" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.assembler.950301174" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.assembler.input.503794450" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+                                							
+                            </tool>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="video/wxwidgets|video/qt|video/mmf|osd/wxwidgets|osd/qt|gui/wxwidgets|gui/qt|osd/windows|osd/mac|osd/gnu_clocale.cpp|gui/agar/|gui/cocoa/|gui/windows/|gui/sdl2_ledbox.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_screen.cpp|video/avkit/|video/cocoa/|video/qtkit/|video/vfw/|video/windows/|osd/SDL/sdl_screenmode.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+                        					
+                    </sourceEntries>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        		
+        <cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893" moduleId="org.eclipse.cdt.core.settings" name="DebugG3S1_Dbgr">
+                				
+                <externalSettings>
+                    					
+                    <externalSetting/>
+                    				
+                </externalSettings>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using GTK3 and SDL1 with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893" name="DebugG3S1_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+                    					
+                    <folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893." name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.239923133" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+                            							
+                            <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1970389621" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+                            							
+                            <builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.28764419" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1549270151" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+                                								
+                                <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.566832300" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.497644604" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.47425334" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.c.compiler.option.dialect.std.1944388390" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.441789368" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} `pkg-config gtk+-3.0 --cflags` ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1792894485" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+                                								
+                                <option id="gnu.cpp.compiler.option.optimization.level.310519980" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1404474587" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1324327523" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+                                    									
+                                    <listOptionValue builtIn="false" value="_BML3MK5"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_OPENGL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GETTEXT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GTK"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG_LOG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GUI_TYPE_GTK_X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_REENTRANT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL_GLEXT_PROTOTYPES"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1163103631" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.1377679023" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.other.other.2034443345" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.280787399" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1542112445" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config gtk+-3.0 --libs`" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1793885368" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1953130660" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib64"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/lib"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.1581361203" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL_ttf"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="freetype"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="pthread"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="dl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="m"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="png"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.link.option.flags.563362117" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.199999766" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1400614250" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+                                    									
+                                    <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+                                    									
+                                    <additionalInput kind="additionalinput" paths="$(LIBS)"/>
+                                    								
+                                </inputType>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.archiver.992107901" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.assembler.581431518" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1064613028" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+                                							
+                            </tool>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="video/wxwidgets|video/qt|video/mmf|osd/wxwidgets|osd/qt|gui/wxwidgets|gui/qt|osd/windows|osd/mac|osd/gnu_clocale.cpp|gui/agar/|gui/cocoa/|gui/windows/|gui/sdl2_ledbox.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_screen.cpp|video/avkit/|video/cocoa/|video/qtkit/|video/vfw/|video/windows/|osd/SDL/sdl_screenmode.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+                        					
+                    </sourceEntries>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        		
+        <cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933" moduleId="org.eclipse.cdt.core.settings" name="DebugG3S2">
+                				
+                <externalSettings>
+                    					
+                    <externalSetting/>
+                    				
+                </externalSettings>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using GTK3 and SDL2" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933" name="DebugG3S2" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+                    					
+                    <folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933." name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.814336489" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+                            							
+                            <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1425615969" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+                            							
+                            <builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.1107907636" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.835511724" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+                                								
+                                <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1175061612" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.1984112449" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.2116991574" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.c.compiler.option.dialect.std.1498774922" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.744498024" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} `pkg-config gtk+-3.0 --cflags` ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.868495809" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+                                								
+                                <option id="gnu.cpp.compiler.option.optimization.level.1419748411" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1512799967" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.871929739" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+                                    									
+                                    <listOptionValue builtIn="false" value="_BML3MK5"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_OPENGL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GETTEXT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GTK"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG_LOG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GUI_TYPE_GTK_X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_REENTRANT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL_GLEXT_PROTOTYPES"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1257259675" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.1137831906" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.other.other.1314539826" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1057855680" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1685915515" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config gtk+-3.0 --libs`" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.219553684" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.634377576" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib64"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/lib"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.223206480" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL2_ttf"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="freetype"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="pthread"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="dl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="m"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="png"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.link.option.flags.192491453" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.1257365658" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.583523155" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+                                    									
+                                    <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+                                    									
+                                    <additionalInput kind="additionalinput" paths="$(LIBS)"/>
+                                    								
+                                </inputType>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.archiver.1863314293" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.assembler.1512209037" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1447179588" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+                                							
+                            </tool>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="video/wxwidgets|video/qt|video/mmf|osd/wxwidgets|osd/qt|gui/wxwidgets|gui/qt|osd/windows|osd/mac|osd/gnu_clocale.cpp|gui/agar/|gui/cocoa/|gui/windows/|gui/sdl2_ledbox.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_screen.cpp|video/avkit/|video/cocoa/|video/qtkit/|video/vfw/|video/windows/|osd/SDL/sdl_screenmode.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+                        					
+                    </sourceEntries>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        		
+        <cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684" moduleId="org.eclipse.cdt.core.settings" name="DebugG3S2_Dbgr">
+                				
+                <externalSettings>
+                    					
+                    <externalSetting/>
+                    				
+                </externalSettings>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using GTK3 and SDL2 with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684" name="DebugG3S2_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+                    					
+                    <folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684." name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1273863906" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+                            							
+                            <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.796233782" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+                            							
+                            <builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.625048226" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.146941802" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+                                								
+                                <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1496501157" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.1408217588" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.420466823" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.c.compiler.option.dialect.std.814872245" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2022381982" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} `pkg-config gtk+-3.0 --cflags` ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.677714853" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+                                								
+                                <option id="gnu.cpp.compiler.option.optimization.level.1039295105" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.906590688" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.160735339" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+                                    									
+                                    <listOptionValue builtIn="false" value="_BML3MK5"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_OPENGL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GETTEXT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GTK"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_DEBUG_LOG"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GUI_TYPE_GTK_X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_REENTRANT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL_GLEXT_PROTOTYPES"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.508779883" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.1979750684" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.other.other.1168770412" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.76805991" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1898891979" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config gtk+-3.0 --libs`" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.965489110" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1781009306" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib64"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/lib"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.95025690" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL2_ttf"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="freetype"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="pthread"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="dl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="m"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="png"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.link.option.flags.355887381" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.2024998192" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.291780422" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+                                    									
+                                    <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+                                    									
+                                    <additionalInput kind="additionalinput" paths="$(LIBS)"/>
+                                    								
+                                </inputType>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.archiver.595419079" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.assembler.1788822458" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1326103389" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+                                							
+                            </tool>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="video/wxwidgets|video/qt|video/mmf|osd/wxwidgets|osd/qt|gui/wxwidgets|gui/qt|osd/windows|osd/mac|osd/gnu_clocale.cpp|gui/agar/|gui/cocoa/|gui/windows/|gui/sdl2_ledbox.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_screen.cpp|video/avkit/|video/cocoa/|video/qtkit/|video/vfw/|video/windows/|osd/SDL/sdl_screenmode.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+                        					
+                    </sourceEntries>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        		
+        <cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667">
+            			
+            <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667" moduleId="org.eclipse.cdt.core.settings" name="ReleaseG3S2_Dbgr">
+                				
+                <externalSettings>
+                    					
+                    <externalSetting/>
+                    				
+                </externalSettings>
+                				
+                <extensions>
+                    					
+                    <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+                    					
+                    <extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+                    				
+                </extensions>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+                				
+                <configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using GTK3 and SDL2 with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667" name="ReleaseG3S2_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+                    					
+                    <folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667." name="/" resourcePath="">
+                        						
+                        <toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1287189616" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+                            							
+                            <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1685966863" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+                            							
+                            <builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.1370381261" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1993330064" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+                                								
+                                <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.633992436" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.822812142" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.141678455" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.c.compiler.option.dialect.std.1676056068" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1401722695" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} `pkg-config gtk+-3.0 --cflags` ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1295291703" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+                                								
+                                <option id="gnu.cpp.compiler.option.optimization.level.1154771324" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.more" valueType="enumerated"/>
+                                								
+                                <option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1404749581" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1622345870" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+                                    									
+                                    <listOptionValue builtIn="false" value="_BML3MK5"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_OPENGL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GETTEXT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_GTK"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GUI_TYPE_GTK_X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="_REENTRANT"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL_GLEXT_PROTOTYPES"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1476649276" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include/SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.std.294190013" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.other.other.664452272" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.563282936" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.c.linker.376814333" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+                            							
+                            <tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS} `pkg-config gtk+-3.0 --libs`" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1057220509" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1195075765" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/lib64"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/usr/local/lib"/>
+                                    								
+                                </option>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.1928203343" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL2"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="SDL2_ttf"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="freetype"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="X11"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="pthread"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="GL"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="dl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="m"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="png"/>
+                                    								
+                                </option>
+                                								
+                                <option id="gnu.cpp.link.option.flags.1251491647" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+                                								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.582904374" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+                                								
+                                <option id="gnu.cpp.link.option.strip.741520783" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.212710819" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+                                    									
+                                    <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+                                    									
+                                    <additionalInput kind="additionalinput" paths="$(LIBS)"/>
+                                    								
+                                </inputType>
+                                							
+                            </tool>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.archiver.35810526" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+                            							
+                            <tool id="cdt.managedbuild.tool.gnu.cross.assembler.2108103621" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+                                								
+                                <inputType id="cdt.managedbuild.tool.gnu.assembler.input.336796959" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+                                							
+                            </tool>
+                            						
+                        </toolChain>
+                        					
+                    </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="video/wxwidgets|video/qt|video/mmf|osd/wxwidgets|osd/qt|gui/wxwidgets|gui/qt|osd/windows|osd/mac|osd/gnu_clocale.cpp|gui/agar/|gui/cocoa/|gui/windows/|gui/sdl2_ledbox.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_screen.cpp|video/avkit/|video/cocoa/|video/qtkit/|video/vfw/|video/windows/|osd/SDL/sdl_screenmode.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+                        					
+                    </sourceEntries>
+                    				
+                </configuration>
+                			
+            </storageModule>
+            			
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            		
+        </cconfiguration>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="cdtBuildSystem" version="4.0.0">
+        		
+        <project id="bml3mk5.cdt.managedbuild.target.gnu.cross.exe.1311337294" name="Executable" projectType="cdt.managedbuild.target.gnu.cross.exe"/>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+    	
+    <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+    	
+    <storageModule moduleId="refreshScope" versionNumber="2">
+        		
+        <configuration configurationName="DebugG3S1"/>
+        		
+        <configuration configurationName="DebugG3S1_Dbgr"/>
+        		
+        <configuration configurationName="DebugG3S2">
+            			
+            <resource resourceType="PROJECT" workspacePath="/bml3mk5"/>
+            		
+        </configuration>
+        		
+        <configuration configurationName="DebugG3S2_Dbgr">
+            			
+            <resource resourceType="PROJECT" workspacePath="/bml3mk5"/>
+            		
+        </configuration>
+        		
+        <configuration configurationName="DebugS1G3_Dbgr"/>
+        		
+        <configuration configurationName="ReleaseG3S1_Dbgr"/>
+        		
+        <configuration configurationName="ReleaseG3S2_Dbgr">
+            			
+            <resource resourceType="PROJECT" workspacePath="/bml3mk5"/>
+            		
+        </configuration>
+        		
+        <configuration configurationName="Release"/>
+        		
+        <configuration configurationName="Debug"/>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+    	
+    <storageModule moduleId="scannerConfiguration">
+        		
+        <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.;cdt.managedbuild.tool.gnu.cross.c.compiler.3302595;cdt.managedbuild.tool.gnu.c.compiler.input.309246292">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893.;cdt.managedbuild.tool.gnu.cross.c.compiler.1549270151;cdt.managedbuild.tool.gnu.c.compiler.input.441789368">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.;cdt.managedbuild.tool.gnu.cross.c.compiler.1064740966;cdt.managedbuild.tool.gnu.c.compiler.input.543773837">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.1904112601;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.1904112601.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1177003798;cdt.managedbuild.tool.gnu.cpp.compiler.input.617019359">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.799580356;cdt.managedbuild.tool.gnu.cpp.compiler.input.238082773">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.;cdt.managedbuild.tool.gnu.cross.c.compiler.1750362407;cdt.managedbuild.tool.gnu.c.compiler.input.2067980085">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1426482576;cdt.managedbuild.tool.gnu.cpp.compiler.input.756091988">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.868495809;cdt.managedbuild.tool.gnu.cpp.compiler.input.1057855680">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.;cdt.managedbuild.tool.gnu.cross.c.compiler.835511724;cdt.managedbuild.tool.gnu.c.compiler.input.744498024">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.664718292;cdt.managedbuild.tool.gnu.cpp.compiler.input.1286220909">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.;cdt.managedbuild.tool.gnu.cross.c.compiler.844485337;cdt.managedbuild.tool.gnu.c.compiler.input.724259268">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.282474607;cdt.managedbuild.config.gnu.cross.exe.release.282474607.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.979180788;cdt.managedbuild.tool.gnu.cpp.compiler.input.1756937178">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1177331949;cdt.managedbuild.tool.gnu.cpp.compiler.input.703841504">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.;cdt.managedbuild.tool.gnu.cross.c.compiler.866416476;cdt.managedbuild.tool.gnu.c.compiler.input.839935949">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667.;cdt.managedbuild.tool.gnu.cross.c.compiler.1993330064;cdt.managedbuild.tool.gnu.c.compiler.input.1401722695">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1808990042;cdt.managedbuild.tool.gnu.cpp.compiler.input.1867074462">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.282474607;cdt.managedbuild.config.gnu.cross.exe.release.282474607.;cdt.managedbuild.tool.gnu.cross.c.compiler.614092752;cdt.managedbuild.tool.gnu.c.compiler.input.1022749329">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.677714853;cdt.managedbuild.tool.gnu.cpp.compiler.input.76805991">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.476585667.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1295291703;cdt.managedbuild.tool.gnu.cpp.compiler.input.563282936">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1446152893.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1792894485;cdt.managedbuild.tool.gnu.cpp.compiler.input.280787399">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.1904112601;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.1904112601.;cdt.managedbuild.tool.gnu.cross.c.compiler.27516569;cdt.managedbuild.tool.gnu.c.compiler.input.1708345505">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178.;cdt.managedbuild.tool.gnu.cross.c.compiler.1909119691;cdt.managedbuild.tool.gnu.c.compiler.input.1629259567">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.1504144178.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.816627748;cdt.managedbuild.tool.gnu.cpp.compiler.input.138376197">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.1067830167.602518818.928427933.85204684.;cdt.managedbuild.tool.gnu.cross.c.compiler.146941802;cdt.managedbuild.tool.gnu.c.compiler.input.2022381982">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        	
+    </storageModule>
+    
+</cproject>

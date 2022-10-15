@@ -1,0 +1,804 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605" moduleId="org.eclipse.cdt.core.settings" name="DebugS1G3S">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.2"/>
+					<stringMacro name="WXBUILDINCLUDE" type="VALUE_PATH_DIR" value="${WXLIBDIR}/wx/include/gtk3-unicode-static-${WX_VER}"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="${WXBUILD}/lib"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="${WXDIR}/include"/>
+					<stringMacro name="WXBASENAME" type="VALUE_TEXT" value="wx_gtk3u"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/wxWidgets-3.1.0"/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value="${WXDIR}/build_debug_static_unicode_gtk3"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.1"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL and WXGTK3 static" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605" name="DebugS1G3S" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.355318871" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1795152381" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.597274430" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.844485337" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.765233752" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.2141162700" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.dialect.std.313824216" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.724259268" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1426482576" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.749190422" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1726993471" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1128683919" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX"/>
+									<listOptionValue builtIn="false" value="_DEBUG"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="WXUSINGDLL"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1484464029" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.2110176655" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.925716787" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.756091988" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.2060248345" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${INPUTS} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1212824106" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.114908855" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.1333108216" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.858412568" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="`${WXCONFIG} --libs all --static`" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.1354484070" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1754523419" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1913300398" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1194263945" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1706038704" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="osd/windows|video/windows|video/qt|video/mmf|video/libpng|video/cocoa|osd/simple_clocale.cpp|osd/gnu_clocale.cpp|osd/SDL/sdl_vkeyboardbase.cpp|osd/SDL/sdl_timer.cpp|osd/SDL/sdl_socket.cpp|osd/SDL/sdl_screenmode.cpp|osd/SDL/sdl_screen.cpp|osd/SDL/sdl_parseopt.cpp|osd/SDL/sdl_msgboard.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_ledboxbase.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_debugger_console.cpp|osd/SDL/sdl_csurface.cpp|osd/SDL/sdl_ccolor.cpp|osd/SDL/sdl_cbitmap.cpp|osd/qt|osd/mac|osd/gtk|gui/windows|gui/qt|gui/gtk_x11|gui/cocoa|gui/agar|video/wxwidgets|osd/SDL/sdl_emu.cpp|video/avkit/|video/qtkit/|video/vfw/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838" moduleId="org.eclipse.cdt.core.settings" name="DebugS2G3">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.1"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="${WXBUILD}/lib"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="${WXDIR}/include"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.0"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value="$(HOME)/Devel/wxWidgets-3.1.0"/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value="${WXDIR}/build_debug_static_unicode"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL2 and WXGTK3" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838" name="DebugS2G3" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.339193251" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1669224294" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.819696001" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.3302595" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.718549969" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.766723707" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.309246292" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1177331949" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.1010360425" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.172466742" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1270628193" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX2"/>
+									<listOptionValue builtIn="false" value="_DEBUG"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="WXUSINGDLL"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1481186706" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.693605437" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.136519413" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.703841504" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1820753276" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${INPUTS} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.562721737" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1103418450" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.1114575195" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+									<listOptionValue builtIn="false" value="SDL2"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.710504696" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="`${WXCONFIG} --libs all`" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.204017696" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.299553606" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1729383061" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.655488936" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="osd/SDL/sdl_emu.cpp|osd/windows|video/windows|video/qt|video/mmf|video/libpng|video/cocoa|osd/simple_clocale.cpp|osd/gnu_clocale.cpp|osd/SDL/sdl_vkeyboardbase.cpp|osd/SDL/sdl_timer.cpp|osd/SDL/sdl_socket.cpp|osd/SDL/sdl_screenmode.cpp|osd/SDL/sdl_screen.cpp|osd/SDL/sdl_parseopt.cpp|osd/SDL/sdl_msgboard.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_ledboxbase.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_debugger_console.cpp|osd/SDL/sdl_csurface.cpp|osd/SDL/sdl_ccolor.cpp|osd/SDL/sdl_cbitmap.cpp|osd/qt|osd/mac|osd/gtk|gui/windows|gui/qt|gui/gtk_x11|gui/cocoa|gui/agar|video/avkit/|video/qtkit/|video/vfw/|video/wxwidgets/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808" moduleId="org.eclipse.cdt.core.settings" name="DebugS1G3">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.2"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="${WXBUILD}/lib"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="${WXDIR}/include"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.0"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value="$(HOME)/Devel/wxWidgets-3.1.0"/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value="${WXDIR}/build_debug_static_unicode"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL and WXGTK3" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808" name="DebugS1G3" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.2056965787" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1519547767" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.1342389466" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1064740966" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1225963015" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.1163644699" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.543773837" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.799580356" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.1408318731" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.689314569" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1893884278" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX"/>
+									<listOptionValue builtIn="false" value="_DEBUG"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="WXUSINGDLL"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1777863017" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.462778711" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.472022099" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.238082773" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.608263356" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${INPUTS} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.192518475" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1706968750" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.27134635" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+									<listOptionValue builtIn="false" value="SDL"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.837485540" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="`${WXCONFIG} --libs all`" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1456046948" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1081572446" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.230126658" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.195214799" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="osd/SDL/sdl_emu.cpp|osd/windows|video/windows|video/qt|video/mmf|video/libpng|video/cocoa|osd/simple_clocale.cpp|osd/gnu_clocale.cpp|osd/SDL/sdl_vkeyboardbase.cpp|osd/SDL/sdl_timer.cpp|osd/SDL/sdl_socket.cpp|osd/SDL/sdl_screenmode.cpp|osd/SDL/sdl_screen.cpp|osd/SDL/sdl_parseopt.cpp|osd/SDL/sdl_msgboard.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_ledboxbase.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_debugger_console.cpp|osd/SDL/sdl_csurface.cpp|osd/SDL/sdl_ccolor.cpp|osd/SDL/sdl_cbitmap.cpp|osd/qt|osd/mac|osd/gtk|gui/windows|gui/qt|gui/gtk_x11|gui/cocoa|gui/agar|video/avkit/|video/qtkit/|video/vfw/|video/wxwidgets/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394" moduleId="org.eclipse.cdt.core.settings" name="ReleaseS1">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.2"/>
+					<stringMacro name="WXBUILDINCLUDE" type="VALUE_PATH_DIR" value="${WXLIBDIR}/wx/include/gtk2-unicode-${WX_VER}"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="${WXBUILD}/lib/x86_64-linux-gnu"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="${WXDIR}/include/wx-3.0"/>
+					<stringMacro name="WXLIBGUIPRE" type="VALUE_TEXT" value="wx_gtk2u"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value="/usr"/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value="${WXDIR}"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.0"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL1 and WXGTK" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394" name="ReleaseS1" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1435073858" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1339849232" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.2015095607" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1291789189" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1751501157" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.1122418499" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.dialect.std.1386504389" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1005062407" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.855811638" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.1963350102" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.632741007" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.2023764775" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="WXUSINGDLL"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.201811654" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.813954626" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.556560462" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1512255433" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.395118957" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.937289436" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.7514586" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.986962869" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.2116872986" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-pthread" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.2012808703" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.130789173" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1054422124" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.916298416" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.723169753" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="src/osd/windows|src/video/windows|src/video/qt|src/video/mmf|src/video/libpng|src/video/cocoa|src/osd/simple_clocale.cpp|src/osd/gnu_clocale.cpp|src/osd/SDL/sdl_vkeyboardbase.cpp|src/osd/SDL/sdl_timer.cpp|src/osd/SDL/sdl_socket.cpp|src/osd/SDL/sdl_screenmode.cpp|src/osd/SDL/sdl_screen.cpp|src/osd/SDL/sdl_parseopt.cpp|src/osd/SDL/sdl_msgboard.cpp|src/osd/SDL/sdl_main.cpp|src/osd/SDL/sdl_ledboxbase.cpp|src/osd/SDL/sdl_input.cpp|src/osd/SDL/sdl_input_keysym.cpp|src/osd/SDL/sdl_debugger_console.cpp|src/osd/SDL/sdl_csurface.cpp|src/osd/SDL/sdl_ccolor.cpp|src/osd/SDL/sdl_cbitmap.cpp|src/osd/qt|src/osd/mac|src/osd/gtk|src/gui/windows|src/gui/qt|src/gui/gtk_x11|src/gui/cocoa|src/gui/agar|src/video/wxwidgets|src/osd/SDL/sdl_emu.cpp|src/video/wxwidgets/wx_bitmap.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931" moduleId="org.eclipse.cdt.core.settings" name="DebugS1G2S">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.2"/>
+					<stringMacro name="WXBUILDINCLUDE" type="VALUE_PATH_DIR" value="${WXLIBDIR}/wx/include/gtk2-unicode-static-${WX_VER}"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="${WXBUILD}/lib"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="${WXDIR}/include"/>
+					<stringMacro name="WXBASENAME" type="VALUE_TEXT" value="wx_gtk2u"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/wxWidgets-3.1.0"/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value="${WXDIR}/build_debug_static_unicode"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.1"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL and WXGTK2 static" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931" name="DebugS1G2S" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1277371504" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1756624716" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.1754927554" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.784131395" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1497809503" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.325833176" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.dialect.std.2137638508" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.242243086" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.600284582" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.1977213408" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1231057686" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.772256585" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX"/>
+									<listOptionValue builtIn="false" value="_DEBUG"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.542331742" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.1945567306" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.181853736" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.compiler.option.include.files.1244771204" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files" useByScannerDiscovery="false" valueType="includeFiles"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1200100851" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1690540791" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${INPUTS} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.357059363" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.524242424" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.970154041" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.254694502" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="`${WXCONFIG} --libs all --static`" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.userobjs.851053801" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1679685944" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.847254384" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1523096914" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.895677031" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="src/osd/windows|src/video/windows|src/video/qt|src/video/mmf|src/video/libpng|src/video/cocoa|src/osd/simple_clocale.cpp|src/osd/gnu_clocale.cpp|src/osd/SDL/sdl_vkeyboardbase.cpp|src/osd/SDL/sdl_timer.cpp|src/osd/SDL/sdl_socket.cpp|src/osd/SDL/sdl_screenmode.cpp|src/osd/SDL/sdl_screen.cpp|src/osd/SDL/sdl_parseopt.cpp|src/osd/SDL/sdl_msgboard.cpp|src/osd/SDL/sdl_main.cpp|src/osd/SDL/sdl_ledboxbase.cpp|src/osd/SDL/sdl_input.cpp|src/osd/SDL/sdl_input_keysym.cpp|src/osd/SDL/sdl_debugger_console.cpp|src/osd/SDL/sdl_csurface.cpp|src/osd/SDL/sdl_ccolor.cpp|src/osd/SDL/sdl_cbitmap.cpp|src/osd/qt|src/osd/mac|src/osd/gtk|src/gui/windows|src/gui/qt|src/gui/gtk_x11|src/gui/cocoa|src/gui/agar|src/video/wxwidgets|src/osd/SDL/sdl_emu.cpp|src/video/wxwidgets/wx_bitmap.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877" moduleId="org.eclipse.cdt.core.settings" name="DebugS1G3_Dbgr">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.2"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="${WXBUILD}/lib"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="${WXDIR}/include"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.0"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value="$(HOME)/Devel/wxWidgets-3.1.0"/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value="${WXDIR}/build_debug_static_unicode"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL and WXGTK3 with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877" name="DebugS1G3_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1731009359" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1798236761" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.511391908" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.136743687" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.636806571" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.410823541" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.601117266" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1557426980" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.1269733613" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.379333589" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.2035946617" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX"/>
+									<listOptionValue builtIn="false" value="_DEBUG"/>
+									<listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="WXUSINGDLL"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.2083343180" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.1598830209" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.116789807" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.573582741" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1772519716" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${INPUTS} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.447476741" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1783980166" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.493906437" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+									<listOptionValue builtIn="false" value="SDL"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.1794158670" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="`${WXCONFIG} --libs all`" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.68447882" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.39714051" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1521944289" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1571004263" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="osd/windows|video/windows|video/qt|video/mmf|video/libpng|video/cocoa|osd/simple_clocale.cpp|osd/gnu_clocale.cpp|osd/SDL/sdl_vkeyboardbase.cpp|osd/SDL/sdl_timer.cpp|osd/SDL/sdl_socket.cpp|osd/SDL/sdl_screenmode.cpp|osd/SDL/sdl_screen.cpp|osd/SDL/sdl_parseopt.cpp|osd/SDL/sdl_msgboard.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_ledboxbase.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_debugger_console.cpp|osd/SDL/sdl_csurface.cpp|osd/SDL/sdl_ccolor.cpp|osd/SDL/sdl_cbitmap.cpp|osd/qt|osd/mac|osd/gtk|gui/windows|gui/qt|gui/gtk_x11|gui/cocoa|gui/agar|osd/SDL/sdl_emu.cpp|video/avkit/|video/qtkit/|video/vfw/|video/wxwidgets/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587" moduleId="org.eclipse.cdt.core.settings" name="DebugS2G3_Dbgr">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.1"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="${WXBUILD}/lib"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="${WXDIR}/include"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.0"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value="$(HOME)/Devel/wxWidgets-3.1.0"/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value="${WXDIR}/build_debug_static_unicode"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL2 and WXGTK3 with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587" name="DebugS2G3_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.200610200" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.522043716" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.488686723" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.2114892978" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.757352344" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.454421430" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.381865475" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1814143070" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.782051948" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.1758178397" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1238831105" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX2"/>
+									<listOptionValue builtIn="false" value="_DEBUG"/>
+									<listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="WXUSINGDLL"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.180083434" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.1074957917" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.274612372" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1396970422" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.777134368" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${INPUTS} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.729380627" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.557206402" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.2102393802" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+									<listOptionValue builtIn="false" value="SDL2"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.402318083" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="`${WXCONFIG} --libs all`" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1312315125" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1364896623" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.795142516" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1029028273" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="osd/SDL/sdl_emu.cpp|osd/windows|video/windows|video/qt|video/mmf|video/libpng|video/cocoa|osd/simple_clocale.cpp|osd/gnu_clocale.cpp|osd/SDL/sdl_vkeyboardbase.cpp|osd/SDL/sdl_timer.cpp|osd/SDL/sdl_socket.cpp|osd/SDL/sdl_screenmode.cpp|osd/SDL/sdl_screen.cpp|osd/SDL/sdl_parseopt.cpp|osd/SDL/sdl_msgboard.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_ledboxbase.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_debugger_console.cpp|osd/SDL/sdl_csurface.cpp|osd/SDL/sdl_ccolor.cpp|osd/SDL/sdl_cbitmap.cpp|osd/qt|osd/mac|osd/gtk|gui/windows|gui/qt|gui/gtk_x11|gui/cocoa|gui/agar|video/avkit/|video/qtkit/|video/vfw/|video/wxwidgets/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587.436188051">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587.436188051" moduleId="org.eclipse.cdt.core.settings" name="DebugS2G3SH_Dbgr">
+				<macros>
+					<stringMacro name="FFMPEGDIR" type="VALUE_PATH_DIR" value="${HOME}/Devel/ffmpeg-3.4.1"/>
+					<stringMacro name="WXLIBDIR" type="VALUE_PATH_DIR" value="/usr/lib/"/>
+					<stringMacro name="WXINCLUDE" type="VALUE_PATH_DIR" value="/usr/include/wx-3.0"/>
+					<stringMacro name="WXCONFIG" type="VALUE_TEXT" value="wx-config"/>
+					<stringMacro name="WX_VER" type="VALUE_TEXT" value="3.0"/>
+					<stringMacro name="WXDIR" type="VALUE_PATH_DIR" value=""/>
+					<stringMacro name="WXBUILD" type="VALUE_PATH_DIR" value=""/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="using SDL2 and WXGTK3(shared libs) with Debugger" id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587.436188051" name="DebugS2G3SH_Dbgr" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.cross.exe.debug" postbuildStep="${ProjDirPath}/post_build.sh &quot;${ProjDirPath}&quot; &quot;${ConfigName}&quot;">
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.202712587.436188051." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1523912567" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1619227752" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/bml3mk5}/Debug" id="cdt.managedbuild.builder.gnu.cross.117094401" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.350297887" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1447135562" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option defaultValue="gnu.c.debugging.level.max" id="gnu.c.compiler.option.debugging.level.966874118" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.4251032" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.147371563" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
+								<option id="gnu.cpp.compiler.option.optimization.level.478183027" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.cpp.compiler.debugging.level.max" id="gnu.cpp.compiler.option.debugging.level.129950789" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.24552086" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="_BML3MK5"/>
+									<listOptionValue builtIn="false" value="_UNICODE"/>
+									<listOptionValue builtIn="false" value="USE_OPENGL"/>
+									<listOptionValue builtIn="false" value="USE_WX2"/>
+									<listOptionValue builtIn="false" value="_DEBUG"/>
+									<listOptionValue builtIn="false" value="USE_DEBUGGER"/>
+									<listOptionValue builtIn="false" value="GUI_TYPE_WXWIDGETS"/>
+									<listOptionValue builtIn="false" value="_FILE_OFFSET_BITS=64"/>
+									<listOptionValue builtIn="false" value="WXUSINGDLL"/>
+									<listOptionValue builtIn="false" value="__WXGTK__"/>
+									<listOptionValue builtIn="false" value="_GNU_SOURCE=1"/>
+									<listOptionValue builtIn="false" value="_REENTRANT"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1578599474" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/wx/include/gtk3-unicode-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL2"/>
+									<listOptionValue builtIn="false" value="${HOME}/Devel/ffmpeg"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.409578202" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.591781696" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -pthread" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1961904156" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1141542553" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
+							<tool commandLinePattern="${COMMAND} ${INPUTS} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT}" id="cdt.managedbuild.tool.gnu.cross.cpp.linker.406596870" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.2011014506" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="${WXLIBDIR}"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.200019057" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="X11"/>
+									<listOptionValue builtIn="false" value="SDL2"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.606891132" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="`${WXCONFIG} --libs all`" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.233805442" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1246753492" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.802602980" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.345707925" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="osd/SDL/sdl_emu.cpp|osd/windows|video/windows|video/qt|video/mmf|video/libpng|video/cocoa|osd/simple_clocale.cpp|osd/gnu_clocale.cpp|osd/SDL/sdl_vkeyboardbase.cpp|osd/SDL/sdl_timer.cpp|osd/SDL/sdl_socket.cpp|osd/SDL/sdl_screenmode.cpp|osd/SDL/sdl_screen.cpp|osd/SDL/sdl_parseopt.cpp|osd/SDL/sdl_msgboard.cpp|osd/SDL/sdl_main.cpp|osd/SDL/sdl_ledboxbase.cpp|osd/SDL/sdl_input.cpp|osd/SDL/sdl_input_keysym.cpp|osd/SDL/sdl_debugger_console.cpp|osd/SDL/sdl_csurface.cpp|osd/SDL/sdl_ccolor.cpp|osd/SDL/sdl_cbitmap.cpp|osd/qt|osd/mac|osd/gtk|gui/windows|gui/qt|gui/gtk_x11|gui/cocoa|gui/agar|video/avkit/|video/qtkit/|video/vfw/|video/wxwidgets/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="bml3mk5.cdt.managedbuild.target.gnu.cross.exe.1311337294" name="Executable" projectType="cdt.managedbuild.target.gnu.cross.exe"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="DebugS2G3"/>
+		<configuration configurationName="DebugS1G3"/>
+		<configuration configurationName="DebugS1G3SNGL"/>
+		<configuration configurationName="Debug2">
+			<resource resourceType="PROJECT" workspacePath="/bml3mk5"/>
+		</configuration>
+		<configuration configurationName="DebugS1G3S"/>
+		<configuration configurationName="ReleaseS1"/>
+		<configuration configurationName="DebugS2G3_Dbgr"/>
+		<configuration configurationName="DebugS1G2S"/>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/bml3mk5"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/bml3mk5"/>
+		</configuration>
+		<configuration configurationName="DebugS1G3_Dbgr"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.;cdt.managedbuild.tool.gnu.cross.c.compiler.3302595;cdt.managedbuild.tool.gnu.c.compiler.input.309246292">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.600284582;cdt.managedbuild.tool.gnu.cpp.compiler.input.1200100851">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.;cdt.managedbuild.tool.gnu.cross.c.compiler.1064740966;cdt.managedbuild.tool.gnu.c.compiler.input.543773837">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.282474607;cdt.managedbuild.config.gnu.cross.exe.release.282474607.;cdt.managedbuild.tool.gnu.cross.c.compiler.614092752;cdt.managedbuild.tool.gnu.c.compiler.input.1022749329">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.799580356;cdt.managedbuild.tool.gnu.cpp.compiler.input.238082773">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.659715793;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.659715793.;cdt.managedbuild.tool.gnu.cross.c.compiler.1380617633;cdt.managedbuild.tool.gnu.c.compiler.input.412788568">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1426482576;cdt.managedbuild.tool.gnu.cpp.compiler.input.756091988">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.855811638;cdt.managedbuild.tool.gnu.cpp.compiler.input.1512255433">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.;cdt.managedbuild.tool.gnu.cross.c.compiler.844485337;cdt.managedbuild.tool.gnu.c.compiler.input.724259268">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.1227956931.;cdt.managedbuild.tool.gnu.cross.c.compiler.784131395;cdt.managedbuild.tool.gnu.c.compiler.input.242243086">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.282474607;cdt.managedbuild.config.gnu.cross.exe.release.282474607.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.979180788;cdt.managedbuild.tool.gnu.cpp.compiler.input.1756937178">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1177331949;cdt.managedbuild.tool.gnu.cpp.compiler.input.703841504">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1557426980;cdt.managedbuild.tool.gnu.cpp.compiler.input.573582741">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.599540394.;cdt.managedbuild.tool.gnu.cross.c.compiler.1291789189;cdt.managedbuild.tool.gnu.c.compiler.input.1005062407">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.298081838.1146021808.450776877.;cdt.managedbuild.tool.gnu.cross.c.compiler.136743687;cdt.managedbuild.tool.gnu.c.compiler.input.601117266">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.659715793;cdt.managedbuild.config.gnu.cross.exe.debug.2014723605.659715793.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1991008511;cdt.managedbuild.tool.gnu.cpp.compiler.input.722492110">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+</cproject>

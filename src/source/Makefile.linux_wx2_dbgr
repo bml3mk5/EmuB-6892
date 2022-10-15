@@ -1,0 +1,157 @@
+#
+# wxWidgets3 + SDL2
+# for linux 
+#
+export
+
+include mk_deps.mk
+
+GUI_TYPE:=GUI_TYPE_WXWIDGETS
+
+SUBCPU_CARD:=
+
+BUILDDIR_BASE:=./build
+SH_BUILDDIR:=$(BUILDDIR_BASE)/shared_wx2_dbgr
+ST_BUILDDIR:=$(BUILDDIR_BASE)/static_wx2_dbgr
+DBG_BUILDDIR:=$(BUILDDIR_BASE)/debug_wx2_dbgr
+DBGST_BUILDDIR:=$(BUILDDIR_BASE)/debugst_wx2_dbgr
+
+SH_INSTALLDIR:=../ReleaseWx2SHDbgr
+ST_INSTALLDIR:=../ReleaseWx2STDbgr
+DBG_INSTALLDIR:=../DebugWx2SHDbgr
+DBGST_INSTALLDIR:=../DebugWx2STDbgr
+
+CDEFS_BASE:=-D$(VMTARGET) -D_UNICODE -DUSE_OPENGL -DUSE_WX2 -DUSE_DEBUGGER -D$(GUI_TYPE)
+SH_CDEFS:=$(CDEFS_BASE)
+ST_CDEFS:=$(CDEFS_BASE)
+DBG_CDEFS:=$(CDEFS_BASE) -D_DEBUG -D_DEBUG_LOG
+DBGST_CDEFS:=$(CDEFS_BASE) -D_DEBUG -D_DEBUG_LOG
+ifneq ($(SUBCPU_CARD),)
+	SH_CDEFS:=$(SH_CDEFS) -DUSE_$(SUBCPU_CARD)
+	ST_CDEFS:=$(ST_CDEFS) -DUSE_$(SUBCPU_CARD)
+	DBG_CDEFS:=$(DBG_CDEFS) -DUSE_$(SUBCPU_CARD)
+	DBGST_CDEFS:=$(DBGST_CDEFS) -DUSE_$(SUBCPU_CARD)
+endif
+
+LOCALINCDIR:=/usr/local/include
+SDLLOCALINCDIR:=$(LOCALINCDIR)/SDL2
+
+WXDIR:=$(HOME)/Devel/wxWidgets-3.1.0
+WXCONFIG_SH:=wx-config
+WXCONFIG_ST:=$(WXDIR)/build_release_static_unicode_gtk3/wx-config
+WXCONFIG_DBG:=wx-config
+WXCONFIG_DBGST:=$(WXDIR)/build_debug_static_unicode/wx-config
+
+SDL_CFLAGS:=$(shell sdl2-config --cflags) -I$(SDLLOCALINCDIR)
+SDL_LDFLAGS:=$(shell sdl2-config --libs)
+
+sh_exe: WX_CFLAGS:=$(shell $(WXCONFIG_SH) --cppflags)
+sh_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_SH) --libs std gl)
+sh_exe: IS_GTK3:=$(findstring gtk3,$(shell $(WXCONFIG_SH) --cppflags))
+
+st_exe: WX_CFLAGS:=$(shell $(WXCONFIG_ST) --cppflags)
+st_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_ST) --libs std gl --static)
+st_exe: IS_GTK3:=$(findstring gtk3,$(shell $(WXCONFIG_ST) --cppflags))
+
+dbg_exe: WX_CFLAGS:=$(shell $(WXCONFIG_DBG) --cppflags --debug)
+dbg_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_DBG) --libs std gl --debug)
+dbg_exe: IS_GTK3:=$(findstring gtk3,$(shell $(WXCONFIG_DBG) --cppflags))
+
+dbgst_exe: WX_CFLAGS:=$(shell $(WXCONFIG_DBGST) --cppflags --debug)
+dbgst_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_DBGST) --libs std gl --debug)
+dbgst_exe: IS_GTK3:=$(findstring gtk3,$(shell $(WXCONFIG_DBGST) --cppflags))
+
+GTK_CFLAGS=$(if $(IS_GTK3),,$(shell pkg-config gtk+-2.0 --cflags) $(shell pkg-config gdk-pixbuf-2.0 --cflags))
+GTK_LDFLAGS=$(if $(IS_GTK3),$(shell pkg-config gtk+-3.0 --libs),$(shell pkg-config gtk+-2.0 --libs))
+
+SH_CFLAGS=$(ARCH) -Wall -O2 $(SDL_CFLAGS) $(WX_CFLAGS) $(GTK_CFLAGS) -I$(LOCALINCDIR) -I./include
+ST_CFLAGS=$(ARCH) -Wall -O2 $(SDL_CFLAGS) $(WX_CFLAGS) $(GTK_CFLAGS) -I$(LOCALINCDIR) -I./include
+DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(SDL_CFLAGS) $(WX_CFLAGS) $(GTK_CFLAGS) -I$(LOCALINCDIR) -I./include
+DBGST_CFLAGS=$(ARCH) -g -Wall -O0 $(SDL_CFLAGS) $(WX_CFLAGS) $(GTK_CFLAGS) -I$(LOCALINCDIR) -I./include
+
+LOCALLIBDIR:=/usr/local/lib
+# SDLLIBS:=$(LOCALLIBDIR)/libSDL2main.a $(LOCALLIBDIR)/libSDL2.a $(LOCALLIBDIR)/libSDL2_ttf.a
+SDLLIBS:=
+
+SH_LDFLAGS=-s $(SDL_LDFLAGS) $(WX_LDFLAGS) $(GTK_LDFLAGS) -lm -lz -lGL -lpthread -lrt -ldl -lX11
+ST_LDFLAGS=-s $(SDL_LDFLAGS) $(WX_LDFLAGS) $(GTK_LDFLAGS) -lm -lz -lGL -lpthread -lrt -ldl -lX11
+DBG_LDFLAGS=$(SDL_LDFLAGS) $(WX_LDFLAGS) $(GTK_LDFLAGS) -lm -lz -lGL -lpthread -lrt -ldl -lX11
+DBGST_LDFLAGS=$(SDL_LDFLAGS) $(WX_LDFLAGS) $(GTK_LDFLAGS) -lm -lz -lGL -lpthread -lrt -ldl -lX11
+
+LIBS_BASE:=$(SDLLIBS)
+
+SH_LIBS:=
+ST_LIBS:=$(LIBS_BASE)
+DBG_LIBS:=
+DBGST_LIBS:=$(LIBS_BASE)
+
+#
+#
+#
+
+all: sh_exe
+
+sh_exe: export INSTALLDIR:=$(SH_INSTALLDIR)
+sh_exe: export BUILDDIR:=$(SH_BUILDDIR)
+sh_exe: export LIBS:=$(SH_LIBS)
+sh_exe: export LDFLAGS:=$(SH_LDFLAGS)
+sh_exe: export CDEFS:=$(SH_CDEFS)
+sh_exe: export CFLAGS:=$(SH_CFLAGS)
+sh_exe: export CXXFLAGS:=$(SH_CFLAGS)
+
+st_exe: export INSTALLDIR:=$(ST_INSTALLDIR)
+st_exe: export BUILDDIR:=$(ST_BUILDDIR)
+st_exe: export LIBS:=$(ST_LIBS)
+st_exe: export LDFLAGS:=$(ST_LDFLAGS)
+st_exe: export CDEFS:=$(ST_CDEFS)
+st_exe: export CFLAGS:=$(ST_CFLAGS)
+st_exe: export CXXFLAGS:=$(ST_CFLAGS)
+
+dbg_exe: export INSTALLDIR:=$(DBG_INSTALLDIR)
+dbg_exe: export BUILDDIR:=$(DBG_BUILDDIR)
+dbg_exe: export LIBS:=$(DBG_LIBS)
+dbg_exe: export LDFLAGS:=$(DBG_LDFLAGS)
+dbg_exe: export CDEFS:=$(DBG_CDEFS)
+dbg_exe: export CFLAGS:=$(DBG_CFLAGS)
+dbg_exe: export CXXFLAGS:=$(DBG_CFLAGS)
+
+dbgst_exe: export INSTALLDIR:=$(DBGST_INSTALLDIR)
+dbgst_exe: export BUILDDIR:=$(DBGST_BUILDDIR)
+dbgst_exe: export LIBS:=$(DBGST_LIBS)
+dbgst_exe: export LDFLAGS:=$(DBGST_LDFLAGS)
+dbgst_exe: export CDEFS:=$(DBGST_CDEFS)
+dbgst_exe: export CFLAGS:=$(DBGST_CFLAGS)
+dbgst_exe: export CXXFLAGS:=$(DBGST_CFLAGS)
+
+sh_exe st_exe dbg_exe dbgst_exe:
+	$(MAKE) -f mk_linux_wx.mk $(TARGET)
+
+install: sh_install
+
+sh_install st_install dbg_install dbgst_install: export TARGET:=install
+
+sh_install: sh_exe
+
+st_install: st_exe
+
+dbg_install: dbg_exe
+
+dbgst_install: dbgst_exe
+
+clean: sh_clean
+
+sh_clean:
+	rm -rf $(SH_BUILDDIR)
+
+st_clean:
+	rm -rf $(ST_BUILDDIR)
+
+dbg_clean:
+	rm -rf $(DBG_BUILDDIR)
+
+dbgst_clean:
+	rm -rf $(DBGST_BUILDDIR)
+
+clean_all:
+	rm -rf $(BUILDDIR)
+

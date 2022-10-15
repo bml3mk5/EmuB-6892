@@ -1,0 +1,119 @@
+#
+# for MacOSX  
+#
+CC=gcc
+
+CDEFS=
+DBG_CDEFS=-D_DEBUG
+
+ARCH=-arch i386
+#ARCH=-arch x86_64
+
+MACMINVER=-mmacosx-version-min=10.6
+
+CFLAGS=$(ARCH) -Wall -O2 $(shell sdl-config --cflags)
+DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(shell sdl-config --cflags)
+
+LD=gcc
+
+LIBDIR=/usr/lib
+LOCALLIBDIR=/usr/local/lib
+LOCALLIBS=$(LOCALLIBDIR)/libSDLmain.a $(LOCALLIBDIR)/libSDL.a $(LOCALLIBDIR)/libSDL_ttf.a
+
+SH_LDFLAGS=$(ARCH) $(shell sdl-config --libs) -lSDL_ttf -liconv
+ST_LDFLAGS=$(ARCH) $(shell sdl-config --static-libs) -L/usr/X11/lib -lfreetype -liconv
+DBG_LDFLAGS=$(ST_LDFLAGS)
+
+EXEFILE=mkkanji
+
+BUILDDIR=./build
+SH_BUILDDIR=$(BUILDDIR)/shared
+ST_BUILDDIR=$(BUILDDIR)/static
+DBG_BUILDDIR=$(BUILDDIR)/debug
+
+RELEASEDIR=./Release
+DEBUGDIR=./Debug
+
+EXE =$(BUILDDIR)/$(EXEFILE)
+SH_EXE=$(SH_BUILDDIR)/$(EXEFILE)
+ST_EXE=$(ST_BUILDDIR)/$(EXEFILE)
+DBG_EXE=$(DBG_BUILDDIR)/$(EXEFILE)
+
+OBJS=mkkanji.o
+
+SH_OBJS=$(OBJS:%=$(SH_BUILDDIR)/%)
+ST_OBJS=$(OBJS:%=$(ST_BUILDDIR)/%)
+DBG_OBJS=$(OBJS:%=$(DBG_BUILDDIR)/%)
+
+LIBS=$(LOCALLIBS)
+SH_LIBS=
+ST_LIBS=$(LIBS)
+DBG_LIBS=$(LIBS)
+
+#
+#
+#
+
+all: sh_exe
+
+sh_exe: mk_sh_builddir $(SH_EXE)
+
+st_exe: mk_st_builddir $(ST_EXE)
+
+dbg_exe: mk_dbg_builddir $(DBG_EXE)
+
+$(SH_EXE): $(SH_OBJS)
+	$(LD) -o $@ $(SH_OBJS) $(SH_LIBS) $(SH_LDFLAGS)
+
+$(ST_EXE): $(ST_OBJS)
+	$(LD) -o $@ $(ST_OBJS) $(ST_LIBS) $(ST_LDFLAGS)
+
+$(DBG_EXE): $(DBG_OBJS)
+	$(LD) -o $@ $(DBG_OBJS) $(DBG_LIBS) $(DBG_LDFLAGS)
+
+$(SH_BUILDDIR)/%.o: %.c
+	$(CC) $(CDEFS) $(CFLAGS) -c $< -o $@
+
+$(ST_BUILDDIR)/%.o: %.c
+	$(CC) $(CDEFS) $(CFLAGS) -c $< -o $@
+
+$(DBG_BUILDDIR)/%.o: %.c
+	$(CC) $(DBG_CDEFS) $(DBG_CFLAGS) -c $< -o $@
+
+install: sh_install
+
+sh_install: sh_exe
+	mkdir -p $(RELEASEDIR)
+	cp -p $(SH_EXE) $(RELEASEDIR)
+
+st_install: st_exe
+	mkdir -p $(RELEASEDIR)
+	cp -p $(ST_EXE) $(RELEASEDIR)
+
+dbg_install: dbg_exe
+	mkdir -p $(DEBUGDIR)
+	cp -p $(DBG_EXE) $(DEBUGDIR)
+
+mk_sh_builddir:
+	mkdir -p $(SH_BUILDDIR)
+
+mk_st_builddir:
+	mkdir -p $(ST_BUILDDIR)
+
+mk_dbg_builddir:
+	mkdir -p $(DBG_BUILDDIR)
+
+clean: sh_clean
+
+sh_clean:
+	rm -rf $(SH_BUILDDIR)
+
+st_clean:
+	rm -rf $(ST_BUILDDIR)
+
+dbg_clean:
+	rm -rf $(DBG_BUILDDIR)
+
+clean_all:
+	rm -rf $(BUILDDIR)
+
