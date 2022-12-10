@@ -22,6 +22,11 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, long status, int *new_
 }
 #endif
 
+/// @param[in] type bit0:0:down 1:up
+/// @param[in] code native code
+/// @param[in] scan_code native key scan code
+/// @param[out] new_code
+/// @param[out] new_keep_frames
 uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *new_code, bool *new_keep_frames)
 {
 	int n_code = 0;

@@ -496,6 +496,7 @@ const BreakPoint *BreakPoints::FindFetchCyc(uint32_t addr, int len, int start, i
 	int idx = ((end - start) >> 1) + start;
 
 	const BreakPoint *bp = EnableItem(idx);
+	addr &= bp->Mask();
 	if(addr >= bp->Addr() && addr < (bp->Addr() + bp->Len() + len)) {
 		if (bp->MatchRegVal()) {
 			Hit(bp);
@@ -519,6 +520,7 @@ const BreakPoint *BreakPoints::FindMemoryCyc(uint32_t addr, int len, uint32_t va
 	int idx = ((end - start) >> 1) + start;
 
 	const BreakPoint *bp = EnableItem(idx);
+	addr &= bp->Mask();
 	if(addr >= bp->Addr() && addr < (bp->Addr() + bp->Len() + len)) {
 		if (bp->MatchValue(value)) {
 			Hit(bp);
@@ -589,7 +591,7 @@ const BreakPoint *BreakPoints::FindInterrupt(uint32_t addr, uint32_t mask)
 	const BreakPoint *found = NULL;
 	for(int i = 0; i < tbl_ena_count; i++) {
 		const BreakPoint *bp = EnableItem(i);
-		if(addr == bp->Addr() && (((mask & 1) == (bp->Mask() & 1)) || ((bp->Mask() & 2) != 0))) {
+		if(addr == bp->Addr() && (((mask & BreakPoints::INTR_ON) == (bp->Mask() & BreakPoints::INTR_ON)) || ((bp->Mask() & BreakPoints::INTR_CHG) != 0))) {
 			Hit(bp);
 			found = bp;
 			break;

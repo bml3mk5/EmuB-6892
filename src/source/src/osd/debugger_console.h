@@ -335,7 +335,8 @@ private:
 	int ParseInput();
 	void ClearInput();
 	bool EscapePressed();
-	bool NowDisable();
+	bool NowDisable() const;
+	bool NowPausing() const;
 
 	int GetAddressType(int num);
 	void UsageAddressType(int num);

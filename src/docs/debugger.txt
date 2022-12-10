@@ -134,21 +134,31 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
   バンク切換えの状態を確認できます。
 
 
-  ◆ S - メモリ内のデータを検索する。
+  ◆ S, SB, SW, SD, SA - メモリ内のデータを検索する。
 
-  書式: S <start address> <end address> <list>
+  書式: S[{B,W,D}] <start address> <end address> <list>
+        SA <start address> <end address> "<string>"
   <start address> - 開始アドレスを指定
   <end address> - 終了アドレスを指定
-  <list> - 1バイトずつ空白区切りで値を指定
+  <list> - 空白区切りで値を指定
+    S,SBは1バイト、SWは2バイト、SDは4バイトで指定
+  <string> - アスキー形式文字列を指定
+
+  検索実行中にESCキーを押すと処理を中断します。
 
 
-  ◆ SP - 物理メモリ内のデータを検索する。
+  ◆ SP, SPB, SPW, SPD, SPA - 物理メモリ内のデータを検索する。
 
-  書式: SP <type> <start address> <end address> <list>
+  書式: SP[{B,W,D}] <type> <start address> <end address> <list>
+        SPA <start address> <end address> "<string>"
   <type> - メモリの種類を指定。詳細はDPコマンド参照。
   <start address> - 開始アドレスを指定
   <end address> - 終了アドレスを指定
-  <list> - 1バイトずつ空白区切りで値を指定
+  <list> - 空白区切りで値を指定
+    SP,SPBは1バイト、SPWは2バイト、SPDは4バイトで指定
+  <string> - アスキー形式文字列を指定
+
+  検索実行中にESCキーを押すと処理を中断します。
 
 
   ◆ U - メモリ内のデータを逆アセンブルする。

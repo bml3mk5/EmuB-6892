@@ -108,6 +108,11 @@ public:
 		ERR_TOO_MANY_ITEMS = -3,
 		ERR_OUT_OF_RANGE = -4,
 	};
+	enum en_intr_masks {
+		INTR_OFF = 0,
+		INTR_ON = 1,
+		INTR_CHG = 2,
+	};
 
 private:
 	BreakPointTable table;
@@ -188,7 +193,7 @@ protected:
 	bool m_now_basicreason;
 	uint32_t m_stored_mask;
 
-protected:
+public:
 	void find_fetch_break_trace_points(DEBUGGER_BUS_BASE *dbg, BreakPoints::en_break_point_type bp_type, uint32_t addr, int length);
 	void find_mem_break_trace_points(DEBUGGER_BUS_BASE *dbg, BreakPoints::en_break_point_type bp_type, uint32_t addr, int length, uint32_t value);
 	void find_io_break_trace_points(DEBUGGER_BUS_BASE *dbg, BreakPoints::en_break_point_type bp_type, uint32_t addr, int length, uint32_t value);

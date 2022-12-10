@@ -309,6 +309,7 @@ int EMU_OSD::key_down_up(uint8_t type, int code, long status)
 #endif
 		if (key_mod & KEY_MOD_ALT_KEY) {
 			// notify key down
+			code = translate_global_key(code);
 			system_key_down(code);
 			// execute for pressed global key
 			execute_global_keys(code, 0);
@@ -322,6 +323,7 @@ int EMU_OSD::key_down_up(uint8_t type, int code, long status)
 #endif
 		if (key_mod & KEY_MOD_ALT_KEY) {
 			// notify key down
+			code = translate_global_key(code);
 			system_key_down(code);
 			// release global key
 			if (release_global_keys(code, 0)) return 0;

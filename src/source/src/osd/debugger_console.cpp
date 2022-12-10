@@ -1457,9 +1457,14 @@ void DebuggerConsole::ClearInput()
 	command_buffer.ClearCurr();
 }
 
-bool DebuggerConsole::NowDisable()
+bool DebuggerConsole::NowDisable() const
 {
 	return config.now_power_off;
+}
+
+bool DebuggerConsole::NowPausing() const
+{
+	return emu->get_pause(3);
 }
 
 // ---------------------------------------------------------------------------
@@ -1567,7 +1572,7 @@ bool DebuggerConsole::HexaToInt(const _TCHAR *str, uint32_t *data) const
 		ad = (uint32_t)_tcstol(str, &err, 16);
 	}
 	if (data) *data = ad;
-	return (err == NULL);
+	return (err != NULL && *err == _T('\0'));
 }
 
 /// convert integer from hexa string
@@ -2228,6 +2233,7 @@ void DebuggerConsole::CommandSearch(int n, int num)
 	}
 	UTILITY::stprintf(data_format, 6, _T("%%0%dX"), n * 2);
 	start_addr &= ~(n - 1);
+	bool no_data_found = true;
 	for(uint64_t addr = start_addr; addr <= end_addr; addr+=n) {
 		bool found = true;
 		switch(n) {
@@ -2257,6 +2263,7 @@ void DebuggerConsole::CommandSearch(int n, int num)
 			break;
 		}
 		if(found) {
+			no_data_found = false;
 			Printf(_T(ADDR_FORMAT), addr);
 			for(int i = pos+2, j = 0; i < paramnum; i++, j++) {
 				Print(_T(" "), false);
@@ -2264,6 +2271,16 @@ void DebuggerConsole::CommandSearch(int n, int num)
 			}
 			Cr();
 		}
+		if(EscapePressed()) {
+			no_data_found = false;
+			Print(Yellow, _T("Aborted by user."));
+			SetTextColor(White);
+			break;
+		}
+	}
+	if (no_data_found) {
+		Print(Yellow, _T("No data found."));
+		SetTextColor(White);
 	}
 }
 
@@ -2299,6 +2316,7 @@ void DebuggerConsole::CommandSearchAscii(int num)
 
 	const _TCHAR *token = params[pos + 2];
 	int len = (int)_tcslen(token);
+	bool no_data_found = true;
 	for(uint32_t addr = start_addr; addr <= end_addr; addr++) {
 		bool found = true;
 		for(int i = 0; i < len; i++) {
@@ -2308,10 +2326,21 @@ void DebuggerConsole::CommandSearchAscii(int num)
 			}
 		}
 		if(found) {
+			no_data_found = false;
 			Printf(_T(ADDR_FORMAT), addr);
 			Print(_T(" "), false);
 			Print(token);
 		}
+		if(EscapePressed()) {
+			no_data_found = false;
+			Print(Yellow, _T("Aborted by user."));
+			SetTextColor(White);
+			break;
+		}
+	}
+	if (no_data_found) {
+		Print(Yellow, _T("No data found."));
+		SetTextColor(White);
 	}
 }
 
@@ -3007,11 +3036,11 @@ int DebuggerConsole::SetBreakPoint(BreakPoints *bps, int cat, int num, const _TC
 			Cr();
 			return 1;
 		}
-		mask = 1;
+		mask = BreakPoints::INTR_ON;
 		if (pn == 3) {
-			if (_tcsicmp(ps[2], _T("on")) == 0) mask = 1;
-			else if (_tcsicmp(ps[2], _T("off")) == 0) mask = 0;
-			else if (_tcsicmp(ps[2], _T("chg")) == 0) mask = 2;
+			if (_tcsicmp(ps[2], _T("on")) == 0) mask = BreakPoints::INTR_ON;
+			else if (_tcsicmp(ps[2], _T("off")) == 0) mask = BreakPoints::INTR_OFF;
+			else if (_tcsicmp(ps[2], _T("chg")) == 0) mask = BreakPoints::INTR_CHG;
 		}
 		break;
 	case BP_IORD:
@@ -3048,7 +3077,12 @@ int DebuggerConsole::SetBreakPoint(BreakPoints *bps, int cat, int num, const _TC
 
 		HexaToInt(ps[1], &addr, &len);
 
-		if (!(num & BP_FETCH_PH)) addr &= current_dev->prog_addr_mask;
+		if (!(num & BP_FETCH_PH)) {
+			addr &= current_dev->prog_addr_mask;
+			mask = current_dev->prog_addr_mask;
+		} else {
+			mask = 0xffffffff;
+		}
 		break;
 	case BP_FETCH:
 	case BP_FETCH_PH:
@@ -3075,7 +3109,12 @@ int DebuggerConsole::SetBreakPoint(BreakPoints *bps, int cat, int num, const _TC
 			HexaToInt(ps[1], &addr, &len);
 		}
 
-		if (!(num & BP_FETCH_PH)) addr &= current_dev->prog_addr_mask;
+		if (!(num & BP_FETCH_PH)) {
+			addr &= current_dev->prog_addr_mask;
+			mask = current_dev->prog_addr_mask;
+		} else {
+			mask = 0xffffffff;
+		}
 		break;
 	default:
 		PrintError(_T("Invalid breakpoint type."));
@@ -4077,16 +4116,21 @@ void DebuggerConsole::CommandExecute()
 			} else if (NowDisable()) {
 				breaked |= 2;
 				break;
+//			} else if (NowPausing()) {
+//				breaked |= 4;
+//				break;
 			}
 			CDelay(10);
 		}
 		// break cpu
 
+		if (!breaked && NowPausing()) continue;
+
 		// switch to cpu on which hitting break point
 		SwitchCPU(GetCPUIndexHitBreakOrTracePoint());
 
 		current_dev->debugger->now_going(0);
-		while(!dp->request_terminate && !current_dev->debugger->now_suspend() && !NowDisable()) {
+		while(!dp->request_terminate && !current_dev->debugger->now_suspend() && !NowDisable() && !NowPausing()) {
 			CDelay(10);
 		}
 		current_dev->dasm_addr = current_dev->cpu->get_next_pc();
@@ -4204,6 +4248,11 @@ void DebuggerConsole::PrintBreakedReason(uint32_t reason)
 			_T(ADDR_FORMAT), storage->GetCurrentCPUName());
 		Printf(Red, buffer, current_dev->cpu->get_next_pc());
 		Cr();
+	} else if (reason & 4) {
+		UTILITY::stprintf(buffer, DC_MAX_BUFFER_LEN, _T("Breaked at %s on %s: now pausing"),
+			_T(ADDR_FORMAT), storage->GetCurrentCPUName());
+		Printf(Red, buffer, current_dev->cpu->get_next_pc());
+		Cr();
 	}
 }
 
@@ -4263,7 +4312,7 @@ void DebuggerConsole::CommandTrace()
 			ClearSuspendInDebugger(-1);
 			current_dev->debugger->now_going(skips);
 
-			while(!dp->request_terminate && !current_dev->debugger->now_suspend() && !NowDisable()) {
+			while(!dp->request_terminate && !current_dev->debugger->now_suspend() && !NowDisable() && !NowPausing()) {
 				CDelay(10);
 			}
 
@@ -4288,6 +4337,9 @@ void DebuggerConsole::CommandTrace()
 			} else if (NowDisable()) {
 				breaked |= 2;
 				break;
+//			} else if (NowPausing()) {
+//				breaked |= 4;
+//				break;
 			}
 
 			step++;

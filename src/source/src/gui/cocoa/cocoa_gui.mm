@@ -1523,13 +1523,13 @@ void GUI::setup_menu(void)
 	[screenMenu add_menu_item_by_id:CMsg::Afterimage1:recv:@selector(ChangeAfterImage:):0:1:'t'];
 	[screenMenu add_menu_item_by_id:CMsg::Afterimage2:recv:@selector(ChangeAfterImage:):0:2:'t'];
 
-	[screenMenu addItem:[NSMenuItem separatorItem]];
-
 #ifdef USE_KEEPIMAGE
+	[screenMenu addItem:[NSMenuItem separatorItem]];
 	[screenMenu add_menu_item_by_id:CMsg::Keepimage1:recv:@selector(ChangeKeepImage:):0:1:0];
 	[screenMenu add_menu_item_by_id:CMsg::Keepimage2:recv:@selector(ChangeKeepImage:):0:2:0];
 #endif
 #ifdef _MBS1
+	[screenMenu addItem:[NSMenuItem separatorItem]];
 	[screenMenu add_menu_item_by_id:CMsg::Digital_RGB:recv:@selector(ChangeRGBType:):0:0:0];
 	[screenMenu add_menu_item_by_id:CMsg::Analog_RGB:recv:@selector(ChangeRGBType:):0:1:0];
 #endif

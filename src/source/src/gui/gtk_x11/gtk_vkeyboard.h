@@ -29,7 +29,7 @@ class VKeyboard : public Base
 private:
 	GtkWidget	*parent;
 	GtkWidget	*window;
-//	GtkWidget   *drawing;
+	GtkWidget   *drawing;
 	cairo_surface_t *surface;
 
 	void set_dist();

@@ -518,6 +518,9 @@
     <ClInclude Include="..\src\inttypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\keycode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\labels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -895,9 +898,6 @@
     </ClInclude>
     <ClInclude Include="..\src\osd\windows\win_uart.h">
       <Filter>Header Files\OSD Header Files\windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\keycode.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

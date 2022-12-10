@@ -1,8 +1,8 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         SDL edition
-                                                             Version 1.9.0
-                                                                2022/10/16
+                                                             Version 1.9.1
+                                                                2022/12/10
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 ==============================================================================
@@ -129,6 +129,12 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
   (6) ffmpegのライブラリ（任意）
       詳細は、「録画＆録音で使用するライブラリについて」を参照してください。
 
+  -----
+    CLUB09氏のL3エミュのものを流用する場合は、ファイル内の先頭5バイトと
+  末尾5バイトをとり除いてください。対応は以下の通り：
+        ROM1 → ROM1.ROM
+        ROM2 → ROM2.ROM
+        FONT → FONT.ROM
 
 
   ■メニューやダイアログなどのフォントについて
@@ -208,7 +214,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 
   0. 準備
      Linuxの場合、以下のパッケージをインストールしてください。
-      libsdl1.2 libsdl-ttf libfreetype gtk+-2.0
+      libsdl2.0 libsdl2-ttf gtk+-3.0
 
   1. アーカイブを解凍するとbml3mk5フォルダがありますので、bml3mk5フォルダを
      任意の場所にコピーしてください。
@@ -250,10 +256,11 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
     ・コマンドラインで設定ファイルを指定すると、そのファイルがあるフォルダ下に
       作成されます。
 
-     起動しない場合：
-       bml3mk5.logを開いてエラーメッセージを確認してください。
-       ターミナル/コマンドプロンプトから実行して出力されるメッセージを確認
-       して下さい。
+  起動しない場合：
+
+    bml3mk5.logを開いてエラーメッセージを確認してください。
+    ターミナル/コマンドプロンプトから実行して出力されるメッセージを確認
+    して下さい。
 
 
 ● アンインストール
@@ -1205,19 +1212,19 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
   MacOSX版: (Mac Mini CPU: Corei5 / Mem: 8GB)
     Mac OS X High Sierra (10.13.6 Intel x86_64)
     Xcode 7.3.1
-      SDL-2.0.8, SDL2_ttf-2.0.12 SDL2_net-2.0.0
+      SDL-2.0.8, SDL2_ttf-2.0.12
 
   Linux版: (VMwareです。)(CPU: Corei7 4770S 3.1GHz / Mem: 768KB)
     Ubuntu 18.04 (amd64) + GNOME
-      SDL-1.2.15, SDL_ttf-1.0.20 SDL_net-1.2.8
+      SDL-2.0.8, SDL2_ttf-1.0.12
       Agar-1.4.2beta(SVN r9049)
 
   Windows版: (CPU: Corei7 4770S 3.1GHz / Mem: 8GB)
     Microsoft Windows10 (64ビット環境)
     MinGW + MSYS
-      SDL-1.2.15, SDL_ttf-1.0.20 SDL_net-1.2.8
+      SDL-2.0.10, SDL2_ttf-2.0.12
       Agar-1.4.2beta(SVN r9049)
-      freetype-2.4.8
+      freetype-2.5.5
 
 
 ● 参考文献
@@ -1241,18 +1248,14 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 ● クレジット
 
   SDL:
-  Simple DirectMedia Layer is a cross-platform development library designed
-  to provide low level access to audio, keyboard, mouse, joystick, and graphics
-  hardware via OpenGL and Direct3D. It is used by video playback software,
-  emulators, and popular games.
+  The Simple DirectMedia Layer (SDL for short) is a cross-platform library
+  designed to make it easy to write multi-media software, such as games and
+  emulators.
     http://www.libsdl.org/
 
   SDL_ttf:
   This library allows you to use TrueType fonts to render text in SDL
   applications.
-
-  SDL_net:
-  This is an example portable network library for use with SDL.
 
   Agar:
   Agar is a type of sugar polymer obtained from seaweed and red algae. Agar

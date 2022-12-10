@@ -322,6 +322,9 @@ bool EMU::get_pause(int idx) const
 		case 2:
 			return ((vm_pause & VM_USRPAUSE_MASK) != 0);
 			break;
+		case 3:
+			return ((vm_pause & (VM_SYSPAUSE_MASK | VM_USRPAUSE_MASK)) != 0);
+			break;
 	}
 	return (vm_pause != 0);
 }

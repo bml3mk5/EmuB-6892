@@ -204,8 +204,8 @@ Config::~Config()
 
 #if defined(_MBS1)
 const struct Config::st_type_of_sound Config::c_type_of_sound[] = {
-	{ Config::CHIP_AY38910, CLOCKS_1MHZ },		// 1MHz
-	{ Config::CHIP_AY38910, CLOCKS_1MHZ * 2 },	// 2MHz
+	{ Config::CHIP_AY38910, CLOCKS_1MHZ * 2 },	// 1MHz * 2
+	{ Config::CHIP_AY38910, CLOCKS_1MHZ * 4 },	// 2MHz * 2
 	{ Config::CHIP_YM2203, CLOCKS_1MHZ * 2 },	// 2MHz
 	{ Config::CHIP_YM2203, 3579545 },			// 3.58MHz
 	{ Config::CHIP_YM2203, CLOCKS_1MHZ * 4 },	// 4MHz

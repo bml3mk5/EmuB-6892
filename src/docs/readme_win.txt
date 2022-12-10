@@ -1,7 +1,7 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
-                                                             Version 1.9.0
-                                                                2022/10/16
+                                                             Version 1.9.1
+                                                                2022/12/10
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 ==============================================================================
@@ -70,16 +70,6 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 
   使用デバイス：キーボード、マウス、ジョイスティック
 
- 「msvcp100.dllが見つからなかったため、アプリケーションを開始できませんでした。
-  ～」と表示され起動できないときは、
-  Visual C++ 2010 SP1 再頒布可能パッケージのインストールが必要です。
-    マイクロソフトのページよりインストールしてください。
-
-  32ビット版(x86):
-    http://www.microsoft.com/ja-jp/download/details.aspx?id=8328
-  64ビット版(x64):
-    http://www.microsoft.com/ja-jp/download/details.aspx?id=13523
-
 
 ● 動作に必要なもの
 
@@ -135,6 +125,13 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 
   (6) ffmpegのライブラリ（任意）
       詳細は、「録画＆録音で使用するライブラリについて」を参照してください。
+
+  -----
+    CLUB09氏のL3エミュのものを流用する場合は、ファイル内の先頭5バイトと
+  末尾5バイトをとり除いてください。対応は以下の通り：
+        ROM1 → ROM1.ROM
+        ROM2 → ROM2.ROM
+        FONT → FONT.ROM
 
 
 ● ファイル構成
@@ -193,6 +190,22 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
       keybind.ini ... キー設定ファイル
     ・コマンドラインで設定ファイルを指定すると、そのファイルがあるフォルダ下に
       作成されます。
+
+  起動しない場合：
+
+  ※「msvcp100.dllが見つからなかったため、アプリケーションを開始できませんでした。
+    ～」と表示され起動できないときは、
+    Visual C++ 2010 SP1 再頒布可能パッケージのインストールが必要です。
+    マイクロソフトのページよりインストールしてください。
+
+    32ビット版(x86):
+      http://www.microsoft.com/ja-jp/download/details.aspx?id=8328
+    64ビット版(x64):
+      http://www.microsoft.com/ja-jp/download/details.aspx?id=13523
+
+    上記以外の場合、bml3mk5.logを開いてエラーメッセージを確認してください。
+    ターミナル/コマンドプロンプトから実行して出力されるメッセージを確認
+    して下さい。
 
 
 ● アンインストール

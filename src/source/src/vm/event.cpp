@@ -450,11 +450,24 @@ void EVENT::drive(int split_num)
 
 		} else if ((*vm_pause) & (VM_SYSPAUSE_MASK | VM_USRPAUSE_MASK)) {
 			// now pausing
-
+#ifdef USE_DEBUGGER
+			// When start debugging in pausing 
+			for(int i=0; i<ncount_cpu; i++) {
+				DEVICE *dbg = d_cpu[i].device->get_debugger();
+				dbg->go_suspend_at_first();
+			}
+#endif
 			for(v = vstart; v < vline_split[frame_split_num+1]; v++) {
 				update_sound(v);
 			}
-			if (draw_count_when_pause == 0) {
+			if (draw_count_when_pause < 2) {
+#ifdef USE_EMU_INHERENT_SPEC
+				for(v = vstart; v < vline_split[frame_split_num+1]; v++) {
+					for(int i = 0; i < dcount_display; i++) {
+						d_display[i]->update_display(v, vclocks[v]);
+					}
+				}
+#endif
 				emu->draw_screen();
 			}
 			draw_count_when_pause = (draw_count_when_pause + 1) % 6;

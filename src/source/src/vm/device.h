@@ -363,7 +363,10 @@ public:
 	virtual int debug_trace_back(int index, _TCHAR *buffer, size_t buffer_len);
 	virtual uint32_t debug_address_mapping_rev(uint32_t addr);
 	virtual bool reach_break_point();
+//	virtual void now_debugging(bool val);
+//	virtual bool now_debugging() const;
 	virtual void go_suspend();
+	virtual void go_suspend_at_first();
 	virtual bool now_suspend() const;
 
 	virtual	uint32_t get_debug_pc(int type);

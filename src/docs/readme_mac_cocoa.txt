@@ -1,8 +1,8 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         SDL2 + Mac Cocoa edition
-                                                             Version 1.9.0
-                                                                2022/10/16
+                                                             Version 1.9.1
+                                                                2022/12/10
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 ==============================================================================
@@ -127,6 +127,13 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
   (6) ffmpegのライブラリ（任意）
       詳細は、「録画＆録音で使用するライブラリについて」を参照してください。
 
+  -----
+    CLUB09氏のL3エミュのものを流用する場合は、ファイル内の先頭5バイトと
+  末尾5バイトをとり除いてください。対応は以下の通り：
+        ROM1 → ROM1.ROM
+        ROM2 → ROM2.ROM
+        FONT → FONT.ROM
+
 
 ● ファイル構成
 
@@ -175,18 +182,6 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
      のあるフォルダを指定した後、操作(Control) -> パワーオン(PowerOn) を
      おこなうか、このソフトを再起動してください。
 
-  ※「開発元が未確認のため開けません。」と出る場合は、Controlキーを押しながら
-    マウスをクリックし「開く」を選んだあと、さらに「開く」をクリックします。
-  ※ 上記操作で開けない場合は、  システム環境設定→セキュリティーとプライバシー
-    を開き、「Mac App Store と確認済みの開発元からのアプリケーションを許可」を
-    選択して再度行ってください。
-
-  ※ Sierra (10.12)以降で設定ファイルなどが保存されない場合：
-     App Store以外からダウンロードしたアプリはファイル保存ができないことが
-    あります。
-     こういう場合は、一度appフォルダを別のフォルダに移動してから、再度元の
-    フォルダに戻します。
-
   5. FDDを使用する場合は、メニューのFDDタイプ(FDD Type)、または、option+Fで
      どのFDDを使用するか選択した後、操作(Control) -> パワーオン(PowerOn) を
      おこなうか、このソフトを再起動してください。
@@ -201,10 +196,23 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
     ・コマンドラインで設定ファイルを指定すると、そのファイルがあるフォルダ下に
       作成されます。
 
-     起動しない場合：
-       bml3mk5.logを開いてエラーメッセージを確認してください。
-       ターミナル/コマンドプロンプトから実行して出力されるメッセージを確認
-       して下さい。
+  起動しない場合：
+
+  ※「開発元が未確認のため開けません。」と出る場合は、Controlキーを押しながら
+    マウスをクリックし「開く」を選んだあと、さらに「開く」をクリックします。
+  ※ 上記操作で開けない場合は、  システム環境設定→セキュリティーとプライバシー
+    を開き、「Mac App Store と確認済みの開発元からのアプリケーションを許可」を
+    選択して再度行ってください。
+
+  ※ Sierra (10.12)以降で設定ファイルなどが保存されない場合：
+     App Store以外からダウンロードしたアプリはファイル保存ができないことが
+    あります。
+     こういう場合は、一度appフォルダを別のフォルダに移動してから、再度元の
+    フォルダに戻します。
+
+    上記以外の場合、bml3mk5.logを開いてエラーメッセージを確認してください。
+    ターミナル/コマンドプロンプトから実行して出力されるメッセージを確認
+    して下さい。
 
 
 ● アンインストール
@@ -1118,7 +1126,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
   MacOSX版: (Mac Mini CPU: Corei5 / Mem: 8GB)
     Mac OS X High Sierra (10.13.6 Intel x86_64)
     Xcode 7.3.1
-      SDL-2.0.8, SDL2_ttf-2.0.12 SDL2_net-2.0.0
+      SDL-2.0.8, SDL2_ttf-2.0.12
 
 
 ● 参考文献
@@ -1142,18 +1150,14 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 ● クレジット
 
   SDL:
-  Simple DirectMedia Layer is a cross-platform development library designed
-  to provide low level access to audio, keyboard, mouse, joystick, and graphics
-  hardware via OpenGL and Direct3D. It is used by video playback software,
-  emulators, and popular games.
+  The Simple DirectMedia Layer (SDL for short) is a cross-platform library
+  designed to make it easy to write multi-media software, such as games and
+  emulators.
     http://www.libsdl.org/
 
   SDL_ttf:
   This library allows you to use TrueType fonts to render text in SDL
   applications.
-
-  SDL_net:
-  This is an example portable network library for use with SDL.
 
   freetype2:
   FreeType 2 is a software font engine that is designed to be small, efficient,

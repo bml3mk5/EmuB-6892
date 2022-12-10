@@ -52,7 +52,7 @@ public:
 	DEBUGGER(VM* parent_vm, EMU* parent_emu, const char *identifier);
 	~DEBUGGER();
 
-	friend DEBUGGER_BUS;
+//	friend DEBUGGER_BUS;
 
 	// common functions
 	void write_data8(uint32_t addr, uint32_t data);
@@ -129,7 +129,7 @@ public:
 	DEBUGGER_BUS(VM* parent_vm, EMU* parent_emu, const char *identifier);
 	~DEBUGGER_BUS();
 
-	friend DEBUGGER;
+//	friend DEBUGGER;
 
 	// common functions
 	void write_data8(uint32_t addr, uint32_t data);

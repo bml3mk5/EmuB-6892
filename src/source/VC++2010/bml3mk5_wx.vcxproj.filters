@@ -518,6 +518,9 @@
     <ClInclude Include="..\src\inttypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\keycode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\labels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -898,7 +901,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\src\res\windows\bml3mk5.rc">
+    <ResourceCompile Include="..\src\res\windows\bml3mk5_wx.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

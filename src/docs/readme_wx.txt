@@ -1,8 +1,8 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         wxWidgets edition
-                                                             Version 1.9.0
-                                                                2022/10/16
+                                                             Version 1.9.1
+                                                                2022/12/10
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 ==============================================================================
@@ -131,6 +131,13 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
   (6) ffmpegのライブラリ（任意）
       詳細は、「録画＆録音で使用するライブラリについて」を参照してください。
 
+  -----
+    CLUB09氏のL3エミュのものを流用する場合は、ファイル内の先頭5バイトと
+  末尾5バイトをとり除いてください。対応は以下の通り：
+        ROM1 → ROM1.ROM
+        ROM2 → ROM2.ROM
+        FONT → FONT.ROM
+
 
 ● ファイル構成
 
@@ -232,10 +239,11 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
     ・コマンドラインで設定ファイルを指定すると、そのファイルがあるフォルダ下に
       作成されます。
 
-     起動しない場合：
-       bml3mk5.logを開いてエラーメッセージを確認してください。
-       ターミナル/コマンドプロンプトから実行して出力されるメッセージを確認
-       して下さい。
+  起動しない場合：
+
+    bml3mk5.logを開いてエラーメッセージを確認してください。
+    ターミナル/コマンドプロンプトから実行して出力されるメッセージを確認
+    して下さい。
 
 
 ● アンインストール

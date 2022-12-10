@@ -1113,7 +1113,20 @@ bool DEVICE::reach_break_point()
 	return false;
 }
 
+//void DEVICE::now_debugging(bool val)
+//{
+//}
+
+//bool DEVICE::now_debugging() const
+//{
+//	return false;
+//}
+
 void DEVICE::go_suspend()
+{
+}
+
+void DEVICE::go_suspend_at_first()
 {
 }
 

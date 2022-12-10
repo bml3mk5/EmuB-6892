@@ -393,7 +393,7 @@ void DISPLAY::draw_screen()
 		);
 #endif
 
-	if (*vm_pause) return;
+//	if (*vm_pause) return;
 
 	crt_mon_bg_color = bg_color;
 

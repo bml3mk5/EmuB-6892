@@ -491,7 +491,7 @@ HWND CDialogBox::CreateComboBox(CBox *box, int nItemId, const CPtrList<CTchar> &
 HWND CDialogBox::CreateComboTextBox(CBox *box, int nItemId, const _TCHAR **list, int defnum, int nMinSize, bool translate)
 {
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | CBS_HASSTRINGS;
-	HWND hCtrl = CreateWindow(WC_COMBOBOX, "", dwStyle , 0, 0, 10, 10, hDlg, (HMENU)nItemId, hInstance, NULL);
+	HWND hCtrl = CreateWindow(WC_COMBOBOX, "", dwStyle , 0, 0, 10, 10, hDlg, (HMENU)(INT_PTR)nItemId, hInstance, NULL);
 	if (hCtrl) {
 		SendMessage(hCtrl, WM_SETFONT, (WPARAM)font->GetFont(), MAKELPARAM(TRUE, 0));
 		SetComboBoxItems(hCtrl, list, 0, translate);
@@ -512,7 +512,7 @@ HWND CDialogBox::CreateComboTextBox(CBox *box, int nItemId, const _TCHAR **list,
 HWND CDialogBox::CreateComboTextBox(CBox *box, int nItemId, const _TCHAR **list, const _TCHAR *deftext, int nMinSize, bool translate)
 {
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBS_DROPDOWN | CBS_HASSTRINGS;
-	HWND hCtrl = CreateWindow(WC_COMBOBOX, "", dwStyle , 0, 0, 10, 10, hDlg, (HMENU)nItemId, hInstance, NULL);
+	HWND hCtrl = CreateWindow(WC_COMBOBOX, "", dwStyle , 0, 0, 10, 10, hDlg, (HMENU)(INT_PTR)nItemId, hInstance, NULL);
 	if (hCtrl) {
 		SendMessage(hCtrl, WM_SETFONT, (WPARAM)font->GetFont(), MAKELPARAM(TRUE, 0));
 		SetComboBoxItems(hCtrl, list, 0, translate);

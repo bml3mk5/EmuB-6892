@@ -52,7 +52,7 @@ class DEBUGGER_BASE : public DEBUGGER_BUS_BASE
 protected:
 	CTchar m_file_path;
 	int m_now_going;
-	bool m_now_debugging;
+	int m_now_debugging;
 	bool m_now_suspended;
 	DEBUGGER_BUS_BASE *d_detected;	// the device detected a break point 
 
@@ -69,13 +69,14 @@ public:
 	void stop_debugging();
 
 	void go_suspend();
+	void go_suspend_at_first();
 	bool now_suspend() const;
 	virtual void clear_suspend();
 
 	void now_going(int val) { m_now_going = val; }
 	int  now_going() const { return m_now_going; }
-	void now_debugging(bool val) { m_now_debugging = val; }
-	bool now_debugging() const { return m_now_debugging; }
+//	void now_debugging(bool val) { m_now_debugging = val; }
+	bool now_debugging() const { return (m_now_debugging != 0); }
 	void now_suspended(bool val) { m_now_suspended = val; }
 	bool now_suspended() const { return m_now_suspended; }
 

@@ -26,7 +26,7 @@ VKeyboard::VKeyboard() : Base()
 {
 	parent = NULL;
 	window = NULL;
-//	drawing = NULL;
+	drawing = NULL;
 	surface = NULL;
 }
 
@@ -77,11 +77,13 @@ bool VKeyboard::Create(const char *res_path)
 
 //	GtkWidget *cont = gtk_dialog_get_content_area(GTK_DIALOG(window));
 //	gtk_box_set_spacing(GTK_BOX(cont), 0);
-//	drawing = gtk_drawing_area_new();
-//	gtk_widget_set_size_request(drawing, pSurface->w, pSurface->h);
-//	gtk_box_pack_start(GTK_BOX(cont), drawing, TRUE, TRUE, 0); 
+//	gtk_box_pack_start(GTK_BOX(cont), drawing, TRUE, TRUE, 0);
+	drawing = gtk_drawing_area_new();
+	gtk_widget_set_size_request(drawing, pSurface->Width(), pSurface->Height());
+	gtk_container_add(GTK_CONTAINER(window), drawing);
+
 	gtk_widget_set_app_paintable(window, TRUE);
-	gtk_widget_set_size_request(window, pSurface->Width(), pSurface->Height());
+//	gtk_widget_set_size_request(window, pSurface->Width(), pSurface->Height());
 	gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
 #if !GTK_CHECK_VERSION(3,0,0)
@@ -95,15 +97,21 @@ bool VKeyboard::Create(const char *res_path)
 		, cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, pSurface->Width())
 	);
 
-	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnMouseDown), (gpointer)this);
-	g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnMouseUp), (gpointer)this);
+//	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnMouseDown), (gpointer)this);
+//	g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnMouseUp), (gpointer)this);
+	g_signal_connect(G_OBJECT(drawing), "button-press-event", G_CALLBACK(OnMouseDown), (gpointer)this);
+	g_signal_connect(G_OBJECT(drawing), "button-release-event", G_CALLBACK(OnMouseUp), (gpointer)this);
 #if GTK_CHECK_VERSION(3,0,0)
-	g_signal_connect(G_OBJECT(window), "draw", G_CALLBACK(OnDraw), (gpointer)this);
+//	g_signal_connect(G_OBJECT(window), "draw", G_CALLBACK(OnDraw), (gpointer)this);
+	g_signal_connect(G_OBJECT(drawing), "draw", G_CALLBACK(OnDraw), (gpointer)this);
 #else
 	g_signal_connect(G_OBJECT(window), "expose-event", G_CALLBACK(OnExpose), (gpointer)this);
 #endif
 	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(OnDelete), (gpointer)this);
 //	g_signal_connect(G_OBJECT(window), "response", G_CALLBACK(OnResponse), (gpointer)this);
+
+	gtk_widget_set_events(drawing,
+			gtk_widget_get_events(drawing) | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 
 //	adjust_window_size();
 	set_dist();
@@ -146,6 +154,9 @@ void VKeyboard::set_dist()
 	gtk_window_get_position(GTK_WINDOW(parent), &xp, &yp);
 	gtk_window_get_size(GTK_WINDOW(parent), &wp, &hp);
 	gtk_window_get_default_size(GTK_WINDOW(window), &w, &h);
+	if (w < 0 || h < 0) {
+		gtk_window_get_size(GTK_WINDOW(window), &w, &h);
+	}
 
 	int x = (wp - w) / 2 + xp;
 	int y = yp;
@@ -159,7 +170,8 @@ void VKeyboard::need_update_window(PressedInfo_t *info, bool onoff)
 
 	Base::need_update_window(info, onoff);
 
-	gtk_widget_queue_draw_area(window
+//	gtk_widget_queue_draw_area(window
+	gtk_widget_queue_draw_area(drawing
 		, info->re.left
 		, info->re.top
 		, info->re.right - info->re.left
@@ -198,8 +210,8 @@ gboolean VKeyboard::OnMouseUp(GtkWidget *widget, GdkEvent *event, gpointer user_
 gboolean VKeyboard::OnDraw(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
 	VKeyboard *obj = (VKeyboard *)user_data;
-	GdkRectangle re;
-	gdk_cairo_get_clip_rectangle(cr, &re);
+//	GdkRectangle re;
+//	gdk_cairo_get_clip_rectangle(cr, &re);
 //printf("OnDraw: re:%d:%d:%d:%d\n",re.x,re.y,re.width,re.height);
 //	cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
 	cairo_set_source_surface(cr, obj->surface, 0.0, 0.0);

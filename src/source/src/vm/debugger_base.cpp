@@ -53,7 +53,7 @@ DEBUGGER_BASE::~DEBUGGER_BASE()
 void DEBUGGER_BASE::clear_all()
 {
 	m_now_going = 0;
-	m_now_debugging = false;
+	m_now_debugging = 0;
 	m_now_suspended = false;
 	d_detected = NULL;
 }
@@ -61,7 +61,7 @@ void DEBUGGER_BASE::clear_all()
 void DEBUGGER_BASE::start_debugging()
 {
 	m_now_going = 0;
-	m_now_debugging = true;
+	m_now_debugging = 1;
 }
 
 void DEBUGGER_BASE::stop_debugging()
@@ -71,12 +71,23 @@ void DEBUGGER_BASE::stop_debugging()
 
 void DEBUGGER_BASE::go_suspend()
 {
-	if (m_now_debugging) m_now_suspended = true;
+	if (m_now_debugging != 0) {
+		m_now_suspended = true;
+		m_now_debugging |= 2;
+	}
+}
+
+void DEBUGGER_BASE::go_suspend_at_first()
+{
+	if (m_now_debugging == 1) {
+		m_now_suspended = true;
+		m_now_debugging |= 2;
+	}
 }
 
 bool DEBUGGER_BASE::now_suspend() const
 {
-	return (m_now_debugging && m_now_suspended);
+	return (m_now_debugging != 0 && m_now_suspended);
 }
 
 void DEBUGGER_BASE::clear_suspend()
