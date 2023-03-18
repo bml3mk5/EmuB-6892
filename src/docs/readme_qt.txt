@@ -1,10 +1,10 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         Qt edition
-                                                             Version 1.9.1
-                                                                2022/12/10
+                                                             Version 1.9.2
+                                                                2023/03/19
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 ==============================================================================
 
   Qtエディションはβ版です。いくつかの不具合や制限があります。

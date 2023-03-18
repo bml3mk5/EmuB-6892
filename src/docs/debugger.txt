@@ -1,7 +1,7 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 ==============================================================================
 
 
@@ -93,7 +93,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
         EA <address> "<string>"
   <address> - アドレスを指定
   <value> - 書き込む値を指定
-    E,EBは1バイト、EDは2バイト、EWは4バイトで指定
+    E,EBは1バイト、EWは2バイト、EDは4バイトで指定
   <string> - アスキー文字列を指定
 
 
@@ -104,7 +104,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
   <type> - メモリの種類を指定。詳細はDPコマンド参照。
   <address> - アドレスを指定
   <value> - 書き込む値を指定
-    E,EBは1バイト、EDは2バイト、EWは4バイトで指定
+    EP,EPBは1バイト、EPWは2バイト、EPDは4バイトで指定
   <string> - アスキー文字列を指定
 
 
