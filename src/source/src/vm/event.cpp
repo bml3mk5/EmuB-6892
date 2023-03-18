@@ -309,7 +309,7 @@ void EVENT::drive(int split_num)
 						}
 					}
 					event_remain += vclocks[v];
-					cpu_remain += (vclocks[v] << cpu_power) >> 1;
+					cpu_remain += ((vclocks[v] << cpu_power) >> 1);
 
 					vprev = v;
 				}
@@ -399,7 +399,7 @@ void EVENT::drive(int split_num)
 #endif /* NUMBER_OF_CPUS */
 						cpu_remain -= cpu_done_tmp;
 						cpu_accum += cpu_done_tmp;
-						event_done = (cpu_accum << 1) >> cpu_power;
+						event_done = ((cpu_accum << 1) >> cpu_power);
 						cpu_accum -= ((event_done << cpu_power) >> 1);
 					}
 					if(event_done > 0) {
@@ -489,7 +489,7 @@ void EVENT::drive(int split_num)
 						}
 					}
 					event_remain += vclocks[v];
-					cpu_remain += (vclocks[v] << cpu_power) >> 1;
+					cpu_remain += ((vclocks[v] << cpu_power) >> 1);
 
 					vprev = v;
 				}
@@ -499,7 +499,7 @@ void EVENT::drive(int split_num)
 					if(cpu_remain > 0) {
 						cpu_remain--;
 						cpu_accum++;
-						event_done = (cpu_accum << 1) >> cpu_power;
+						event_done = ((cpu_accum << 1) >> cpu_power);
 						cpu_accum -= ((event_done << cpu_power) >> 1);
 					}
 					if(event_done > 0) {
@@ -993,11 +993,8 @@ void EVENT::update_config()
 	}
 #endif
 
-	if(cpu_power != config.cpu_power) {
-		cpu_power = config.cpu_power;
-		cpu_accum = 0;
-	}
 #endif
+
 //	sound_rate_f = ((sound_rate << 5) >> event_power);
 //	update_sound_rate_f = sound_rate_f;
 }

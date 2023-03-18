@@ -1,9 +1,9 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
-                                                             Version 1.9.1
-                                                                2022/12/10
+                                                             Version 1.9.2
+                                                                2023/03/19
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 ==============================================================================
 
 ● はじめに
@@ -958,15 +958,10 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
 
   media foundationは、Windows7以降で使用できます。
 
-  ffmpegを使用する場合は、別途以下の要領でライブラリを入手してください。
+    ffmpegを使用する場合は、ffmpeg-3.xのshared binaryを入手し、以下のdll
+    ファイルを実行ファイルと同じフォルダに入れてください。
+    (2023/1現在、ffmpeg-3.xのshared binaryは入手困難になっています。)
 
-  Windows:
-
-  1. Zeranoe's FFmpeg Builds Home Page： http://ffmpeg.zeranoe.com/builds/
-     にアクセスします。
-  2. FFmpeg 3.x 32/64-bit Shared をダウンロードします。
-  3. ダウンロードしたファイルから、以下のdllファイルを本ソフトと同じフォルダに
-     入れるか、システムフォルダに入れてください。
         avcodec-57.dll
         avutil-55.dll
         avformat-57.dll

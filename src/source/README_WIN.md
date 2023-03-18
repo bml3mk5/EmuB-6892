@@ -1,6 +1,6 @@
 # HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
 
-#### Copyright(C) Common Source Code Project, Sasaji 2011-2022 All Rights Reserved.
+#### Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 
 ## ファイル構成
 
@@ -51,9 +51,6 @@
     コメントアウトする。)
     * ヘッダファイルが必要です。
     includeフォルダにヘッダファイルを入れてください。
-    * 以下のページから、FFmpeg xxxx 32/64-bit dev をダウンロードすれば、
-    ヘッダファイルを入手できます。
-    [Zeranoe's FFmpeg Builds Home Page](http://ffmpeg.zeranoe.com/builds/)
 
 * mmf_loader
   * Microsoft Media Foundationを使用するためのDLLファイルを作成します。

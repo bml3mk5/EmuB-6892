@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
-    <DevelopDir>D:\Devel\vc\</DevelopDir>
+    <DevelopDir>\Devel\vc\</DevelopDir>
     <SDLDir>$(DevelopDir)SDL-1.2.15-static\</SDLDir>
     <SDLDebugLibDir>$(SDLDir)lib\$(Platform)\Debug</SDLDebugLibDir>
     <SDLReleaseLibDir>$(SDLDir)lib\$(Platform)\Release</SDLReleaseLibDir>
@@ -19,7 +19,7 @@
     <LibIntlDir>$(DevelopDir)libintl-msvc10-with_lc_messages\</LibIntlDir>
     <LibIntlLibDir>$(LibIntlDir)lib\x86\</LibIntlLibDir>
     <LibIntlLib64Dir>$(LibIntlDir)lib\x64\</LibIntlLib64Dir>
-    <FFMpegDir>$(DevelopDir)ffmpeg-3.4.1-dev\</FFMpegDir>
+    <FFMpegDir>$(DevelopDir)ffmpeg-3.4.1-win64-dev\</FFMpegDir>
     <LocalDebugLibs>SDL.lib; SDLmain.lib; SDL_net.lib; ag_core_static.lib; ag_gui_static.lib; freetype248_D.lib; SDL_ttf.lib</LocalDebugLibs>
     <LocalReleaseLibs>SDL.lib; SDLmain.lib; SDL_net.lib; ag_core_static.lib; ag_gui_static.lib; freetype248.lib; SDL_ttf.lib</LocalReleaseLibs>
     <SDL2Dir>$(DevelopDir)SDL2-2.0.10-static\</SDL2Dir>
