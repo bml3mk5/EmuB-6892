@@ -12,6 +12,13 @@
 #ifndef KEYCODE_DEFINES_H
 #define KEYCODE_DEFINES_H
 
+// ----------------------------------------------------------------------
+
+#define KEYCODE_KEEP_FRAMES		0x8000
+
+#define KEYCODE_EXTENDED		0x100
+
+// ----------------------------------------------------------------------
 
 #define KEYCODE_UNKNOWN			0x00
 
@@ -223,6 +230,8 @@
 #define KEYCODE_VOLUME_UP		0xaf
 
 #define KEYCODE_KP_COMMA		0xb0
+
+// ----------------------------------------------------------------------
 
 #define GLOBALKEY_RETURN		0x0d
 #define GLOBALKEY_CONTROL		0x11

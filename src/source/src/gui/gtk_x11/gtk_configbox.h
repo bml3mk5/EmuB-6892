@@ -87,6 +87,7 @@ private:
 
 	GtkWidget *txtROMPath;
 	GtkWidget *chkUndefOp;
+	GtkWidget *chkClrCPUReg;
 #if defined(_MBS1)
 	GtkWidget *comExRam;
 	GtkWidget *chkMemNoWait;

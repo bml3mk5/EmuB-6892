@@ -21,7 +21,7 @@ namespace Vkbd {
 /**
 	@brief Virtual keyboard
 */
-class VKeyboard : public Base
+class VKeyboard : public OSDBase
 {
 private:
 	HINSTANCE	hInstance;
@@ -47,7 +47,7 @@ public:
 	~VKeyboard();
 
 #if defined(USE_WIN)
-	void Create();
+	bool Create();
 #elif defined(USE_SDL) || defined(USE_SDL2)
 	bool Create(const _TCHAR *res_path);
 #endif

@@ -1,6 +1,5 @@
 /** @file wx_vkeyboard.h
 
-	HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
 	Skelton for retropc emulator
 
 	@author Sasaji
@@ -13,7 +12,8 @@
 #define WX_VKEYBOARD_H
 
 //#include <wx/wx.h>
-#include <wx/dialog.h>
+//#include <wx/dialog.h>
+#include <wx/frame.h>
 #include "../../res/resource.h"
 #include "../vkeyboard.h"
 
@@ -25,7 +25,7 @@ namespace Vkbd {
 /**
 	@brief Virtual keyboard
 */
-class VKeyboard : public Base
+class VKeyboard : public OSDBase
 {
 public:
 	MyVKeyboard	*win;
@@ -55,7 +55,7 @@ public:
 /**
 	@brief Virtual keyboard window
 */
-class MyVKeyboard : public wxDialog
+class MyVKeyboard : public wxFrame
 {
 private:
 	Vkbd::VKeyboard *vkbd;
@@ -65,6 +65,9 @@ private:
 	void OnClose(wxCloseEvent &);
 	void OnMouseDown(wxMouseEvent &); 
 	void OnMouseUp(wxMouseEvent &); 
+	void OnCharHook(wxKeyEvent &);
+	void OnKeyDown(wxKeyEvent &);
+	void OnKeyUp(wxKeyEvent &);
 
 public:
 	MyVKeyboard(wxWindow *parent, wxSize &sz, Vkbd::VKeyboard *vkbd);

@@ -522,6 +522,9 @@ void MyConfigDlg::InitDialog()
 # endif
 #endif
 
+	chkClrCPUReg = new MyCheckBox(page, IDC_CHK_CLEAR_CPUREG, CMsg::Clear_CPU_registers_at_power_on);
+	szrMain->Add(chkClrCPUReg, flags);
+
 	//
 	bszr = new wxBoxSizer(wxVERTICAL);
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::Need_restart_program_or_PowerOn), flags);
@@ -716,6 +719,7 @@ void MyConfigDlg::UpdateDialog()
 	chkUseExMem->SetValue(config.exram_size_num == 1);
 #endif
 	chkUndefOp->SetValue(FLG_SHOWMSG_UNDEFOP != 0);
+	chkClrCPUReg->SetValue(FLG_CLEAR_CPUREG != 0);
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)
@@ -874,6 +878,7 @@ void MyConfigDlg::ModifyParam()
 	config.exram_size_num = chkUseExMem->GetValue() ? 1 : 0;
 #endif
 	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, chkUndefOp->GetValue());
+	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, chkClrCPUReg->GetValue());
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)

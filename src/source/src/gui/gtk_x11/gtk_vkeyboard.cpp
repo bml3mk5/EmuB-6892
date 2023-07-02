@@ -22,7 +22,7 @@ namespace Vkbd {
 // for GTK+
 //
 
-VKeyboard::VKeyboard() : Base()
+VKeyboard::VKeyboard() : OSDBase()
 {
 	parent = NULL;
 	window = NULL;
@@ -37,6 +37,7 @@ VKeyboard::~VKeyboard()
 void VKeyboard::Show(bool show)
 {
 	if (window) {
+		Base::Show(show);
 		if (show) {
 			// show
 			gtk_widget_show_all(window);
@@ -101,6 +102,8 @@ bool VKeyboard::Create(const char *res_path)
 //	g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnMouseUp), (gpointer)this);
 	g_signal_connect(G_OBJECT(drawing), "button-press-event", G_CALLBACK(OnMouseDown), (gpointer)this);
 	g_signal_connect(G_OBJECT(drawing), "button-release-event", G_CALLBACK(OnMouseUp), (gpointer)this);
+	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyDown), (gpointer)this);
+	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyUp), (gpointer)this);
 #if GTK_CHECK_VERSION(3,0,0)
 //	g_signal_connect(G_OBJECT(window), "draw", G_CALLBACK(OnDraw), (gpointer)this);
 	g_signal_connect(G_OBJECT(drawing), "draw", G_CALLBACK(OnDraw), (gpointer)this);
@@ -115,7 +118,7 @@ bool VKeyboard::Create(const char *res_path)
 
 //	adjust_window_size();
 	set_dist();
-	Base::Create();
+	closed = false;
 
 	return true;
 }
@@ -138,7 +141,7 @@ void VKeyboard::Close()
 
 	unload_bitmap();
 
-	Base::Close();
+	CloseBase();
 }
 
 void VKeyboard::set_dist()
@@ -168,7 +171,7 @@ void VKeyboard::need_update_window(PressedInfo_t *info, bool onoff)
 {
 	if (!window) return;
 
-	Base::need_update_window(info, onoff);
+	need_update_window_base(info, onoff);
 
 //	gtk_widget_queue_draw_area(window
 	gtk_widget_queue_draw_area(drawing
@@ -204,6 +207,22 @@ gboolean VKeyboard::OnMouseUp(GtkWidget *widget, GdkEvent *event, gpointer user_
 		obj->MouseUp();
 	}
 	return TRUE;
+}
+
+gboolean VKeyboard::OnKeyDown(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	GdkEventKey *key_event = (GdkEventKey *)event;
+	emu->key_down_up(0, (int)key_event->keyval
+		, (short)key_event->hardware_keycode);
+	return FALSE;
+}
+
+gboolean VKeyboard::OnKeyUp(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	GdkEventKey *key_event = (GdkEventKey *)event;
+	emu->key_down_up(1, (int)key_event->keyval
+		, (short)key_event->hardware_keycode);
+	return FALSE;
 }
 
 #if GTK_CHECK_VERSION(3,0,0)

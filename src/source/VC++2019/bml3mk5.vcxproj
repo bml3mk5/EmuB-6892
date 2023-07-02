@@ -391,6 +391,7 @@
     <ClCompile Include="..\src\osd\logging.cpp" />
     <ClCompile Include="..\src\osd\screenmode.cpp" />
     <ClCompile Include="..\src\osd\simple_clocale.cpp" />
+    <ClCompile Include="..\src\osd\vkeyboardbase.cpp" />
     <ClCompile Include="..\src\osd\windowmode.cpp" />
     <ClCompile Include="..\src\osd\windows\win_cbitmap.cpp" />
     <ClCompile Include="..\src\osd\windows\win_ccolor.cpp" />
@@ -534,6 +535,7 @@
     <ClInclude Include="..\src\osd\emu_input.h" />
     <ClInclude Include="..\src\osd\screenmode.h" />
     <ClInclude Include="..\src\osd\simple_clocale.h" />
+    <ClInclude Include="..\src\osd\vkeyboardbase.h" />
     <ClInclude Include="..\src\osd\windowmode.h" />
     <ClInclude Include="..\src\osd\windows\win_cbitmap.h" />
     <ClInclude Include="..\src\osd\windows\win_ccolor.h" />

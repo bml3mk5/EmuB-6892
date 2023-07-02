@@ -1,6 +1,5 @@
 /** @file qt_vkeyboard.cpp
 
-	HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
 	Skelton for retropc emulator
 
 	@author Sasaji
@@ -14,6 +13,7 @@
 #ifdef QT_VKEYBOARD_H
 
 #include "../../emu.h"
+#include "../../emu_osd.h"
 #include <QApplication>
 #include <QScreen>
 #include <QPainter>
@@ -22,12 +22,13 @@
 
 extern EMU *emu;
 
+
 namespace Vkbd {
 
 //
 // for Qt
 //
-VKeyboard::VKeyboard(QWidget *parent) : Base()
+VKeyboard::VKeyboard(QWidget *parent) : OSDBase()
 {
 	this->parent = parent;
 	this->dlg = nullptr;
@@ -41,6 +42,8 @@ VKeyboard::~VKeyboard()
 void VKeyboard::Show(bool show)
 {
 	if (!dlg) return;
+
+	Base::Show(show);
 
 	if (show) dlg->show();
 	else dlg->hide();
@@ -56,7 +59,7 @@ void VKeyboard::Create(const _TCHAR *res_path)
 	if (dlg) {
 		adjust_window_size();
 		set_dist();
-		Base::Create();
+		closed = false;
 	}
 }
 
@@ -69,7 +72,7 @@ void VKeyboard::Close()
 
 	unload_bitmap();
 
-	Base::Close();
+	CloseBase();
 }
 
 void VKeyboard::adjust_window_size()
@@ -109,7 +112,7 @@ void VKeyboard::need_update_window(PressedInfo_t *info, bool onoff)
 {
 	if (!dlg) return;
 
-	Base::need_update_window(info, onoff);
+	need_update_window_base(info, onoff);
 
 	dlg->repaint(info->re.left, info->re.top, info->re.right - info->re.left, info->re.bottom - info->re.top);
 }
@@ -171,6 +174,26 @@ void MyVKeyboard::mouseReleaseEvent(QMouseEvent *event)
 	if (event->button() & Qt::LeftButton) {
 		vkbd->MouseUp();
 	}
+}
+
+void MyVKeyboard::keyPressEvent(QKeyEvent *event)
+{
+	if (event->isAutoRepeat()) return;
+	int code = event->key();
+	uint32_t vk_key = event->nativeVirtualKey();
+	uint32_t scan_code = event->nativeScanCode();
+	uint32_t mod = static_cast<uint32_t>(event->modifiers());
+	(dynamic_cast<EMU_OSD *>(emu))->key_down_up_(0, code, vk_key, scan_code, mod);
+}
+
+void MyVKeyboard::keyReleaseEvent(QKeyEvent *event)
+{
+	if (event->isAutoRepeat()) return;
+	int code = event->key();
+	uint32_t vk_key = event->nativeVirtualKey();
+	uint32_t scan_code = event->nativeScanCode();
+	uint32_t mod = static_cast<uint32_t>(event->modifiers());
+	(dynamic_cast<EMU_OSD *>(emu))->key_down_up_(1, code, vk_key, scan_code, mod);
 }
 
 #endif /* QT_VKEYBOARD_H */

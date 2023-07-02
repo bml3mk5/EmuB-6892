@@ -25,12 +25,13 @@ void EMU_OSD::EMU_INPUT()
 	lpdi = NULL;
 	lpdikey = NULL;
 #endif
+#if defined(USE_MOUSE_ABSOLUTE) || defined(USE_MOUSE_FLEXIBLE)
+	mouse_position.x = mouse_position.y = 0;
+#endif
 }
 
 void EMU_OSD::initialize_input()
 {
-	EMU::initialize_input();
-
 #ifdef USE_DIRECTINPUT
 //	if(config.use_direct_input) {
 #if DIRECTINPUT_VERSION >= 0x0800
@@ -49,6 +50,8 @@ void EMU_OSD::initialize_input()
 		}
 //	}
 #endif
+
+	EMU::initialize_input();
 }
 
 void EMU_OSD::initialize_joystick()
@@ -190,7 +193,7 @@ void EMU_OSD::update_input()
 
 	// release keys
 #ifdef USE_AUTO_KEY
-	if(lost_focus && autokey_phase == 0) {
+	if(lost_focus && !autokey_enabled) {
 #else
 	if(lost_focus) {
 #endif
@@ -198,6 +201,9 @@ void EMU_OSD::update_input()
 		for(int i = 0; i < KEY_STATUS_SIZE; i++) {
 			if(key_status[i] & 0x80) {
 				key_status[i] &= 0x7f;
+				if (!key_status[i]) {
+					vm_key_up(vm_key_map[i], VM_KEY_STATUS_KEYBOARD);
+				}
 #ifdef NOTIFY_KEY_DOWN
 				if(!key_status[i]) {
 					vm->key_up(i);
@@ -210,6 +216,9 @@ void EMU_OSD::update_input()
 		for(int i = 0; i < KEY_STATUS_SIZE; i++) {
 			if(key_status[i] & 0x7f) {
 				key_status[i] = (key_status[i] & 0x80) | ((key_status[i] & 0x7f) - 1);
+				if (!key_status[i]) {
+					vm_key_up(vm_key_map[i], VM_KEY_STATUS_KEYBOARD);
+				}
 #ifdef NOTIFY_KEY_DOWN
 				if(!key_status[i]) {
 					vm->key_up(i);
@@ -339,193 +348,28 @@ int EMU_OSD::key_down_up(uint8_t type, int code, long status)
 	if (!translate_keysym(type, code, status, &code, &keep_frames)) {
 		// key down
 		if (key_mod & KEY_MOD_ALT_KEY) {
+			// notify key down
 			code = translate_global_key(code);
 			system_key_down(code);
+			// execute for pressed global key
 			execute_global_keys(code, 0);
 			return 0;
 		} else {
-//			bool repeat = ((HIWORD(lParam) & 0x4000) != 0);
-//			key_down(LOBYTE(wParam), repeat);
 			key_down(code, keep_frames);
 		}
 	} else {
 		// key up
 		if (key_mod & KEY_MOD_ALT_KEY) {
+			// notify key up
 			code = translate_global_key(code);
 			system_key_up(code);
+			// release global key
 			if (release_global_keys(code, 0)) return 0;
 		}
-//		emu->key_up(LOBYTE(wParam));
 		key_up(code, keep_frames);
 	}
 	return 1;
 }
-
-//void EMU::key_down(int code, bool repeat)
-int EMU_OSD::key_down(int code, bool keep_frames)
-{
-#ifdef USE_ORIGINAL_KEYINPUT
-	int  orig_code = code;
-	bool repeat = ((HIWORD(status) & 0x4000) != 0);
-	int  scan_code = (status & 0x1ff0000) >> 16;
-
-	if(code == VK_SHIFT) {
-		if(GetAsyncKeyState(VK_LSHIFT) & 0x8000) key_status[VK_LSHIFT] = 0x80;
-		if(GetAsyncKeyState(VK_RSHIFT) & 0x8000) key_status[VK_RSHIFT] = 0x80;
-		if(!(key_status[VK_LSHIFT] || key_status[VK_RSHIFT])) key_status[VK_LSHIFT] = 0x80;
-	}
-	else if(code == VK_CONTROL) {
-		if(GetAsyncKeyState(VK_LCONTROL) & 0x8000) key_status[VK_LCONTROL] = 0x80;
-		if(GetAsyncKeyState(VK_RCONTROL) & 0x8000) key_status[VK_RCONTROL] = 0x80;
-		if(!(key_status[VK_LCONTROL] || key_status[VK_RCONTROL])) key_status[VK_LCONTROL] = 0x80;
-	}
-	else if(code == VK_MENU) {
-		if(GetAsyncKeyState(VK_LMENU) & 0x8000) key_status[VK_LMENU] = 0x80;
-		if(GetAsyncKeyState(VK_RMENU) & 0x8000) key_status[VK_RMENU] = 0x80;
-		if(!(key_status[VK_LMENU] || key_status[VK_RMENU])) key_status[VK_LMENU] = 0x80;
-	}
-	else if(code == 0xf0) {
-		code = VK_CAPITAL;
-		keep_frames = true;
-	}
-#ifdef USE_EMU_INHERENT_SPEC
-	else if(code == 0xf1) {
-		code = VK_NONCONVERT;
-//		keep_frames = true;
-	}
-#endif
-	else if(code == 0xf2) {
-		code = VK_KANA;
-		keep_frames = true;
-	}
-	else if(code == 0xf3 || code == 0xf4) {
-		code = VK_KANJI;
-//		keep_frames = true;
-	}
-
-#ifdef USE_EMU_INHERENT_SPEC
-	// convert numpad keys
-	if (scan_code >= 0x47 && scan_code <= 0x53) {
-		if (scancode2vkey[scan_code - 0x47] != 0) code = scancode2vkey[scan_code - 0x47];
-	}
-#endif
-
-#ifdef USE_SHIFT_NUMPAD_KEY
-	if(code == VK_SHIFT) {
-		key_shift_pressed = true;
-		return;
-	}
-	else if(numpad_table[code] != 0) {
-		if(key_shift_pressed || key_shift_released) {
-			key_converted[code] = 1;
-			key_shift_pressed = true;
-			code = numpad_table[code];
-		}
-	}
-#endif
-#ifdef DONT_KEEEP_KEY_PRESSED
-		if(!(code == VK_SHIFT || code == VK_CONTROL || code == VK_MENU)) {
-			key_status[code] = KEY_KEEP_FRAMES;
-		}
-		else
-#endif
-#endif
-	key_status[code] = keep_frames ? (KEY_KEEP_FRAMES * FRAME_SPLIT_NUM) : 0x80;
-#ifdef NOTIFY_KEY_DOWN
-	if(keep_frames) {
-		repeat = false;
-	}
-	vm->key_down(code, repeat);
-#endif
-	return code;
-}
-
-//void EMU::key_up(int code)
-void EMU_OSD::key_up(int code, bool keep_frames)
-{
-#ifdef USE_ORIGINAL_KEYINPUT
-	int  orig_code = code;
-	int  scan_code = (status & 0x1ff0000) >> 16;
-
-	if(code == VK_SHIFT) {
-#ifndef USE_SHIFT_NUMPAD_KEY
-		if(!(GetAsyncKeyState(VK_LSHIFT) & 0x8000)) key_status[VK_LSHIFT] &= 0x7f;
-		if(!(GetAsyncKeyState(VK_RSHIFT) & 0x8000)) key_status[VK_RSHIFT] &= 0x7f;
-#endif
-	}
-	else if(code == VK_CONTROL) {
-		if(!(GetAsyncKeyState(VK_LCONTROL) & 0x8000)) key_status[VK_LCONTROL] &= 0x7f;
-		if(!(GetAsyncKeyState(VK_RCONTROL) & 0x8000)) key_status[VK_RCONTROL] &= 0x7f;
-	}
-	else if(code == VK_MENU) {
-		if(!(GetAsyncKeyState(VK_LMENU) & 0x8000)) key_status[VK_LMENU] &= 0x7f;
-		if(!(GetAsyncKeyState(VK_RMENU) & 0x8000)) key_status[VK_RMENU] &= 0x7f;
-	}
-	else if(code == 0xf0) {
-		code = VK_CAPITAL;
-	}
-#ifdef USE_EMU_INHERENT_SPEC
-	else if(code == 0xf1) {
-		code = VK_NONCONVERT;
-	}
-#endif
-	else if(code == 0xf2) {
-		code = VK_KANA;
-	}
-	else if(code == 0xf3 || code == 0xf4) {
-		code = VK_KANJI;
-	}
-
-#ifdef USE_EMU_INHERENT_SPEC
-	// convert numpad keys
-	if (scan_code >= 0x47 && scan_code <= 0x53) {
-		if (scancode2vkey[scan_code - 0x47] != 0) code = scancode2vkey[scan_code - 0x47];
-	}
-#endif
-
-#ifdef USE_SHIFT_NUMPAD_KEY
-	if(code == VK_SHIFT) {
-		key_shift_pressed = false;
-		key_shift_released = true;
-		return;
-	}
-	else if(key_converted[code] != 0) {
-		key_converted[code] = 0;
-		code = numpad_table[code];
-	}
-#endif
-#endif
-//	if(key_status[code]) {
-		key_status[code] &= 0x7f;
-#ifdef NOTIFY_KEY_DOWN
-		if(!key_status[code]) {
-			vm->key_up(code);
-		}
-#endif
-//	}
-}
-
-#if 0
-int EMU_OSD::vm_key_down(int code)
-{
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] |= 1;
-	}
-	return code;
-}
-void EMU_OSD::vm_key_up(int code)
-{
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] &= ~1;
-	}
-}
-#endif
 
 #ifdef USE_BUTTON
 void EMU_OSD::press_button(int num)

@@ -2430,8 +2430,10 @@ bool GUI::ShowVirtualKeyboard(void)
 
 		uint8_t *buf;
 		int siz;
-		emu->get_vm_key_buffer(&buf, &siz);
-		vkeyboard->SetStatusBufferPtr(buf, siz);
+		emu->get_vm_key_status_buffer(&buf, &siz);
+		FIFOINT *his = emu->get_vm_key_history();
+		vkeyboard->SetStatusBufferPtr(buf, siz, VM_KEY_STATUS_VKEYBOARD);
+		vkeyboard->SetHistoryBufferPtr(his);
 		if (!vkeyboard->Create(emu->resource_path())) {
 			logging->out_log(LOG_ERROR, _T("Cannot open virtual keyboard window."));
 		}

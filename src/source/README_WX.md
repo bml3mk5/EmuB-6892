@@ -1,5 +1,4 @@
-# HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
-#       wxWidgets edition
+# HITACHI BASIC MASTER LEVEL3 MARK5 Emulator wxWidgets edition
 
 #### Copyright(C) Common Source Code Project, Sasaji 2012-2023 All Rights Reserved.
 

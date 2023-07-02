@@ -416,6 +416,7 @@ public:
 		No_wait_to_access_the_main_memory,
 		Show_message_when_the_CPU_fetches_undefined_opcode,
 		Show_message_when_the_address_error_occured_in_MC68008,
+		Clear_CPU_registers_at_power_on,
 		FM_Synthesis_Card_ASTERISK,
 		Extended_PSG_Port_ASTERISK,
 		IO_ports_are_FF1E_FF1F_FF16_FF17,

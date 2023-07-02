@@ -909,6 +909,7 @@
     <ClCompile Include="..\src\osd\opengl.cpp" />
     <ClCompile Include="..\src\osd\screenmode.cpp" />
     <ClCompile Include="..\src\osd\simple_clocale.cpp" />
+    <ClCompile Include="..\src\osd\vkeyboardbase.cpp" />
     <ClCompile Include="..\src\osd\windowmode.cpp" />
     <ClCompile Include="..\src\osd\windows\win_uart.cpp" />
     <ClCompile Include="..\src\simple_ini.cpp" />
@@ -1049,6 +1050,7 @@
     <ClInclude Include="..\src\osd\opengl.h" />
     <ClInclude Include="..\src\osd\screenmode.h" />
     <ClInclude Include="..\src\osd\simple_clocale.h" />
+    <ClInclude Include="..\src\osd\vkeyboardbase.h" />
     <ClInclude Include="..\src\osd\windowmode.h" />
     <ClInclude Include="..\src\osd\windows\win_uart.h" />
     <ClInclude Include="..\src\parseopt.h" />

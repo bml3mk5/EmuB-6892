@@ -95,6 +95,7 @@ EMUOSDOBJS:=$(SRCOSDWX)/wxw_emu.o \
 	$(SRCOSD)/emu_sound.o \
 	$(SRCOSD)/logging.o \
 	$(SRCOSD)/screenmode.o \
+	$(SRCOSD)/vkeyboardbase.o \
 	$(SRCOSD)/windowmode.o \
 	$(SRCOSD)/opengl.o
 

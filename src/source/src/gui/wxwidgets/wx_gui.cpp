@@ -549,12 +549,15 @@ bool GUI::ShowVirtualKeyboard(void)
 {
 #ifdef USE_VKEYBOARD
 	if (!vkeyboard) {
-		vkeyboard = new Vkbd::VKeyboard(frame->GetParent());
+//		vkeyboard = new Vkbd::VKeyboard(frame->GetParent());
+		vkeyboard = new Vkbd::VKeyboard(frame);
 
 		uint8_t *buf;
 		int siz;
-		emu->get_vm_key_buffer(&buf, &siz);
-		vkeyboard->SetStatusBufferPtr(buf, siz);
+		emu->get_vm_key_status_buffer(&buf, &siz);
+		FIFOINT *his = emu->get_vm_key_history();
+		vkeyboard->SetStatusBufferPtr(buf, siz, VM_KEY_STATUS_VKEYBOARD);
+		vkeyboard->SetHistoryBufferPtr(his);
 		vkeyboard->Create(emu->resource_path());
 		vkeyboard->Show();
 	} else {

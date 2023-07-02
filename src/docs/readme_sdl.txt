@@ -1,8 +1,8 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         SDL edition
-                                                             Version 1.9.2
-                                                                2023/03/19
+                                                             Version 1.9.3
+                                                                2023/07/03
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 ==============================================================================
@@ -971,6 +971,9 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
      the CPU fetches undefined opcode.)
       CPUが未定義命令を読み込んだ時に画面およびログにメッセージを表示するか
     どうかを指定します。
+
+   ●パワーオン時にCPUのレジスタをクリアする。(Clear CPU registers at power on.)
+     チェックを入れるとパワーオン時にCPUのレジスタをゼロクリアします。
 
 
 ○ 音量設定ダイアログ(Volume...)

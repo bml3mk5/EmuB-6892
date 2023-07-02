@@ -24,7 +24,7 @@ namespace Vkbd {
 /**
 	@brief Virtual keyboard
 */
-class VKeyboard : public Base
+class VKeyboard : public OSDBase
 {
 private:
 	GtkWidget	*parent;
@@ -39,6 +39,8 @@ private:
 
 	static gboolean OnMouseDown(GtkWidget *, GdkEvent *, gpointer);
 	static gboolean OnMouseUp(GtkWidget *, GdkEvent *, gpointer);
+	static gboolean OnKeyDown(GtkWidget *, GdkEvent *, gpointer);
+	static gboolean OnKeyUp(GtkWidget *, GdkEvent *, gpointer);
 #if GTK_CHECK_VERSION(3,0,0)
 	static gboolean OnDraw(GtkWidget *, cairo_t *, gpointer);
 #else

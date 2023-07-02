@@ -765,7 +765,8 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 	original = (int)ini->GetLongValue(SECTION_CONTROL, _T("OriginalSettings"), original);
 
 	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("ShowMessage"), FLG_SHOWMSGBOARD ? true : false);
-	misc_flags = valueb ? (misc_flags | MSK_SHOWMSGBOARD) : (misc_flags & ~MSK_SHOWMSGBOARD);
+	BIT_ONOFF(misc_flags, MSK_SHOWMSGBOARD, valueb);
+
 #if defined(_MBS1)
 	if (version2 < 0x03)
 #else
@@ -780,18 +781,21 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 	}
 #if defined(_MBS1)
 	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("EnableMouse"), FLG_USEMOUSE ? true : false);
-	misc_flags = valueb ? (misc_flags | MSK_USEMOUSE) : (misc_flags & ~MSK_USEMOUSE);
+	BIT_ONOFF(misc_flags, MSK_USEMOUSE, valueb);
 #else
 	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("EnableLightpen"), FLG_USELIGHTPEN ? true : false);
-	misc_flags = valueb ? (misc_flags | MSK_USELIGHTPEN) : (misc_flags & ~MSK_USELIGHTPEN);
+	BIT_ONOFF(misc_flags, MSK_USELIGHTPEN, valueb);
 #endif
 	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("ShowMessageUndefOpcode"), FLG_SHOWMSG_UNDEFOP ? true : false);
-	misc_flags = valueb ? (misc_flags | MSK_SHOWMSG_UNDEFOP) : (misc_flags & ~MSK_SHOWMSG_UNDEFOP);
+	BIT_ONOFF(misc_flags, MSK_SHOWMSG_UNDEFOP, valueb);
 
 	valuel = ini->GetLongValue(SECTION_CONTROL, _T("FpsNo"), fps_no);
 	if (-1 <= valuel && valuel <= 6) {
 		fps_no = (int)valuel;
 	}
+
+	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("ClearCPURegistersAtPowerOn"), FLG_CLEAR_CPUREG ? true : false);
+	BIT_ONOFF(misc_flags, MSK_CLEAR_CPUREG, valueb);
 
 #ifdef USE_STATE
 	get_dirpath_value(SECTION_STATE, _T("Path"), initial_state_path);
@@ -1250,6 +1254,8 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	ini->SetBoolValue(SECTION_CONTROL, _T("ShowMessageUndefOpcode"), FLG_SHOWMSG_UNDEFOP ? true : false);
 
 	ini->SetLongValue(SECTION_CONTROL, _T("FpsNo"), fps_no);
+
+	ini->SetBoolValue(SECTION_CONTROL, _T("ClearCPURegistersAtPowerOn"), FLG_CLEAR_CPUREG ? true : false);
 
 #ifdef USE_STATE
 	ini->SetValue(SECTION_STATE, _T("Path"), conv_from_npath(initial_state_path));

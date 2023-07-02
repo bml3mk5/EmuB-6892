@@ -39,12 +39,13 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 		if (type & 4) {
 			if (code < 256) {
 				n_code = vkkey2keycode[code];
-				n_keep_frames = ((n_code & 0x8000) != 0);
+				n_keep_frames = ((n_code & KEYCODE_KEEP_FRAMES) != 0);
 				n_code &= 0xff;
 				if (n_code == 0) return type;
 			}
-		} else {
+		} else
 #endif
+		{
 			if(code == VK_SHIFT) {
 				if(scan_code == 0x36 || GetKeyState(VK_RSHIFT) & 0x8000) n_code = KEYCODE_RSHIFT;
 				else n_code = KEYCODE_LSHIFT;
@@ -63,12 +64,11 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 			}
 			else if (code < 256) {
 				n_code = vkkey2keycode[code];
-				n_keep_frames = ((n_code & 0x8000) != 0);
+				n_keep_frames = ((n_code & KEYCODE_KEEP_FRAMES) != 0);
 				n_code &= 0xff;
 			}
-#ifdef USE_DIRECTINPUT
 		}
-#endif
+
 		// convert numpad keys
 		if (scan_code >= 0x47 && scan_code <= 0x53) {
 			if (scancode2keycode47[scan_code - 0x47] != 0) n_code = scancode2keycode47[scan_code - 0x47];
@@ -76,21 +76,23 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 		else if (scan_code >= 0x70 && scan_code <= 0x7f) {
 			if (scancode2keycode70[scan_code - 0x70] != 0) n_code = scancode2keycode70[scan_code - 0x70];
 		}
-		else if (scan_code == 0x29) {
-			// code is set either Hankaku or Kanji in JP
-			n_code = KEYCODE_GRAVE;
-			n_keep_frames = true;
-		}
+//		else if (scan_code == 0x29) {
+//			// code is set either Hankaku or Kanji in JP
+//			n_code = KEYCODE_GRAVE;
+//			n_keep_frames = true;
+//			type &= ~1; // always key down
+//		}
 #ifdef USE_DIRECTINPUT
 	} else {
 		n_code = dikey2keycode[code];
-		n_keep_frames = ((n_code & 0x8000) != 0);
+		n_keep_frames = ((n_code & KEYCODE_KEEP_FRAMES) != 0);
 		n_code &= 0xff;
 	}
 #endif
 
 	if (n_code == 0) {
-		n_code = code | 0x100;
+		// unknown key code
+		n_code = code | KEYCODE_EXTENDED;
 	}
 	if (new_code) *new_code = n_code;
 	if (new_keep_frames) *new_keep_frames = n_keep_frames;
@@ -98,10 +100,4 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 //	out_debugf("keytrans: %d %02x->%02x %04x keep:%s", type, code, n_code, scan_code, n_keep_frames ? "true" : "false");
 
 	return (type & 1);
-}
-
-/// post message to main thread
-void EMU_OSD::post_command_message(int id)
-{
-	if (gui) gui->PostCommandMessage(id);
 }

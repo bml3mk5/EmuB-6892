@@ -95,3 +95,9 @@ int EMU::translate_global_key(int code)
 	}
 	return code;
 }
+
+/// post message to main thread
+void EMU::post_command_message(int id)
+{
+	if (gui) gui->PostCommandMessage(id);
+}

@@ -58,7 +58,7 @@ void KEYBOARD::initialize()
 	powersw_pressed = false;
 
 	memset(vm_key_stat, 0, sizeof(vm_key_stat));
-	emu->set_vm_key_buffer(vm_key_stat, KEYBIND_KEYS);
+	emu->set_vm_key_status_buffer(vm_key_stat, KEYBIND_KEYS);
 
 	counter = 0;
 	remain_count = -1;
@@ -86,6 +86,8 @@ void KEYBOARD::initialize()
 	if (load_ini_file() != true) {
 		load_cfg_file();
 	}
+
+	convert_map();
 
 	// for dialog box
 	emu->set_parami(VM::ParamVmKeyMapSize0, 128);
@@ -133,13 +135,25 @@ void KEYBOARD::initialize()
 	register_frame_event(this);
 }
 
+void KEYBOARD::convert_map()
+{
+	emu->clear_vm_key_map();
+	for(int k=0; k<KEYBIND_KEYS; k++) {
+		for(int i=0; i<KEYBIND_ASSIGN; i++) {
+			emu->set_vm_key_map(scan2key_map[k][i], k);
+		}
+	}
+}
+
 void KEYBOARD::release()
 {
+	emu->set_vm_key_status_buffer(NULL, 0);
 	// save keybind
 	save_keybind();
 }
 
 // ----------------------------------------------------------------------------
+
 void KEYBOARD::save_keybind()
 {
 	// save keybind

@@ -169,6 +169,7 @@ void AG_CONFIG_DLG::Create()
 # endif
 #endif
 	param.showmsg_undefop = FLG_SHOWMSG_UNDEFOP ? 1 : 0;
+	param.clear_cpureg = FLG_CLEAR_CPUREG ? 1 : 0;
 
 	if (paramtmp == NULL) {
 		paramtmp = new ConfigDlgParam;
@@ -541,6 +542,9 @@ void AG_CONFIG_DLG::Create()
 #endif
 
 	//
+	AG_CheckboxNewInt(vbox_base, 0, CMSG(Clear_CPU_registers_at_power_on), &paramtmp->clear_cpureg);
+
+	//
 	AG_LabelNewS(vbox_base, AG_LABEL_HFILL, CMSG(Need_restart_program_or_PowerOn));
 
 #if defined(_MBS1)
@@ -777,6 +781,8 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	config.rom_path.Set(param.rom_path);
 
 	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, param.showmsg_undefop);
+
+	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, param.clear_cpureg);
 
 #if defined(_MBS1)
 	emu->set_parami(VM::ParamExMemNum, param.exram_num);

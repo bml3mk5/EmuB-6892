@@ -341,9 +341,7 @@ public:
 	/// @name input device procedures for host machine
 	//@{
 	int  key_down_up(uint8_t type, int code, long status);
-	int  key_down(int code, bool keep_frames);
-	void key_up(int code, bool keep_frames);
-	void post_command_message(int id);
+//	void post_command_message(int id);
 	uint8_t translate_keysym(uint8_t type, int code, long status, int *new_code, bool *new_keep_frames = NULL);
 	uint8_t translate_keysym(uint8_t type, int code, short scan_code, int *new_code, bool *new_keep_frames = NULL);
 

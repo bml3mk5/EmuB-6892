@@ -37,25 +37,25 @@ class CSimpleIni;
 /// @ingroup Enums
 /// @brief bit mask of Config::io_port
 enum IOPORT_MASKS {
-	IOPORT_MSK_5FDD		= 0x00001,
-	IOPORT_MSK_3FDD		= 0x00002,
-	IOPORT_MSK_PSG6		= 0x00004,
-	IOPORT_MSK_EXPIA	= 0x00008,
-	IOPORT_MSK_EXACIA	= 0x00010,
-	IOPORT_MSK_PSG9		= 0x00020,
-	IOPORT_MSK_KANJI	= 0x00040,
-	IOPORT_MSK_EXPSG	= 0x00080,	/* for mbs1 */
+	IOPORT_MSK_5FDD		= 0x00001,	///< bit0: use fdd5
+	IOPORT_MSK_3FDD		= 0x00002,	///< bit1: use fdd3
+	IOPORT_MSK_PSG6		= 0x00004,	///< bit2: use 6voices psg
+	IOPORT_MSK_EXPIA	= 0x00008,	///< bit3: use ex pia
+	IOPORT_MSK_EXACIA	= 0x00010,	///< bit4: use ex acia
+	IOPORT_MSK_PSG9		= 0x00020,	///< bit5: use 9voices psg
+	IOPORT_MSK_KANJI	= 0x00040,	///< bit6: use kanji rom
+	IOPORT_MSK_EXPSG	= 0x00080,	///< bit7: use s1 ex psg (CONFIG_VERSION >= 0x02)(for mbs1)
 	IOPORT_MSK_FDDALL	= 0x00003,
-	IOPORT_MSK_OS9BD	= 0x00100,	/* for mbs1 */
-	IOPORT_MSK_CM01		= 0x00200,	/* for mbs1 */
-	IOPORT_MSK_KEYBD	= 0x00400,	/* for mbs1 */
-	IOPORT_MSK_MOUSE	= 0x00800,	/* for mbs1 */
-	IOPORT_MSK_FMOPN	= 0x01000,	/* for mbs1 */
-	IOPORT_MSK_DISROMB	= 0x02000,	/* for mbs1 */
-	IOPORT_MSK_DISIG	= 0x04000,
-	IOPORT_MSK_RTC		= 0x08000,
-	IOPORT_MSK_Z80BCARD	= 0x10000,	/* for mbs1 */
-	IOPORT_MSK_MPC68008	= 0x20000,	/* for mbs1 */
+	IOPORT_MSK_OS9BD	= 0x00100,	///< bit8: use OS/9 (for mbs1)
+	IOPORT_MSK_CM01		= 0x00200,	///< bit9: use comm (for mbs1)
+	IOPORT_MSK_KEYBD	= 0x00400,	///< bit10: use keyboard (for mbs1)
+	IOPORT_MSK_MOUSE	= 0x00800,	///< bit11: use mouse (for mbs1)
+	IOPORT_MSK_FMOPN	= 0x01000,	///< bit12: use fm opn (for mbs1)
+	IOPORT_MSK_DISROMB	= 0x02000,	///< bit13: disable booting from rom basic (for mbs1)
+	IOPORT_MSK_DISIG	= 0x04000,	///< bit14: disable ig ram
+	IOPORT_MSK_RTC		= 0x08000,	///< bit15: use rtc
+	IOPORT_MSK_Z80BCARD	= 0x10000,	///< bit16: use Z80B card (for mbs1)
+	IOPORT_MSK_MPC68008	= 0x20000,	///< bit17: use 68008 card (for mbs1)
 #if defined(_MBS1)
 #if defined(USE_Z80B_CARD)
 	IOPORT_MSK_ALL		= 0x1ffff,
@@ -119,18 +119,19 @@ enum IOPORT_POS {
 /// @ingroup Enums
 /// @brief bit mask of Config::misc_flags
 enum MISC_FLAG_MASKS {
-	MSK_SHOWLEDBOX		= 0x001,
-	MSK_SHOWMSGBOARD	= 0x002,
-	MSK_USEJOYSTICK		= 0x004,
-	MSK_INSIDELEDBOX	= 0x008,
+	MSK_SHOWLEDBOX		= 0x001,	///< bit0: show led
+	MSK_SHOWMSGBOARD	= 0x002,	///< bit1: show msg
+	MSK_USEJOYSTICK		= 0x004,	///< bit2: use joystick
+	MSK_INSIDELEDBOX	= 0x008,	///< bit3: inside led
 	MSK_LEDBOX_ALL		= 0x009,
-	MSK_USELIGHTPEN		= 0x010,
-	MSK_USEMOUSE		= 0x020,
-	MSK_USEPIAJOYSTICK	= 0x040,
+	MSK_USELIGHTPEN		= 0x010,	///< bit4: enable lightpen
+	MSK_USEMOUSE		= 0x020,	///< bit5: enable mouse
+	MSK_USEPIAJOYSTICK	= 0x040,	///< bit6: use pia joystick
 	MSK_USEJOYSTICK_ALL	= 0x044,
-	MSK_SHOWMSG_UNDEFOP	= 0x080,
-	MSK_SHOWMSG_ADDRERR	= 0x100,
+	MSK_SHOWMSG_UNDEFOP	= 0x080,	///< bit7: show msg when undef opcode
+	MSK_SHOWMSG_ADDRERR	= 0x100,	///< bit8: show msg when address error
 	MSK_SHOWDLG_ALL		= 0x1ff,
+	MSK_CLEAR_CPUREG	= 0x800,	///< bit11: clear CPU registers at power on
 };
 
 /// @ingroup Macros
@@ -146,20 +147,21 @@ enum MISC_FLAG_MASKS {
 #define FLG_USEJOYSTICK_ALL	(config.misc_flags & MSK_USEJOYSTICK_ALL)
 #define FLG_SHOWMSG_UNDEFOP	(config.misc_flags & MSK_SHOWMSG_UNDEFOP)
 #define FLG_SHOWMSG_ADDRERR	(config.misc_flags & MSK_SHOWMSG_ADDRERR)
+#define FLG_CLEAR_CPUREG	(config.misc_flags & MSK_CLEAR_CPUREG)
 ///@}
 
 /// @ingroup Enums
 /// @brief bit mask of Config::original
 enum ORIGINAL_MASKS {
-	MSK_ORIG_CURIG		= 0x001,
-	MSK_ORIG_PAL8		= 0x002,		/* for mbs1 */
-	MSK_ORIG_NOPAL64	= 0x004,		/* for mbs1 */
-	MSK_ORIG_NOPAL		= 0x008,		/* for mbs1 */
-	MSK_ORIG_LIMKEY		= 0x010,
-	MSK_ORIG_FDMSK		= 0x020,		/* for mbs1 */
-	MSK_ORIG_FDINSERT	= 0x040,
-	MSK_ORIG_FDDRQ		= 0x080,
-	MSK_ORIG_MOUSEEG	= 0x100,		/* for mbs1 */
+	MSK_ORIG_CURIG		= 0x001,	///< bit0: show cursor on IG
+	MSK_ORIG_PAL8		= 0x002,	///< bit1: set dark gray on palette 8 (for mbs1)
+	MSK_ORIG_NOPAL64	= 0x004,	///< bit2: not use palette in ANALOG 64 color mode (for mbs1)
+	MSK_ORIG_NOPAL		= 0x008,	///< bit3: not use palette in ANALOG mode (for mbs1)
+	MSK_ORIG_LIMKEY		= 0x010,	///< bit4: auto key release after few frames
+	MSK_ORIG_FDMSK		= 0x020,	///< bit5: ff00 mask (for mbs1)
+	MSK_ORIG_FDINSERT	= 0x040,	///< bit6: check fd insert when get track
+	MSK_ORIG_FDDRQ		= 0x080,	///< bit7: ignore drq when sector is not found
+	MSK_ORIG_MOUSEEG	= 0x100,	///< bit8: occur mouse IRQ when both edge (for mbs1)
 };
 
 /// @ingroup Macros
@@ -415,9 +417,12 @@ public:
 	// bit14: disable ig ram
 	// bit15: use rtc
 	// bit16: use Z80B card
+	// bit17: use 68008 card
 	int io_port;
 	// bit0: show led  bit1: show msg  bit2: use joystick  bit3: inside led
-	// bit4: enable lightpen bit5: enable mouse bit6: use pia joystick  bit7: show msg when undef opcode
+	// bit4: enable lightpen bit5: enable mouse bit6: use pia joystick
+	// bit7: show msg when undef opcode  bit8: show msg when address error
+	// bit11: clear CPU registers at power on
 	int misc_flags;
 	// bit0: show cursor on IG  bit1: set dark gray on palette 8 (on mbs1)
 	// bit2: not use palette in ANALOG 64 color mode  bit3: not use palette in ANALOG mode (on mbs1)

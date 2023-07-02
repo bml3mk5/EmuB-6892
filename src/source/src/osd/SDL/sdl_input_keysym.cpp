@@ -40,7 +40,7 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 		n_code = scancode2keycode[scan_code];
 	}
 	if (n_code == 0) {
-		n_code = (scan_code & 0x1ff);
+		n_code = (scan_code & (KEY_STATUS_SIZE-1)) | KEYCODE_EXTENDED;
 	}
 
 #else /* !USE_SDL2 */
@@ -68,7 +68,7 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 		}
 	}
 	if (n_code == 0) {
-		n_code = code | 0x100;
+		n_code = code | KEYCODE_EXTENDED;
 	}
 #elif defined(__APPLE__) && defined(__MACH__)
 	/* Apple MacOSX */
@@ -90,7 +90,7 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 	} else if (scan_code == 255) {
 		n_type = 1;
 	} else {
-		n_code = (code & 0x1ff) | 0x100;
+		n_code = (code & (KEY_STATUS_SIZE-1)) | KEYCODE_EXTENDED;
 	}
 #else
 	/* Unix and X Window system */

@@ -701,6 +701,10 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 # endif
 #endif
 
+	chkClrCPUReg = new MyCheckBox(CMsg::Clear_CPU_registers_at_power_on);
+	chkClrCPUReg->setChecked(FLG_CLEAR_CPUREG != 0);
+	vbox4->addWidget(chkClrCPUReg);
+
 	lbl = new MyLabel(CMsg::Need_restart_program_or_PowerOn);
 	vbox4->addWidget(lbl);
 
@@ -1034,6 +1038,7 @@ void MyConfigBox::setDatas()
 #endif
 	//
 	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, chkUndefOp->isChecked());
+	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, chkClrCPUReg->isChecked());
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)

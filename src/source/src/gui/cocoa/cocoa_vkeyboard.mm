@@ -1,6 +1,5 @@
 /** @file cocoa_vkeyboard.mm
 
- HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
  Skelton for retropc emulator
  SDL edition + Cocoa GUI
 
@@ -200,7 +199,7 @@ void vkeyboard_set_owner_window(NSWindow *owner)
 
 namespace Vkbd {
 
-VKeyboard::VKeyboard() : Base()
+VKeyboard::VKeyboard() : OSDBase()
 {
 	vKbdWin = NULL;
 	parentWin = NULL;
@@ -234,7 +233,7 @@ bool VKeyboard::Create(const char *res_path)
 
 	vKbdWin = [[CocoaVKeyboard alloc] initWithSurface:this surface:pSurface->Get()];
 	SetDist();
-	Base::Create();
+	closed = false;
 
 	return true;
 }
@@ -242,6 +241,7 @@ bool VKeyboard::Create(const char *res_path)
 void VKeyboard::Show(bool show)
 {
 	if (!vKbdWin) return;
+	Base::Show(show);
 
 	[vKbdWin orderFront:nil];
 	[vKbdWin makeKeyWindow];
@@ -258,7 +258,7 @@ void VKeyboard::PostClose()
 {
 	vKbdWin = NULL;
 	unload_bitmap();
-	closed = true;
+	CloseBase();
 }
 
 void VKeyboard::SetDist()
@@ -277,7 +277,7 @@ void VKeyboard::SetDist()
 
 void VKeyboard::need_update_window(PressedInfo_t *info, bool onoff)
 {
-	Base::need_update_window(info, onoff);
+	need_update_window_base(info, onoff);
 
 	if (vKbdWin) {
 		CocoaVKeyboardView *vw = (CocoaVKeyboardView *)[vKbdWin contentView];

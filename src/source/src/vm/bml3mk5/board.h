@@ -113,6 +113,7 @@ public:
 	void set_context_cpu(DEVICE *device) {
 		d_cpu = device;
 	}
+	uint32_t update_led();
 
 	void save_state(FILEIO *fio);
 	bool load_state(FILEIO *fio);

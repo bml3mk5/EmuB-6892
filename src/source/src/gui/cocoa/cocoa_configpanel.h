@@ -83,6 +83,7 @@
 	CocoaTextField *txtROMPath;
 
 	CocoaCheckBox *chkUndefOp;
+	CocoaCheckBox *chkClrCPUReg;
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)

@@ -11,15 +11,6 @@
     <Filter Include="Header Files\GUI Header Files\wxWidgets">
       <UniqueIdentifier>{8dfa611f-48d4-44ff-ab04-3e52232ba219}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OSD Header Files">
-      <UniqueIdentifier>{d0364dc5-282b-4f5b-9c51-895511bff923}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\OSD Header Files\windows">
-      <UniqueIdentifier>{05289855-df05-4502-9a74-8b839d156f4a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\OSD Header Files\wxWidgets">
-      <UniqueIdentifier>{f6997263-f31b-4957-92fd-aee9db570ba6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\VIDEO Header Files">
       <UniqueIdentifier>{9a739c1e-5082-4e0b-9c46-39360ad27cf4}</UniqueIdentifier>
     </Filter>
@@ -93,6 +84,15 @@
     </Filter>
     <Filter Include="Source Files\VM Driver Source Files">
       <UniqueIdentifier>{56177725-ca2a-41f6-8168-d64dfce2e9d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSD Header Files">
+      <UniqueIdentifier>{d0364dc5-282b-4f5b-9c51-895511bff923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSD Header Files\windows">
+      <UniqueIdentifier>{05289855-df05-4502-9a74-8b839d156f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSD Header Files\wxWidgets">
+      <UniqueIdentifier>{f6997263-f31b-4957-92fd-aee9db570ba6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +220,9 @@
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\osd\screenmode.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\vkeyboardbase.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\osd\windowmode.cpp">
@@ -618,6 +621,9 @@
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osd\screenmode.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\vkeyboardbase.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osd\windowmode.h">

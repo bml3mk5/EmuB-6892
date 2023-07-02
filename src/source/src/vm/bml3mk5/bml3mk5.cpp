@@ -859,6 +859,8 @@ uint64_t VM::update_led()
 #endif
 	// b4-b6: kbd led
 	status |= ((key->get_kb_mode()) << 4);
+	// b7: reset signal
+	status |= board->update_led();
 	// b8-b11: cmt led  b12-b27:cmt cnt
 	status |= (cmt->get_cmt_mode() << 8);
 #ifdef USE_FD1

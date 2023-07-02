@@ -1,4 +1,4 @@
-# HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
+# HITACHI BASIC MASTER LEVEL3 MARK5 Emulator Windows(VC++) Edition
 
 #### Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 
@@ -30,17 +30,17 @@
           windows/ ......... windows関連ソース
         vm/ ................ VMメインプログラムソース
       VC++2010/
-        bml3mk5.vcxproj .... VC++2010用プロジェクトファイル
-        mmf_loader.vcxproj.. Media Foundationを動的にロードするためのDLL作成
+        bml3mk5.vcxproj ...... VC++2010用プロジェクトファイル
+        mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2013/
-        bml3mk5.vcxproj .... VC++2013用プロジェクトファイル
-        mmf_loader.vcxproj.. Media Foundationを動的にロードするためのDLL作成
+        bml3mk5.vcxproj ...... VC++2013用プロジェクトファイル
+        mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2015/
-        bml3mk5.vcxproj .... VC++2015用プロジェクトファイル
+        bml3mk5.vcxproj ...... VC++2015用プロジェクトファイル
       VC++2017/
-        bml3mk5.vcxproj .... VC++2017用プロジェクトファイル
+        bml3mk5.vcxproj ...... VC++2017用プロジェクトファイル
       VC++2019/
-        bml3mk5.vcxproj .... VC++2019用プロジェクトファイル
+        bml3mk5.vcxproj ...... VC++2019用プロジェクトファイル
       README_WIN.md ........ このファイル
 
 ## コンパイル方法

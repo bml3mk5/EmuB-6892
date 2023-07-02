@@ -1732,14 +1732,15 @@ bool GUI::ShowVirtualKeyboard()
 
 		uint8_t *buf;
 		int siz;
-		emu->get_vm_key_buffer(&buf, &siz);
+		emu->get_vm_key_status_buffer(&buf, &siz);
+		FIFOINT *his = emu->get_vm_key_history();
+		vkeyboard->SetStatusBufferPtr(buf, siz, VM_KEY_STATUS_VKEYBOARD);
+		vkeyboard->SetHistoryBufferPtr(his);
 #if defined(USE_SDL) || defined(USE_SDL2)
-		vkeyboard->SetStatusBufferPtr(buf, siz);
 		if (!vkeyboard->Create(emu->resource_path())) {
 			logging->out_log(LOG_ERROR, _T("Cannot open virtual keyboard window."));
 		}
 #else
-		vkeyboard->SetStatusBufferPtr(buf, siz); 
 		vkeyboard->Create();
 #endif
 		vkeyboard->Show();

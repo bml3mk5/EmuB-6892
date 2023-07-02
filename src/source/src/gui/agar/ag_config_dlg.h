@@ -63,6 +63,7 @@ private:
 		int  capture_type;
 
 		int  showmsg_undefop;
+		int  clear_cpureg;
 
 #if defined(_MBS1)
 		int  mem_nowait;

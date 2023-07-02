@@ -1,6 +1,5 @@
 /** @file qt_vkeyboard.h
 
-	HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
 	Skelton for retropc emulator
 
 	@author Sasaji
@@ -23,7 +22,7 @@ namespace Vkbd {
 /**
 	@brief Virtual keyboard
 */
-class VKeyboard : public Base
+class VKeyboard : public OSDBase
 {
     friend class ::MyVKeyboard;
 
@@ -63,6 +62,8 @@ private:
 	void paintEvent(QPaintEvent *);
 	void mousePressEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent *);
+	void keyPressEvent(QKeyEvent *);
+	void keyReleaseEvent(QKeyEvent *);
 
 public:
 	explicit MyVKeyboard(Vkbd::VKeyboard *vkbd, QWidget *parent = nullptr);

@@ -131,6 +131,7 @@ private:
 	void save_cfg_file();
 	bool load_ini_file();
 	void save_ini_file();
+	void convert_map();
 public:
 	KEYBOARD(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier)
 	{

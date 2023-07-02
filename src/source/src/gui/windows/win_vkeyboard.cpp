@@ -28,7 +28,7 @@ namespace Vkbd {
 //
 // for windows
 //
-VKeyboard::VKeyboard(HINSTANCE hInst, HWND hWnd) : Base()
+VKeyboard::VKeyboard(HINSTANCE hInst, HWND hWnd) : OSDBase()
 {
 	hInstance = hInst;
 	hParent = hWnd;
@@ -49,13 +49,14 @@ void VKeyboard::Show(bool show)
 {
 	if (!hVkbd) return;
 
+	Base::Show(show);
 	::ShowWindow(hVkbd, show ? SW_SHOWNORMAL : SW_HIDE);
 }
 
 #if defined(USE_WIN)
-void VKeyboard::Create()
+bool VKeyboard::Create()
 {
-	if (hVkbd) return;
+	if (hVkbd) return true;
 
 	hVkbd = ::CreateDialogParam(hInstance, MAKEINTRESOURCE(IDD_VKEYBOARD), hParent, Proc, (LPARAM)this);
 	if (hVkbd) {
@@ -63,8 +64,9 @@ void VKeyboard::Create()
 		create_surface();
 		adjust_window_size();
 		set_dist();
-		Base::Create();
+		closed = false;
 	}
+	return true;
 }
 #elif defined(USE_SDL) || defined(USE_SDL2)
 bool VKeyboard::Create(const _TCHAR *res_path)
@@ -80,7 +82,7 @@ bool VKeyboard::Create(const _TCHAR *res_path)
 	if (hVkbd) {
 		adjust_window_size();
 		set_dist();
-		Base::Create();
+		closed = false;
 	}
 	return true;
 }
@@ -105,7 +107,7 @@ void VKeyboard::Close()
 
 	unload_bitmap();
 
-	Base::Close();
+	CloseBase();
 }
 
 INT_PTR CALLBACK VKeyboard::Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -164,6 +166,10 @@ INT_PTR CALLBACK VKeyboard::Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 	case WM_CLOSE:
 		myObj->Close();
 		return (INT_PTR)TRUE;
+	case WM_MENUCHAR:
+		// ignore accel key and suppress beep
+		::SetWindowLongPtr(hDlg, DWLP_MSGRESULT, MNC_CLOSE << 16);
+		return (INT_PTR)TRUE;
 //	case WM_DESTROY:
 //		break;
 	}
@@ -217,7 +223,7 @@ void VKeyboard::need_update_window(PressedInfo_t *info, bool onoff)
 {
 	if (!hVkbd) return;
 
-	Base::need_update_window(info, onoff);
+	need_update_window_base(info, onoff);
 
 	RECT re = { info->re.left, info->re.top, info->re.right, info->re.bottom };
 	::InvalidateRect(hVkbd, &re, TRUE);

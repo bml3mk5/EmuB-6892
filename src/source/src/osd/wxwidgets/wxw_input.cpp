@@ -26,13 +26,6 @@
 
 void EMU_OSD::EMU_INPUT()
 {
-//	vm_key_status = NULL;
-//	vm_key_status_size = 0;
-
-	// initialize status
-//	memset(key_status, 0, sizeof(key_status));
-//	memset(mouse_status, 0, sizeof(mouse_status));
-
 #ifdef USE_JOYSTICK
 //	memset(joy_status, 0, sizeof(joy_status));
 	for(int i=0; i<2; i++) {
@@ -54,8 +47,6 @@ void EMU_OSD::EMU_INPUT()
 
 void EMU_OSD::initialize_input()
 {
-//	logging->out_debug(_T("EMU::initialize_input"));
-
 #ifdef USE_JOYSTICK
 //	use_joystick = FLG_USEJOYSTICK_ALL ? true : false;
 	// initialize joysticks
@@ -181,8 +172,6 @@ void EMU_OSD::release_joystick()
 
 void EMU_OSD::update_input()
 {
-//	logging->out_debug("EMU::update_input");
-
 	// release keys
 #ifdef USE_AUTO_KEY
 	if(lost_focus && !autokey_enabled) {
@@ -193,6 +182,9 @@ void EMU_OSD::update_input()
 		for(int i = 0; i < KEY_STATUS_SIZE; i++) {
 			if(key_status[i] & 0x80) {
 				key_status[i] &= 0x7f;
+				if (!key_status[i]) {
+					vm_key_up(vm_key_map[i], VM_KEY_STATUS_KEYBOARD);
+				}
 #ifdef NOTIFY_KEY_DOWN
 				if(!key_status[i]) {
 					vm->key_up(i);
@@ -205,6 +197,9 @@ void EMU_OSD::update_input()
 		for(int i = 0; i < KEY_STATUS_SIZE; i++) {
 			if(key_status[i] & 0x7f) {
 				key_status[i] = (key_status[i] & 0x80) | ((key_status[i] & 0x7f) - 1);
+				if (!key_status[i]) {
+					vm_key_up(vm_key_map[i], VM_KEY_STATUS_KEYBOARD);
+				}
 #ifdef NOTIFY_KEY_DOWN
 				if(!key_status[i]) {
 					vm->key_up(i);
@@ -337,13 +332,10 @@ void EMU_OSD::update_joystick()
 int EMU_OSD::key_down_up(uint8_t type, int code, long status)
 {
 	bool keep_frames = false;
-//#if defined(USE_WX2)
-//	// use scancode because sym code is over 512
-//	code = scan_code;
-//#endif
 	// translate keycode
 	// type change UP to DOWN when capslock key in macosx
 	if (!translate_keysym(type, code, (short)status, &code, &keep_frames)) {
+		// key down
 #ifdef LOG_MEASURE
 		logging->out_debugf(_T("SDL_KEYDOWN: scancode:%02x sym:%02x(%s) mod:%02x")
 			,e->key.keysym.scancode,e->key.keysym.sym,SDL_GetKeyName(e->key.keysym.sym),e->key.keysym.mod);
@@ -358,6 +350,7 @@ int EMU_OSD::key_down_up(uint8_t type, int code, long status)
 			key_down(code, keep_frames);
 		}
 	} else {
+		// key up
 #ifdef LOG_MEASURE
 		logging->out_debugf(_T("SDL_KEYUP: scancode:%02x sym:%02x(%s) mod:%02x")
 			,e->key.keysym.scancode,e->key.keysym.sym,SDL_GetKeyName(e->key.keysym.sym),e->key.keysym.mod);
@@ -372,55 +365,6 @@ int EMU_OSD::key_down_up(uint8_t type, int code, long status)
 		key_up(code, keep_frames);
 	}
 	return 0;
-}
-
-int EMU_OSD::key_down(int code, bool keep_frames)
-{
-	key_status[code] = keep_frames ? KEY_KEEP_FRAMES * FRAME_SPLIT_NUM : 0x80;
-
-#ifdef NOTIFY_KEY_DOWN_TO_GUI
-	gui->KeyDown(code, mod);
-#endif
-#ifdef NOTIFY_KEY_DOWN
-	vm->key_down(code);
-#endif
-	return code;
-}
-
-void EMU_OSD::key_up(int code, bool keep_frames)
-{
-	if(key_status[code]) {
-		key_status[code] &= 0x7f;
-#ifdef NOTIFY_KEY_DOWN_TO_GUI
-		gui->KeyUp(code);
-#endif
-#ifdef NOTIFY_KEY_DOWN
-		if(!key_status[code]) {
-			vm->key_up(code);
-		}
-#endif
-	}
-}
-
-#if 0
-int EMU_OSD::vm_key_down(int code)
-{
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] = 1;
-	}
-	return code;
-}
-void EMU_OSD::vm_key_up(int code)
-{
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] = 0;
-	}
 }
 
 #ifdef USE_BUTTON
@@ -439,6 +383,7 @@ void EMU_OSD::press_button(int num)
 }
 #endif
 
+#if 0
 void EMU_OSD::initialize_mouse(bool enable)
 {
 	if (enable) enable_mouse(0);

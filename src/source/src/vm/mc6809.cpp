@@ -345,6 +345,13 @@ void MC6809::reset()
 	memset(illegal_pc, 0, sizeof(illegal_pc));
 	illegal_pc_idx = 0;
 
+	/* Clear other registers */
+	UD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+	SD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+	XD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+	YD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+	DD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+
 	WS_BABS(0x01);
 	PCD = RM16(0xfffe);
 	WS_BABS(0x00);
@@ -630,7 +637,9 @@ int MC6809::run(int clock, int accum, int cycle)
 
 #define DUMMY_FETCH_OP { \
 	uint8_t ireg = ROP(PCD); \
-	if (ireg == 0x10 || ireg == 0x11) ireg = ROP(PCD+1); \
+	if (ireg == 0x10 || ireg == 0x11) { \
+		ireg = ROP(PCD+1); \
+	} \
 }
 
 void MC6809::run_one_opecode()

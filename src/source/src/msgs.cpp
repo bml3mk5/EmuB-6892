@@ -404,6 +404,7 @@ CMsg::CMsg()
 	msgs[i++] = _TX("No wait to access the main memory.");
 	msgs[i++] = _TX("Show message when the CPU fetches undefined opcode.");
 	msgs[i++] = _TX("Show message when the address error occured in MC68008.");
+	msgs[i++] = _TX("Clear CPU registers at power on.");
 	msgs[i++] = _TX("FM Synthesis Card (*)");
 	msgs[i++] = _TX("Extended PSG Port (*)");
 	msgs[i++] = _TX("I/O ports are $FF1E - $FF1F and $FF16 - $FF17.");

@@ -32,6 +32,7 @@ const struct stLedPos_t cLedPos[] = {
 	{ BITMAPPARTS_LED_GH,     15, 184 },	// HIRAGANA Led
 	{ BITMAPPARTS_LED_RV,     22, 238 },	// CAPSLOCK Led
 	{ BITMAPPARTS_MODE,      505,   4 },	// MODE Switch
+	{ BITMAPPARTS_MODE,      568,   4 },	// RESET Switch
 	{ BITMAPPARTS_POWER,     634,   4 },	// POWER Switch OFF
 	{ BITMAPPARTS_LED_GLH,   638,  60 },	// POWER Led OFF
 	{ -1, 0, 0 }
@@ -39,7 +40,7 @@ const struct stLedPos_t cLedPos[] = {
 
 const Hori_t cvKeyHori0[] = {
 	{505, 25, 0x7d, KEYKIND_NOANIME, -1, -1},	// MODE
-	{568, 25, 0x7f, 0, -1, BITMAPPARTS_MODE},	// RESET
+	{568, 25, 0x7f, KEYKIND_NOANIME, -1, -1},	// RESET
 	{634, 25, 0x7e, KEYKIND_NOANIME, -1, -1},	// POWER
 	{  0,  0,    0, 0, -1, -1}
 };
@@ -95,7 +96,7 @@ const Hori_t cvKeyHori3[] = {
 	{366, 32, 0x24, 0, -1, -1},	// P
 	{399, 32, 0x26, 0, -1, -1},	// @
 	{432, 32, 0x25, 0, -1, -1},	// [
-	{465, 57, 0x2f, 0, -1, -1},	// RETURN
+	{465, 57, 0x2f, KEYKIND_ARRAY, ARRAYKEYS_RETURN, -1},	// RETURN
 	{555, 32, 0x1d, 0, -1, -1},	// num 7
 	{588, 32, 0x0d, 0, -1, -1},	// num 8
 	{621, 32, 0x0e, 0, -1, -1},	// num 9
@@ -135,7 +136,7 @@ const Hori_t cvKeyHori5[] = {
 	{225, 32, 0x49, 0, -1, -1},	// B
 	{258, 32, 0x42, 0, -1, -1},	// N
 	{291, 32, 0x40, 0, -1, -1},	// M
-	{324, 32, 0x43, 0, -1, -1},	// ,
+	{324, 32, 0x43, KEYKIND_ARRAY, ARRAYKEYS_COMMA, -1},	// ,
 	{357, 32, 0x4c, 0, -1, -1},	// .
 	{390, 32, 0x44, 0, -1, -1},	// /
 	{423, 32, 0x46, 0, -1, -1},	// _
@@ -143,7 +144,7 @@ const Hori_t cvKeyHori5[] = {
 	{555, 32, 0x47, 0, -1, -1},	// num 1
 	{588, 32, 0x4d, 0, -1, -1},	// num 2
 	{621, 32, 0x4e, 0, -1, -1},	// num 3
-	{654, 32, 0x43, 0, -1, -1},	// num ,
+	{654, 32, 0x43, KEYKIND_ARRAY, ARRAYKEYS_COMMA, -1},	// num ,
 	{  0,  0,    0, 0, -1, -1}
 };
 
@@ -151,7 +152,7 @@ const Hori_t cvKeyHori6[] = {
 	{126, 263, 0x00, 0, -1, -1},	// SPACE 
 	{555,  32, 0x27, 0, -1, -1},	// num 0
 	{588,  32, 0x2d, 0, -1, -1},	// num .
-	{621,  65, 0x2f, 0, -1, -1},	// num RETURN
+	{621,  65, 0x2f, KEYKIND_ARRAY, ARRAYKEYS_RETURN, -1},	// num RETURN
 	{  0,   0,    0, 0, -1, -1}
 };
 

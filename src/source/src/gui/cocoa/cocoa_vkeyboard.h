@@ -1,6 +1,5 @@
 /** @file cocoa_vkeyboard.h
 
- HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
  Skelton for retropc emulator
  SDL edition + Cocoa GUI
 
@@ -69,7 +68,7 @@ namespace Vkbd {
 /**
 	@brief Virtual keyboard
 */
-class VKeyboard : public Base
+class VKeyboard : public OSDBase
 {
 private:
 #ifdef __OBJC__

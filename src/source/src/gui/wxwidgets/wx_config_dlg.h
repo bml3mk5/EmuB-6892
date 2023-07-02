@@ -86,6 +86,7 @@ private:
 	MyCheckBox *chkUseExMem;
 #endif
 	MyCheckBox *chkUndefOp;
+	MyCheckBox *chkClrCPUReg;
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)
 	MyChoice *comZ80BIntr;

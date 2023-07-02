@@ -256,8 +256,6 @@ public:
 	/// @name input device procedures for host machine
 	//@{
     int  key_down_up_(uint8_t type, int code, uint32_t vk_key, uint32_t scan_code, uint32_t mod);
-	int  key_down(int code, bool keep_frames);
-	void key_up(int code, bool keep_frames);
 	uint8_t translate_keysym_(uint8_t type, int code, uint32_t vk_key, uint32_t scan_code, uint32_t mod, int *new_code, bool *new_keep_frames = nullptr);
 
 	void reset_joystick();

@@ -16,11 +16,11 @@
 #define APP_FILENAME	"bml3mk5.exe"
 #define APP_INTERNAME	"EmuB-6892"
 #define APP_COPYRIGHT	"Copyright (C) 2011,2012-2023 Common Source Code Project, Sasaji"
-#define APP_VERSION		"1.9.2.2001"
+#define APP_VERSION		"1.9.3.2006"
 #define APP_VER_MAJOR	1
 #define APP_VER_MINOR	9
-#define APP_VER_REV		2
-#define APP_VER_BUILD	2001
+#define APP_VER_REV		3
+#define APP_VER_BUILD	2006
 
 #if defined(__MINGW32__)
 #if defined(x86_64) || defined(__x86_64)

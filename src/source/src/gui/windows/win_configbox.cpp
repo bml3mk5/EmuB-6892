@@ -452,6 +452,9 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 # endif
 #endif
 
+	// clear CPU registers
+	CreateCheckBox(box_4all, IDC_CHK_CLEAR_CPUREG, CMsg::Clear_CPU_registers_at_power_on, FLG_CLEAR_CPUREG != 0);
+
 	// text
 	CreateStatic(box_4all, IDC_STATIC, CMsg::Need_restart_program_or_PowerOn);
 
@@ -1028,6 +1031,9 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_ADDRERR, IsDlgButtonChecked(hDlg, IDC_CHK_ADDRERR) == BST_CHECKED);
 # endif
 #endif
+
+	// clear CPU registers
+	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, IsDlgButtonChecked(hDlg, IDC_CHK_CLEAR_CPUREG) == BST_CHECKED);
 
 #if defined(_MBS1)
 	// fmopn clock

@@ -1394,6 +1394,10 @@
         <translation type="vanished">MC68008でアドレスエラーが発生した時にメッセージを表示する。</translation>
     </message>
     <message>
+        <source>Clear CPU registers at power on.</source>
+        <translation type="vanished">パワーオン時にCPUのレジスタをクリアする。</translation>
+    </message>
+    <message>
         <source>FM Synthesis Card (*)</source>
         <translation type="vanished">FM音源カード (*)</translation>
     </message>
@@ -4336,1318 +4340,1323 @@ PSG</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="407"/>
+        <source>Clear CPU registers at power on.</source>
+        <translation>パワーオン時にCPUのレジスタをクリアする。</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="408"/>
         <source>FM Synthesis Card (*)</source>
         <translation>FM音源カード (*)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="408"/>
+        <location filename="../../src/msgs.cpp" line="409"/>
         <source>Extended PSG Port (*)</source>
         <translation>拡張PSGポート (*)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="409"/>
+        <location filename="../../src/msgs.cpp" line="410"/>
         <source>I/O ports are $FF1E - $FF1F and $FF16 - $FF17.</source>
         <translation>I/Oポートは $FF1E - $FF1F, $FF16 - $FF17。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="410"/>
+        <location filename="../../src/msgs.cpp" line="411"/>
         <source>I/O ports are $FFE6 - $FFE7 and $FFEE - $FFEF.</source>
         <translation>I/Oポートは $FFE6 - $FFE7, $FFEE - $FFEF。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="411"/>
+        <location filename="../../src/msgs.cpp" line="412"/>
         <source>Clock</source>
         <translation>クロック</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="412"/>
+        <location filename="../../src/msgs.cpp" line="413"/>
         <source>Connect interrupt signal of FM synthesis to (*)(**)</source>
         <translation>FM音源の割り込み信号接続先 (*)(**)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="413"/>
+        <location filename="../../src/msgs.cpp" line="414"/>
         <source>Sound chip</source>
         <translation>音源チップ</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="414"/>
+        <location filename="../../src/msgs.cpp" line="415"/>
         <source>** This is the common setting both FM synthesis card and extended PSG port.</source>
         <translation>** これはFM音源カードと拡張PSGポートの共通の設定です。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="415"/>
+        <location filename="../../src/msgs.cpp" line="416"/>
         <source>Connect interrupt signal of Z80B Card to (*)</source>
         <translation>Z80Bカードの割り込み信号接続先 (*)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="416"/>
+        <location filename="../../src/msgs.cpp" line="417"/>
         <source>MsgBoard: OK</source>
         <translation>MsgBoard: OK</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="417"/>
+        <location filename="../../src/msgs.cpp" line="418"/>
         <source>MsgBoard: Failed</source>
         <translation>MsgBoard: 失敗</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="418"/>
+        <location filename="../../src/msgs.cpp" line="419"/>
         <source>MsgBoard: Use &quot;%s&quot; for %s.</source>
         <translation>MsgBoard: &quot;%s&quot;を%s用に使用します。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="419"/>
+        <location filename="../../src/msgs.cpp" line="420"/>
         <source>MsgBoard: Couldn&apos;t load font %s.</source>
         <translation>MsgBoard: フォント %s をロードできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="420"/>
+        <location filename="../../src/msgs.cpp" line="421"/>
         <source>MsgBoard: Couldn&apos;t find fonts for %s.</source>
         <translation>MsgBoard: %s用のフォントが見つかりませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="421"/>
+        <location filename="../../src/msgs.cpp" line="422"/>
         <source>MsgBoard: Couldn&apos;t load font &quot;%s&quot; for message.</source>
         <translation>MsgBoard: フォント&quot;%s&quot;をメッセージ用にロードできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="422"/>
+        <location filename="../../src/msgs.cpp" line="423"/>
         <source>MsgBoard: Couldn&apos;t load font &quot;%s&quot; for info.</source>
         <translation>MsgBoard: フォント&quot;%s&quot;を情報用にロードできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="423"/>
+        <location filename="../../src/msgs.cpp" line="424"/>
         <source>info</source>
         <translation>情報</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="424"/>
+        <location filename="../../src/msgs.cpp" line="425"/>
         <source>message</source>
         <translation>メッセージ</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="425"/>
+        <location filename="../../src/msgs.cpp" line="426"/>
         <source>Select a folder to save snapshot images.</source>
         <translation>スナップショットを保存するフォルダを選択してください。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="426"/>
+        <location filename="../../src/msgs.cpp" line="427"/>
         <source>Select a font file for showing messages.</source>
         <translation>メッセージ表示用のフォントファイルを選択してください。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="427"/>
+        <location filename="../../src/msgs.cpp" line="428"/>
         <source>Select a font folder for showing messages.</source>
         <translation>メッセージ表示用のフォントがあるフォルダを選択してください。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="428"/>
+        <location filename="../../src/msgs.cpp" line="429"/>
         <source>Select a folder containing the rom images.</source>
         <translation>ROMイメージのあるフォルダを選択してください。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="429"/>
+        <location filename="../../src/msgs.cpp" line="430"/>
         <source>Select a font.</source>
         <translation>フォントを選択してください。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="430"/>
+        <location filename="../../src/msgs.cpp" line="431"/>
         <source>File...</source>
         <translation>ファイル...</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="431"/>
+        <location filename="../../src/msgs.cpp" line="432"/>
         <source>File Type :</source>
         <translation>ファイル種類:</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="432"/>
+        <location filename="../../src/msgs.cpp" line="433"/>
         <source>Play Data Recorder Tape</source>
         <translation>テープを再生</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="433"/>
+        <location filename="../../src/msgs.cpp" line="434"/>
         <source>Record Data Recorder Tape</source>
         <translation>テープに録音</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="434"/>
+        <location filename="../../src/msgs.cpp" line="435"/>
         <source>Play [</source>
         <translation>再生 [</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="435"/>
+        <location filename="../../src/msgs.cpp" line="436"/>
         <source>Play...</source>
         <translation>再生...</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="436"/>
+        <location filename="../../src/msgs.cpp" line="437"/>
         <source>Rec [</source>
         <translation>録音 [</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="437"/>
+        <location filename="../../src/msgs.cpp" line="438"/>
         <source>Open Floppy Disk %d</source>
         <translation>フロッピー%dを開く</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="438"/>
+        <location filename="../../src/msgs.cpp" line="439"/>
         <source>FDD</source>
         <translation>FDD</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="439"/>
+        <location filename="../../src/msgs.cpp" line="440"/>
         <source>New Floppy Disk %d</source>
         <translation>新規フロッピー%d</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="440"/>
+        <location filename="../../src/msgs.cpp" line="441"/>
         <source>Insert [</source>
         <translation>挿入 [</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="441"/>
+        <location filename="../../src/msgs.cpp" line="442"/>
         <source>Insert...</source>
         <translation>挿入...</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="442"/>
+        <location filename="../../src/msgs.cpp" line="443"/>
         <source>Open HuCARD</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="443"/>
+        <location filename="../../src/msgs.cpp" line="444"/>
         <source>Open Cartridge</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="444"/>
+        <location filename="../../src/msgs.cpp" line="445"/>
         <source>Open Quick Disk</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="445"/>
+        <location filename="../../src/msgs.cpp" line="446"/>
         <source>Open Media</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="446"/>
+        <location filename="../../src/msgs.cpp" line="447"/>
         <source>Load RAM Pack Cartridge</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="447"/>
+        <location filename="../../src/msgs.cpp" line="448"/>
         <source>Load Memory Dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="448"/>
+        <location filename="../../src/msgs.cpp" line="449"/>
         <source>Save RAM Pack Cartridge</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="449"/>
+        <location filename="../../src/msgs.cpp" line="450"/>
         <source>Save Memory Dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="450"/>
+        <location filename="../../src/msgs.cpp" line="451"/>
         <source>Open Text File</source>
         <translation>テキストファイルを開く</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="451"/>
+        <location filename="../../src/msgs.cpp" line="452"/>
         <source>Save Status Data</source>
         <translation>状態を保存</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="452"/>
+        <location filename="../../src/msgs.cpp" line="453"/>
         <source>Load Status Data</source>
         <translation>状態データをロード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="453"/>
+        <location filename="../../src/msgs.cpp" line="454"/>
         <source>Play Recorded Keys</source>
         <translation>記録したキー情報を再生</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="454"/>
+        <location filename="../../src/msgs.cpp" line="455"/>
         <source>Record Input Keys</source>
         <translation>入力キーを記録</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="455"/>
+        <location filename="../../src/msgs.cpp" line="456"/>
         <source>Save Printing Data</source>
         <translation>印刷データを保存</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="456"/>
+        <location filename="../../src/msgs.cpp" line="457"/>
         <source>Supported Files (*.ttf;*.otf)</source>
         <translation>サポートファイル (*.ttf;*.otf)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="457"/>
+        <location filename="../../src/msgs.cpp" line="458"/>
         <source>Supported Files (*.cas;*.cmt;*.t88)</source>
         <translation>テープファイル (*.cas;*.cmt;*.t88)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="458"/>
+        <location filename="../../src/msgs.cpp" line="459"/>
         <source>Supported Files (*.cas;*.cmt)</source>
         <translation>テープファイル (*.cas;*.cmt)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="459"/>
+        <location filename="../../src/msgs.cpp" line="460"/>
         <source>Supported Files (*.wav;*.cas;*.tap)</source>
         <translation>テープファイル (*.wav;*.cas;*.tap)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="460"/>
+        <location filename="../../src/msgs.cpp" line="461"/>
         <source>Supported Files (*.wav;*.cas;*.mzt;*.m12)</source>
         <translation>テープファイル (*.wav;*.cas;*.mzt;*.m12)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="461"/>
+        <location filename="../../src/msgs.cpp" line="462"/>
         <source>Supported Files (*.l3;*.l3b;*.l3c;*.wav;*.t9x)</source>
         <translation>テープファイル (*.l3;*.l3b;*.l3c;*.wav;*.t9x)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="462"/>
+        <location filename="../../src/msgs.cpp" line="463"/>
         <source>Supported Files (*.wav;*.cas)</source>
         <translation>テープファイル (*.wav;*.cas)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="463"/>
+        <location filename="../../src/msgs.cpp" line="464"/>
         <source>L3 File (*.l3)</source>
         <translation>L3ファイル (*.l3)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="464"/>
+        <location filename="../../src/msgs.cpp" line="465"/>
         <source>L3B File (*.l3b)</source>
         <translation>L3Bファイル (*.l3b)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="465"/>
+        <location filename="../../src/msgs.cpp" line="466"/>
         <source>L3C File (*.l3c)</source>
         <translation>L3Cファイル (*.l3c)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="466"/>
+        <location filename="../../src/msgs.cpp" line="467"/>
         <source>Wave File (*.wav)</source>
         <translation>Waveファイル (*.wav)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="467"/>
+        <location filename="../../src/msgs.cpp" line="468"/>
         <source>T9X File (*.t9x)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="468"/>
+        <location filename="../../src/msgs.cpp" line="469"/>
         <source>Supported Files (*.d88;*.d77;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.sf7)</source>
         <translation>ディスクファイル (*.d88;*.d77;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.sf7)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="469"/>
+        <location filename="../../src/msgs.cpp" line="470"/>
         <source>Supported Files (*.d88;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.sf7)</source>
         <translation>ディスクファイル (*.d88;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.sf7)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="470"/>
+        <location filename="../../src/msgs.cpp" line="471"/>
         <source>Supported Files (*.d88;*.d77)</source>
         <translation>ディスクファイル (*.d88;*.d77)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="471"/>
+        <location filename="../../src/msgs.cpp" line="472"/>
         <source>Supported Files (*.d88)</source>
         <translation>ディスクファイル (*.d88)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="472"/>
+        <location filename="../../src/msgs.cpp" line="473"/>
         <source>Supported Files (*.txt;*.bas;*.lpt)</source>
         <translation>テキストファイル (*.txt;*.bas;*.lpt)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="473"/>
+        <location filename="../../src/msgs.cpp" line="474"/>
         <source>Supported Files (*.l3r)</source>
         <translation>レジュームファイル (*.l3r)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="474"/>
+        <location filename="../../src/msgs.cpp" line="475"/>
         <source>Supported Files (*.l3k)</source>
         <translation>キー情報ファイル (*.l3k)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="475"/>
+        <location filename="../../src/msgs.cpp" line="476"/>
         <source>Supported Files (*.lpt)</source>
         <translation>印刷ファイル (*.lpt)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="476"/>
+        <location filename="../../src/msgs.cpp" line="477"/>
         <source>Supported Files (*.rom;*.bin;*.hex;*.gg;*.col)</source>
         <translation>サポートファイル (*.rom;*.bin;*.hex;*.gg;*.col)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="477"/>
+        <location filename="../../src/msgs.cpp" line="478"/>
         <source>Supported Files (*.rom;*.bin;*.hex;*.sms)</source>
         <translation>サポートファイル (*.rom;*.bin;*.hex;*.sms)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="478"/>
+        <location filename="../../src/msgs.cpp" line="479"/>
         <source>Supported Files (*.rom;*.bin;*.hex;*.60)</source>
         <translation>サポートファイル (*.rom;*.bin;*.hex;*.60)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="479"/>
+        <location filename="../../src/msgs.cpp" line="480"/>
         <source>Supported Files (*.rom;*.bin;*.hex;*.pce)</source>
         <translation>サポートファイル (*.rom;*.bin;*.hex;*.pce)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="480"/>
+        <location filename="../../src/msgs.cpp" line="481"/>
         <source>Supported Files (*.rom;*.bin;*.hex)</source>
         <translation>サポートファイル (*.rom;*.bin;*.hex)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="481"/>
+        <location filename="../../src/msgs.cpp" line="482"/>
         <source>Supported Files (*.mzt;*.q20;*.qdf)</source>
         <translation>サポートファイル (*.mzt;*.q20;*.qdf)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="482"/>
+        <location filename="../../src/msgs.cpp" line="483"/>
         <source>Supported Files (*.bin)</source>
         <translation>サポートファイル (*.bin)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="483"/>
+        <location filename="../../src/msgs.cpp" line="484"/>
         <source>Supported Files (*.ram;*.bin;*.hex)</source>
         <translation>サポートファイル (*.ram;*.bin;*.hex)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="484"/>
+        <location filename="../../src/msgs.cpp" line="485"/>
         <source>All Files (*.*)</source>
         <translation>全てのファイル (*.*)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="485"/>
+        <location filename="../../src/msgs.cpp" line="486"/>
         <source>(Pause)</source>
         <translation>(ポーズ)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="486"/>
+        <location filename="../../src/msgs.cpp" line="487"/>
         <source>num INS/DEL</source>
         <translation>テンキー INS/DEL</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="487"/>
+        <location filename="../../src/msgs.cpp" line="488"/>
         <source>KATA/HIRA</source>
         <translation>KATA/HIRA</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="488"/>
+        <location filename="../../src/msgs.cpp" line="489"/>
         <source>HENKAN</source>
         <translation>変換</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="489"/>
+        <location filename="../../src/msgs.cpp" line="490"/>
         <source>MUHENKAN</source>
         <translation>無変換</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="490"/>
+        <location filename="../../src/msgs.cpp" line="491"/>
         <source>Allow RIGHT</source>
         <translation>→</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="491"/>
+        <location filename="../../src/msgs.cpp" line="492"/>
         <source>Allow LEFT</source>
         <translation>←</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="492"/>
+        <location filename="../../src/msgs.cpp" line="493"/>
         <source>Allow UP</source>
         <translation>↑</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="493"/>
+        <location filename="../../src/msgs.cpp" line="494"/>
         <source>Allow DOWN</source>
         <translation>↓</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="494"/>
+        <location filename="../../src/msgs.cpp" line="495"/>
         <source>SPACE</source>
         <translation>スペース</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="495"/>
+        <location filename="../../src/msgs.cpp" line="496"/>
         <source>num ,</source>
         <translation>テンキー ,</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="496"/>
+        <location filename="../../src/msgs.cpp" line="497"/>
         <source>num *</source>
         <translation>テンキー *</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="497"/>
+        <location filename="../../src/msgs.cpp" line="498"/>
         <source>num +</source>
         <translation>テンキー +</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="498"/>
+        <location filename="../../src/msgs.cpp" line="499"/>
         <source>num ?</source>
         <translation>テンキー ?</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="499"/>
+        <location filename="../../src/msgs.cpp" line="500"/>
         <source>num -</source>
         <translation>テンキー -</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="500"/>
+        <location filename="../../src/msgs.cpp" line="501"/>
         <source>num .</source>
         <translation>テンキー .</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="501"/>
+        <location filename="../../src/msgs.cpp" line="502"/>
         <source>num /</source>
         <translation>テンキー /</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="502"/>
+        <location filename="../../src/msgs.cpp" line="503"/>
         <source>num enter</source>
         <translation>テンキー enter</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="503"/>
+        <location filename="../../src/msgs.cpp" line="504"/>
         <source>num =</source>
         <translation>テンキー =</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="504"/>
+        <location filename="../../src/msgs.cpp" line="505"/>
         <source>num 0</source>
         <translation>テンキー 0</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="505"/>
+        <location filename="../../src/msgs.cpp" line="506"/>
         <source>num %c</source>
         <translation>テンキー %c</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="506"/>
+        <location filename="../../src/msgs.cpp" line="507"/>
         <source>num %d</source>
         <translation>テンキー %d</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="507"/>
+        <location filename="../../src/msgs.cpp" line="508"/>
         <source>PF%d</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="508"/>
+        <location filename="../../src/msgs.cpp" line="509"/>
         <source>space</source>
         <translation>スペース</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="509"/>
+        <location filename="../../src/msgs.cpp" line="510"/>
         <source>up</source>
         <translation>↑</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="510"/>
+        <location filename="../../src/msgs.cpp" line="511"/>
         <source>up+right</source>
         <translation>↑→</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="511"/>
+        <location filename="../../src/msgs.cpp" line="512"/>
         <source>right</source>
         <translation>→</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="512"/>
+        <location filename="../../src/msgs.cpp" line="513"/>
         <source>down+right</source>
         <translation>↓→</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="513"/>
+        <location filename="../../src/msgs.cpp" line="514"/>
         <source>down</source>
         <translation>↓</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="514"/>
+        <location filename="../../src/msgs.cpp" line="515"/>
         <source>down+left</source>
         <translation>←↓</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="515"/>
+        <location filename="../../src/msgs.cpp" line="516"/>
         <source>left</source>
         <translation>←</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="516"/>
+        <location filename="../../src/msgs.cpp" line="517"/>
         <source>up+left</source>
         <translation>←↑</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="517"/>
+        <location filename="../../src/msgs.cpp" line="518"/>
         <source>button</source>
         <translation>ボタン</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="518"/>
+        <location filename="../../src/msgs.cpp" line="519"/>
         <source>button %c</source>
         <translation>ボタン %c</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="519"/>
+        <location filename="../../src/msgs.cpp" line="520"/>
         <source>bit %d</source>
         <translation>ビット %d</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="520"/>
+        <location filename="../../src/msgs.cpp" line="521"/>
         <source>kanji</source>
         <translation>漢字</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="521"/>
+        <location filename="../../src/msgs.cpp" line="522"/>
         <source>henkan</source>
         <translation>変換</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="522"/>
+        <location filename="../../src/msgs.cpp" line="523"/>
         <source>muhenkan</source>
         <translation>無変換</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="523"/>
+        <location filename="../../src/msgs.cpp" line="524"/>
         <source>katakana</source>
         <translation>カタカナ</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="524"/>
+        <location filename="../../src/msgs.cpp" line="525"/>
         <source>eisu</source>
         <translation>英数</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="525"/>
+        <location filename="../../src/msgs.cpp" line="526"/>
         <source>kana</source>
         <translation>カナ</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="526"/>
+        <location filename="../../src/msgs.cpp" line="527"/>
         <source>right shift</source>
         <translation>右shift</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="527"/>
+        <location filename="../../src/msgs.cpp" line="528"/>
         <source>left shift</source>
         <translation>左shift</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="528"/>
+        <location filename="../../src/msgs.cpp" line="529"/>
         <source>right ctrl</source>
         <translation>右ctrl</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="529"/>
+        <location filename="../../src/msgs.cpp" line="530"/>
         <source>left ctrl</source>
         <translation>左ctrl</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="530"/>
+        <location filename="../../src/msgs.cpp" line="531"/>
         <source>right option</source>
         <translation>右option</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="531"/>
+        <location filename="../../src/msgs.cpp" line="532"/>
         <source>right alt</source>
         <translation>右alt</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="532"/>
+        <location filename="../../src/msgs.cpp" line="533"/>
         <source>left option</source>
         <translation>左option</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="533"/>
+        <location filename="../../src/msgs.cpp" line="534"/>
         <source>left alt</source>
         <translation>左alt</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="534"/>
+        <location filename="../../src/msgs.cpp" line="535"/>
         <source>right command</source>
         <translation>右command</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="535"/>
+        <location filename="../../src/msgs.cpp" line="536"/>
         <source>right meta</source>
         <translation>右meta</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="536"/>
+        <location filename="../../src/msgs.cpp" line="537"/>
         <source>left command</source>
         <translation>左command</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="537"/>
+        <location filename="../../src/msgs.cpp" line="538"/>
         <source>left meta</source>
         <translation>左meta</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="538"/>
+        <location filename="../../src/msgs.cpp" line="539"/>
         <source>right win</source>
         <translation>右win</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="539"/>
+        <location filename="../../src/msgs.cpp" line="540"/>
         <source>left win</source>
         <translation>左win</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="540"/>
+        <location filename="../../src/msgs.cpp" line="541"/>
         <source>Next</source>
         <translation>次</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="541"/>
+        <location filename="../../src/msgs.cpp" line="542"/>
         <source>Prev</source>
         <translation>前</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="542"/>
+        <location filename="../../src/msgs.cpp" line="543"/>
         <source>Bind</source>
         <translation>割り当て</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="543"/>
+        <location filename="../../src/msgs.cpp" line="544"/>
         <source>Bind%d</source>
         <translation>割り当て%d</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="544"/>
+        <location filename="../../src/msgs.cpp" line="545"/>
         <source>S1 Key</source>
         <translation>S1のキー</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="545"/>
+        <location filename="../../src/msgs.cpp" line="546"/>
         <source>PIA on S1</source>
         <translation>S1のPIA</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="546"/>
+        <location filename="../../src/msgs.cpp" line="547"/>
         <source>Level3 Key</source>
         <translation>Level3のキー</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="547"/>
+        <location filename="../../src/msgs.cpp" line="548"/>
         <source>PIA on L3</source>
         <translation>L3のPIA</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="548"/>
+        <location filename="../../src/msgs.cpp" line="549"/>
         <source>Keyboard</source>
         <translation>キーボード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="549"/>
+        <location filename="../../src/msgs.cpp" line="550"/>
         <source>Joypad</source>
         <translation>ジョイパッド</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="550"/>
+        <location filename="../../src/msgs.cpp" line="551"/>
         <source>Joypad (Key Assigned)</source>
         <translation>ジョイパッド（キー割当）</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="551"/>
+        <location filename="../../src/msgs.cpp" line="552"/>
         <source>Joypad (PIA Type)</source>
         <translation>ジョイパッド（PIA接続）</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="552"/>
+        <location filename="../../src/msgs.cpp" line="553"/>
         <source>Joypad%d</source>
         <translation>ジョイパッド%d</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="553"/>
+        <location filename="../../src/msgs.cpp" line="554"/>
         <source>Signals are negative logic</source>
         <translation>信号は負論理</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="554"/>
+        <location filename="../../src/msgs.cpp" line="555"/>
         <source>Recognize as another key when pressed two buttons</source>
         <translation>2つのボタンを押したとき、別のキーと認識する</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="555"/>
+        <location filename="../../src/msgs.cpp" line="556"/>
         <source>Load Default</source>
         <translation>デフォルトをロード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="556"/>
+        <location filename="../../src/msgs.cpp" line="557"/>
         <source>Load Preset 1</source>
         <translation>プリセット1をロード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="557"/>
+        <location filename="../../src/msgs.cpp" line="558"/>
         <source>Load Preset 2</source>
         <translation>プリセット2をロード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="558"/>
+        <location filename="../../src/msgs.cpp" line="559"/>
         <source>Load Preset 3</source>
         <translation>プリセット3をロード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="559"/>
+        <location filename="../../src/msgs.cpp" line="560"/>
         <source>Load Preset 4</source>
         <translation>プリセット4をロード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="560"/>
+        <location filename="../../src/msgs.cpp" line="561"/>
         <source>Load Preset %d</source>
         <translation>プリセット%dをロード</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="561"/>
+        <location filename="../../src/msgs.cpp" line="562"/>
         <source>Save Preset 1</source>
         <translation>プリセット1に保存</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="562"/>
+        <location filename="../../src/msgs.cpp" line="563"/>
         <source>Save Preset 2</source>
         <translation>プリセット2に保存</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="563"/>
+        <location filename="../../src/msgs.cpp" line="564"/>
         <source>Save Preset 3</source>
         <translation>プリセット3に保存</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="564"/>
+        <location filename="../../src/msgs.cpp" line="565"/>
         <source>Save Preset 4</source>
         <translation>プリセット4に保存</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="565"/>
+        <location filename="../../src/msgs.cpp" line="566"/>
         <source>Save Preset %d</source>
         <translation>プリセット%dに保存</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="566"/>
+        <location filename="../../src/msgs.cpp" line="567"/>
         <source>Volume</source>
         <translation>ボリューム</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="567"/>
+        <location filename="../../src/msgs.cpp" line="568"/>
         <source>Master</source>
         <translation>マスター</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="568"/>
+        <location filename="../../src/msgs.cpp" line="569"/>
         <source>Beep</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="569"/>
+        <location filename="../../src/msgs.cpp" line="570"/>
         <source>PSG</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="570"/>
+        <location filename="../../src/msgs.cpp" line="571"/>
         <source>6voice
 PSG</source>
         <translation>6声
 PSG</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="571"/>
+        <location filename="../../src/msgs.cpp" line="572"/>
         <source>9voice
 PSG</source>
         <translation>9声
 PSG</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="572"/>
+        <location filename="../../src/msgs.cpp" line="573"/>
         <source>Relay</source>
         <translation>リレー</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="573"/>
-        <source>CMT</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../../src/msgs.cpp" line="574"/>
-        <source>ExPSG
-FM</source>
+        <source>CMT</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="575"/>
         <source>ExPSG
-SSG</source>
+FM</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="576"/>
         <source>ExPSG
-ADPCM</source>
+SSG</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="577"/>
         <source>ExPSG
-Rhythm</source>
+ADPCM</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="578"/>
-        <source>OPN
-FM</source>
+        <source>ExPSG
+Rhythm</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="579"/>
         <source>OPN
-SSG</source>
+FM</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="580"/>
-        <source>OPNA
-ADPCM</source>
+        <source>OPN
+SSG</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="581"/>
         <source>OPNA
-Rhythm</source>
+ADPCM</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="582"/>
+        <source>OPNA
+Rhythm</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="583"/>
         <source>Mute</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="583"/>
+        <location filename="../../src/msgs.cpp" line="584"/>
         <source>PSG (like AY-3-8910)</source>
         <translation>PSG (AY-3-8910相当)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="584"/>
+        <location filename="../../src/msgs.cpp" line="585"/>
         <source>OPN (like YM2203)</source>
         <translation>OPN (YM2203相当)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="585"/>
+        <location filename="../../src/msgs.cpp" line="586"/>
         <source>OPNA (like YM2608)</source>
         <translation>OPNA (YM2608相当)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="586"/>
+        <location filename="../../src/msgs.cpp" line="587"/>
         <source>PSG (like AY-3-8910) Clock: 1MHz</source>
         <translation>PSG (AY-3-8910相当) クロック:1MHz</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="587"/>
+        <location filename="../../src/msgs.cpp" line="588"/>
         <source>PSG (like AY-3-8910) Clock: 2MHz</source>
         <translation>PSG (AY-3-8910相当) クロック:2MHz</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="588"/>
+        <location filename="../../src/msgs.cpp" line="589"/>
         <source>OPN (like YM2203) Clock: 2MHz</source>
         <translation>OPN (YM2203相当) クロック:2MHz</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="589"/>
+        <location filename="../../src/msgs.cpp" line="590"/>
         <source>OPN (like YM2203) Clock: 3.58MHz</source>
         <translation>OPN (YM2203相当) クロック:3.58MHz</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="590"/>
+        <location filename="../../src/msgs.cpp" line="591"/>
         <source>OPN (like YM2203) Clock: 4MHz</source>
         <translation>OPN (YM2203相当) クロック:4MHz</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="591"/>
+        <location filename="../../src/msgs.cpp" line="592"/>
         <source>OPNA (like YM2608) Clock: 4MHz</source>
         <translation>OPNA (YM2608相当) クロック:4MHz</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="592"/>
+        <location filename="../../src/msgs.cpp" line="593"/>
         <source>OPNA (like YM2608) Clock: 8MHz</source>
         <translation>OPNA (YM2608相当) クロック:8MHz</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="593"/>
+        <location filename="../../src/msgs.cpp" line="594"/>
         <source>%s was loaded.</source>
         <translation>%sがロードされました。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="594"/>
+        <location filename="../../src/msgs.cpp" line="595"/>
         <source>%s couldn&apos;t be loaded.</source>
         <translation>%sをロードできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="595"/>
+        <location filename="../../src/msgs.cpp" line="596"/>
         <source>%s is invalid file.</source>
         <translation>%sは不正なファイルです。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="596"/>
+        <location filename="../../src/msgs.cpp" line="597"/>
         <source>%s is invalid version.</source>
         <translation>%sは不正なバージョンです。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="597"/>
+        <location filename="../../src/msgs.cpp" line="598"/>
         <source>%s is old version.</source>
         <translation>%sは古いバージョンです。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="598"/>
+        <location filename="../../src/msgs.cpp" line="599"/>
         <source>%s was saved.</source>
         <translation>%sが保存されました。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="599"/>
+        <location filename="../../src/msgs.cpp" line="600"/>
         <source>%s couldn&apos;t be saved.</source>
         <translation>%sを保存できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="600"/>
+        <location filename="../../src/msgs.cpp" line="601"/>
         <source>%s is not compatible. use default setting.</source>
         <translation>%sは互換がありません。デフォルト設定を使用します。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="601"/>
+        <location filename="../../src/msgs.cpp" line="602"/>
         <source>Floppy image couldn&apos;t be opened.</source>
         <translation>フロッピーイメージをオープンできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="602"/>
+        <location filename="../../src/msgs.cpp" line="603"/>
         <source>Floppy image on drive %d couldn&apos;t be opened.</source>
         <translation>ドライブ%dのフロッピーイメージをオープンできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="603"/>
+        <location filename="../../src/msgs.cpp" line="604"/>
         <source>Floppy image on drive %d couldn&apos;t be saved.</source>
         <translation>ドライブ%dのフロッピーイメージを保存できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="604"/>
+        <location filename="../../src/msgs.cpp" line="605"/>
         <source>Floppy image on drive %d is saved as the new file: %s.</source>
         <translation>ドライブ%dのフロッピーイメージは新しいファイル%sで保存されます。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="605"/>
+        <location filename="../../src/msgs.cpp" line="606"/>
         <source>There is the same disk in drive %d and %d.</source>
         <translation>ドライブ%dと%dに同じディスクが入っています。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="606"/>
+        <location filename="../../src/msgs.cpp" line="607"/>
         <source>The density in track %d, side %d is different from specified one.</source>
         <translation>トラック%d, サイド%dの密度が指定されたものと異なります。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="607"/>
+        <location filename="../../src/msgs.cpp" line="608"/>
         <source>The media type in drive %d is different from specified one.</source>
         <translation>ドライブ%dのメディア種類が指定されたものと異なります。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="608"/>
+        <location filename="../../src/msgs.cpp" line="609"/>
         <source>Tape image couldn&apos;t be opened.</source>
         <translation>テープイメージをオープンできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="609"/>
+        <location filename="../../src/msgs.cpp" line="610"/>
         <source>Tape image couldn&apos;t be saved.</source>
         <translation>テープイメージを保存できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="610"/>
+        <location filename="../../src/msgs.cpp" line="611"/>
         <source>Print image couldn&apos;t be saved.</source>
         <translation>印刷イメージを保存できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="611"/>
+        <location filename="../../src/msgs.cpp" line="612"/>
         <source>Status image couldn&apos;t be saved.</source>
         <translation>状態イメージを保存できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="612"/>
+        <location filename="../../src/msgs.cpp" line="613"/>
         <source>Status image couldn&apos;t be loaded.</source>
         <translation>状態イメージをロードできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="613"/>
+        <location filename="../../src/msgs.cpp" line="614"/>
         <source>Load State: Cannot open.</source>
         <translation>状態ロード：オープンできません。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="614"/>
+        <location filename="../../src/msgs.cpp" line="615"/>
         <source>Load State: Unsupported file.</source>
         <translation>状態ロード：サポートされていないファイルです。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="615"/>
+        <location filename="../../src/msgs.cpp" line="616"/>
         <source>Load State: Invalid version.</source>
         <translation>状態ロード：不正なバージョン。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="616"/>
+        <location filename="../../src/msgs.cpp" line="617"/>
         <source>Load State: No longer support a status file for %s.</source>
         <translation>状態ロード：%s用の状態ファイルはもうサポートされません。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="617"/>
+        <location filename="../../src/msgs.cpp" line="618"/>
         <source>Auto key file couldn&apos;t be opened.</source>
         <translation>オートキーファイルをオープンできませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="618"/>
+        <location filename="../../src/msgs.cpp" line="619"/>
         <source>Record key file couldn&apos;t be saved.</source>
         <translation>キー記録ファイルを保存できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="619"/>
+        <location filename="../../src/msgs.cpp" line="620"/>
         <source>%s is %d bytes smaller than assumed one.</source>
         <translation>%sは想定されているものより%dバイト小さいサイズです。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="620"/>
+        <location filename="../../src/msgs.cpp" line="621"/>
         <source>%s is different image from assumed one.</source>
         <translation>%sは想定されているものとイメージが異なります。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="621"/>
+        <location filename="../../src/msgs.cpp" line="622"/>
         <source>This is not record key file.</source>
         <translation>これはキー記録ファイルではありません。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="622"/>
+        <location filename="../../src/msgs.cpp" line="623"/>
         <source>Record key file is invalid version.</source>
         <translation>キー記録ファイルは不正なバージョンです。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="623"/>
+        <location filename="../../src/msgs.cpp" line="624"/>
         <source>Record key file has invalid parameter.</source>
         <translation>キー記録ファイルに不正なパラメータがあります。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="624"/>
+        <location filename="../../src/msgs.cpp" line="625"/>
         <source>The record key file is not supported.</source>
         <translation>キー記録ファイルはサポートされていません。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="625"/>
+        <location filename="../../src/msgs.cpp" line="626"/>
         <source>The record key file for %s is no longer supported.</source>
         <translation>%s用のキー記録ファイルはもうサポートされません。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="626"/>
+        <location filename="../../src/msgs.cpp" line="627"/>
         <source>The version of the emulator used for recording is %d.%d.%d.</source>
         <translation>記録に使用したエミュレータのバージョンは%d.%d.%dです。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="627"/>
+        <location filename="../../src/msgs.cpp" line="628"/>
         <source>Couldn&apos;t start recording audio.</source>
         <translation>録音を開始できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="628"/>
+        <location filename="../../src/msgs.cpp" line="629"/>
         <source>Couldn&apos;t start recording video.</source>
         <translation>録画を開始できませんでした。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="629"/>
+        <location filename="../../src/msgs.cpp" line="630"/>
         <source>Now saving video file...</source>
         <translation>ビデオファイルを保存中...</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="630"/>
+        <location filename="../../src/msgs.cpp" line="631"/>
         <source>Video file was saved.</source>
         <translation>ビデオファイルが保存されました。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="631"/>
+        <location filename="../../src/msgs.cpp" line="632"/>
         <source>Screen was saved successfully.</source>
         <translation>画面が正常に保存されました。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="632"/>
+        <location filename="../../src/msgs.cpp" line="633"/>
         <source>Select a sample rate on sound menu in advance.</source>
         <translation>あらかじめサウンドメニューでサンプルレートを選択してください。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="633"/>
+        <location filename="../../src/msgs.cpp" line="634"/>
         <source>You can set properties after pressing start button.</source>
         <translation>開始ボタンを押した後に設定できます。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="634"/>
+        <location filename="../../src/msgs.cpp" line="635"/>
         <source>! Need install library.</source>
         <translation>! ライブラリをインストールする必要があります。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="635"/>
+        <location filename="../../src/msgs.cpp" line="636"/>
         <source>Codec Type</source>
         <translation>コーデック</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="636"/>
+        <location filename="../../src/msgs.cpp" line="637"/>
         <source>Quality</source>
         <translation>品質</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="637"/>
+        <location filename="../../src/msgs.cpp" line="638"/>
         <source>Max (368Kbps)</source>
         <translation>最大 (368Kbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="638"/>
+        <location filename="../../src/msgs.cpp" line="639"/>
         <source>High (256Kbps)</source>
         <translation>高 (256Kbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="639"/>
+        <location filename="../../src/msgs.cpp" line="640"/>
         <source>Normal (128Kbps)</source>
         <translation>普通 (128Kbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="640"/>
+        <location filename="../../src/msgs.cpp" line="641"/>
         <source>Low (96Kbps)</source>
         <translation>低 (96Kbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="641"/>
+        <location filename="../../src/msgs.cpp" line="642"/>
         <source>Min (64Kbps)</source>
         <translation>最小 (64Kbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="642"/>
+        <location filename="../../src/msgs.cpp" line="643"/>
         <source>Max (50Mbps)</source>
         <translation>最大 (50Mbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="643"/>
+        <location filename="../../src/msgs.cpp" line="644"/>
         <source>High (10Mbps)</source>
         <translation>高 (10Mbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="644"/>
+        <location filename="../../src/msgs.cpp" line="645"/>
         <source>Normal (1Mbps)</source>
         <translation>普通 (1Mbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="645"/>
+        <location filename="../../src/msgs.cpp" line="646"/>
         <source>Low (500Kbps)</source>
         <translation>低 (500Kbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="646"/>
+        <location filename="../../src/msgs.cpp" line="647"/>
         <source>Min (100Kbps)</source>
         <translation>最小 (100Kbps)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="647"/>
+        <location filename="../../src/msgs.cpp" line="648"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="648"/>
+        <location filename="../../src/msgs.cpp" line="649"/>
         <source>High</source>
         <translation>高</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="649"/>
+        <location filename="../../src/msgs.cpp" line="650"/>
         <source>Normal</source>
         <translation>普通</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="650"/>
+        <location filename="../../src/msgs.cpp" line="651"/>
         <source>Low</source>
         <translation>低</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="651"/>
+        <location filename="../../src/msgs.cpp" line="652"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="652"/>
+        <location filename="../../src/msgs.cpp" line="653"/>
         <source>Debugger was started.</source>
         <translation>デバッガを開始しました。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="653"/>
+        <location filename="../../src/msgs.cpp" line="654"/>
         <source>Cannot start debugger.</source>
         <translation>デバッガを開始できません。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="654"/>
+        <location filename="../../src/msgs.cpp" line="655"/>
         <source>Debugger was stopped.</source>
         <translation>デバッガを停止しました。</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="655"/>
+        <location filename="../../src/msgs.cpp" line="656"/>
         <source>Save to: %s</source>
         <translation>保存先: %s</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="656"/>
+        <location filename="../../src/msgs.cpp" line="657"/>
         <source>About bml3mk5</source>
         <translation>bml3mk5について</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="657"/>
+        <location filename="../../src/msgs.cpp" line="658"/>
         <source>About mbs1</source>
         <translation>mbs1について</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="658"/>
+        <location filename="../../src/msgs.cpp" line="659"/>
         <source>Hide bml3mk5</source>
         <translation>bml3mk5を隠す</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="659"/>
+        <location filename="../../src/msgs.cpp" line="660"/>
         <source>Hide mbs1</source>
         <translation>mbs1を隠す</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="660"/>
+        <location filename="../../src/msgs.cpp" line="661"/>
         <source>Quit bml3mk5</source>
         <translation>bml3mk5を終了</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="661"/>
+        <location filename="../../src/msgs.cpp" line="662"/>
         <source>Quit mbs1</source>
         <translation>mbs1を終了</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="662"/>
+        <location filename="../../src/msgs.cpp" line="663"/>
         <source>Hide Others</source>
         <translation>ほかを隠す</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="663"/>
+        <location filename="../../src/msgs.cpp" line="664"/>
         <source>Show All</source>
         <translation>すべてを表示</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="664"/>
+        <location filename="../../src/msgs.cpp" line="665"/>
         <source>Services</source>
         <translation>サービス</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="665"/>
+        <location filename="../../src/msgs.cpp" line="666"/>
         <source>Preferences...</source>
         <translation>環境設定...</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="666"/>
+        <location filename="../../src/msgs.cpp" line="667"/>
         <source>Language (*)</source>
         <translation>言語 (*)</translation>
     </message>
     <message>
-        <location filename="../../src/msgs.cpp" line="667"/>
+        <location filename="../../src/msgs.cpp" line="668"/>
         <source>Default</source>
         <translation>デフォルト</translation>
     </message>
@@ -5665,12 +5674,12 @@ Rhythm</source>
         <translation>終了</translation>
     </message>
     <message>
-        <location filename="../../src/gui/qt/qt_gui.cpp" line="898"/>
+        <location filename="../../src/gui/qt/qt_gui.cpp" line="900"/>
         <source>LPT</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/gui/qt/qt_gui.cpp" line="919"/>
+        <location filename="../../src/gui/qt/qt_gui.cpp" line="921"/>
         <source>COM</source>
         <translation></translation>
     </message>

@@ -66,22 +66,22 @@
         bml3mk5_wx.vcxproj ... wxWidgets版 VC++2010用プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2013/
-        bml3mk5.vcxproj .... Windows版 VC++2013用プロジェクトファイル
+        bml3mk5.vcxproj ...... Windows版 VC++2013用プロジェクトファイル
         bml3mk5_sdl.vcxproj .. SDL版 VC++2013用プロジェクトファイル
         bml3mk5_wx.vcxproj ... wxWidgets版 VC++2013用プロジェクトファイル
-        mmf_loader.vcxproj.. Media Foundationを動的にロードするためのDLL作成
+        mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2015/
-        bml3mk5.vcxproj .... Windows版 VC++2015用プロジェクトファイル
+        bml3mk5.vcxproj ...... Windows版 VC++2015用プロジェクトファイル
         bml3mk5_sdl.vcxproj .. SDL版 VC++2015用プロジェクトファイル
         bml3mk5_wx.vcxproj ... wxWidgets版 VC++2015用プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2017/
-        bml3mk5.vcxproj .... Windows版 VC++2017用プロジェクトファイル
+        bml3mk5.vcxproj ...... Windows版 VC++2017用プロジェクトファイル
         bml3mk5_sdl.vcxproj .. SDL版 VC++2017用プロジェクトファイル
         bml3mk5_wx.vcxproj ... wxWidgets版 VC++2017用プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2019/
-        bml3mk5.vcxproj .... Windows版 VC++2019用プロジェクトファイル
+        bml3mk5.vcxproj ...... Windows版 VC++2019用プロジェクトファイル
         bml3mk5_sdl.vcxproj .. SDL版 VC++2019用プロジェクトファイル
         bml3mk5_wx.vcxproj ... wxWidgets版 VC++2019用プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成

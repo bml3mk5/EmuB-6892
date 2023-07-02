@@ -103,6 +103,9 @@ void EMU_OSD::update_input()
 		for(int i = 0; i < KEY_STATUS_SIZE; i++) {
 			if(key_status[i] & 0x80) {
 				key_status[i] &= 0x7f;
+				if (!key_status[i]) {
+					vm_key_up(vm_key_map[i], VM_KEY_STATUS_KEYBOARD);
+				}
 #ifdef NOTIFY_KEY_DOWN
 				if(!key_status[i]) {
 					vm->key_up(i);
@@ -115,6 +118,9 @@ void EMU_OSD::update_input()
 		for(int i = 0; i < KEY_STATUS_SIZE; i++) {
 			if(key_status[i] & 0x7f) {
 				key_status[i] = (key_status[i] & 0x80) | ((key_status[i] & 0x7f) - 1);
+				if (!key_status[i]) {
+					vm_key_up(vm_key_map[i], VM_KEY_STATUS_KEYBOARD);
+				}
 #ifdef NOTIFY_KEY_DOWN
 				if(!key_status[i]) {
 					vm->key_up(i);
@@ -252,6 +258,7 @@ int EMU_OSD::key_down_up_(uint8_t type, int code, uint32_t vk_key, uint32_t scan
 	// translate keycode
 	// type change UP to DOWN when capslock key in macosx
 	if (!translate_keysym_(type, code, vk_key, scan_code, mod, &code, &keep_frames)) {
+		// key down
 #ifdef LOG_MEASURE
 		out_debugf(_T("KEYDOWN: scancode:%02x code:%02x key_mod:%04x")
 			,scan_code, code, key_mod);
@@ -266,6 +273,7 @@ int EMU_OSD::key_down_up_(uint8_t type, int code, uint32_t vk_key, uint32_t scan
 			key_down(code, keep_frames);
 		}
 	} else {
+		// key up
 #ifdef LOG_MEASURE
 		out_debugf(_T("KEYUP: scancode:%02x code:%02x key_mod:%04x")
 		   ,scan_code, code, key_mod);
@@ -281,56 +289,6 @@ int EMU_OSD::key_down_up_(uint8_t type, int code, uint32_t vk_key, uint32_t scan
 	}
 	return 0;
 }
-
-int EMU_OSD::key_down(int code, bool keep_frames)
-{
-	key_status[code] = keep_frames ? KEY_KEEP_FRAMES * FRAME_SPLIT_NUM : 0x80;
-
-#ifdef NOTIFY_KEY_DOWN_TO_GUI
-	gui->KeyDown(code, mod);
-#endif
-#ifdef NOTIFY_KEY_DOWN
-	vm->key_down(code);
-#endif
-	return code;
-}
-
-void EMU_OSD::key_up(int code, bool UNUSED_PARAM(keep_frames))
-{
-	if(key_status[code]) {
-		key_status[code] &= 0x7f;
-#ifdef NOTIFY_KEY_DOWN_TO_GUI
-		gui->KeyUp(code);
-#endif
-#ifdef NOTIFY_KEY_DOWN
-		if(!key_status[code]) {
-			vm->key_up(code);
-		}
-#endif
-	}
-}
-
-#if 0
-int EMU_OSD::vm_key_down(int code)
-{
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] |= 1;
-	}
-	return code;
-}
-void EMU_OSD::vm_key_up(int code)
-{
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] &= ~1;
-	}
-}
-#endif
 
 #ifdef USE_BUTTON
 void EMU_OSD::press_button(int num)

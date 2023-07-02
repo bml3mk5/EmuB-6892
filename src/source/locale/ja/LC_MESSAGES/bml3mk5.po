@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: bml3mk5\n"
-"POT-Creation-Date: 2022-10-14 18:52+0900\n"
-"PO-Revision-Date: 2022-10-14 18:52+0900\n"
+"POT-Creation-Date: 2023-06-29 17:35+0900\n"
+"PO-Revision-Date: 2023-06-29 17:36+0900\n"
 "Last-Translator: Sasaji <s-sasaji@ddo.jp>\n"
 "Language-Team: Sasaji <sasaji@s-sasaji.ddo.jp>\n"
 "Language: Japanese\n"
@@ -1547,258 +1547,262 @@ msgid "Show message when the address error occured in MC68008."
 msgstr "MC68008でアドレスエラーが発生した時にメッセージを表示する。"
 
 #: src/msgs.cpp:407
+msgid "Clear CPU registers at power on."
+msgstr "パワーオン時にCPUのレジスタをクリアする。"
+
+#: src/msgs.cpp:408
 msgid "FM Synthesis Card (*)"
 msgstr "FM音源カード (*)"
 
-#: src/msgs.cpp:408
+#: src/msgs.cpp:409
 msgid "Extended PSG Port (*)"
 msgstr "拡張PSGポート (*)"
 
-#: src/msgs.cpp:409
+#: src/msgs.cpp:410
 msgid "I/O ports are $FF1E - $FF1F and $FF16 - $FF17."
 msgstr "I/Oポートは $FF1E - $FF1F, $FF16 - $FF17。"
 
-#: src/msgs.cpp:410
+#: src/msgs.cpp:411
 msgid "I/O ports are $FFE6 - $FFE7 and $FFEE - $FFEF."
 msgstr "I/Oポートは $FFE6 - $FFE7, $FFEE - $FFEF。"
 
-#: src/msgs.cpp:411
+#: src/msgs.cpp:412
 msgid "Clock"
 msgstr "クロック"
 
-#: src/msgs.cpp:412
+#: src/msgs.cpp:413
 msgid "Connect interrupt signal of FM synthesis to (*)(**)"
 msgstr "FM音源の割り込み信号接続先 (*)(**)"
 
-#: src/msgs.cpp:413
+#: src/msgs.cpp:414
 msgid "Sound chip"
 msgstr "音源チップ"
 
-#: src/msgs.cpp:414
+#: src/msgs.cpp:415
 msgid ""
 "** This is the common setting both FM synthesis card and extended PSG port."
 msgstr "** これはFM音源カードと拡張PSGポートの共通の設定です。"
 
-#: src/msgs.cpp:415
+#: src/msgs.cpp:416
 msgid "Connect interrupt signal of Z80B Card to (*)"
 msgstr "Z80Bカードの割り込み信号接続先 (*)"
 
-#: src/msgs.cpp:416
+#: src/msgs.cpp:417
 msgid "MsgBoard: OK"
 msgstr "MsgBoard: OK"
 
-#: src/msgs.cpp:417
+#: src/msgs.cpp:418
 msgid "MsgBoard: Failed"
 msgstr "MsgBoard: 失敗"
 
-#: src/msgs.cpp:418
+#: src/msgs.cpp:419
 #, c-format
 msgid "MsgBoard: Use \"%s\" for %s."
 msgstr "MsgBoard: \"%s\"を%s用に使用します。"
 
-#: src/msgs.cpp:419
+#: src/msgs.cpp:420
 #, c-format
 msgid "MsgBoard: Couldn't load font %s."
 msgstr "MsgBoard: フォント %s をロードできませんでした。"
 
-#: src/msgs.cpp:420
+#: src/msgs.cpp:421
 #, c-format
 msgid "MsgBoard: Couldn't find fonts for %s."
 msgstr "MsgBoard: %s用のフォントが見つかりませんでした。"
 
-#: src/msgs.cpp:421
+#: src/msgs.cpp:422
 #, c-format
 msgid "MsgBoard: Couldn't load font \"%s\" for message."
 msgstr "MsgBoard: フォント\"%s\"をメッセージ用にロードできませんでした。"
 
-#: src/msgs.cpp:422
+#: src/msgs.cpp:423
 #, c-format
 msgid "MsgBoard: Couldn't load font \"%s\" for info."
 msgstr "MsgBoard: フォント\"%s\"を情報用にロードできませんでした。"
 
-#: src/msgs.cpp:423
+#: src/msgs.cpp:424
 msgid "info"
 msgstr "情報"
 
-#: src/msgs.cpp:424
+#: src/msgs.cpp:425
 msgid "message"
 msgstr "メッセージ"
 
-#: src/msgs.cpp:425
+#: src/msgs.cpp:426
 msgid "Select a folder to save snapshot images."
 msgstr "スナップショットを保存するフォルダを選択してください。"
 
-#: src/msgs.cpp:426
+#: src/msgs.cpp:427
 msgid "Select a font file for showing messages."
 msgstr "メッセージ表示用のフォントファイルを選択してください。"
 
-#: src/msgs.cpp:427
+#: src/msgs.cpp:428
 msgid "Select a font folder for showing messages."
 msgstr "メッセージ表示用のフォントがあるフォルダを選択してください。"
 
-#: src/msgs.cpp:428
+#: src/msgs.cpp:429
 msgid "Select a folder containing the rom images."
 msgstr "ROMイメージのあるフォルダを選択してください。"
 
-#: src/msgs.cpp:429
+#: src/msgs.cpp:430
 msgid "Select a font."
 msgstr "フォントを選択してください。"
 
-#: src/msgs.cpp:430
+#: src/msgs.cpp:431
 msgid "File..."
 msgstr "ファイル..."
 
-#: src/msgs.cpp:431
+#: src/msgs.cpp:432
 msgid "File Type :"
 msgstr "ファイル種類:"
 
-#: src/msgs.cpp:432
+#: src/msgs.cpp:433
 msgid "Play Data Recorder Tape"
 msgstr "テープを再生"
 
-#: src/msgs.cpp:433
+#: src/msgs.cpp:434
 msgid "Record Data Recorder Tape"
 msgstr "テープに録音"
 
-#: src/msgs.cpp:434
+#: src/msgs.cpp:435
 msgid "Play ["
 msgstr "再生 ["
 
-#: src/msgs.cpp:435 src/res/windows/bml3mk5_gui.rc:193
+#: src/msgs.cpp:436 src/res/windows/bml3mk5_gui.rc:193
 msgid "Play..."
 msgstr "再生..."
 
-#: src/msgs.cpp:436
+#: src/msgs.cpp:437
 msgid "Rec ["
 msgstr "録音 ["
 
-#: src/msgs.cpp:437
+#: src/msgs.cpp:438
 #, c-format
 msgid "Open Floppy Disk %d"
 msgstr "フロッピー%dを開く"
 
-#: src/msgs.cpp:438
+#: src/msgs.cpp:439
 msgid "FDD"
 msgstr "FDD"
 
-#: src/msgs.cpp:439
+#: src/msgs.cpp:440
 #, c-format
 msgid "New Floppy Disk %d"
 msgstr "新規フロッピー%d"
 
-#: src/msgs.cpp:440
+#: src/msgs.cpp:441
 msgid "Insert ["
 msgstr "挿入 ["
 
-#: src/msgs.cpp:441 src/res/windows/bml3mk5_gui.rc:212
+#: src/msgs.cpp:442 src/res/windows/bml3mk5_gui.rc:212
 msgid "Insert..."
 msgstr "挿入..."
 
-#: src/msgs.cpp:442
+#: src/msgs.cpp:443
 msgid "Open HuCARD"
 msgstr ""
 
-#: src/msgs.cpp:443
+#: src/msgs.cpp:444
 msgid "Open Cartridge"
 msgstr ""
 
-#: src/msgs.cpp:444
+#: src/msgs.cpp:445
 msgid "Open Quick Disk"
 msgstr ""
 
-#: src/msgs.cpp:445
+#: src/msgs.cpp:446
 msgid "Open Media"
 msgstr ""
 
-#: src/msgs.cpp:446
+#: src/msgs.cpp:447
 msgid "Load RAM Pack Cartridge"
 msgstr ""
 
-#: src/msgs.cpp:447
+#: src/msgs.cpp:448
 msgid "Load Memory Dump"
 msgstr ""
 
-#: src/msgs.cpp:448
+#: src/msgs.cpp:449
 msgid "Save RAM Pack Cartridge"
 msgstr ""
 
-#: src/msgs.cpp:449
+#: src/msgs.cpp:450
 msgid "Save Memory Dump"
 msgstr ""
 
-#: src/msgs.cpp:450
+#: src/msgs.cpp:451
 msgid "Open Text File"
 msgstr "テキストファイルを開く"
 
-#: src/msgs.cpp:451
+#: src/msgs.cpp:452
 msgid "Save Status Data"
 msgstr "状態を保存"
 
-#: src/msgs.cpp:452
+#: src/msgs.cpp:453
 msgid "Load Status Data"
 msgstr "状態データをロード"
 
-#: src/msgs.cpp:453
+#: src/msgs.cpp:454
 msgid "Play Recorded Keys"
 msgstr "記録したキー情報を再生"
 
-#: src/msgs.cpp:454
+#: src/msgs.cpp:455
 msgid "Record Input Keys"
 msgstr "入力キーを記録"
 
-#: src/msgs.cpp:455
+#: src/msgs.cpp:456
 msgid "Save Printing Data"
 msgstr "印刷データを保存"
 
-#: src/msgs.cpp:456
+#: src/msgs.cpp:457
 msgid "Supported Files (*.ttf;*.otf)"
 msgstr "サポートファイル (*.ttf;*.otf)"
 
-#: src/msgs.cpp:457
+#: src/msgs.cpp:458
 msgid "Supported Files (*.cas;*.cmt;*.t88)"
 msgstr "テープファイル (*.cas;*.cmt;*.t88)"
 
-#: src/msgs.cpp:458
+#: src/msgs.cpp:459
 msgid "Supported Files (*.cas;*.cmt)"
 msgstr "テープファイル (*.cas;*.cmt)"
 
-#: src/msgs.cpp:459
+#: src/msgs.cpp:460
 msgid "Supported Files (*.wav;*.cas;*.tap)"
 msgstr "テープファイル (*.wav;*.cas;*.tap)"
 
-#: src/msgs.cpp:460
+#: src/msgs.cpp:461
 msgid "Supported Files (*.wav;*.cas;*.mzt;*.m12)"
 msgstr "テープファイル (*.wav;*.cas;*.mzt;*.m12)"
 
-#: src/msgs.cpp:461
+#: src/msgs.cpp:462
 msgid "Supported Files (*.l3;*.l3b;*.l3c;*.wav;*.t9x)"
 msgstr "テープファイル (*.l3;*.l3b;*.l3c;*.wav;*.t9x)"
 
-#: src/msgs.cpp:462
+#: src/msgs.cpp:463
 msgid "Supported Files (*.wav;*.cas)"
 msgstr "テープファイル (*.wav;*.cas)"
 
-#: src/msgs.cpp:463
+#: src/msgs.cpp:464
 msgid "L3 File (*.l3)"
 msgstr "L3ファイル (*.l3)"
 
-#: src/msgs.cpp:464
+#: src/msgs.cpp:465
 msgid "L3B File (*.l3b)"
 msgstr "L3Bファイル (*.l3b)"
 
-#: src/msgs.cpp:465
+#: src/msgs.cpp:466
 msgid "L3C File (*.l3c)"
 msgstr "L3Cファイル (*.l3c)"
 
-#: src/msgs.cpp:466
+#: src/msgs.cpp:467
 msgid "Wave File (*.wav)"
 msgstr "Waveファイル (*.wav)"
 
-#: src/msgs.cpp:467
+#: src/msgs.cpp:468
 msgid "T9X File (*.t9x)"
 msgstr ""
 
-#: src/msgs.cpp:468
+#: src/msgs.cpp:469
 msgid ""
 "Supported Files (*.d88;*.d77;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;"
 "*.sf7)"
@@ -1806,422 +1810,422 @@ msgstr ""
 "ディスクファイル (*.d88;*.d77;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;"
 "*.sf7)"
 
-#: src/msgs.cpp:469
+#: src/msgs.cpp:470
 msgid ""
 "Supported Files (*.d88;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.sf7)"
 msgstr ""
 "ディスクファイル (*.d88;*.td0;*.imd;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.sf7)"
 
-#: src/msgs.cpp:470
+#: src/msgs.cpp:471
 msgid "Supported Files (*.d88;*.d77)"
 msgstr "ディスクファイル (*.d88;*.d77)"
 
-#: src/msgs.cpp:471
+#: src/msgs.cpp:472
 msgid "Supported Files (*.d88)"
 msgstr "ディスクファイル (*.d88)"
 
-#: src/msgs.cpp:472
+#: src/msgs.cpp:473
 msgid "Supported Files (*.txt;*.bas;*.lpt)"
 msgstr "テキストファイル (*.txt;*.bas;*.lpt)"
 
-#: src/msgs.cpp:473
+#: src/msgs.cpp:474
 msgid "Supported Files (*.l3r)"
 msgstr "レジュームファイル (*.l3r)"
 
-#: src/msgs.cpp:474
+#: src/msgs.cpp:475
 msgid "Supported Files (*.l3k)"
 msgstr "キー情報ファイル (*.l3k)"
 
-#: src/msgs.cpp:475
+#: src/msgs.cpp:476
 msgid "Supported Files (*.lpt)"
 msgstr "印刷ファイル (*.lpt)"
 
-#: src/msgs.cpp:476
+#: src/msgs.cpp:477
 msgid "Supported Files (*.rom;*.bin;*.hex;*.gg;*.col)"
 msgstr "サポートファイル (*.rom;*.bin;*.hex;*.gg;*.col)"
 
-#: src/msgs.cpp:477
+#: src/msgs.cpp:478
 msgid "Supported Files (*.rom;*.bin;*.hex;*.sms)"
 msgstr "サポートファイル (*.rom;*.bin;*.hex;*.sms)"
 
-#: src/msgs.cpp:478
+#: src/msgs.cpp:479
 msgid "Supported Files (*.rom;*.bin;*.hex;*.60)"
 msgstr "サポートファイル (*.rom;*.bin;*.hex;*.60)"
 
-#: src/msgs.cpp:479
+#: src/msgs.cpp:480
 msgid "Supported Files (*.rom;*.bin;*.hex;*.pce)"
 msgstr "サポートファイル (*.rom;*.bin;*.hex;*.pce)"
 
-#: src/msgs.cpp:480
+#: src/msgs.cpp:481
 msgid "Supported Files (*.rom;*.bin;*.hex)"
 msgstr "サポートファイル (*.rom;*.bin;*.hex)"
 
-#: src/msgs.cpp:481
+#: src/msgs.cpp:482
 msgid "Supported Files (*.mzt;*.q20;*.qdf)"
 msgstr "サポートファイル (*.mzt;*.q20;*.qdf)"
 
-#: src/msgs.cpp:482
+#: src/msgs.cpp:483
 msgid "Supported Files (*.bin)"
 msgstr "サポートファイル (*.bin)"
 
-#: src/msgs.cpp:483
+#: src/msgs.cpp:484
 msgid "Supported Files (*.ram;*.bin;*.hex)"
 msgstr "サポートファイル (*.ram;*.bin;*.hex)"
 
-#: src/msgs.cpp:484
+#: src/msgs.cpp:485
 msgid "All Files (*.*)"
 msgstr "全てのファイル (*.*)"
 
-#: src/msgs.cpp:485
+#: src/msgs.cpp:486
 msgid "(Pause)"
 msgstr "(ポーズ)"
 
-#: src/msgs.cpp:486
+#: src/msgs.cpp:487
 msgid "num INS/DEL"
 msgstr "テンキー INS/DEL"
 
-#: src/msgs.cpp:487
+#: src/msgs.cpp:488
 msgid "KATA/HIRA"
 msgstr "KATA/HIRA"
 
-#: src/msgs.cpp:488
+#: src/msgs.cpp:489
 msgid "HENKAN"
 msgstr "変換"
 
-#: src/msgs.cpp:489
+#: src/msgs.cpp:490
 msgid "MUHENKAN"
 msgstr "無変換"
 
-#: src/msgs.cpp:490
+#: src/msgs.cpp:491
 msgid "Allow RIGHT"
 msgstr "→"
 
-#: src/msgs.cpp:491
+#: src/msgs.cpp:492
 msgid "Allow LEFT"
 msgstr "←"
 
-#: src/msgs.cpp:492
+#: src/msgs.cpp:493
 msgid "Allow UP"
 msgstr "↑"
 
-#: src/msgs.cpp:493
+#: src/msgs.cpp:494
 msgid "Allow DOWN"
 msgstr "↓"
 
-#: src/msgs.cpp:494
+#: src/msgs.cpp:495
 msgid "SPACE"
 msgstr "スペース"
 
-#: src/msgs.cpp:495
+#: src/msgs.cpp:496
 msgid "num ,"
 msgstr "テンキー ,"
 
-#: src/msgs.cpp:496
+#: src/msgs.cpp:497
 msgid "num *"
 msgstr "テンキー *"
 
-#: src/msgs.cpp:497
+#: src/msgs.cpp:498
 msgid "num +"
 msgstr "テンキー +"
 
-#: src/msgs.cpp:498
+#: src/msgs.cpp:499
 msgid "num ?"
 msgstr "テンキー ?"
 
-#: src/msgs.cpp:499
+#: src/msgs.cpp:500
 msgid "num -"
 msgstr "テンキー -"
 
-#: src/msgs.cpp:500
+#: src/msgs.cpp:501
 msgid "num ."
 msgstr "テンキー ."
 
-#: src/msgs.cpp:501
+#: src/msgs.cpp:502
 msgid "num /"
 msgstr "テンキー /"
 
-#: src/msgs.cpp:502
+#: src/msgs.cpp:503
 msgid "num enter"
 msgstr "テンキー enter"
 
-#: src/msgs.cpp:503
+#: src/msgs.cpp:504
 msgid "num ="
 msgstr "テンキー ="
 
-#: src/msgs.cpp:504
+#: src/msgs.cpp:505
 msgid "num 0"
 msgstr "テンキー 0"
 
-#: src/msgs.cpp:505
+#: src/msgs.cpp:506
 #, c-format
 msgid "num %c"
 msgstr "テンキー %c"
 
-#: src/msgs.cpp:506
+#: src/msgs.cpp:507
 #, c-format
 msgid "num %d"
 msgstr "テンキー %d"
 
-#: src/msgs.cpp:507
+#: src/msgs.cpp:508
 #, c-format
 msgid "PF%d"
 msgstr ""
 
-#: src/msgs.cpp:508
+#: src/msgs.cpp:509
 msgid "space"
 msgstr "スペース"
 
-#: src/msgs.cpp:509
+#: src/msgs.cpp:510
 msgid "up"
 msgstr "↑"
 
-#: src/msgs.cpp:510
+#: src/msgs.cpp:511
 msgid "up+right"
 msgstr "↑→"
 
-#: src/msgs.cpp:511
+#: src/msgs.cpp:512
 msgid "right"
 msgstr "→"
 
-#: src/msgs.cpp:512
+#: src/msgs.cpp:513
 msgid "down+right"
 msgstr "↓→"
 
-#: src/msgs.cpp:513
+#: src/msgs.cpp:514
 msgid "down"
 msgstr "↓"
 
-#: src/msgs.cpp:514
+#: src/msgs.cpp:515
 msgid "down+left"
 msgstr "←↓"
 
-#: src/msgs.cpp:515
+#: src/msgs.cpp:516
 msgid "left"
 msgstr "←"
 
-#: src/msgs.cpp:516
+#: src/msgs.cpp:517
 msgid "up+left"
 msgstr "←↑"
 
-#: src/msgs.cpp:517
+#: src/msgs.cpp:518
 msgid "button"
 msgstr "ボタン"
 
-#: src/msgs.cpp:518
+#: src/msgs.cpp:519
 #, c-format
 msgid "button %c"
 msgstr "ボタン %c"
 
-#: src/msgs.cpp:519
+#: src/msgs.cpp:520
 #, c-format
 msgid "bit %d"
 msgstr "ビット %d"
 
-#: src/msgs.cpp:520
+#: src/msgs.cpp:521
 msgid "kanji"
 msgstr "漢字"
 
-#: src/msgs.cpp:521
+#: src/msgs.cpp:522
 msgid "henkan"
 msgstr "変換"
 
-#: src/msgs.cpp:522
+#: src/msgs.cpp:523
 msgid "muhenkan"
 msgstr "無変換"
 
-#: src/msgs.cpp:523
+#: src/msgs.cpp:524
 msgid "katakana"
 msgstr "カタカナ"
 
-#: src/msgs.cpp:524
+#: src/msgs.cpp:525
 msgid "eisu"
 msgstr "英数"
 
-#: src/msgs.cpp:525
+#: src/msgs.cpp:526
 msgid "kana"
 msgstr "カナ"
 
-#: src/msgs.cpp:526
+#: src/msgs.cpp:527
 msgid "right shift"
 msgstr "右shift"
 
-#: src/msgs.cpp:527
+#: src/msgs.cpp:528
 msgid "left shift"
 msgstr "左shift"
 
-#: src/msgs.cpp:528
+#: src/msgs.cpp:529
 msgid "right ctrl"
 msgstr "右ctrl"
 
-#: src/msgs.cpp:529
+#: src/msgs.cpp:530
 msgid "left ctrl"
 msgstr "左ctrl"
 
-#: src/msgs.cpp:530
+#: src/msgs.cpp:531
 msgid "right option"
 msgstr "右option"
 
-#: src/msgs.cpp:531
+#: src/msgs.cpp:532
 msgid "right alt"
 msgstr "右alt"
 
-#: src/msgs.cpp:532
+#: src/msgs.cpp:533
 msgid "left option"
 msgstr "左option"
 
-#: src/msgs.cpp:533
+#: src/msgs.cpp:534
 msgid "left alt"
 msgstr "左alt"
 
-#: src/msgs.cpp:534
+#: src/msgs.cpp:535
 msgid "right command"
 msgstr "右command"
 
-#: src/msgs.cpp:535
+#: src/msgs.cpp:536
 msgid "right meta"
 msgstr "右meta"
 
-#: src/msgs.cpp:536
+#: src/msgs.cpp:537
 msgid "left command"
 msgstr "左command"
 
-#: src/msgs.cpp:537
+#: src/msgs.cpp:538
 msgid "left meta"
 msgstr "左meta"
 
-#: src/msgs.cpp:538
+#: src/msgs.cpp:539
 msgid "right win"
 msgstr "右win"
 
-#: src/msgs.cpp:539
+#: src/msgs.cpp:540
 msgid "left win"
 msgstr "左win"
 
-#: src/msgs.cpp:540
+#: src/msgs.cpp:541
 msgid "Next"
 msgstr "次"
 
-#: src/msgs.cpp:541
+#: src/msgs.cpp:542
 msgid "Prev"
 msgstr "前"
 
-#: src/msgs.cpp:542
+#: src/msgs.cpp:543
 msgid "Bind"
 msgstr "割り当て"
 
-#: src/msgs.cpp:543
+#: src/msgs.cpp:544
 #, c-format
 msgid "Bind%d"
 msgstr "割り当て%d"
 
-#: src/msgs.cpp:544
+#: src/msgs.cpp:545
 msgid "S1 Key"
 msgstr "S1のキー"
 
-#: src/msgs.cpp:545
+#: src/msgs.cpp:546
 msgid "PIA on S1"
 msgstr "S1のPIA"
 
-#: src/msgs.cpp:546
+#: src/msgs.cpp:547
 msgid "Level3 Key"
 msgstr "Level3のキー"
 
-#: src/msgs.cpp:547
+#: src/msgs.cpp:548
 msgid "PIA on L3"
 msgstr "L3のPIA"
 
-#: src/msgs.cpp:548
+#: src/msgs.cpp:549
 msgid "Keyboard"
 msgstr "キーボード"
 
-#: src/msgs.cpp:549
+#: src/msgs.cpp:550
 msgid "Joypad"
 msgstr "ジョイパッド"
 
-#: src/msgs.cpp:550
+#: src/msgs.cpp:551
 msgid "Joypad (Key Assigned)"
 msgstr "ジョイパッド（キー割当）"
 
-#: src/msgs.cpp:551
+#: src/msgs.cpp:552
 msgid "Joypad (PIA Type)"
 msgstr "ジョイパッド（PIA接続）"
 
-#: src/msgs.cpp:552
+#: src/msgs.cpp:553
 #, c-format
 msgid "Joypad%d"
 msgstr "ジョイパッド%d"
 
-#: src/msgs.cpp:553
+#: src/msgs.cpp:554
 msgid "Signals are negative logic"
 msgstr "信号は負論理"
 
-#: src/msgs.cpp:554
+#: src/msgs.cpp:555
 msgid "Recognize as another key when pressed two buttons"
 msgstr "2つのボタンを押したとき、別のキーと認識する"
 
-#: src/msgs.cpp:555
+#: src/msgs.cpp:556
 msgid "Load Default"
 msgstr "デフォルトをロード"
 
-#: src/msgs.cpp:556
+#: src/msgs.cpp:557
 msgid "Load Preset 1"
 msgstr "プリセット1をロード"
 
-#: src/msgs.cpp:557
+#: src/msgs.cpp:558
 msgid "Load Preset 2"
 msgstr "プリセット2をロード"
 
-#: src/msgs.cpp:558
+#: src/msgs.cpp:559
 msgid "Load Preset 3"
 msgstr "プリセット3をロード"
 
-#: src/msgs.cpp:559
+#: src/msgs.cpp:560
 msgid "Load Preset 4"
 msgstr "プリセット4をロード"
 
-#: src/msgs.cpp:560
+#: src/msgs.cpp:561
 #, c-format
 msgid "Load Preset %d"
 msgstr "プリセット%dをロード"
 
-#: src/msgs.cpp:561
+#: src/msgs.cpp:562
 msgid "Save Preset 1"
 msgstr "プリセット1に保存"
 
-#: src/msgs.cpp:562
+#: src/msgs.cpp:563
 msgid "Save Preset 2"
 msgstr "プリセット2に保存"
 
-#: src/msgs.cpp:563
+#: src/msgs.cpp:564
 msgid "Save Preset 3"
 msgstr "プリセット3に保存"
 
-#: src/msgs.cpp:564
+#: src/msgs.cpp:565
 msgid "Save Preset 4"
 msgstr "プリセット4に保存"
 
-#: src/msgs.cpp:565
+#: src/msgs.cpp:566
 #, c-format
 msgid "Save Preset %d"
 msgstr "プリセット%dに保存"
 
-#: src/msgs.cpp:566 src/res/windows/bml3mk5_gui.rc:61
+#: src/msgs.cpp:567 src/res/windows/bml3mk5_gui.rc:61
 msgid "Volume"
 msgstr "ボリューム"
 
-#: src/msgs.cpp:567
+#: src/msgs.cpp:568
 msgid "Master"
 msgstr "マスター"
 
-#: src/msgs.cpp:568
+#: src/msgs.cpp:569
 msgid "Beep"
 msgstr ""
 
-#: src/msgs.cpp:569
+#: src/msgs.cpp:570
 msgid "PSG"
 msgstr ""
 
-#: src/msgs.cpp:570
+#: src/msgs.cpp:571
 msgid ""
 "6voice\n"
 "PSG"
@@ -2229,7 +2233,7 @@ msgstr ""
 "6声\n"
 "PSG"
 
-#: src/msgs.cpp:571
+#: src/msgs.cpp:572
 msgid ""
 "9voice\n"
 "PSG"
@@ -2237,426 +2241,426 @@ msgstr ""
 "9声\n"
 "PSG"
 
-#: src/msgs.cpp:572
+#: src/msgs.cpp:573
 msgid "Relay"
 msgstr "リレー"
 
-#: src/msgs.cpp:573
-msgid "CMT"
-msgstr ""
-
 #: src/msgs.cpp:574
-msgid ""
-"ExPSG\n"
-"FM"
+msgid "CMT"
 msgstr ""
 
 #: src/msgs.cpp:575
 msgid ""
 "ExPSG\n"
-"SSG"
+"FM"
 msgstr ""
 
 #: src/msgs.cpp:576
 msgid ""
 "ExPSG\n"
-"ADPCM"
+"SSG"
 msgstr ""
 
 #: src/msgs.cpp:577
 msgid ""
 "ExPSG\n"
-"Rhythm"
+"ADPCM"
 msgstr ""
 
 #: src/msgs.cpp:578
 msgid ""
-"OPN\n"
-"FM"
+"ExPSG\n"
+"Rhythm"
 msgstr ""
 
 #: src/msgs.cpp:579
 msgid ""
 "OPN\n"
-"SSG"
+"FM"
 msgstr ""
 
 #: src/msgs.cpp:580
 msgid ""
-"OPNA\n"
-"ADPCM"
+"OPN\n"
+"SSG"
 msgstr ""
 
 #: src/msgs.cpp:581
 msgid ""
 "OPNA\n"
-"Rhythm"
+"ADPCM"
 msgstr ""
 
 #: src/msgs.cpp:582
+msgid ""
+"OPNA\n"
+"Rhythm"
+msgstr ""
+
+#: src/msgs.cpp:583
 msgid "Mute"
 msgstr "ミュート"
 
-#: src/msgs.cpp:583
+#: src/msgs.cpp:584
 msgid "PSG (like AY-3-8910)"
 msgstr "PSG (AY-3-8910相当)"
 
-#: src/msgs.cpp:584
+#: src/msgs.cpp:585
 msgid "OPN (like YM2203)"
 msgstr "OPN (YM2203相当)"
 
-#: src/msgs.cpp:585
+#: src/msgs.cpp:586
 msgid "OPNA (like YM2608)"
 msgstr "OPNA (YM2608相当)"
 
-#: src/msgs.cpp:586
+#: src/msgs.cpp:587
 msgid "PSG (like AY-3-8910) Clock: 1MHz"
 msgstr "PSG (AY-3-8910相当) クロック:1MHz"
 
-#: src/msgs.cpp:587
+#: src/msgs.cpp:588
 msgid "PSG (like AY-3-8910) Clock: 2MHz"
 msgstr "PSG (AY-3-8910相当) クロック:2MHz"
 
-#: src/msgs.cpp:588
+#: src/msgs.cpp:589
 msgid "OPN (like YM2203) Clock: 2MHz"
 msgstr "OPN (YM2203相当) クロック:2MHz"
 
-#: src/msgs.cpp:589
+#: src/msgs.cpp:590
 msgid "OPN (like YM2203) Clock: 3.58MHz"
 msgstr "OPN (YM2203相当) クロック:3.58MHz"
 
-#: src/msgs.cpp:590
+#: src/msgs.cpp:591
 msgid "OPN (like YM2203) Clock: 4MHz"
 msgstr "OPN (YM2203相当) クロック:4MHz"
 
-#: src/msgs.cpp:591
+#: src/msgs.cpp:592
 msgid "OPNA (like YM2608) Clock: 4MHz"
 msgstr "OPNA (YM2608相当) クロック:4MHz"
 
-#: src/msgs.cpp:592
+#: src/msgs.cpp:593
 msgid "OPNA (like YM2608) Clock: 8MHz"
 msgstr "OPNA (YM2608相当) クロック:8MHz"
 
-#: src/msgs.cpp:593
+#: src/msgs.cpp:594
 #, c-format
 msgid "%s was loaded."
 msgstr "%sがロードされました。"
 
-#: src/msgs.cpp:594
+#: src/msgs.cpp:595
 #, c-format
 msgid "%s couldn't be loaded."
 msgstr "%sをロードできませんでした。"
 
-#: src/msgs.cpp:595
+#: src/msgs.cpp:596
 #, c-format
 msgid "%s is invalid file."
 msgstr "%sは不正なファイルです。"
 
-#: src/msgs.cpp:596
+#: src/msgs.cpp:597
 #, c-format
 msgid "%s is invalid version."
 msgstr "%sは不正なバージョンです。"
 
-#: src/msgs.cpp:597
+#: src/msgs.cpp:598
 #, c-format
 msgid "%s is old version."
 msgstr "%sは古いバージョンです。"
 
-#: src/msgs.cpp:598
+#: src/msgs.cpp:599
 #, c-format
 msgid "%s was saved."
 msgstr "%sが保存されました。"
 
-#: src/msgs.cpp:599
+#: src/msgs.cpp:600
 #, c-format
 msgid "%s couldn't be saved."
 msgstr "%sを保存できませんでした。"
 
-#: src/msgs.cpp:600
+#: src/msgs.cpp:601
 #, c-format
 msgid "%s is not compatible. use default setting."
 msgstr "%sは互換がありません。デフォルト設定を使用します。"
 
-#: src/msgs.cpp:601
+#: src/msgs.cpp:602
 msgid "Floppy image couldn't be opened."
 msgstr "フロッピーイメージをオープンできませんでした。"
 
-#: src/msgs.cpp:602
+#: src/msgs.cpp:603
 #, c-format
 msgid "Floppy image on drive %d couldn't be opened."
 msgstr "ドライブ%dのフロッピーイメージをオープンできませんでした。"
 
-#: src/msgs.cpp:603
+#: src/msgs.cpp:604
 #, c-format
 msgid "Floppy image on drive %d couldn't be saved."
 msgstr "ドライブ%dのフロッピーイメージを保存できませんでした。"
 
-#: src/msgs.cpp:604
+#: src/msgs.cpp:605
 #, c-format
 msgid "Floppy image on drive %d is saved as the new file: %s."
 msgstr "ドライブ%dのフロッピーイメージは新しいファイル%sで保存されます。"
 
-#: src/msgs.cpp:605
+#: src/msgs.cpp:606
 #, c-format
 msgid "There is the same disk in drive %d and %d."
 msgstr "ドライブ%dと%dに同じディスクが入っています。"
 
-#: src/msgs.cpp:606
+#: src/msgs.cpp:607
 #, c-format
 msgid "The density in track %d, side %d is different from specified one."
 msgstr "トラック%d, サイド%dの密度が指定されたものと異なります。"
 
-#: src/msgs.cpp:607
+#: src/msgs.cpp:608
 #, c-format
 msgid "The media type in drive %d is different from specified one."
 msgstr "ドライブ%dのメディア種類が指定されたものと異なります。"
 
-#: src/msgs.cpp:608
+#: src/msgs.cpp:609
 msgid "Tape image couldn't be opened."
 msgstr "テープイメージをオープンできませんでした。"
 
-#: src/msgs.cpp:609
+#: src/msgs.cpp:610
 msgid "Tape image couldn't be saved."
 msgstr "テープイメージを保存できませんでした。"
 
-#: src/msgs.cpp:610
+#: src/msgs.cpp:611
 msgid "Print image couldn't be saved."
 msgstr "印刷イメージを保存できませんでした。"
 
-#: src/msgs.cpp:611
+#: src/msgs.cpp:612
 msgid "Status image couldn't be saved."
 msgstr "状態イメージを保存できませんでした。"
 
-#: src/msgs.cpp:612
+#: src/msgs.cpp:613
 msgid "Status image couldn't be loaded."
 msgstr "状態イメージをロードできませんでした。"
 
-#: src/msgs.cpp:613
+#: src/msgs.cpp:614
 msgid "Load State: Cannot open."
 msgstr "状態ロード：オープンできません。"
 
-#: src/msgs.cpp:614
+#: src/msgs.cpp:615
 msgid "Load State: Unsupported file."
 msgstr "状態ロード：サポートされていないファイルです。"
 
-#: src/msgs.cpp:615
+#: src/msgs.cpp:616
 msgid "Load State: Invalid version."
 msgstr "状態ロード：不正なバージョン。"
 
-#: src/msgs.cpp:616
+#: src/msgs.cpp:617
 #, c-format
 msgid "Load State: No longer support a status file for %s."
 msgstr "状態ロード：%s用の状態ファイルはもうサポートされません。"
 
-#: src/msgs.cpp:617
+#: src/msgs.cpp:618
 msgid "Auto key file couldn't be opened."
 msgstr "オートキーファイルをオープンできませんでした。"
 
-#: src/msgs.cpp:618
+#: src/msgs.cpp:619
 msgid "Record key file couldn't be saved."
 msgstr "キー記録ファイルを保存できませんでした。"
 
-#: src/msgs.cpp:619
+#: src/msgs.cpp:620
 #, c-format
 msgid "%s is %d bytes smaller than assumed one."
 msgstr "%sは想定されているものより%dバイト小さいサイズです。"
 
-#: src/msgs.cpp:620
+#: src/msgs.cpp:621
 #, c-format
 msgid "%s is different image from assumed one."
 msgstr "%sは想定されているものとイメージが異なります。"
 
-#: src/msgs.cpp:621
+#: src/msgs.cpp:622
 msgid "This is not record key file."
 msgstr "これはキー記録ファイルではありません。"
 
-#: src/msgs.cpp:622
+#: src/msgs.cpp:623
 msgid "Record key file is invalid version."
 msgstr "キー記録ファイルは不正なバージョンです。"
 
-#: src/msgs.cpp:623
+#: src/msgs.cpp:624
 msgid "Record key file has invalid parameter."
 msgstr "キー記録ファイルに不正なパラメータがあります。"
 
-#: src/msgs.cpp:624
+#: src/msgs.cpp:625
 msgid "The record key file is not supported."
 msgstr "キー記録ファイルはサポートされていません。"
 
-#: src/msgs.cpp:625
+#: src/msgs.cpp:626
 #, c-format
 msgid "The record key file for %s is no longer supported."
 msgstr "%s用のキー記録ファイルはもうサポートされません。"
 
-#: src/msgs.cpp:626
+#: src/msgs.cpp:627
 #, c-format
 msgid "The version of the emulator used for recording is %d.%d.%d."
 msgstr "記録に使用したエミュレータのバージョンは%d.%d.%dです。"
 
-#: src/msgs.cpp:627
+#: src/msgs.cpp:628
 msgid "Couldn't start recording audio."
 msgstr "録音を開始できませんでした。"
 
-#: src/msgs.cpp:628
+#: src/msgs.cpp:629
 msgid "Couldn't start recording video."
 msgstr "録画を開始できませんでした。"
 
-#: src/msgs.cpp:629
+#: src/msgs.cpp:630
 msgid "Now saving video file..."
 msgstr "ビデオファイルを保存中..."
 
-#: src/msgs.cpp:630
+#: src/msgs.cpp:631
 msgid "Video file was saved."
 msgstr "ビデオファイルが保存されました。"
 
-#: src/msgs.cpp:631
+#: src/msgs.cpp:632
 msgid "Screen was saved successfully."
 msgstr "画面が正常に保存されました。"
 
-#: src/msgs.cpp:632
+#: src/msgs.cpp:633
 msgid "Select a sample rate on sound menu in advance."
 msgstr "あらかじめサウンドメニューでサンプルレートを選択してください。"
 
-#: src/msgs.cpp:633
+#: src/msgs.cpp:634
 msgid "You can set properties after pressing start button."
 msgstr "開始ボタンを押した後に設定できます。"
 
-#: src/msgs.cpp:634 src/gui/wxwidgets/wx_recvid_dlg.cpp:125
+#: src/msgs.cpp:635 src/gui/wxwidgets/wx_recvid_dlg.cpp:125
 msgid "! Need install library."
 msgstr "! ライブラリをインストールする必要があります。"
 
-#: src/msgs.cpp:635
+#: src/msgs.cpp:636
 msgid "Codec Type"
 msgstr "コーデック"
 
-#: src/msgs.cpp:636
+#: src/msgs.cpp:637
 msgid "Quality"
 msgstr "品質"
 
-#: src/msgs.cpp:637
+#: src/msgs.cpp:638
 msgid "Max (368Kbps)"
 msgstr "最大 (368Kbps)"
 
-#: src/msgs.cpp:638
+#: src/msgs.cpp:639
 msgid "High (256Kbps)"
 msgstr "高 (256Kbps)"
 
-#: src/msgs.cpp:639
+#: src/msgs.cpp:640
 msgid "Normal (128Kbps)"
 msgstr "普通 (128Kbps)"
 
-#: src/msgs.cpp:640
+#: src/msgs.cpp:641
 msgid "Low (96Kbps)"
 msgstr "低 (96Kbps)"
 
-#: src/msgs.cpp:641
+#: src/msgs.cpp:642
 msgid "Min (64Kbps)"
 msgstr "最小 (64Kbps)"
 
-#: src/msgs.cpp:642
+#: src/msgs.cpp:643
 msgid "Max (50Mbps)"
 msgstr "最大 (50Mbps)"
 
-#: src/msgs.cpp:643
+#: src/msgs.cpp:644
 msgid "High (10Mbps)"
 msgstr "高 (10Mbps)"
 
-#: src/msgs.cpp:644
+#: src/msgs.cpp:645
 msgid "Normal (1Mbps)"
 msgstr "普通 (1Mbps)"
 
-#: src/msgs.cpp:645
+#: src/msgs.cpp:646
 msgid "Low (500Kbps)"
 msgstr "低 (500Kbps)"
 
-#: src/msgs.cpp:646
+#: src/msgs.cpp:647
 msgid "Min (100Kbps)"
 msgstr "最小 (100Kbps)"
 
-#: src/msgs.cpp:647
+#: src/msgs.cpp:648
 msgid "Max"
 msgstr "最大"
 
-#: src/msgs.cpp:648
+#: src/msgs.cpp:649
 msgid "High"
 msgstr "高"
 
-#: src/msgs.cpp:649
+#: src/msgs.cpp:650
 msgid "Normal"
 msgstr "普通"
 
-#: src/msgs.cpp:650
+#: src/msgs.cpp:651
 msgid "Low"
 msgstr "低"
 
-#: src/msgs.cpp:651
+#: src/msgs.cpp:652
 msgid "Min"
 msgstr "最小"
 
-#: src/msgs.cpp:652
+#: src/msgs.cpp:653
 msgid "Debugger was started."
 msgstr "デバッガを開始しました。"
 
-#: src/msgs.cpp:653
+#: src/msgs.cpp:654
 msgid "Cannot start debugger."
 msgstr "デバッガを開始できません。"
 
-#: src/msgs.cpp:654
+#: src/msgs.cpp:655
 msgid "Debugger was stopped."
 msgstr "デバッガを停止しました。"
 
-#: src/msgs.cpp:655
+#: src/msgs.cpp:656
 #, c-format
 msgid "Save to: %s"
 msgstr "保存先: %s"
 
-#: src/msgs.cpp:656 src/gui/cocoa/cocoa_gui.mm:2214
+#: src/msgs.cpp:657 src/gui/cocoa/cocoa_gui.mm:2214
 msgid "About bml3mk5"
 msgstr "bml3mk5について"
 
-#: src/msgs.cpp:657 src/gui/cocoa/cocoa_gui.mm:2212
+#: src/msgs.cpp:658 src/gui/cocoa/cocoa_gui.mm:2212
 msgid "About mbs1"
 msgstr "mbs1について"
 
-#: src/msgs.cpp:658 src/gui/cocoa/cocoa_gui.mm:2214
+#: src/msgs.cpp:659 src/gui/cocoa/cocoa_gui.mm:2214
 msgid "Hide bml3mk5"
 msgstr "bml3mk5を隠す"
 
-#: src/msgs.cpp:659 src/gui/cocoa/cocoa_gui.mm:2212
+#: src/msgs.cpp:660 src/gui/cocoa/cocoa_gui.mm:2212
 msgid "Hide mbs1"
 msgstr "mbs1を隠す"
 
-#: src/msgs.cpp:660 src/gui/cocoa/cocoa_gui.mm:2214
+#: src/msgs.cpp:661 src/gui/cocoa/cocoa_gui.mm:2214
 msgid "Quit bml3mk5"
 msgstr "bml3mk5を終了"
 
-#: src/msgs.cpp:661 src/gui/cocoa/cocoa_gui.mm:2212
+#: src/msgs.cpp:662 src/gui/cocoa/cocoa_gui.mm:2212
 msgid "Quit mbs1"
 msgstr "mbs1を終了"
 
-#: src/msgs.cpp:662 src/gui/cocoa/cocoa_gui.mm:2212
+#: src/msgs.cpp:663 src/gui/cocoa/cocoa_gui.mm:2212
 #: src/gui/cocoa/cocoa_gui.mm:2214
 msgid "Hide Others"
 msgstr "ほかを隠す"
 
-#: src/msgs.cpp:663 src/gui/cocoa/cocoa_gui.mm:2212
+#: src/msgs.cpp:664 src/gui/cocoa/cocoa_gui.mm:2212
 #: src/gui/cocoa/cocoa_gui.mm:2214
 msgid "Show All"
 msgstr "すべてを表示"
 
-#: src/msgs.cpp:664 src/gui/cocoa/cocoa_gui.mm:2212
+#: src/msgs.cpp:665 src/gui/cocoa/cocoa_gui.mm:2212
 #: src/gui/cocoa/cocoa_gui.mm:2214
 msgid "Services"
 msgstr "サービス"
 
-#: src/msgs.cpp:665
+#: src/msgs.cpp:666
 msgid "Preferences..."
 msgstr "環境設定..."
 
-#: src/msgs.cpp:666
+#: src/msgs.cpp:667
 msgid "Language (*)"
 msgstr "言語 (*)"
 
-#: src/msgs.cpp:667
+#: src/msgs.cpp:668
 msgid "Default"
 msgstr "デフォルト"
 

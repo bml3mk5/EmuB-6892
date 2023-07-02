@@ -27,9 +27,9 @@ void EMU::EMU_INPUT()
 	// initialize status
 	memset(key_status, 0, sizeof(key_status));
 	memset(mouse_status, 0, sizeof(mouse_status));
-#ifdef USE_MOUSE_ABSOLUTE
-	mouse_position.x = mouse_position.y = 0;
-#endif
+	clear_vm_key_map();
+
+	vm_key_history = new FIFOINT(64);
 
 #ifdef USE_JOYSTICK
 	joy_num = 0;
@@ -95,6 +95,12 @@ void EMU::reset_joystick()
 
 void EMU::release_input()
 {
+	// release buffer
+	if (vm_key_history) {
+		delete vm_key_history;
+		vm_key_history = NULL;
+	}
+
 	// release mouse
 	if(!mouse_disabled) {
 		disable_mouse(0);
@@ -103,8 +109,9 @@ void EMU::release_input()
 #ifdef USE_AUTO_KEY
 	// release autokey buffer
 	if(autokey_buffer) {
-		autokey_buffer->release();
+//		autokey_buffer->release();
 		delete autokey_buffer;
+		autokey_buffer = NULL;
 	}
 #endif
 }
@@ -139,7 +146,7 @@ void EMU::update_autokey()
 			// update graph key status
 			int graph = autokey_buffer->read_not_remove(0) & AUTO_KEY_GRAPH_MASK;
 			if(graph && !autokey_shift) {
-				vm_key_down(AUTO_KEY_GRAPH);
+				vm_key_down(AUTO_KEY_GRAPH, VM_KEY_STATUS_AUTOKEY);
 				logging->out_debugf(_T("autokey phase:% 2d: graph down"), autokey_phase);
 				autokey_shift = graph;
 				autokey_phase++;
@@ -149,7 +156,7 @@ void EMU::update_autokey()
 			// update shift key status
 			int shift = autokey_buffer->read_not_remove(0) & AUTO_KEY_SHIFT_MASK;
 			if(shift && !autokey_shift) {
-				vm_key_down(AUTO_KEY_SHIFT);
+				vm_key_down(AUTO_KEY_SHIFT, VM_KEY_STATUS_AUTOKEY);
 				logging->out_debugf(_T("autokey phase:% 2d: shift down"), autokey_phase);
 				autokey_shift = shift;
 				autokey_phase++;
@@ -162,7 +169,8 @@ void EMU::update_autokey()
 	case 2:
 		if(autokey_buffer && !autokey_buffer->empty()) {
 			autokey_code = autokey_buffer->read_not_remove(0) & AUTO_KEY_MASK;
-			vm_key_down(autokey_code);
+			vm_key_down(autokey_code, VM_KEY_STATUS_AUTOKEY);
+			autokey_code |= AUTO_KEY_PRESS_MASK;
 			logging->out_debugf(_T("autokey phase:% 2d: key down %x"), autokey_phase, autokey_code);
 		}
 		autokey_phase++;
@@ -177,18 +185,18 @@ void EMU::update_autokey()
 		break;
 	case USE_AUTO_KEY + 2:
 		if(autokey_shift & AUTO_KEY_SHIFT_MASK) {
-			vm_key_up(AUTO_KEY_SHIFT);
+			vm_key_up(AUTO_KEY_SHIFT, VM_KEY_STATUS_AUTOKEY);
 			logging->out_debugf(_T("autokey phase:% 2d: shift up:"), autokey_phase);
 		}
 #ifdef USE_EMU_INHERENT_SPEC
 		if(autokey_shift & AUTO_KEY_GRAPH_MASK) {
-			vm_key_up(AUTO_KEY_GRAPH);
+			vm_key_up(AUTO_KEY_GRAPH, VM_KEY_STATUS_AUTOKEY);
 			logging->out_debugf(_T("autokey phase:% 2d: graph up"), autokey_phase);
 		}
 #endif
 		autokey_shift = 0;
 		if(autokey_buffer && !autokey_buffer->empty()) {
-			vm_key_up(autokey_buffer->read_not_remove(0) & AUTO_KEY_MASK);
+			vm_key_up(autokey_buffer->read_not_remove(0) & AUTO_KEY_MASK, VM_KEY_STATUS_AUTOKEY);
 		}
 		logging->out_debugf(_T("autokey phase:% 2d: key up %x"), autokey_phase, autokey_code);
 		autokey_code = 0;
@@ -232,6 +240,7 @@ void EMU::update_autokey()
 #endif
 }
 
+/// @brief vm must call this function when cpu scanned the key i/o port in vm
 void EMU::recognized_key(uint16_t key_code)
 {
 #ifdef USE_AUTO_KEY
@@ -265,34 +274,111 @@ int EMU::key_down_up(uint8_t type, int code, long status)
 	return 1;
 }
 
+/// @brief key pressed
 int EMU::key_down(int code, bool keep_frames)
 {
+	key_status[code] = keep_frames ? (KEY_KEEP_FRAMES * FRAME_SPLIT_NUM) : 0x80;
+	vm_key_down(vm_key_map[code], VM_KEY_STATUS_KEYBOARD);
+#ifdef NOTIFY_KEY_DOWN_TO_GUI
+	gui->KeyDown(code, mod);
+#endif
+#ifdef NOTIFY_KEY_DOWN
+	vm->key_down(code);
+#endif
 	return code;
 }
 
+/// @brief key released
 void EMU::key_up(int code, bool keep_frames)
 {
+	key_status[code] &= 0x7f;
+	vm_key_up(vm_key_map[code], VM_KEY_STATUS_KEYBOARD);
+#ifdef NOTIFY_KEY_DOWN_TO_GUI
+	gui->KeyUp(code);
+#endif
+#ifdef NOTIFY_KEY_DOWN
+	if(!key_status[code]) {
+		vm->key_up(code);
+	}
+#endif
 }
 
-int EMU::vm_key_down(int code)
+/// @brief clear the vm key status
+void EMU::clear_vm_key_status(uint8_t mask)
 {
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] |= 1;
-	}
-	return code;
-}
-void EMU::vm_key_up(int code)
-{
-#ifdef USE_EMU_INHERENT_SPEC
-	code -= 0x80;
-#endif
-	if (vm_key_status && 0 <= code && code < vm_key_status_size) {
-		vm_key_status[code] &= ~1;
+	if (!vm_key_status) return;
+	for(int code = 0; code < vm_key_status_size; code++) {
+		if (vm_key_status[code] & mask) {
+			vm_key_status[code] &= ~mask;
+			vm_key_history->write(code);
+		}
 	}
 }
+
+/// @brief set the vm key status as pressed
+/// @param[in] code
+/// @param[in] mask : flags
+void EMU::vm_key_down(int code, uint8_t mask)
+{
+	if (0 <= code && vm_key_status) {
+		vm_key_status[code] |= mask;
+		vm_key_history->write(code);
+	}
+}
+
+/// @brief set the vm key status as released
+/// @param[in] code
+/// @param[in] mask : flags
+void EMU::vm_key_up(int code, uint8_t mask)
+{
+	if (0 <= code && vm_key_status) {
+		vm_key_status[code] &= ~mask;
+		vm_key_history->write(code);
+	}
+}
+
+/// @brief set the virtual key status as pressed
+/// @param[in] code
+/// @param[in] mask : flags
+void EMU::vkey_key_down(int code, uint8_t mask)
+{
+	vm_key_down(code, mask);
+}
+
+/// @brief set the virtual key status as released
+/// @param[in] code
+/// @param[in] mask : flags
+void EMU::vkey_key_up(int code, uint8_t mask)
+{
+	vm_key_up(code, mask);
+}
+
+/// @brief clear the vm key mapping table
+void EMU::clear_vm_key_map()
+{
+	for(uint32_t i=0; i<KEY_STATUS_SIZE; i++) {
+		vm_key_map[i] = -1;
+	}
+}
+
+/// @brief set the vm key mapping table
+void EMU::set_vm_key_map(uint32_t key_code, int vm_scan_code)
+{
+	if (0 < key_code && key_code < KEY_STATUS_SIZE) {
+		vm_key_map[key_code] = vm_scan_code;
+	}
+}
+
+#if 0
+/// @brief get the vm key mapping table
+int EMU::get_vm_key_map(uint32_t key_code) const
+{
+	if (0 < key_code && key_code < KEY_STATUS_SIZE) {
+		return vm_key_map[key_code];
+	}
+	return 0;
+}
+#endif
 
 #ifdef USE_BUTTON
 void EMU::press_button(int num)
@@ -488,23 +574,23 @@ void EMU::stop_auto_key()
 {
 #ifndef USE_EMU_INHERENT_SPEC
 	if(autokey_shift) {
-		vm_key_up(AUTO_KEY_SHIFT);
+		vm_key_up(AUTO_KEY_SHIFT, VM_KEY_STATUS_AUTOKEY);
 	}
 	if (vm_key_status) {
 		for (int i=0; i<vm_key_status_size; i++) {
-			vm_key_status[i] &= ~1;
+			vm_key_status[i] &= ~VM_KEY_STATUS_AUTOKEY;
 		}
 	}
 #else
 	if(autokey_shift) {
-		vm_key_up(AUTO_KEY_SHIFT);
+		vm_key_up(AUTO_KEY_SHIFT, VM_KEY_STATUS_AUTOKEY);
 	}
 	if(autokey_shift) {
-		vm_key_up(AUTO_KEY_GRAPH);
+		vm_key_up(AUTO_KEY_GRAPH, VM_KEY_STATUS_AUTOKEY);
 	}
 	if (vm_key_status) {
 		for (int i=0; i<vm_key_status_size; i++) {
-			vm_key_status[i] &= ~1;
+			vm_key_status[i] &= ~VM_KEY_STATUS_AUTOKEY;
 		}
 	}
 #endif

@@ -222,6 +222,9 @@
     <ClCompile Include="..\src\osd\screenmode.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\osd\vkeyboardbase.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\osd\windowmode.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
@@ -618,6 +621,9 @@
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osd\screenmode.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\vkeyboardbase.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osd\windowmode.h">

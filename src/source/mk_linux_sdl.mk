@@ -98,6 +98,7 @@ EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
 	$(SRCOSD)/logging.o \
 	$(SRCOSD)/screenmode.o \
 	$(SRCOSD)/simple_clocale.o \
+	$(SRCOSD)/vkeyboardbase.o \
 	$(SRCOSD)/windowmode.o \
 	$(SRCOSD)/opengl.o
 

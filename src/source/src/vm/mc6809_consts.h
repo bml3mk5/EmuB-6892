@@ -80,6 +80,7 @@ enum MC6809_CC_BITS {
 #define Y	y.w.l
 #define YD	y.d
 #define D	acc.w.l
+#define DD	acc.d
 #define A	acc.b.h
 #define B	acc.b.l
 #define DP	dp.b.h

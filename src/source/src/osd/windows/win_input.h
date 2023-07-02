@@ -40,17 +40,6 @@ static const int numpad_table[256] = {
 };
 #endif
 
-#ifdef USE_ORIGINAL_KEYINPUT
-#ifdef USE_EMU_INHERENT_SPEC
-// numpad key convert
-// 0x47 - 0x53
-static const int scancode2vkey[16] = {
-//	0x47,      0x48,      0x49,   0x4a,0x4b,      0x4c,      0x4d,   0x4e,0x4f,      0x50,      0x51,0x52,0x53,0x54,0x55,0x56
-	VK_NUMPAD7,VK_NUMPAD8,VK_NUMPAD9,0,VK_NUMPAD4,VK_NUMPAD5,VK_NUMPAD6,0,VK_NUMPAD1,VK_NUMPAD2,VK_NUMPAD3,VK_NUMPAD0,VK_DECIMAL,0,0,0
-};
-#endif
-#endif
-
 /// mapping from VK_* virtual key to original keycode
 const uint16_t vkkey2keycode[256] = {
 	/* 0x00 - 0x0f */
@@ -309,11 +298,11 @@ const uint16_t vkkey2keycode[256] = {
 	0,
 	0,
 	/* 0xf0 - 0xff */
-	KEYCODE_CAPSLOCK | 0x8000,
+	KEYCODE_CAPSLOCK | KEYCODE_KEEP_FRAMES,
 	KEYCODE_MUHENKAN,
-	KEYCODE_KATAHIRA | 0x8000,
-	KEYCODE_HENKAN,
-	KEYCODE_HENKAN,
+	KEYCODE_KATAHIRA | KEYCODE_KEEP_FRAMES,
+	KEYCODE_GRAVE | KEYCODE_KEEP_FRAMES,
+	KEYCODE_GRAVE | KEYCODE_KEEP_FRAMES,
 	0, 
 	0,
 	0,

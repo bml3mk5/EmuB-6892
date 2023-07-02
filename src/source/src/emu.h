@@ -39,7 +39,6 @@
 #define USE_SCREEN_MIX_SURFACE
 
 #define KEY_STATUS_SIZE 512
-#define KEY_MOD_ALT_KEY 0x0001
 
 #ifdef USE_MEDIA
 #define MEDIA_MAX 64
@@ -77,6 +76,24 @@ class DebuggerThread;
 class DebuggerStorage;
 class DebuggerSocket;
 #endif
+
+/// @ingroup Enums
+/// key_mod
+enum EnumKeyModFlags {
+	KEY_MOD_ALT_KEY = 0x0001,
+	KEY_MOD_SHIFT_KEY = 0x0002,
+};
+
+/// @ingroup Enums
+/// vm_key_status
+enum EnumVmKeyStatusFlags {
+	VM_KEY_STATUS_KEYBOARD = 0x01,
+	VM_KEY_STATUS_AUTOKEY = 0x08,
+	VM_KEY_STATUS_VKEYBOARD = 0x10,
+	VM_KEY_STATUS_KEYREC = 0x20,
+	VM_KEY_STATUS_KEY2JOY = 0x80,
+	VM_KEY_STATUS_MASK = 0x7f,
+};
 
 /// @ingroup Enums
 /// ScreenMode
@@ -127,17 +144,35 @@ protected:
 #ifdef USE_KEYCODE_CONV
 	uint8_t keycode_conv[KEY_STATUS_SIZE];
 #endif
-	uint8_t key_status[KEY_STATUS_SIZE];	// windows key code mapping
-	/// vm key scan code mapping (provided from vm)
-	/// bit0: set/reset on auto key
+	/// @brief emu key code status (KEYCODE_**)
+	///
+	/// key code mapping (b7: on/off b0-b6: count down until release)
+	uint8_t key_status[KEY_STATUS_SIZE];
+
+	/// @brief vm key scan code mapping (provided from vm)
+	int vm_key_map[KEY_STATUS_SIZE];
+
+	/// @brief vm key scan code on/off status
+	///
+	/// bit0: set/reset on keyboard
+	/// bit3: set/reset on auto key
 	/// bit4: set/reset on virtual key
+	/// @see EnumVmKeyStatusFlags
 	uint8_t *vm_key_status;
+	/// @brief size of vm_key_status
 	int   vm_key_status_size;
+
+	/// @brief vm key buffer (store keycode recently)
+	FIFOINT* vm_key_history;
 #ifdef USE_SHIFT_NUMPAD_KEY
 	uint8_t key_converted[KEY_STATUS_SIZE];
 	bool key_shift_pressed, key_shift_released;
 #endif
 	bool lost_focus;
+
+	/// @brief modifier keys
+	///
+	/// @see EnumKeyModFlags
 	int  key_mod;
 
 #ifdef USE_JOYSTICK
@@ -194,6 +229,7 @@ protected:
 #ifdef USE_SCREEN_MIX_SURFACE
 	CSurface *sufMixed;
 #endif
+
 	CMutex *mux_update_screen;
 	bool screen_changing;
 
@@ -660,15 +696,23 @@ public:
 	void key_lost_focus() {
 		lost_focus = true;
 	}
-	virtual int  vm_key_down(int code);
-	virtual void vm_key_up(int code);
 	int  system_key_down(int code);
 	void system_key_up(int code);
 	bool execute_global_keys(int code, uint32_t status);
 	bool release_global_keys(int code, uint32_t status);
-	virtual void post_command_message(int id) {}
+	virtual void post_command_message(int id);
 	virtual uint8_t translate_keysym(uint8_t type, int code, long status, int *new_code, bool *new_keep_frames = NULL);
 	virtual uint8_t translate_keysym(uint8_t type, int code, short scan_code, int *new_code, bool *new_keep_frames = NULL);
+	void clear_vm_key_map();
+	void set_vm_key_map(uint32_t key_code, int vm_scan_code);
+//	int get_vm_key_map(uint32_t key_code) const;
+
+	void clear_vm_key_status(uint8_t mask);
+	void vm_key_down(int code, uint8_t mask);
+	void vm_key_up(int code, uint8_t mask);
+
+	void vkey_key_down(int code, uint8_t mask);
+	void vkey_key_up(int code, uint8_t mask);
 
 #ifdef USE_BUTTON
 	void press_button(int num);
@@ -811,13 +855,16 @@ public:
 		return &key_mod;
 	}
 	virtual void recognized_key(uint16_t key_code);
-	void set_vm_key_buffer(uint8_t *buffer, int size) {
+	void set_vm_key_status_buffer(uint8_t *buffer, int size) {
 		vm_key_status = buffer;
 		vm_key_status_size = size;
 	}
-	void get_vm_key_buffer(uint8_t **buffer, int *size) {
+	void get_vm_key_status_buffer(uint8_t **buffer, int *size) {
 		*buffer = vm_key_status;
 		*size = vm_key_status_size;
+	}
+	FIFOINT *get_vm_key_history() const {
+		return vm_key_history;
 	}
 	//@}
 	/// @name screen for vm

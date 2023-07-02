@@ -86,6 +86,7 @@ SOURCES +=\
 	../src/osd/opengl.cpp \
 	../src/osd/logging.cpp \
 	../src/osd/screenmode.cpp \
+	../src/osd/vkeyboardbase.cpp \
 	../src/osd/windowmode.cpp \
 	../src/gui/gui_base.cpp \
 	../src/gui/gui_keybinddata.cpp \
@@ -216,6 +217,7 @@ HEADERS  +=\
 	../src/osd/qt/qt_common.h \
 	../src/osd/qt/qt_debugger_console.h \
 	../src/osd/screenmode.h \
+	../src/osd/vkeyboardbase.h \
 	../src/osd/windowmode.h \
 	../src/rec_video_defs.h \
 	../src/utils.h \

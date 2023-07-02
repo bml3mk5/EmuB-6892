@@ -105,7 +105,25 @@ void BOARD::write_signal(int id, uint32_t data, uint32_t mask)
 
 uint32_t BOARD::read_signal(int id)
 {
-	return 0xffffffff;
+	uint32_t data = 0xffffffff;
+	switch (id) {
+		case SIG_CPU_RESET:
+			data = now_wreset;
+			break;
+		case SIG_CPU_NMI:
+			data = now_nmi;
+			break;
+		case SIG_CPU_IRQ:
+			data = now_irq;
+			break;
+		case SIG_CPU_FIRQ:
+			data = now_firq;
+			break;
+		case SIG_CPU_HALT:
+			data = now_halt;
+			break;
+	}
+	return data;
 }
 
 void BOARD::event_callback(int event_id, int err)
@@ -118,6 +136,11 @@ void BOARD::event_callback(int event_id, int err)
 		d_cpu->write_signal(SIG_CPU_RESET, 0, 1);
 		preset_register_id = -1;
 	}
+}
+
+uint32_t BOARD::update_led()
+{
+	return now_wreset ? 0x80 : 0;
 }
 
 // ----------------------------------------------------------------------------

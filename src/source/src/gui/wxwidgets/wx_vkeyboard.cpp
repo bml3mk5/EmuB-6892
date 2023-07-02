@@ -1,6 +1,5 @@
 /** @file wx_vkeyboard.cpp
 
-	HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
 	Skelton for retropc emulator
 
 	@author Sasaji
@@ -25,7 +24,7 @@ namespace Vkbd {
 //
 // for wx widgets
 //
-VKeyboard::VKeyboard(wxWindow *parent) : Base()
+VKeyboard::VKeyboard(wxWindow *parent) : OSDBase()
 {
 	this->parent = parent;
 	this->win = NULL;
@@ -39,6 +38,8 @@ VKeyboard::~VKeyboard()
 void VKeyboard::Show(bool show)
 {
 	if (!win) return;
+	
+	Base::Show(show);
 
 	win->Show(show);
 }
@@ -55,7 +56,7 @@ void VKeyboard::Create(const _TCHAR *res_path)
 		if (win) {
 			adjust_window_size();
 //			set_dist();
-			Base::Create();
+			closed = false;
 		}
 	}
 }
@@ -69,7 +70,7 @@ void VKeyboard::Close()
 
 	unload_bitmap();
 
-	Base::Close();
+	CloseBase();
 }
 
 void VKeyboard::adjust_window_size()
@@ -116,7 +117,7 @@ void VKeyboard::need_update_window(PressedInfo_t *info, bool onoff)
 {
 	if (!win) return;
 
-	Base::need_update_window(info, onoff);
+	need_update_window_base(info, onoff);
 
 	win->RefreshRect(wxRect(info->re.left, info->re.top, info->re.right - info->re.left, info->re.bottom - info->re.top));
 }
@@ -164,13 +165,13 @@ void VKeyboard::init_dialog(HWND hDlg)
 } /* namespace Vkbd */
 
 // Attach Event
-BEGIN_EVENT_TABLE(MyVKeyboard, wxDialog)
+BEGIN_EVENT_TABLE(MyVKeyboard, wxFrame)
 	EVT_CLOSE(MyVKeyboard::OnClose)
 	EVT_PAINT(MyVKeyboard::OnPaint)
 //	EVT_ERASE_BACKGROUND(MyVKeyboard::OnEraseBackground)
-//	EVT_CHAR_HOOK(MyPanel::OnKeyDown)
-//	EVT_KEY_DOWN(MyVKeyboard::OnKeyDown)
-//	EVT_KEY_UP(MyVKeyboard::OnKeyUp)
+	EVT_CHAR_HOOK(MyVKeyboard::OnCharHook)
+	EVT_KEY_DOWN(MyVKeyboard::OnKeyDown)
+	EVT_KEY_UP(MyVKeyboard::OnKeyUp)
 //	EVT_MOTION(MyPanel::OnMouseMotion)
 	EVT_LEFT_DOWN(MyVKeyboard::OnMouseDown)
 	EVT_LEFT_UP(MyVKeyboard::OnMouseUp)
@@ -185,7 +186,9 @@ BEGIN_EVENT_TABLE(MyVKeyboard, wxDialog)
 END_EVENT_TABLE()
 
 MyVKeyboard::MyVKeyboard(wxWindow *parent, wxSize &sz, Vkbd::VKeyboard *vkbd)
-	: wxDialog(parent, IDD_VKEYBOARD, _T("Virtual Keyboard"), wxDefaultPosition, sz)
+	: wxFrame(parent, IDD_VKEYBOARD, _T("Virtual Keyboard"), wxDefaultPosition, sz,
+		wxMINIMIZE_BOX | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN
+	)
 {
 	this->vkbd = vkbd;
 	this->bmp = new wxBitmap(sz, 24);	// 24bpp
@@ -224,6 +227,25 @@ void MyVKeyboard::OnMouseDown(wxMouseEvent &event)
 void MyVKeyboard::OnMouseUp(wxMouseEvent & WXUNUSED(event))
 {
 	vkbd->MouseUp();
+}
+
+void MyVKeyboard::OnCharHook(wxKeyEvent &event)
+{
+	event.Skip();
+}
+
+void MyVKeyboard::OnKeyDown(wxKeyEvent &event)
+{
+	short rawcode = (short)event.GetRawKeyCode();
+	long  rawflag = (long)event.GetRawKeyFlags();
+	emu->key_down_up(0, rawcode, (short)((rawflag & 0x1ff0000) >> 16));
+}
+
+void MyVKeyboard::OnKeyUp(wxKeyEvent &event)
+{
+	short rawcode = (short)event.GetRawKeyCode();
+	long  rawflag = (long)event.GetRawKeyFlags();
+	emu->key_down_up(1, rawcode, (short)((rawflag & 0x1ff0000) >> 16));
 }
 
 #endif /* WX_VKEYBOARD_H */

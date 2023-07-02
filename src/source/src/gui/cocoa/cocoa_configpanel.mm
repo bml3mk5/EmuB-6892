@@ -723,7 +723,6 @@ extern GUI *gui;
 #endif
 
 	hbox = [box_one addBox:HorizontalBox :MiddlePos :0 :_T("UndefCPU")];
-
 	chkUndefOp = [CocoaCheckBox createI:CMsg::Show_message_when_the_CPU_fetches_undefined_opcode action:nil value:FLG_SHOWMSG_UNDEFOP];
 	[hbox addControl:chkUndefOp];
 	[tab_view addSubview:chkUndefOp];
@@ -746,6 +745,11 @@ extern GUI *gui;
 	[tab_view addSubview:chkAddrErr];
 # endif
 #endif
+
+	hbox = [box_one addBox:HorizontalBox :MiddlePos :0 :_T("ClrCPUReg")];
+	chkClrCPUReg = [CocoaCheckBox createI:CMsg::Clear_CPU_registers_at_power_on action:nil value:FLG_CLEAR_CPUREG];
+	[hbox addControl:chkClrCPUReg];
+	[tab_view addSubview:chkClrCPUReg];
 
 	lbl = [CocoaLabel createI:CMsg::Need_restart_program_or_PowerOn];
 	[box_one addControl:lbl];
@@ -1014,6 +1018,8 @@ extern GUI *gui;
 	config.rom_path.Set([[txtROMPath stringValue] UTF8String]);
 
 	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, [chkUndefOp state] == NSOnState);
+
+	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, [chkClrCPUReg state] == NSOnState);
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)

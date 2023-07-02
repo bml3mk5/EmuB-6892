@@ -117,6 +117,7 @@ private:
 	QCheckBox *chkExMem;
 #endif
 	QCheckBox *chkUndefOp;
+	QCheckBox *chkClrCPUReg;
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)

@@ -343,6 +343,9 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 #endif
 
 	hbox = create_hbox(vboxall);
+	chkClrCPUReg = create_check_box(hbox, CMsg::Clear_CPU_registers_at_power_on, FLG_CLEAR_CPUREG != 0);
+
+	hbox = create_hbox(vboxall);
 	create_label(hbox, CMsg::Need_restart_program_or_PowerOn);
 
 #if defined(_MBS1)
@@ -514,6 +517,7 @@ bool ConfigBox::SetData()
 
 	config.rom_path.Set(get_text(txtROMPath));
 	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, get_check_state(chkUndefOp));
+	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, get_check_state(chkClrCPUReg));
 
 #if defined(_MBS1)
 	int exram_num = get_combo_sel_num(comExRam);
