@@ -294,6 +294,7 @@ void Config::initialize()
 #ifdef USE_FD1
 	ignore_crc = true;
 	mount_fdd = 0x3;
+	option_fdd = 0;
 #endif
 
 #if defined(_MBS1)
@@ -312,9 +313,6 @@ void Config::initialize()
 #endif
 
 	original = 0;
-
-	delay_fdd = 0;
-	check_fdmedia = 0;
 
 	fps_no = -1;
 	screen_video_size = 0;
@@ -536,8 +534,11 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 
 #ifdef USE_FD1
 	get_dirpath_value(SECTION_FDD, _T("Path"), initial_disk_path);
-	delay_fdd = (uint8_t)(ini->GetLongValue(SECTION_FDD, _T("IgnoreDelay"), delay_fdd) & 0xff);
-	check_fdmedia = (uint8_t)(ini->GetLongValue(SECTION_FDD, _T("CheckMedia"), check_fdmedia) & 0xff);
+	valuel = 0;
+	valuel |= ((ini->GetLongValue(SECTION_FDD, _T("IgnoreDelay"), (option_fdd & MSK_DELAY_FD_MASK) >> MSK_DELAY_FD_SFT) << MSK_DELAY_FD_SFT) & MSK_DELAY_FD_MASK);
+	valuel |= ((ini->GetLongValue(SECTION_FDD, _T("CheckMedia"), (option_fdd & MSK_CHECK_FD_MASK) >> MSK_CHECK_FD_SFT) << MSK_CHECK_FD_SFT) & MSK_CHECK_FD_MASK);
+	valuel |= ((ini->GetLongValue(SECTION_FDD, _T("SaveImage"), (option_fdd & MSK_SAVE_FD_MASK) >> MSK_SAVE_FD_SFT) << MSK_SAVE_FD_SFT) & MSK_SAVE_FD_MASK);
+	option_fdd = (int)valuel;
 	ignore_crc = ini->GetBoolValue(SECTION_FDD, _T("IgnoreCRC"), ignore_crc);
 
 #if defined(USE_FD8) || defined(USE_FD7)
@@ -1146,8 +1147,9 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 
 #ifdef USE_FD1
 	ini->SetValue(SECTION_FDD, _T("Path"), conv_from_npath(initial_disk_path));
-	ini->SetLongValue(SECTION_FDD, _T("IgnoreDelay"), delay_fdd);
-	ini->SetLongValue(SECTION_FDD, _T("CheckMedia"), check_fdmedia);
+	ini->SetLongValue(SECTION_FDD, _T("IgnoreDelay"), (option_fdd & MSK_DELAY_FD_MASK) >> MSK_DELAY_FD_SFT);
+	ini->SetLongValue(SECTION_FDD, _T("CheckMedia"), (option_fdd & MSK_CHECK_FD_MASK) >> MSK_CHECK_FD_SFT);
+	ini->SetLongValue(SECTION_FDD, _T("SaveImage"), (option_fdd & MSK_SAVE_FD_MASK) >> MSK_SAVE_FD_SFT);
 	ini->SetBoolValue(SECTION_FDD, _T("IgnoreCRC"), ignore_crc);
 
 #if defined(USE_FD8) || defined(USE_FD7)

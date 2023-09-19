@@ -105,6 +105,39 @@ bool check_file_extensions(const _TCHAR* file_path, ...)
 }
 
 /**
+ * @brief match one and more in extension list
+ *
+ * @param [in] file_path
+ * @param [in] exts       extension list such as "foo;bar;baz"
+ * @return true when include ext in file_path
+ */
+bool check_file_extensions(const _TCHAR *file_path, const char *exts)
+{
+	bool rc = false;
+
+	char ext[8];
+	int len = (int)strlen(exts);
+	int pos = 0;
+	int ext_len;
+	strcpy(ext, 8, ".");
+	do {
+		ext_len = 0;
+		pos = get_token(exts, pos, len, &ext[1], 7, ';', &ext_len);
+		if (ext_len >= 0) {
+#ifdef _UNICODE
+			wchar_t wext[8];
+			conv_mbs_to_wcs(ext, 8, wext, 8);
+			rc = check_file_extension(file_path, wext);
+#else
+			rc = check_file_extension(file_path, ext);
+#endif
+		}
+	} while(pos >= 0 && !rc);
+
+	return rc;
+}
+
+/**
  * @brief convert separator chars in path
  *
  * @param [in,out] path
@@ -609,34 +642,49 @@ size_t chomp_crlf(wchar_t *str)
 /**
  * @brief make date and time based file path
  *
- * @param [in] dir : need a path separator in the end of dir
- * @param [out] file_path
+ * @param [in] dir : directory (need a path separator in the end of dir) (nullable)
+ *             If dir is NULL, append a file name to the end of file_path
+ * @param [out] file_path : dir + file name + extension
  * @param [in] maxlen : buffer size of file path
- * @param [in] extension : extension of file name
+ * @param [in] extensions : extension of file name (such as "txt;doc") (nullable)
+ *             Append the first extension of specified parameter to the end of file_path
  */
-void create_date_file_path(const _TCHAR *dir, _TCHAR *file_path, size_t maxlen, const _TCHAR *extension)
+void create_date_file_path(const _TCHAR *dir, _TCHAR *file_path, size_t maxlen, const char *extensions)
 {
 	_TCHAR file_name[64];
 
+	char ext[8];
+	int ext_len = 0;
+	if (extensions) {
+		int len = (int)strlen(extensions);
+		get_token(extensions, 0, len, ext, 8, ';', &ext_len);
+	}
 	CurTime cur_time;
 	cur_time.GetHostTime();
 	cur_time.GetCurrTime();
-	UTILITY::stprintf(file_name, 64, _T("%04d-%02d-%02d_%02d-%02d-%02d.%s"),
+	UTILITY::stprintf(file_name, 64, _T("%04d-%02d-%02d_%02d-%02d-%02d"),
 		cur_time.GetYear(),
 		cur_time.GetMonth(),
 		cur_time.GetDay(),
 		cur_time.GetHour(),
 		cur_time.GetMin(),
-		cur_time.GetSec(),
-		extension
+		cur_time.GetSec()
 	);
+	if (ext_len > 0) {
+		UTILITY::tcscat(file_name, 64, _T("."));
+#ifdef _UNICODE
+		_TCHAR wext[8];
+		UTILITY::conv_mbs_to_wcs(ext, 8, wext, 8);
+		UTILITY::tcscat(file_name, 64, wext);
+#else
+		UTILITY::tcscat(file_name, 64, ext);
+#endif
+	}
 	size_t file_name_len = _tcslen(file_name);
 	if (maxlen <= file_name_len) return;
 
 	if (dir != NULL && _tcslen(dir) + file_name_len < maxlen) {
 		UTILITY::tcscpy(file_path, maxlen, dir);
-	} else {
-		file_path[0] = _T('\0');
 	}
 	UTILITY::tcscat(file_path, maxlen, file_name);
 }
@@ -1855,7 +1903,7 @@ int get_token(const char *str, int start_pos, int max_len, const char sep, int &
 	// rtrim
 	if (!quote) {
 		for (; ed >= 0; ed--) {
-			if (str[ed] != '\0' && str[ed] != ' ' && str[ed] != '\t') {
+			if (str[ed] != sep && str[ed] != '\0' && str[ed] != ' ' && str[ed] != '\t') {
 				break;
 			}
 		}
@@ -1884,7 +1932,7 @@ int get_token(const char *str, int start_pos, int max_len, char *word, int word_
 	int next = get_token(str, start_pos, max_len, sep, st, ed);
 
 	// copy word
-	int len = ed - st;
+	int len = ed - st + 1;
 	if (word) {
 		if (len >= (word_max_len - 1)) len = (word_max_len - 1);
 		word[0] = '\0';
@@ -1938,6 +1986,9 @@ int get_parameters(char *str, int max_len, char **params, int max_params)
 {
 	int paramnum = 0;
 
+	if (!str) {
+		return paramnum;
+	}
 	if (paramnum >= max_params) {
 		return paramnum;
 	}
@@ -1946,8 +1997,10 @@ int get_parameters(char *str, int max_len, char **params, int max_params)
 	int pos = 0;
 	do {
 		pos = get_token(str, pos, max_len, ' ', st, ed);
-		str[ed+1] = '\0';
-		params[paramnum++] = &str[st];
+		if (ed >= st) {
+			str[ed+1] = '\0';
+			params[paramnum++] = &str[st];
+		}
 	} while (pos >= 0 && paramnum < max_params);
 
 	return paramnum;

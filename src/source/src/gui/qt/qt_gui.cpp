@@ -306,7 +306,7 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
 
 	_TCHAR file_name[128];
-	UTILITY::create_date_file_path(nullptr, file_name, 128, _T("d88"));
+	UTILITY::create_date_file_path(nullptr, file_name, 128, "d88");
 	dlg.selectFile(file_name);
 
 	PostEtSystemPause(true);

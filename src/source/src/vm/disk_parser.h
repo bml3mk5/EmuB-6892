@@ -28,6 +28,15 @@
 #define MAX_FREQ		0x8000
 
 class FILEIO;
+class DISK;
+
+/// for store supported floppy media type and parameter
+typedef struct st_fd_format {
+	int media_type;
+	int dens;		// 0x40 if single density
+	uint32_t ncyl, nside, nsec, size;
+	uint32_t ssize;	// sector size when exists single density on track 0 and side 0
+} fd_format_t;
 
 /**
 	@brief parse and decode to d88 format from teledisk image
@@ -97,6 +106,9 @@ private:
 
 	void remove_tempfile();
 
+	static const uint8_t c_teledisk_d_code[256];
+	static const uint8_t c_teledisk_d_len[256];
+
 	TELEDISK_PARSER() {}
 
 public:
@@ -111,12 +123,12 @@ public:
 class DISK_PARSER
 {
 private:
+	DISK *p_disk;
 	FILEIO *fio;
-	const _TCHAR *file_path;
-	uint8_t *buffer;
-	size_t buffer_size;
-	int *file_size_ptr;
-	uint8_t *tmp_buffer;
+	const _TCHAR *p_file_path;
+	uint8_t *p_buffer;
+	size_t m_buffer_size;
+	uint8_t *p_tmp_buffer;
 
 	struct fdi_hdr_t {
 		uint8_t  unknown[0x10];
@@ -139,10 +151,12 @@ private:
 	void alloc_tmp_buffer();
 	void free_tmp_buffer();
 
-	bool standard_to_d88(int type, int ncyl, int nside, int nsec, int size);
+	static const fd_format_t c_fd_formats[];
+
+	bool standard_to_d88(const fd_format_t *param);
 
 public:
-	DISK_PARSER(FILEIO *fio, const _TCHAR *file_path, uint8_t *buffer, size_t buffer_size, int *file_size_ptr);
+	DISK_PARSER(DISK *disk, FILEIO *fio, const _TCHAR *file_path, uint8_t *buffer, size_t buffer_size);
 	~DISK_PARSER();
 
 	// teledisk image decoder (td0)
@@ -154,9 +168,9 @@ public:
 	// cpdread image decoder (dsk)
 	bool cpdread_to_d88(int extended);
 
-	bool parse_standard(_TCHAR *n_file_path);
+	bool parse_standard();
 
-	bool parse(int offset, _TCHAR *n_file_path, int &file_size_orig, int &file_offset);
+	bool parse(int offset, int &file_size_orig, int &file_offset);
 };
 
 #endif /* DISK_PARSER_H */

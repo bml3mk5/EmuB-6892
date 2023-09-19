@@ -1057,7 +1057,7 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	_stprintf(title, CMSG(New_Floppy_Disk_VDIGIT), drv);
 
 	_TCHAR file_name[_MAX_PATH];
-	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, _T("d88"));
+	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, "d88");
 
 	SystemPause(true);
 	filebox_param.Set(emu, this, 0, drv, type);

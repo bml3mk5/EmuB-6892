@@ -27,8 +27,8 @@ extern const CMsg::Id fdd_type[];
 extern const CMsg::Id correct[];
 extern const _TCHAR *correct_amp[];
 
-extern const _TCHAR *sound_rate[];
-extern const _TCHAR *sound_bits[];
+extern const _TCHAR *wav_sampling_rate[];
+extern const _TCHAR *wav_sampling_bits[];
 
 extern const _TCHAR *disp_skew[];
 
@@ -66,6 +66,20 @@ extern const CMsg::Id type_of_soundcard[];
 extern const CMsg::Id z80bcard_irq[];
 #endif
 #endif
+
+extern const char *datarec_exts;
+
+extern const char *floppy_disk_exts;
+extern const char *blank_floppy_disk_exts;
+
+extern const char *hard_disk_exts;
+extern const char *blank_hard_disk_exts;
+
+extern const char *state_file_exts;
+extern const char *key_rec_file_exts;
+
+extern const char *autokey_file_exts;
+extern const char *printing_file_exts;
 
 extern const CMsg::Id volume[];
 

@@ -22,8 +22,9 @@ namespace UTILITY
 	// ----------------------------------------------------------------------
 	// file path conversion
 
-	bool check_file_extension(const _TCHAR *filename, const _TCHAR *ext);
-	bool check_file_extensions(const _TCHAR *filename, ...);
+	bool check_file_extension(const _TCHAR *file_path, const _TCHAR *ext);
+	bool check_file_extensions(const _TCHAR *file_path, ...);
+	bool check_file_extensions(const _TCHAR *file_path, const char *exts);
 
 	void convert_path_separator(_TCHAR *path);
 	void add_path_separator(_TCHAR *path, size_t maxlen = _MAX_PATH);
@@ -47,7 +48,7 @@ namespace UTILITY
 	size_t chomp_crlf(char *str);
 	size_t chomp_crlf(wchar_t *str);
 
-	void create_date_file_path(const _TCHAR *dir, _TCHAR *file_path, size_t maxlen, const _TCHAR *extension);
+	void create_date_file_path(const _TCHAR *dir, _TCHAR *file_path, size_t maxlen, const char *extensions);
 
 	// ----------------------------------------------------------------------
 	// string conversion

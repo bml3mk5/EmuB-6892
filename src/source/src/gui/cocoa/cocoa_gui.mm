@@ -1809,7 +1809,7 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	[panel setDirectoryURL:[NSURL fileURLWithPath:[NSString stringWithUTF8String:config.initial_disk_path]]];
 	// set default file name
 	char file_name[128];
-	UTILITY::create_date_file_path(NULL, file_name, 128, _T("d88"));
+	UTILITY::create_date_file_path(NULL, file_name, 128, "d88");
 	[panel setNameFieldStringValue:[NSString stringWithUTF8String:file_name]];
 
 	// Display modal dialog

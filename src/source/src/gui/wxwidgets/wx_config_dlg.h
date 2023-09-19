@@ -66,6 +66,7 @@ private:
 	MyCheckBox *chkDelayFd2;
 	MyCheckBox *chkFdDensity;
 	MyCheckBox *chkFdMedia;
+	MyCheckBox *chkFdSavePlain;
 	wxTextCtrl *txtHostLPT[3];
 	wxTextCtrl *txtPortLPT[3];
 	wxTextCtrl *txtDelayLPT[3];

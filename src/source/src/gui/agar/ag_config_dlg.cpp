@@ -107,6 +107,7 @@ void AG_CONFIG_DLG::Create()
 	param.delayfd2 = FLG_DELAY_FDSEEK ? 1 : 0;
 	param.chk_fddensity = FLG_CHECK_FDDENSITY ? 0 : 1;
 	param.chk_fdmedia = FLG_CHECK_FDMEDIA ? 0 : 1;
+	param.save_fdplain = FLG_SAVE_FDPLAIN ? 1 : 0;
 	param.io_port = emu->get_parami(VM::ParamIOPort);
 	param.wav_reverse = config.wav_reverse ? 1 : 0;
 	param.wav_half = config.wav_half ? 1 : 0;
@@ -424,11 +425,11 @@ void AG_CONFIG_DLG::Create()
 
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Sample_Rate));
-	UComboNew(hbox, LABELS::sound_rate, paramtmp->wav_sample_rate, OnChangeSampleRate);
+	UComboNew(hbox, LABELS::wav_sampling_rate, paramtmp->wav_sample_rate, OnChangeSampleRate);
 
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Sample_Bits));
-	UComboNew(hbox, LABELS::sound_bits, paramtmp->wav_sample_bits, OnChangeSampleBits);
+	UComboNew(hbox, LABELS::wav_sampling_bits, paramtmp->wav_sample_bits, OnChangeSampleBits);
 
 	// FDD
 	vbox = AG_BoxNewVert(vbox_base, AG_BOX_FRAME | AG_BOX_HFILL);
@@ -447,6 +448,8 @@ void AG_CONFIG_DLG::Create()
 	// density media
 	AG_CheckboxNewInt(vbox, 0, CMSG(Suppress_checking_for_density), &paramtmp->chk_fddensity);
 	AG_CheckboxNewInt(vbox, 0, CMSG(Suppress_checking_for_media_type), &paramtmp->chk_fdmedia);
+
+	AG_CheckboxNewInt(vbox, 0, CMSG(Save_a_plain_disk_image_as_it_is), &paramtmp->save_fdplain);
 
 	//
 	// 3 network
@@ -698,10 +701,11 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 		|| param.fdd_type == FDD_TYPE_58FDD ? IOPORT_MSK_5FDD : 0));
 #endif
 	config.mount_fdd = param.mount_fdd;
-	config.delay_fdd = (param.delayfd1 ? MSK_DELAY_FDSEARCH : 0)
-					| (param.delayfd2 ? MSK_DELAY_FDSEEK : 0);
-	config.check_fdmedia = (param.chk_fddensity ? 0 : MSK_CHECK_FDDENSITY)
-					| (param.chk_fdmedia ? 0 : MSK_CHECK_FDMEDIA);
+	config.option_fdd = (param.delayfd1 ? MSK_DELAY_FDSEARCH : 0)
+		| (param.delayfd2 ? MSK_DELAY_FDSEEK : 0)
+		| (param.chk_fddensity ? 0 : MSK_CHECK_FDDENSITY)
+		| (param.chk_fdmedia ? 0 : MSK_CHECK_FDMEDIA)
+		| (param.save_fdplain ? MSK_SAVE_FDPLAIN : 0);
 
 	emu->set_parami(VM::ParamIOPort, param.io_port);
 #if defined(_MBS1)

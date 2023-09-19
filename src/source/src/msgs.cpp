@@ -128,6 +128,7 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Ignore delays to seek track.");
 	msgs[i++] = _TX("Suppress checking for density.");
 	msgs[i++] = _TX("Suppress checking for media type.");
+	msgs[i++] = _TX("Save a plain disk image as it is.");
 	msgs[i++] = _TX("Drive");
 	msgs[i++] = _TX("Select Drive");
 	msgs[i++] = _TX("FDD Type");

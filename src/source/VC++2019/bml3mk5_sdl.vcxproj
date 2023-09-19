@@ -900,7 +900,6 @@
     <ClCompile Include="..\src\osd\SDL\sdl_vkeyboardbase.cpp" />
     <ClCompile Include="..\src\osd\d88_files.cpp" />
     <ClCompile Include="..\src\osd\debugger_console.cpp" />
-    <ClCompile Include="..\src\osd\disk_parser.cpp" />
     <ClCompile Include="..\src\osd\emu.cpp" />
     <ClCompile Include="..\src\osd\emu_input.cpp" />
     <ClCompile Include="..\src\osd\emu_input_keysym.cpp" />
@@ -948,6 +947,7 @@
     <ClCompile Include="..\src\vm\debugger_base.cpp" />
     <ClCompile Include="..\src\vm\device.cpp" />
     <ClCompile Include="..\src\vm\disk.cpp" />
+    <ClCompile Include="..\src\vm\disk_parser.cpp" />
     <ClCompile Include="..\src\vm\event.cpp" />
     <ClCompile Include="..\src\vm\fmgen\fmgen.cpp" />
     <ClCompile Include="..\src\vm\fmgen\fmtimer.cpp" />
@@ -1046,7 +1046,6 @@
     <ClInclude Include="..\src\osd\SDL\sdl_vkeyboardbase.h" />
     <ClInclude Include="..\src\osd\d88_files.h" />
     <ClInclude Include="..\src\osd\debugger_console.h" />
-    <ClInclude Include="..\src\osd\disk_parser.h" />
     <ClInclude Include="..\src\osd\emu_input.h" />
     <ClInclude Include="..\src\osd\opengl.h" />
     <ClInclude Include="..\src\osd\screenmode.h" />
@@ -1099,6 +1098,7 @@
     <ClInclude Include="..\src\vm\debugger_base.h" />
     <ClInclude Include="..\src\vm\device.h" />
     <ClInclude Include="..\src\vm\disk.h" />
+    <ClInclude Include="..\src\vm\disk_parser.h" />
     <ClInclude Include="..\src\vm\event.h" />
     <ClInclude Include="..\src\vm\floppy_defs.h" />
     <ClInclude Include="..\src\vm\fmgen\diag.h" />

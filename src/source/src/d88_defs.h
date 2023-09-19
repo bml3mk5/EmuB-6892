@@ -29,7 +29,7 @@ typedef struct d88_hdr_st {
 	char title[17];
 	uint8_t rsrv[9];
 	uint8_t protect;
-	uint8_t type;
+	uint8_t media_type;
 	uint32_t size;
 	uint32_t trkptr[164];
 } d88_hdr_t;

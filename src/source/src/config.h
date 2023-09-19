@@ -178,29 +178,28 @@ enum ORIGINAL_MASKS {
 ///@}
 
 /// @ingroup Enums
-/// @brief bit mask of Config::delay_fdd
-enum DELAYFDD_MASKS {
-	MSK_DELAY_FDSEARCH	= 0x01,
-	MSK_DELAY_FDSEEK	= 0x02,
+/// @brief bit mask of Config::option_fdd
+enum OPTIONFDD_MASKS {
+	MSK_DELAY_FDSEARCH	= 0x0001,	///< bit0: ignore delay by searching sector
+	MSK_DELAY_FDSEEK	= 0x0002,	///< bit1: ignore delay by seeking track
+	MSK_DELAY_FD_MASK	= 0x0003,	///< delay fdd flags mask
+	MSK_DELAY_FD_SFT	= 0,		///< delay fdd flags shift
+	MSK_CHECK_FDDENSITY	= 0x0010,	///< bit4: check a difference of density in a floppy disk
+	MSK_CHECK_FDMEDIA	= 0x0020,	///< bit5: check a difference of media in a floppy disk
+	MSK_CHECK_FD_MASK	= 0x0030,	///< check fd media flags mask
+	MSK_CHECK_FD_SFT	= 4,		///< check fd media flags shift
+	MSK_SAVE_FDPLAIN	= 0x0100,	///< bit8: save plain image as it is (default: save it as converted d88 image)
+	MSK_SAVE_FD_MASK	= 0x0100,	///< save fd flags mask
+	MSK_SAVE_FD_SFT		= 8,		///< save fd flags shift
 };
 
 /// @ingroup Macros
 ///@{
-#define FLG_DELAY_FDSEARCH	(config.delay_fdd & MSK_DELAY_FDSEARCH)
-#define FLG_DELAY_FDSEEK	(config.delay_fdd & MSK_DELAY_FDSEEK)
-///@}
-
-/// @ingroup Enums
-/// @brief bit mask of Config::check_fdmedia
-enum CHECKFDMEDIA_MASKS {
-	MSK_CHECK_FDDENSITY	= 0x01,
-	MSK_CHECK_FDMEDIA	= 0x02,
-};
-
-/// @ingroup Macros
-///@{
-#define FLG_CHECK_FDDENSITY	(config.check_fdmedia & MSK_CHECK_FDDENSITY)
-#define FLG_CHECK_FDMEDIA	(config.check_fdmedia & MSK_CHECK_FDMEDIA)
+#define FLG_DELAY_FDSEARCH	(config.option_fdd & MSK_DELAY_FDSEARCH)
+#define FLG_DELAY_FDSEEK	(config.option_fdd & MSK_DELAY_FDSEEK)
+#define FLG_CHECK_FDDENSITY	(config.option_fdd & MSK_CHECK_FDDENSITY)
+#define FLG_CHECK_FDMEDIA	(config.option_fdd & MSK_CHECK_FDMEDIA)
+#define FLG_SAVE_FDPLAIN	(config.option_fdd & MSK_SAVE_FDPLAIN)
 ///@}
 
 /// @ingroup Enums
@@ -432,13 +431,14 @@ public:
 	// bit8: occur mouse IRQ when both edge (on mbs1)
 	int original;
 
-	// bit0: ignore delay by search sector
-	// bit1: ignore delay by seek track
-	uint8_t delay_fdd;
-
-	// bit0: check a difference of density in floppy disk
-	// bit0: check a difference of media in floppy disk
-	uint8_t check_fdmedia;
+#ifdef USE_FD1
+	// bit0: ignore delay by searching sector
+	// bit1: ignore delay by seeking track
+	// bit4: check a difference of density in a floppy disk
+	// bit5: check a difference of media in a floppy disk
+	// bit8: save plain image as it is (default: save it as converted d88 image)
+	int option_fdd;
+#endif
 
 #ifdef USE_STATE
 	CDirPath initial_state_path;

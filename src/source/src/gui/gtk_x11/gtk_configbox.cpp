@@ -70,7 +70,9 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	// create notebook tab
 	nb = create_notebook(cont);
 
+	// ----------------------------------------
 	// 0 Mode
+	// ----------------------------------------
 
 	vboxall = create_vbox(NULL);
 	add_note(nb, vboxall, LABELS::tabs[0]);
@@ -124,7 +126,9 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	hbox = create_hbox(vboxall);
 	create_label(hbox, CMsg::Need_restart_program_or_PowerOn);
 
+	// ----------------------------------------
 	// 1 screen
+	// ----------------------------------------
 
 	vboxall = create_vbox(NULL);
 	add_note(nb, vboxall, LABELS::tabs[1]);
@@ -197,11 +201,14 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	hbox = create_hbox(vboxall);
 	create_label(hbox, CMsg::Need_restart_program);
 
+	// ----------------------------------------
 	// 2 tape, FDD
+	// ----------------------------------------
 
 	vboxall = create_vbox(NULL);
 	add_note(nb, vboxall, LABELS::tabs[2]);
 
+#ifdef USE_DATAREC
 	hboxall = create_hbox(vboxall);
 
 	create_frame(hboxall, CMsg::Load_Wav_File_from_Tape, &vbox, &hbox);
@@ -220,12 +227,13 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	}
 
 	create_frame(hboxall, CMsg::Save_Wav_File_to_Tape, &vbox, &hbox);
-	comSampleRate = create_combo_box(hbox,CMsg::Sample_Rate,LABELS::sound_rate,config.wav_sample_rate);
+	comSampleRate = create_combo_box(hbox,CMsg::Sample_Rate,LABELS::wav_sampling_rate,config.wav_sample_rate);
 	hbox = create_hbox(vbox);
-	comSampleBits = create_combo_box(hbox,CMsg::Sample_Bits,LABELS::sound_bits,config.wav_sample_bits);
+	comSampleBits = create_combo_box(hbox,CMsg::Sample_Bits,LABELS::wav_sampling_bits,config.wav_sample_bits);
+#endif
 
 	// FDD
-
+#ifdef USE_FD1
 	hboxall = create_hbox(vboxall);
 
 	// fdd mount
@@ -243,13 +251,19 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	chkFdDensity = create_check_box(hbox, CMsg::Suppress_checking_for_density, (FLG_CHECK_FDDENSITY == 0));
 	hbox = create_hbox(vbox);
 	chkFdMedia = create_check_box(hbox, CMsg::Suppress_checking_for_media_type, (FLG_CHECK_FDMEDIA == 0));
+	hbox = create_hbox(vbox);
+	chkFdSavePlain = create_check_box(hbox, CMsg::Save_a_plain_disk_image_as_it_is, (FLG_SAVE_FDPLAIN != 0));
+#endif
 
+	// ----------------------------------------
 	// 3 network
+	// ----------------------------------------
 
 	vboxall = create_vbox(NULL);
 	add_note(nb, vboxall, LABELS::tabs[3]);
 
 	// LPT
+#ifdef MAX_PRINTER
 	for(int drv=0; drv<MAX_PRINTER; drv++) {
 		hbox = create_hbox(vboxall);
 		sprintf(buf, CMSG(LPTVDIGIT_Hostname), drv);
@@ -260,6 +274,8 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 		txtLPTDelay[drv] = create_text_with_label(hbox, CMsg::_Print_delay, buf, 5);
 		create_label(hbox, CMsg::msec);
 	}
+#endif
+#ifdef MAX_COMM
 	// COM
 	for(int drv=0; drv<MAX_COMM; drv++) {
 		hbox = create_hbox(vboxall);
@@ -269,6 +285,7 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 		txtCOMPort[drv] = create_text_with_label(hbox, CMsg::_Port, buf, 5);
 		comCOMBaud[drv] = create_combo_box(hbox, " ", LABELS::comm_baud, config.comm_dipswitch[drv]);
 	}
+#endif
 #ifdef USE_DEBUGGER
 	hbox = create_hbox(vboxall);
 	create_label(hbox, CMsg::Connectable_host_to_Debugger);
@@ -302,7 +319,9 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	comCOMUartFlowCtrl = create_combo_box(hbox, " ", LABELS::comm_uart_flowctrl, config.comm_uart_flowctrl);
 	create_label(vbox, CMsg::Need_re_connect_to_serial_port_when_modified_this);
 
+	// ----------------------------------------
 	// 4 CPU, Memory
+	// ----------------------------------------
 
 	vboxall = create_vbox(NULL);
 	add_note(nb, vboxall, LABELS::tabs[4]);
@@ -349,7 +368,9 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	create_label(hbox, CMsg::Need_restart_program_or_PowerOn);
 
 #if defined(_MBS1)
+	// ----------------------------------------
 	// 5 Sound
+	// ----------------------------------------
 
 	vboxall = create_vbox(NULL);
 	add_note(nb, vboxall, LABELS::tabs[5]);
@@ -424,11 +445,14 @@ bool ConfigBox::SetData()
 	emu->set_parami(VM::ParamIOPort, val);
 #endif
 
+#ifdef USE_FD1
 	config.mount_fdd = get_check_state_num(chkFDMount, MAX_DRIVE);
-	config.delay_fdd = (get_check_state(chkDelayFd1) ? MSK_DELAY_FDSEARCH : 0)
-					| (get_check_state(chkDelayFd2) ? MSK_DELAY_FDSEEK : 0);
-	config.check_fdmedia = (get_check_state(chkFdDensity) ? 0 : MSK_CHECK_FDDENSITY)
-					 | (get_check_state(chkFdMedia) ? 0 : MSK_CHECK_FDMEDIA);
+	config.option_fdd = (get_check_state(chkDelayFd1) ? MSK_DELAY_FDSEARCH : 0)
+		| (get_check_state(chkDelayFd2) ? MSK_DELAY_FDSEEK : 0)
+		| (get_check_state(chkFdDensity) ? 0 : MSK_CHECK_FDDENSITY)
+		| (get_check_state(chkFdMedia) ? 0 : MSK_CHECK_FDMEDIA)
+		| (get_check_state(chkFdSavePlain) ? MSK_SAVE_FDPLAIN : 0);
+#endif
 
 #ifdef USE_OPENGL
 	config.use_opengl = (uint8_t)get_combo_sel_num(comUseOpenGL);

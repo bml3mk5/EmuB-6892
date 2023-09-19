@@ -66,31 +66,6 @@ void MyConfigDlg::InitDialog()
 	wxBoxSizer *bszr, *bszr2, *bszr3;
 	wxGridSizer *gszr;
 
-	const wxString rate_list[] = {
-		_T("11025"),
-		_T("22050"),
-		_T("44100"),
-		_T("48000"),
-	};
-	const wxString bits_list[] = {
-		_T("8"),
-		_T("16"),
-	};
-	const wxString skew_list[] = {
-#if defined(_MBS1)
-		wxT("-2"),
-		wxT("-1"),
-#endif
-		wxT("0"),
-		wxT("1"),
-		wxT("2")
-	};
-	const CMsg::Id cap_type_list[] = {
-		CMsg::BMP,
-		CMsg::PNG,
-		CMsg::End
-	};
-
 	MyNotebook *book = new MyNotebook(this, IDC_NOTEBOOK, wxDefaultPosition, wxDefaultSize);
 	wxPanel *page;
 
@@ -203,18 +178,12 @@ void MyConfigDlg::InitDialog()
 	szrSub->Add(szrGLFilter);
 
 	// CRTC
-	int skew_list_cnt;
-#if defined(_MBS1)
-	skew_list_cnt = 5;
-#else
-	skew_list_cnt = 3;
-#endif
 	wxBoxSizer *szrCrtc;
 	szrCrtc = new wxStaticBoxSizer(new MyStaticBox(page, wxID_ANY, CMsg::CRTC), wxVERTICAL);
 	bszr = new wxBoxSizer(wxVERTICAL);
 	bszr2 = new wxBoxSizer(wxHORIZONTAL);
 	bszr2->Add(new MyStaticText(page, wxID_ANY, CMsg::Disptmg_Skew), flags);
-	comDisptmg = new wxChoice(page, IDC_COMBO_DISPTMG, wxDefaultPosition, wxDefaultSize, skew_list_cnt, skew_list, 0);
+	comDisptmg = new MyChoice(page, IDC_COMBO_DISPTMG, wxDefaultPosition, wxDefaultSize, LABELS::disp_skew, 0);
 	bszr2->Add(comDisptmg, flags);
 	bszr->Add(bszr2, flags);
 	bszr3 = new wxBoxSizer(wxHORIZONTAL);
@@ -223,7 +192,7 @@ void MyConfigDlg::InitDialog()
 #else
 	bszr3->Add(new MyStaticText(page, wxID_ANY, CMsg::Curdisp_Skew), flags);
 #endif
-	comCurdisp = new wxChoice(page, IDC_COMBO_CURDISP, wxDefaultPosition, wxDefaultSize, skew_list_cnt, skew_list, 0);
+	comCurdisp = new MyChoice(page, IDC_COMBO_CURDISP, wxDefaultPosition, wxDefaultSize, LABELS::disp_skew, 0);
 	bszr3->Add(comCurdisp, flags);
 	bszr->Add(bszr3, flags);
 	szrCrtc->Add(bszr, flags);
@@ -245,7 +214,7 @@ void MyConfigDlg::InitDialog()
 	// Capture type
 	bszr = new wxBoxSizer(wxHORIZONTAL);
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::Capture_Type), flags);
-	comCapType = new MyChoice(page, IDC_COMBO_CAPTURE_TYPE, wxDefaultPosition, wxDefaultSize, cap_type_list);
+	comCapType = new MyChoice(page, IDC_COMBO_CAPTURE_TYPE, wxDefaultPosition, wxDefaultSize, LABELS::capture_fmt);
 	bszr->Add(comCapType, flags);
 
 	szrMain->Add(bszr, flags);
@@ -365,12 +334,12 @@ void MyConfigDlg::InitDialog()
 	bszr = new wxBoxSizer(wxVERTICAL);
 	bszr2 = new wxBoxSizer(wxHORIZONTAL);
 	bszr2->Add(new MyStaticText(page, wxID_ANY, CMsg::Sample_Rate), flags);
-	comWavSampleRate = new wxChoice(page, IDC_COMBO_SRATE, wxDefaultPosition, wxDefaultSize, 4, rate_list, 0);
+	comWavSampleRate = new MyChoice(page, IDC_COMBO_SRATE, wxDefaultPosition, wxDefaultSize, LABELS::wav_sampling_rate, 0);
 	bszr2->Add(comWavSampleRate, flags);
 	bszr->Add(bszr2, flags);
 	bszr3 = new wxBoxSizer(wxHORIZONTAL);
 	bszr3->Add(new MyStaticText(page, wxID_ANY, CMsg::Sample_Bits), flags);
-	comWavSampleBits = new wxChoice(page, IDC_COMBO_SBITS, wxDefaultPosition, wxDefaultSize, 2, bits_list, 0);
+	comWavSampleBits = new MyChoice(page, IDC_COMBO_SBITS, wxDefaultPosition, wxDefaultSize, LABELS::wav_sampling_bits, 0);
 	bszr3->Add(comWavSampleBits, flags);
 	bszr->Add(bszr3, flags);
 	szrSaveWav->Add(bszr, flags);
@@ -400,6 +369,8 @@ void MyConfigDlg::InitDialog()
 	szrFdd->Add(chkFdDensity, flags);
 	chkFdMedia = new MyCheckBox(page, IDC_CHK_FDMEDIA, CMsg::Suppress_checking_for_media_type);
 	szrFdd->Add(chkFdMedia, flags);
+	chkFdSavePlain = new MyCheckBox(page, IDC_CHK_SAVE_FDPLAIN, CMsg::Save_a_plain_disk_image_as_it_is);
+	szrFdd->Add(chkFdSavePlain, flags);
 
 	szrMain->Add(szrFdd, flags);
 
@@ -685,6 +656,7 @@ void MyConfigDlg::UpdateDialog()
 	chkDelayFd2->SetValue(FLG_DELAY_FDSEEK != 0);
 	chkFdDensity->SetValue(FLG_CHECK_FDDENSITY == 0);
 	chkFdMedia->SetValue(FLG_CHECK_FDMEDIA == 0);
+	chkFdSavePlain->SetValue(FLG_SAVE_FDPLAIN != 0);
 
 	for(i=0; i<MAX_PRINTER; i++) {
 		txtHostLPT[i]->SetValue(config.printer_server_host[i].Get());
@@ -773,10 +745,11 @@ void MyConfigDlg::ModifyParam()
 			config.mount_fdd |= (1 << i);
 		}
 	}
-	config.delay_fdd = (chkDelayFd1->GetValue() ? MSK_DELAY_FDSEARCH : 0)
-		| (chkDelayFd2->GetValue() ? MSK_DELAY_FDSEEK : 0);
-	config.check_fdmedia = (chkFdDensity->GetValue() ? 0 : MSK_CHECK_FDDENSITY)
-		| (chkFdMedia->GetValue() ? 0 : MSK_CHECK_FDMEDIA);
+	config.option_fdd = (chkDelayFd1->GetValue() ? MSK_DELAY_FDSEARCH : 0)
+		| (chkDelayFd2->GetValue() ? MSK_DELAY_FDSEEK : 0)
+		| (chkFdDensity->GetValue() ? 0 : MSK_CHECK_FDDENSITY)
+		| (chkFdMedia->GetValue() ? 0 : MSK_CHECK_FDMEDIA)
+		| (chkFdDensity->GetValue() ? MSK_SAVE_FDPLAIN : 0);
 
 	// immediate modify
 	config.use_power_off = chkPowerOff->GetValue();

@@ -669,7 +669,7 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	FileBox fbox(hWindow);
 
 	_TCHAR file_name[_MAX_PATH];
-	UTILITY::create_date_file_path(config.initial_disk_path, file_name, _MAX_PATH, _T("d88"));
+	UTILITY::create_date_file_path(config.initial_disk_path, file_name, _MAX_PATH, "d88");
 
 	PostEtSystemPause(true);
 	bool rc = fbox.Show(

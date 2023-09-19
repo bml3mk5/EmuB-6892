@@ -68,7 +68,9 @@ extern GUI *gui;
 
 	_TCHAR bname[10];
 
+	// ----------------------------------------
 	// Mode tab
+	// ----------------------------------------
 	tab = [tabView tabViewItemAtIndex:0];
 	tab_view = (CocoaView *)[tab view];
 
@@ -184,7 +186,9 @@ extern GUI *gui;
 	[tab_view addSubview:lbl];
 
 
+	// ----------------------------------------
 	// Screen tab
+	// ----------------------------------------
 	tab = [tabView tabViewItemAtIndex:1];
 	tab_view = (CocoaView *)[tab view];
 
@@ -399,11 +403,15 @@ extern GUI *gui;
 	[hbox addControl:lbl];
 	[tab_view addSubview:lbl];
 
-	// Tape tab
+	// ----------------------------------------
+	// Tape, FDD tab
+	// ----------------------------------------
 	tab = [tabView tabViewItemAtIndex:2];
 	tab_view = (CocoaView *)[tab view];
 
 	box_one = [box_tab addBox:VerticalBox :0 :0 :_T("Tape")];
+
+#ifdef USE_DATAREC
 	sbox = [box_one addBox:HorizontalBox :0 :0 :_T("TapeS")];
 	lbox = [sbox addBox:VerticalBox :0 :0 :_T("TapeL")];
 
@@ -465,7 +473,7 @@ extern GUI *gui;
 	[hbox addControl:lbl];
 	[box_view addSubview:lbl];
 
-	popSampleRate = [CocoaPopUpButton createT:LABELS::sound_rate action:nil selidx:config.wav_sample_rate];
+	popSampleRate = [CocoaPopUpButton createT:LABELS::wav_sampling_rate action:nil selidx:config.wav_sample_rate];
 	[hbox addControl:popSampleRate];
 	[box_view addSubview:popSampleRate];
 
@@ -475,14 +483,15 @@ extern GUI *gui;
 	[hbox addControl:lbl];
 	[box_view addSubview:lbl];
 
-	popSampleBits = [CocoaPopUpButton createT:LABELS::sound_bits action:nil selidx:config.wav_sample_bits];
+	popSampleBits = [CocoaPopUpButton createT:LABELS::wav_sampling_bits action:nil selidx:config.wav_sample_bits];
 	[hbox addControl:popSampleBits];
 	[box_view addSubview:popSampleBits];
 
 	[tab_view addSubview:box];
+#endif
 
 	// FDD
-
+#ifdef USE_FD1
 	bbox = [box_one addBox:BoxViewBox :0 :COCOA_DEFAULT_MARGIN :_T("Fdd2B")];
 	box = [CocoaBox createI:CMsg::Floppy_Disk_Drive];
 	[bbox addControl:box :320 :1];
@@ -519,9 +528,16 @@ extern GUI *gui;
 	[vbox addControl:chkFdMedia];
 	[box_view addSubview:chkFdMedia];
 
-	[tab_view addSubview:box];
+	chkFdSavePlain = [CocoaCheckBox createI:CMsg::Save_a_plain_disk_image_as_it_is action:nil value:(FLG_SAVE_FDPLAIN != 0)];
+	[vbox addControl:chkFdSavePlain];
+	[box_view addSubview:chkFdSavePlain];
 
+	[tab_view addSubview:box];
+#endif
+
+	// ----------------------------------------
 	// Network tab
+	// ----------------------------------------
 	tab = [tabView tabViewItemAtIndex:3];
 	tab_view = (CocoaView *)[tab view];
 
@@ -671,7 +687,9 @@ extern GUI *gui;
 	[tab_view addSubview:box];
 
 
+	// ----------------------------------------
 	// CPU, Memory tab
+	// ----------------------------------------
 	tab = [tabView tabViewItemAtIndex:4];
 	tab_view = (CocoaView *)[tab view];
 
@@ -756,7 +774,9 @@ extern GUI *gui;
 	[tab_view addSubview:lbl];
 
 #if defined(_MBS1)
+	// ----------------------------------------
 	// Sound tab
+	// ----------------------------------------
 	tab = [tabView tabViewItemAtIndex:5];
 	tab_view = (CocoaView *)[tab view];
 
@@ -900,13 +920,16 @@ extern GUI *gui;
 	for(i=0; i<4; i++) {
 		if ([radFddType[i] state] == NSOnState) emu->set_parami(VM::ParamFddType,i);
 	}
+#ifdef USE_FD1
 	for(i=0;i<MAX_DRIVE;i++) {
 		config.mount_fdd = (([chkFddMount[i] state] == NSOnState) ? config.mount_fdd | (1 << i) : config.mount_fdd & ~(1 << i));
 	}
-	config.delay_fdd = ([chkDelayFd1 state] == NSOnState ? MSK_DELAY_FDSEARCH : 0)
-					 | ([chkDelayFd2 state] == NSOnState ? MSK_DELAY_FDSEEK : 0);
-	config.check_fdmedia = ([chkFdDensity state] == NSOnState ? 0 : MSK_CHECK_FDDENSITY)
-					 | ([chkFdMedia state] == NSOnState ? 0 : MSK_CHECK_FDMEDIA);
+	config.option_fdd = ([chkDelayFd1 state] == NSOnState ? MSK_DELAY_FDSEARCH : 0)
+		| ([chkDelayFd2 state] == NSOnState ? MSK_DELAY_FDSEEK : 0)
+		| ([chkFdDensity state] == NSOnState ? 0 : MSK_CHECK_FDDENSITY)
+		| ([chkFdMedia state] == NSOnState ? 0 : MSK_CHECK_FDMEDIA)
+		| ([chkFdSavePlain state] == NSOnState ? MSK_SAVE_FDPLAIN : 0);
+#endif
 
 	for(i=IOPORT_STARTNUM;i<IOPORT_NUMS;i++) {
 		if ((1 << i) & IOPORT_MSK_ALL) {
@@ -962,6 +985,7 @@ extern GUI *gui;
 	valuel = (int)[popLanguage indexOfSelectedItem];
 	clocale->ChooseLocaleName(lang_list, valuel, config.language);
 
+#ifdef USE_DATAREC
 	config.wav_reverse = ([chkReverseWave state] == NSOnState);
 	config.wav_half = ([chkHalfWave state] == NSOnState);
 //	config.wav_correct = ([chkCorrectWave state] == NSOnState);
@@ -979,7 +1003,9 @@ extern GUI *gui;
 
 	config.wav_sample_rate = [popSampleRate indexOfSelectedItem];
 	config.wav_sample_bits = [popSampleBits indexOfSelectedItem];
+#endif
 
+#ifdef MAX_PRINTER
 	for(i=0;i<MAX_PRINTER;i++) {
 		config.printer_server_host[i].Set([[txtLPTHost[i] stringValue] UTF8String]);
 		valuel = [txtLPTPort[i] intValue];
@@ -993,6 +1019,8 @@ extern GUI *gui;
 		valued = floor(valued * 10.0 + 0.5) / 10.0;
 		config.printer_delay[i] = valued;
 	}
+#endif
+#ifdef MAX_COMM
 	for(i=0;i<MAX_COMM;i++) {
 		config.comm_server_host[i].Set([[txtCOMHost[i] stringValue] UTF8String]);
 		valuel = [txtCOMPort[i] intValue];
@@ -1001,6 +1029,7 @@ extern GUI *gui;
 		}
 		config.comm_dipswitch[i] = (int)[popCOMDipswitch[i] indexOfSelectedItem] + 1;
 	}
+#endif
 #ifdef USE_DEBUGGER
 	config.debugger_server_host.Set([[txtDbgrHost stringValue] UTF8String]);
 	valuel = [txtDbgrPort intValue];

@@ -50,26 +50,34 @@
 	CocoaTextField *txtInfoFontName;
 	CocoaTextField *txtInfoFontSize;
 
+#ifdef USE_DATAREC
 	CocoaCheckBox *chkReverseWave;
 	CocoaCheckBox *chkHalfWave;
 //	CocoaCheckBox *chkCorrectWave;
 	CocoaRadioGroup *radCorrect;
 	CocoaTextField *txtCorrectAmp[2];
+	CocoaPopUpButton *popSampleRate;
+	CocoaPopUpButton *popSampleBits;
+#endif
 
+#ifdef USE_FD1
 	CocoaCheckBox *chkDelayFd1;
 	CocoaCheckBox *chkDelayFd2;
 	CocoaCheckBox *chkFdDensity;
 	CocoaCheckBox *chkFdMedia;
+	CocoaCheckBox *chkFdSavePlain;
+#endif
 
-	CocoaPopUpButton *popSampleRate;
-	CocoaPopUpButton *popSampleBits;
-
+#ifdef MAX_PRINTER
 	CocoaTextField *txtLPTHost[MAX_PRINTER];
 	CocoaTextField *txtLPTPort[MAX_PRINTER];
 	CocoaTextField *txtLPTDelay[MAX_PRINTER];
+#endif
+#ifdef MAX_COMM
 	CocoaTextField *txtCOMHost[MAX_COMM];
 	CocoaTextField *txtCOMPort[MAX_COMM];
 	CocoaPopUpButton *popCOMDipswitch[MAX_COMM];
+#endif
 #ifdef USE_DEBUGGER
 	CocoaTextField *txtDbgrHost;
 	CocoaTextField *txtDbgrPort;

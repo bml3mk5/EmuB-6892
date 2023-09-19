@@ -145,6 +145,7 @@
 		D9BFD1061C1C82CE005A90CB /* cocoa_seldrvpanel.mm in Sources */ = {isa = PBXBuildFile; fileRef = D9BFD1051C1C82CE005A90CB /* cocoa_seldrvpanel.mm */; };
 		D9C64E2F1BF6243C003F0D6E /* cocoa_fontpanel.mm in Sources */ = {isa = PBXBuildFile; fileRef = D9C64E2E1BF6243C003F0D6E /* cocoa_fontpanel.mm */; };
 		D9CA5C141AF3C5F400F70770 /* cocoa_configpanel.mm in Sources */ = {isa = PBXBuildFile; fileRef = D9CA5C131AF3C5F400F70770 /* cocoa_configpanel.mm */; };
+		D9CF3D9B2969990C0031915E /* vkeyboardbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9CF3D992969990C0031915E /* vkeyboardbase.cpp */; };
 		D9D05D72283A2CBF008FED65 /* debugger_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9D05D6E283A2CBF008FED65 /* debugger_base.cpp */; };
 		D9D05D73283A2CBF008FED65 /* noise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9D05D70283A2CBF008FED65 /* noise.cpp */; };
 		D9D876B81B1CA7F6000A737E /* ffm_rec_video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9D876B61B1CA7F6000A737E /* ffm_rec_video.cpp */; };
@@ -470,6 +471,8 @@
 		D9C64E2E1BF6243C003F0D6E /* cocoa_fontpanel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_fontpanel.mm; sourceTree = "<group>"; };
 		D9CA5C121AF3C5F400F70770 /* cocoa_configpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_configpanel.h; sourceTree = "<group>"; };
 		D9CA5C131AF3C5F400F70770 /* cocoa_configpanel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_configpanel.mm; sourceTree = "<group>"; };
+		D9CF3D992969990C0031915E /* vkeyboardbase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vkeyboardbase.cpp; sourceTree = "<group>"; };
+		D9CF3D9A2969990C0031915E /* vkeyboardbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vkeyboardbase.h; sourceTree = "<group>"; };
 		D9D05D6E283A2CBF008FED65 /* debugger_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = debugger_base.cpp; sourceTree = "<group>"; };
 		D9D05D6F283A2CBF008FED65 /* debugger_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debugger_base.h; sourceTree = "<group>"; };
 		D9D05D70283A2CBF008FED65 /* noise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = noise.cpp; sourceTree = "<group>"; };
@@ -868,8 +871,6 @@
 				D967FC6C2350A196008A021A /* d88_files.h */,
 				D967FC6D2350A196008A021A /* debugger_console.cpp */,
 				D967FC6E2350A196008A021A /* debugger_console.h */,
-				D967FC6F2350A196008A021A /* disk_parser.cpp */,
-				D967FC702350A196008A021A /* disk_parser.h */,
 				D984CB061FDD0E53000F5DC7 /* emu.cpp */,
 				D967FC722350A196008A021A /* emu_input.cpp */,
 				D967FC732350A196008A021A /* emu_input.h */,
@@ -884,6 +885,8 @@
 				D967FC792350A196008A021A /* screenmode.h */,
 				D9B04306232CB8B0001BA3C8 /* simple_clocale.cpp */,
 				D9B04307232CB8B0001BA3C8 /* simple_clocale.h */,
+				D9CF3D992969990C0031915E /* vkeyboardbase.cpp */,
+				D9CF3D9A2969990C0031915E /* vkeyboardbase.h */,
 				D967FC7B2350A196008A021A /* windowmode.cpp */,
 				D967FC7C2350A196008A021A /* windowmode.h */,
 			);
@@ -1009,6 +1012,8 @@
 				D971DA7E1AF0A6EE00896525 /* device.h */,
 				D971DA7F1AF0A6EE00896525 /* disk.cpp */,
 				D971DA801AF0A6EE00896525 /* disk.h */,
+				D967FC6F2350A196008A021A /* disk_parser.cpp */,
+				D967FC702350A196008A021A /* disk_parser.h */,
 				D971DA811AF0A6EE00896525 /* event.cpp */,
 				D971DA821AF0A6EE00896525 /* event.h */,
 				D905D454256F6F8400380ACB /* floppy_defs.h */,
@@ -1256,6 +1261,7 @@
 				D9BFD1061C1C82CE005A90CB /* cocoa_seldrvpanel.mm in Sources */,
 				D9C64E2F1BF6243C003F0D6E /* cocoa_fontpanel.mm in Sources */,
 				D9CA5C141AF3C5F400F70770 /* cocoa_configpanel.mm in Sources */,
+				D9CF3D9B2969990C0031915E /* vkeyboardbase.cpp in Sources */,
 				D9D05D72283A2CBF008FED65 /* debugger_base.cpp in Sources */,
 				D9D05D73283A2CBF008FED65 /* noise.cpp in Sources */,
 				D9D876B81B1CA7F6000A737E /* ffm_rec_video.cpp in Sources */,

@@ -42,6 +42,7 @@ private:
 		int  delayfd2;
 		int  chk_fddensity;
 		int  chk_fdmedia;
+		int  save_fdplain;
 
 		int  wav_reverse;
 		int  wav_half;

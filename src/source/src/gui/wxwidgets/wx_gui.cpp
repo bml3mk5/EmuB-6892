@@ -235,7 +235,7 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	wxString title = wxString::Format(CMSG(New_Floppy_Disk_VDIGIT), drv);
 
 	_TCHAR file_name[128];
-	UTILITY::create_date_file_path(NULL, file_name, 128, _T("d88"));
+	UTILITY::create_date_file_path(NULL, file_name, 128, "d88");
 
 	MyFileDialog *dlg = new MyFileDialog(
 		title,

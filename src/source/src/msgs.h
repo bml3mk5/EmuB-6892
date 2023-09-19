@@ -140,6 +140,7 @@ public:
 		Ignore_delays_to_seek_track,
 		Suppress_checking_for_density,
 		Suppress_checking_for_media_type,
+		Save_a_plain_disk_image_as_it_is,
 		Drive,
 		Select_Drive,
 		FDD_Type,

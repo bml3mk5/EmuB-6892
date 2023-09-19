@@ -77,7 +77,6 @@ SOURCES +=\
 	../src/osd/qt/qt_debugger_console.cpp \
 	../src/osd/d88_files.cpp \
 	../src/osd/debugger_console.cpp \
-	../src/osd/disk_parser.cpp \
 	../src/osd/emu.cpp \
 	../src/osd/emu_input.cpp \
 	../src/osd/emu_input_keysym.cpp \
@@ -113,6 +112,7 @@ SOURCES +=\
 	../src/vm/debugger_base.cpp \
 	../src/vm/device.cpp \
 	../src/vm/disk.cpp \
+	../src/vm/disk_parser.cpp \
 	../src/vm/event.cpp \
 	../src/vm/hd46505.cpp \
 	../src/vm/mb8866.cpp \
@@ -195,7 +195,6 @@ HEADERS  +=\
 	../src/parseopt.h \
 	../src/osd/d88_files.h \
 	../src/osd/debugger_console.h \
-	../src/osd/disk_parser.h \
 	../src/osd/emu_input.h \
 	../src/osd/opengl.h \
 	../src/osd/qt/qt_cbitmap.h \
@@ -255,6 +254,7 @@ HEADERS  +=\
 	../src/vm/debugger_base.h \
 	../src/vm/device.h \
 	../src/vm/disk.h \
+	../src/vm/disk_parser.h \
 	../src/vm/event.h \
 	../src/vm/floppy_defs.h \
 	../src/vm/hd46505.h \

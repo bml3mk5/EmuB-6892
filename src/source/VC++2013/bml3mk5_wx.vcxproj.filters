@@ -195,9 +195,6 @@
     <ClCompile Include="..\src\osd\debugger_console.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\osd\disk_parser.cpp">
-      <Filter>Source Files\OSD Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\osd\emu.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
@@ -376,6 +373,9 @@
       <Filter>Source Files\VM Common Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\vm\disk.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\disk_parser.cpp">
       <Filter>Source Files\VM Common Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\vm\event.cpp">
@@ -611,9 +611,6 @@
     <ClInclude Include="..\src\osd\debugger_console.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\osd\disk_parser.h">
-      <Filter>Header Files\OSD Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\osd\emu_input.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
@@ -798,6 +795,9 @@
       <Filter>Header Files\VM Common Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\vm\disk.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\disk_parser.h">
       <Filter>Header Files\VM Common Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\vm\event.h">

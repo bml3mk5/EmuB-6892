@@ -93,7 +93,6 @@ EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
 	$(SRCOSDWIN)/win_uart.o \
 	$(SRCOSD)/d88_files.o \
 	$(SRCOSD)/debugger_console.o \
-	$(SRCOSD)/disk_parser.o \
 	$(SRCOSD)/emu.o \
 	$(SRCOSD)/emu_input.o \
 	$(SRCOSD)/emu_input_keysym.o \
@@ -112,6 +111,7 @@ VMOBJS:=$(SRCVM)/device.o \
 	$(SRCVM)/acia.o \
 	$(SRCVM)/ay38910.o \
 	$(SRCVM)/disk.o \
+	$(SRCVM)/disk_parser.o \
 	$(SRCVM)/mb8866.o \
 	$(SRCVM)/mc6809.o \
 	$(SRCVM)/mc6809dasm.o \

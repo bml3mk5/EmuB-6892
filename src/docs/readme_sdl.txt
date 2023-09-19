@@ -1,8 +1,8 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         SDL edition
-                                                             Version 1.9.3
-                                                                2023/07/03
+                                                             Version 1.9.4
+                                                                2023/09/20
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 ==============================================================================
@@ -377,8 +377,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
         ボリュームをFDD0、2番目のボリュームをFDD1で開きます。同様にFDD2で
         開いた場合、2番目のボリュームをFDD3で開きます。
 
-  【注意】d88形式以外のディスクイメージは未検証のため正しく読み込めない
-          可能性があります。
+  【注意】d88形式以外のディスクイメージは正しく読み込めない可能性があります。
 
   「A/B面に変更(Change Side to A/B)」..【3インチコンパクトFDD使用時のみ】
           ディスクのA面/B面を入れ替えます。
@@ -387,7 +386,8 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
           ディスクに書き込んだデータは、取り出し操作を行うか、約5秒無操作で
         実際のディスクイメージファイルに保存されます。
 
-  【注意】d88形式以外のディスクイメージは全てd88形式で保存されます。
+  【注意】ベタのディスクイメージはデフォルトではd88形式に変換して保存します。
+        これは設定で変更できます。
 
   「新規(New)」 ................. 新規にディスクイメージを作成し開きます。
     「ブランク2Dを挿入(Insert Blank 2D)」 ... 5インチ2Dのディスクイメージ
@@ -920,6 +920,10 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
    ●メディア種類のチェックを抑制する。(Suppress checking for media type.) ...
     これにチェックを入れると2Dと2HDの違いを無視します。
 
+   ●ベタディスクイメージをそのまま保存する。(Save a plain disk image as it is.)
+    ベタのディスクイメージはデフォルトではd88形式に変換して保存します。
+    これにチェックを入れるとそのままベタイメージで保存します。
+
   ■ネットワーク(Network)タブ
 
    ●LPT0 ～ LPT2
@@ -1079,7 +1083,8 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
 
  ○ ディスクイメージについて
 
-  d88ファイル形式以外のファイルは動作確認していません。
+  d88形式での使用を前提にしています。
+  ベタ形式はDISK BASIC標準のフォーマット以外は動作確認していません。
 
   【3インチコンパクトフロッピーディスク】
   ディスクイメージは片面単密度(1S) x 2となりますが、両面倍密度(2D)であれば

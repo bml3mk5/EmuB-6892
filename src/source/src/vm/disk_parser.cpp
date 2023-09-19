@@ -15,31 +15,30 @@
 #include "../fileio.h"
 #include "../utility.h"
 #include "../config.h"
+#include "disk.h"
 
 #ifdef stat
 #undef stat
 #endif
 
-/// for store supported floppy media type and parameter
-typedef struct fd_format {
-	int type;
-	uint32_t ncyl, nside, nsec, size;
-} fd_format;
-
-static const fd_format fd_formats[] = {
-	{ MEDIA_TYPE_2D,  40, 1, 16,  128 },	// 1S    80KB
-	{ MEDIA_TYPE_2D,  40, 2, 16,  128 },	// 2S   160KB
-	{ MEDIA_TYPE_2D , 40, 2, 16,  256 },	// 2D   320KB
-	{ MEDIA_TYPE_2D , 77, 2, 26,  256 },	// 2D  1025KB (like 8inch 2D)
-//	{ MEDIA_TYPE_2DD, 80, 2, 16,  256 },	// 2DD  640KB (MZ-2500)
-//	{ MEDIA_TYPE_2DD, 80, 2,  8,  512 },	// 2DD  640KB
-//	{ MEDIA_TYPE_2DD, 80, 2,  9,  512 },	// 2DD  720KB
-//	{ MEDIA_TYPE_2HD, 77, 2,  8, 1024 },	// 2HD 1.25MB
-	{ -1, 0, 0, 0, 0 },
+const fd_format_t DISK_PARSER::c_fd_formats[] = {
+	{ MEDIA_TYPE_2D, 0x40, 40, 1, 16,  128, 0 },	// 1S    80KB
+	{ MEDIA_TYPE_2D, 0x40, 40, 2, 16,  128, 0 },	// 2S   160KB
+	{ MEDIA_TYPE_2D,    0, 40, 2, 16,  256, 128 },	// 2D   318KB (single density on track 0 and side 0)
+	{ MEDIA_TYPE_2D,    0, 40, 2, 16,  256, 0 },	// 2D   320KB
+	{ MEDIA_TYPE_2HD,   0, 77, 2, 26,  256, 128 },	// 2HD  997KB (like 8inch 2D)
+	{ MEDIA_TYPE_2HD,   0, 77, 2, 26,  256, 0 },	// 2HD 1001KB
+//	{ MEDIA_TYPE_2DD,   0, 80, 2, 16,  256, 0 },	// 2DD  640KB (MZ-2500)
+//	{ MEDIA_TYPE_2DD,   0, 80, 2,  8,  512, 0 },	// 2DD  640KB
+//	{ MEDIA_TYPE_2DD,   0, 80, 2,  9,  512, 0 },	// 2DD  720KB
+//	{ MEDIA_TYPE_2HD,   0, 77, 2,  8, 1024, 0 },	// 2HD 1232KB
+//	{ MEDIA_TYPE_2HD,   0, 77, 2,  9, 1024, 0 },	// 2HD 1386KB
+//	{ MEDIA_TYPE_2HD,   0, 80, 2,  9, 1024, 0 },	// 2HD 1440KB
+	{ -1, 0, 0, 0, 0, 0, 0 },
 };
 
 /// teledisk decoder table
-static const uint8_t c_teledisk_d_code[256] = {
+const uint8_t TELEDISK_PARSER::c_teledisk_d_code[256] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -58,7 +57,7 @@ static const uint8_t c_teledisk_d_code[256] = {
 	0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f
 };
 /// teledisk decoder table length
-static const uint8_t c_teledisk_d_len[256] = {
+const uint8_t TELEDISK_PARSER::c_teledisk_d_len[256] = {
 	0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
 	0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
 	0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
@@ -80,18 +79,6 @@ static const uint8_t c_teledisk_d_len[256] = {
 static const int c_sector_sizes[7] = {
 	128, 256, 512, 1024, 2048, 4096, 8192
 };
-
-#if 0
-static uint8_t tmp_buffer[DISK_BUFFER_SIZE];
-
-#define IS_VALID_TRACK(offset) ((offset) >= 0x20 && (offset) < sizeof(buffer))
-
-#define CALC_TRACK_DATA_POS(track, side) (track * num_of_side + (side & 1))
-#define GET_TRACK_DATA_TBL_PTR(buffer, pos) (buffer + 0x20 + pos * 4 + 0)
-
-extern EMU *emu;
-
-#endif
 
 #define COPYBUFFER(dst, dst_size, start_pos, src, src_size) { \
 	if((start_pos) + (src_size) > (dst_size)) { \
@@ -396,7 +383,7 @@ bool TELEDISK_PARSER::convert_to_d88(uint8_t *buffer, size_t buffer_size, int &d
 	memset(&d88_hdr, 0, sizeof(d88_hdr_t));
 	strcpy(d88_hdr.title, "TELEDISK");
 	d88_hdr.protect = 0; // non-protected
-	d88_hdr.type = (hdr.type >= 1 && hdr.type <= 4) ? media_types[hdr.type - 1] : MEDIA_TYPE_UNK;
+	d88_hdr.media_type = (hdr.type >= 1 && hdr.type <= 4) ? media_types[hdr.type - 1] : MEDIA_TYPE_UNK;
 	COPYBUFFER(buffer, buffer_size, d88_file_size, &d88_hdr, sizeof(d88_hdr_t));
 
 	// create tracks
@@ -501,16 +488,17 @@ void TELEDISK_PARSER::remove_tempfile()
 		FILEIO::RemoveFile(tmp_path);
 	}
 }
-//
 
-DISK_PARSER::DISK_PARSER(FILEIO *fio, const _TCHAR *file_path, uint8_t *buffer, size_t buffer_size, int *file_size_ptr)
+// ======================================================================
+
+DISK_PARSER::DISK_PARSER(DISK *disk, FILEIO *fio, const _TCHAR *file_path, uint8_t *buffer, size_t buffer_size)
 {
+	this->p_disk = disk;
 	this->fio = fio;
-	this->file_path = file_path;
-	this->buffer = buffer;
-	this->buffer_size = buffer_size;
-	this->file_size_ptr = file_size_ptr;
-	this->tmp_buffer = NULL;
+	this->p_file_path = file_path;
+	this->p_buffer = buffer;
+	this->m_buffer_size = buffer_size;
+	this->p_tmp_buffer = NULL;
 }
 
 DISK_PARSER::~DISK_PARSER()
@@ -520,23 +508,27 @@ DISK_PARSER::~DISK_PARSER()
 
 void DISK_PARSER::alloc_tmp_buffer()
 {
-	if (!tmp_buffer) {
-		tmp_buffer = new uint8_t[buffer_size];
+	if (!p_tmp_buffer) {
+		p_tmp_buffer = new uint8_t[m_buffer_size];
 	}
 }
 
 void DISK_PARSER::free_tmp_buffer()
 {
-	delete [] tmp_buffer;
-	tmp_buffer = NULL;
+	delete [] p_tmp_buffer;
+	p_tmp_buffer = NULL;
 }
 
 // teledisk image decoder
 
 bool DISK_PARSER::teledisk_to_d88()
 {
-	TELEDISK_PARSER tdp(fio, file_path);
-	return tdp.convert_to_d88(buffer, buffer_size, *file_size_ptr);
+	TELEDISK_PARSER tdp(fio, p_file_path);
+	int d88_file_size = p_disk->get_file_size();
+	bool rc = tdp.convert_to_d88(p_buffer, m_buffer_size, d88_file_size);
+	p_disk->set_file_size(d88_file_size);
+	p_disk->set_image_type(DISK::IMAGE_TYPE_D88_CONVERTED);
+	return rc;
 }
 
 // imagedisk image decoder
@@ -557,14 +549,15 @@ bool DISK_PARSER::imagedisk_to_d88()
 	}
 
 	// create d88 image
-	*file_size_ptr = 0;
+	int file_size = 0;
+	p_disk->set_file_size(0);
 
 	// create d88 header
 	memset(&d88_hdr, 0, sizeof(d88_hdr_t));
 	strcpy(d88_hdr.title, "IMAGEDISK");
 	d88_hdr.protect = 0; // non-protected
-	d88_hdr.type = MEDIA_TYPE_UNK; // TODO
-	COPYBUFFER(buffer, buffer_size, *file_size_ptr, &d88_hdr, sizeof(d88_hdr_t));
+	d88_hdr.media_type = MEDIA_TYPE_UNK; // TODO
+	COPYBUFFER(p_buffer, m_buffer_size, file_size, &d88_hdr, sizeof(d88_hdr_t));
 
 	// create tracks
 	int trkptr = sizeof(d88_hdr_t);
@@ -634,13 +627,15 @@ bool DISK_PARSER::imagedisk_to_d88()
 			}
 
 			// copy to d88
-			COPYBUFFER(buffer, buffer_size, *file_size_ptr, &d88_sct, sizeof(d88_sct_t));
-			COPYBUFFER(buffer, buffer_size, *file_size_ptr, dst, (size_t)d88_sct.size);
+			COPYBUFFER(p_buffer, m_buffer_size, file_size, &d88_sct, sizeof(d88_sct_t));
+			COPYBUFFER(p_buffer, m_buffer_size, file_size, dst, (size_t)d88_sct.size);
 			trkptr += sizeof(d88_sct_t) + d88_sct.size;
 		}
 	}
 	d88_hdr.size = trkptr;
-	memcpy(buffer, &d88_hdr, sizeof(d88_hdr_t));
+	memcpy(p_buffer, &d88_hdr, sizeof(d88_hdr_t));
+	p_disk->set_file_size(file_size);
+	p_disk->set_image_type(DISK::IMAGE_TYPE_D88_CONVERTED);
 	return true;
 }
 
@@ -656,19 +651,21 @@ bool DISK_PARSER::cpdread_to_d88(int extended)
 	alloc_tmp_buffer();
 
 	// get cylinder number and side number
-	memcpy(tmp_buffer, buffer, *file_size_ptr);
-	int ncyl = tmp_buffer[0x30];
-	int nside = tmp_buffer[0x31];
+	int file_size = p_disk->get_file_size();
+	memcpy(p_tmp_buffer, p_buffer, file_size);
+	int ncyl = p_tmp_buffer[0x30];
+	int nside = p_tmp_buffer[0x31];
 
 	// create d88 image
-	*file_size_ptr = 0;
+	file_size = 0;
+	p_disk->set_file_size(0);
 
 	// create d88 header
 	memset(&d88_hdr, 0, sizeof(d88_hdr_t));
 	strcpy(d88_hdr.title, "CPDRead");
 	d88_hdr.protect = 0; // non-protected
-	d88_hdr.type = MEDIA_TYPE_UNK; // TODO
-	COPYBUFFER(buffer, buffer_size, *file_size_ptr, &d88_hdr, sizeof(d88_hdr_t));
+	d88_hdr.media_type = MEDIA_TYPE_UNK; // TODO
+	COPYBUFFER(p_buffer, m_buffer_size, file_size, &d88_hdr, sizeof(d88_hdr_t));
 
 	// create tracks
 	int trkofs = 0x100, trkofs_ptr = 0x34;
@@ -683,14 +680,14 @@ bool DISK_PARSER::cpdread_to_d88(int extended)
 			}
 
 			// read sectors in this track
-			uint8_t *track_info = tmp_buffer + trkofs;
+			uint8_t *track_info = p_tmp_buffer + trkofs;
 			int nsec = track_info[0x15];
 			int size = 1 << (track_info[0x14] + 7); // standard
 			int sctofs = trkofs + 0x100;
 
 			for(int s = 0; s < nsec; s++) {
 				// get sector size
-				uint8_t *sector_info = tmp_buffer + trkofs + 0x18 + s * 8;
+				uint8_t *sector_info = p_tmp_buffer + trkofs + 0x18 + s * 8;
 				if(extended) {
 					size = sector_info[6] + sector_info[7] * 256;
 				}
@@ -708,139 +705,166 @@ bool DISK_PARSER::cpdread_to_d88(int extended)
 				d88_sct.size = size;
 
 				// copy to d88
-				COPYBUFFER(buffer, buffer_size, *file_size_ptr, &d88_sct, sizeof(d88_sct_t));
-				COPYBUFFER(buffer, buffer_size, *file_size_ptr, tmp_buffer + sctofs, (size_t)size);
+				COPYBUFFER(p_buffer, m_buffer_size, file_size, &d88_sct, sizeof(d88_sct_t));
+				COPYBUFFER(p_buffer, m_buffer_size, file_size, p_tmp_buffer + sctofs, (size_t)size);
 				trkptr += sizeof(d88_sct_t) + size;
 				sctofs += size;
 			}
 
 			if(extended) {
-				trkofs += tmp_buffer[trkofs_ptr++] * 256;
+				trkofs += p_tmp_buffer[trkofs_ptr++] * 256;
 			}
 			else {
-				trkofs += tmp_buffer[0x32] + tmp_buffer[0x33] * 256;
+				trkofs += p_tmp_buffer[0x32] + p_tmp_buffer[0x33] * 256;
 			}
 		}
 	}
 	d88_hdr.size = trkptr;
-	memcpy(buffer, &d88_hdr, sizeof(d88_hdr_t));
+	memcpy(p_buffer, &d88_hdr, sizeof(d88_hdr_t));
+	p_disk->set_file_size(file_size);
+	p_disk->set_image_type(DISK::IMAGE_TYPE_D88_CONVERTED);
 	return true;
 }
 
-/// @brief standard image decoder (fdi/tfd/2d/sf7)
-bool DISK_PARSER::standard_to_d88(int type, int ncyl, int nside, int nsec, int size)
+/// @brief standard (plain) image decoder (fdi/tfd/2d/sf7)
+/// @param[in] param : disk parameter
+/// @return true / false
+bool DISK_PARSER::standard_to_d88(const fd_format_t *param)
 {
 	d88_hdr_t d88_hdr;
 	d88_sct_t d88_sct;
-	int n = 0, t = 0;
+	int n = 0, sn = 0, t = 0;
 
-	*file_size_ptr = 0;
+	int file_size = 0;
+	p_disk->set_file_size(0);
 
 	// create d88 header
 	memset(&d88_hdr, 0, sizeof(d88_hdr_t));
 	strcpy(d88_hdr.title, "STANDARD");
 	d88_hdr.protect = 0; // non-protected
-	d88_hdr.type = type;
-	COPYBUFFER(buffer, buffer_size, *file_size_ptr, &d88_hdr, sizeof(d88_hdr_t));
+	d88_hdr.media_type = param->media_type;
+	COPYBUFFER(p_buffer, m_buffer_size, file_size, &d88_hdr, sizeof(d88_hdr_t));
 
 	// sector length
 	for(int i = 0; i < 8; i++) {
-		if(size == (128 << i)) {
+		if(param->size == (uint32_t)(128 << i)) {
 			n = i;
 			break;
+		}
+	}
+	if (param->ssize > 0) {
+		for(int i = 0; i < 8; i++) {
+			if(param->ssize == (uint32_t)(128 << i)) {
+				sn = i;
+				break;
+			}
 		}
 	}
 
 	// create tracks
 	int trkptr = sizeof(d88_hdr_t);
-	for(int c = 0; c < ncyl; c++) {
-		for(int h = 0; h < nside; h++) {
+	for(uint32_t c = 0; c < param->ncyl; c++) {
+		for(uint32_t h = 0; h < param->nside; h++) {
+			// set pointer to a track data
 			d88_hdr.trkptr[t++] = trkptr;
-			if(nside == 1) {
-				// double side
-				d88_hdr.trkptr[t++] = trkptr;
-			}
-
 			// read sectors in this track
-			for(int s = 0; s < nsec; s++) {
+			for(uint32_t s = 0; s < param->nsec; s++) {
 				// create d88 sector header
 				memset(&d88_sct, 0, sizeof(d88_sct_t));
 				d88_sct.c = c;
 				d88_sct.h = h;
 				d88_sct.r = s + 1;
-				d88_sct.n = n;
-				d88_sct.nsec = nsec;
-				d88_sct.dens = 0;
+				d88_sct.nsec = param->nsec;
 				d88_sct.del = 0;
 				d88_sct.stat = 0;
-				d88_sct.size = size;
+				if (c == 0 && h == 0 && param->ssize > 0) {
+					// single density
+					d88_sct.n = sn;
+					d88_sct.dens = 0x40;
+					d88_sct.size = param->ssize;
+				} else {
+					// standard
+					d88_sct.n = n;
+					d88_sct.dens = param->dens;
+					d88_sct.size = param->size;
+				}
 
 				// create sector image
 				uint8_t dst[16384];
-				fio->Fread(dst, size, 1);
+				fio->Fread(dst, d88_sct.size, 1);
 
 				// copy to d88
-				COPYBUFFER(buffer, buffer_size, *file_size_ptr, &d88_sct, sizeof(d88_sct_t));
-				COPYBUFFER(buffer, buffer_size, *file_size_ptr, dst, (size_t)size);
-				trkptr += sizeof(d88_sct_t) + size;
+				COPYBUFFER(p_buffer, m_buffer_size, file_size, &d88_sct, sizeof(d88_sct_t));
+				COPYBUFFER(p_buffer, m_buffer_size, file_size, dst, (size_t)d88_sct.size);
+				trkptr += sizeof(d88_sct_t) + d88_sct.size;
 			}
 		}
 	}
 	d88_hdr.size = trkptr;
-	memcpy(buffer, &d88_hdr, sizeof(d88_hdr_t));
+	memcpy(p_buffer, &d88_hdr, sizeof(d88_hdr_t));
+	p_disk->set_file_size(file_size);
 	return true;
 }
 
-/// @brief standard image decoder (fdi/tfd/2d/sf7)
-bool DISK_PARSER::parse_standard(_TCHAR *n_file_path)
+/// @brief standard (plain) image parser (fdi/tfd/2d/sf7)
+bool DISK_PARSER::parse_standard()
 {
 	bool converted = false;
-	int file_size = *file_size_ptr;
+	int file_size = p_disk->get_file_size();
 
 	for(int i = 0;; i++) {
-		const fd_format *p = &fd_formats[i];
-		if(p->type == -1) {
+		const fd_format_t *param = &c_fd_formats[i];
+		if(param->media_type == -1) {
 			break;
 		}
-		int len = p->ncyl * p->nside * p->nsec * p->size;
+		int len = param->ncyl * param->nside * param->nsec * param->size;
+		if (param->ssize > 0) {
+			// single density on track 0 and side 0
+			len += param->nsec * param->ssize;	// single density size
+			len -= param->nsec * param->size;
+		}
+
 		if (file_size == (len + 4096)) {
 			// 4096 bytes: FDI header ???
 			struct fdi_hdr_t fdi_hdr;
 			fio->Fseek(0, FILEIO::SEEKSET);
 			fio->Fread(&fdi_hdr, sizeof(struct fdi_hdr_t), 1);
-			if (p->ncyl == fdi_hdr.n_cyls && p->nside == fdi_hdr.n_heads && p->nsec == fdi_hdr.n_secs) {
+			if (param->ncyl == fdi_hdr.n_cyls && param->nside == fdi_hdr.n_heads && param->nsec == fdi_hdr.n_secs) {
 				fio->Fseek(file_size - len, FILEIO::SEEKSET);
-				if(standard_to_d88(p->type, p->ncyl, p->nside, p->nsec, p->size)) {
+				if(standard_to_d88(param)) {
 					converted = true;
+					p_disk->set_image_type(DISK::IMAGE_TYPE_D88_CONVERTED);
 					break;
 				}
 			}
 		} else if(file_size == len) {
 			// beta
 			fio->Fseek(file_size - len, FILEIO::SEEKSET);
-			if(standard_to_d88(p->type, p->ncyl, p->nside, p->nsec, p->size)) {
+			if(standard_to_d88(param)) {
 				converted = true;
+				p_disk->set_image_type(DISK::IMAGE_TYPE_PLAIN);
 				break;
 			}
 		}
 	}
-	if (converted) {
-		UTILITY::stprintf(n_file_path, _MAX_PATH, _T("%s.D88"), file_path);
-	}
+//	if (converted) {
+//		UTILITY::stprintf(n_file_path, _MAX_PATH, _T("%s.D88"), p_file_path);
+//	}
 	return converted;
 }
 
+/// @brief parse a floppy disk image
 /// @param[in] offset       : offset for one disk in d88 multi volume image
-/// @param[out] n_file_path : new file path if converted from non d88 disk
 /// @param[out] file_size_orig : original file size on disk image
 /// @param[out] file_offset    : offset for one disk
-bool DISK_PARSER::parse(int offset, _TCHAR *n_file_path, int &file_size_orig, int &file_offset)
+bool DISK_PARSER::parse(int offset, int &file_size_orig, int &file_offset)
 {
 	bool rc = false;
-	int file_size = *file_size_ptr;
+	int file_size = p_disk->get_file_size();
+	p_disk->set_image_type(DISK::IMAGE_TYPE_UNK);
 
 	// is this d88 format ?
-	if(UTILITY::check_file_extensions(file_path, _T(".d88"), _T(".d77"), NULL)) {
+	if(UTILITY::check_file_extensions(p_file_path, _T(".d88"), _T(".d77"), NULL)) {
 		if (file_size < 0x20) {
 			// too small
 			return false;
@@ -850,50 +874,51 @@ bool DISK_PARSER::parse(int offset, _TCHAR *n_file_path, int &file_size_orig, in
 		if (file_size > 0) {
 			file_size_orig = file_size;
 			fio->Fseek(offset, FILEIO::SEEKSET);
-			fio->Fread(buffer, file_size, 1);
+			fio->Fread(p_buffer, file_size, 1);
 			file_offset = offset;
 
-			*file_size_ptr = file_size;
+			p_disk->set_file_size(file_size);
+			p_disk->set_image_type(DISK::IMAGE_TYPE_D88);
 			rc = true;
 		}
 		return rc;
 	}
 
-	if(file_size <= 0 || (int)buffer_size < file_size) {
+	if(file_size <= 0 || (int)m_buffer_size < file_size) {
 		return false;
 	}
 
 	// parse standard image
-	if (parse_standard(n_file_path)) {
+	if (parse_standard()) {
 		return true;
 	}
 
-	memset(buffer, 0, buffer_size);
+	memset(p_buffer, 0, m_buffer_size);
 	fio->Fseek(0, FILEIO::SEEKSET);
-	fio->Fread(buffer, file_size, 1);
+	fio->Fread(p_buffer, file_size, 1);
 
 	// check d88 format (temporary)
-	uint32_t *buffer_file_size = (uint32_t *)(&buffer[0x1c]);
+	uint32_t *buffer_file_size = (uint32_t *)(&p_buffer[0x1c]);
 	if(Uint32_LE(*buffer_file_size) == (uint32_t)file_size) {
 		return true;
 	}
-	UTILITY::stprintf(n_file_path, _MAX_PATH, _T("%s.D88"), file_path);
+//	UTILITY::stprintf(n_file_path, _MAX_PATH, _T("%s.D88"), p_file_path);
 
 	// check file header
 	try {
-		if(memcmp(buffer, "TD", 2) == 0 || memcmp(buffer, "td", 2) == 0) {
+		if(memcmp(p_buffer, "TD", 2) == 0 || memcmp(p_buffer, "td", 2) == 0) {
 			// teledisk image file
 			rc = teledisk_to_d88();
 		}
-		else if(memcmp(buffer, "IMD", 3) == 0) {
+		else if(memcmp(p_buffer, "IMD", 3) == 0) {
 			// imagedisk image file
 			rc = imagedisk_to_d88();
 		}
-		else if(memcmp(buffer, "MV - CPC", 8) == 0) {
+		else if(memcmp(p_buffer, "MV - CPC", 8) == 0) {
 			// standard cpdread image file
 			rc = cpdread_to_d88(0);
 		}
-		else if(memcmp(buffer, "EXTENDED", 8) == 0) {
+		else if(memcmp(p_buffer, "EXTENDED", 8) == 0) {
 			// extended cpdread image file
 			rc = cpdread_to_d88(1);
 		}

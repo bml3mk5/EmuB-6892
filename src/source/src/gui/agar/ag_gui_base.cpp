@@ -676,7 +676,7 @@ bool AG_GUI_BASE::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	UTILITY::sprintf_utf8(title, 128, CMSG(New_Floppy_Disk_VDIGIT), drv);
 
 	char file_name[_MAX_PATH];
-	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, _T("d88"));
+	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, "d88");
 
 	ShowMenu();
 	filebox->CreateSave(AG_FILE_DLG::FLOPPY_NEW, title

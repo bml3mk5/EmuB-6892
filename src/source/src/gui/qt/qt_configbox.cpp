@@ -432,7 +432,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	vboxSaveWav->addLayout(hboxRate);
 	lbl = new MyLabel(CMsg::Sample_Rate);
 	hboxRate->addWidget(lbl);
-	comRate = new MyComboBox(nullptr, LABELS::sound_rate);
+	comRate = new MyComboBox(nullptr, LABELS::wav_sampling_rate);
 	comRate->setCurrentIndex(config.wav_sample_rate);
 	hboxRate->addWidget(comRate);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
@@ -442,7 +442,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	vboxSaveWav->addLayout(hboxBits);
 	lbl = new MyLabel(CMsg::Sample_Bits);
 	hboxBits->addWidget(lbl);
-	comBits = new MyComboBox(nullptr, LABELS::sound_bits);
+	comBits = new MyComboBox(nullptr, LABELS::wav_sampling_bits);
 	comBits->setCurrentIndex(config.wav_sample_bits);
 	hboxBits->addWidget(comBits);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
@@ -480,6 +480,9 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	chkFdMedia = new MyCheckBox(CMsg::Suppress_checking_for_media_type);
 	chkFdMedia->setChecked(FLG_CHECK_FDMEDIA == 0);
 	vboxFdd->addWidget(chkFdMedia);
+	chkFdSavePlain = new MyCheckBox(CMsg::Save_a_plain_disk_image_as_it_is);
+	chkFdSavePlain->setChecked(FLG_SAVE_FDPLAIN != 0);
+	vboxFdd->addWidget(chkFdSavePlain);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	vboxFdd->addSpacerItem(spc);
 
@@ -993,10 +996,11 @@ void MyConfigBox::setDatas()
 	}
 	config.mount_fdd = mount_fdd;
 
-	config.delay_fdd = (chkDelayFd1->isChecked() ? MSK_DELAY_FDSEARCH : 0)
-		| (chkDelayFd2->isChecked() ? MSK_DELAY_FDSEEK : 0);
-	config.check_fdmedia = (chkFdDensity->isChecked() ? 0 : MSK_CHECK_FDDENSITY)
-		| (chkFdMedia->isChecked() ? 0 : MSK_CHECK_FDMEDIA);
+	config.option_fdd = (chkDelayFd1->isChecked() ? MSK_DELAY_FDSEARCH : 0)
+		| (chkDelayFd2->isChecked() ? MSK_DELAY_FDSEEK : 0)
+		| (chkFdDensity->isChecked() ? 0 : MSK_CHECK_FDDENSITY)
+		| (chkFdMedia->isChecked() ? 0 : MSK_CHECK_FDMEDIA)
+		| (chkFdSavePlain->isChecked() ? MSK_SAVE_FDPLAIN : 0);
 
 	// Network tab
 

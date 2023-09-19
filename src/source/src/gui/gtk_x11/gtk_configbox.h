@@ -56,6 +56,7 @@ private:
 	GtkWidget *txtInfoFontName;
 	GtkWidget *txtInfoFontSize;
 
+#ifdef USE_DATAREC
 	GtkWidget *chkReverseWave;
 	GtkWidget *chkHalfWave;
 	GtkWidget *radCorrectType[3];
@@ -63,18 +64,26 @@ private:
 
 	GtkWidget *comSampleRate;
 	GtkWidget *comSampleBits;
+#endif
 
+#ifdef USE_FD1
 	GtkWidget *chkDelayFd1;
 	GtkWidget *chkDelayFd2;
 	GtkWidget *chkFdDensity;
 	GtkWidget *chkFdMedia;
+	GtkWidget *chkFdSavePlain;
+#endif
 
+#ifdef MAX_PRINTER
 	GtkWidget *txtLPTHost[MAX_PRINTER];
 	GtkWidget *txtLPTPort[MAX_PRINTER];
 	GtkWidget *txtLPTDelay[MAX_PRINTER];
+#endif
+#ifdef MAX_COMM
 	GtkWidget *txtCOMHost[MAX_COMM];
 	GtkWidget *txtCOMPort[MAX_COMM];
 	GtkWidget *comCOMBaud[MAX_COMM];
+#endif
 #ifdef USE_DEBUGGER
 	GtkWidget *txtDbgrHost;
 	GtkWidget *txtDbgrPort;

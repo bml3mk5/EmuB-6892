@@ -130,11 +130,11 @@ const _TCHAR *correct_amp[] = {
 };
 
 /// sampling rate
-const _TCHAR *sound_rate[] = {
+const _TCHAR *wav_sampling_rate[] = {
 	_T("11025"), _T("22050"), _T("44100"), _T("48000"), NULL
 };
 /// sample bits
-const _TCHAR *sound_bits[] = {
+const _TCHAR *wav_sampling_bits[] = {
 	_T("8"), _T("16"), NULL
 };
 
@@ -251,6 +251,30 @@ const CMsg::Id z80bcard_irq[] = {
 #endif
 #endif
 
+/// extension of a data recorder image
+const char *datarec_exts = "l3;l3b;l3c;wav;t9x";
+
+/// extension of a floppy disk image
+const char *floppy_disk_exts = "d88;dsk;img;2d;2hd";
+const char *blank_floppy_disk_exts = "d88";
+
+/// extension of a hard disk image
+const char *hard_disk_exts = "hdf";
+const char *blank_hard_disk_exts = "hdf";
+
+/// extension of a state file
+const char *state_file_exts = "l3r";
+
+/// extension of a key recording file
+const char *key_rec_file_exts = "l3k";
+
+/// extension of a auto keying file
+const char *autokey_file_exts = "txt;bas;lpt";
+
+/// extension of a printing file
+const char *printing_file_exts = "lpt;txt;bas";
+
+	
 /// Volume labels
 const CMsg::Id volume[] = {
 	CMsg::Master,

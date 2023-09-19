@@ -101,6 +101,7 @@ private:
 	QCheckBox *chkDelayFd2;
 	QCheckBox *chkFdDensity;
 	QCheckBox *chkFdMedia;
+	QCheckBox *chkFdSavePlain;
 
 	QLineEdit *linLPTHost[MAX_PRINTER];
 	QLineEdit *linLPTPort[MAX_PRINTER];

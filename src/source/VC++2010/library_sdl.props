@@ -20,8 +20,8 @@
     <LibIntlLibDir>$(LibIntlDir)lib\x86\</LibIntlLibDir>
     <LibIntlLib64Dir>$(LibIntlDir)lib\x64\</LibIntlLib64Dir>
     <FFMpegDir>$(DevelopDir)ffmpeg-3.4.1-win64-dev\</FFMpegDir>
-    <LocalDebugLibs>SDL.lib; SDLmain.lib; SDL_net.lib; ag_core_static.lib; ag_gui_static.lib; freetype248_D.lib; SDL_ttf.lib</LocalDebugLibs>
-    <LocalReleaseLibs>SDL.lib; SDLmain.lib; SDL_net.lib; ag_core_static.lib; ag_gui_static.lib; freetype248.lib; SDL_ttf.lib</LocalReleaseLibs>
+    <LocalDebugLibs>SDL.lib; SDLmain.lib; ag_core_static.lib; ag_gui_static.lib; freetype248_D.lib; SDL_ttf.lib</LocalDebugLibs>
+    <LocalReleaseLibs>SDL.lib; SDLmain.lib; ag_core_static.lib; ag_gui_static.lib; freetype248.lib; SDL_ttf.lib</LocalReleaseLibs>
     <SDL2Dir>$(DevelopDir)SDL2-2.0.10-static\</SDL2Dir>
     <SDL2DebugLibDir>$(SDL2Dir)lib\$(Platform)\Debug</SDL2DebugLibDir>
     <SDL2ReleaseLibDir>$(SDL2Dir)lib\$(Platform)\Release</SDL2ReleaseLibDir>
