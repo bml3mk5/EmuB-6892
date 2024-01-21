@@ -43,6 +43,7 @@
 #define ROP_ARG(Addr)	d_mem->read_data8w(Addr, &icount)
 
 #define LA(Addr)	d_mem->latch_address(Addr, &icount); DEC_ICOUNT
+#define LAP(Addr)	d_mem->latch_address(Addr, &icount); DEC_ICOUNT
 
 #define WS(Sig,Value,Mask)	d_mem->write_signal(Sig, Value, Mask)
 #ifdef _MBS1
@@ -70,6 +71,7 @@
 #define ROP_ARG(Addr)	d_mem->read_data8(Addr)
 
 #define LA(Addr)
+#define LAP(Addr)	d_mem->read_data8(Addr)
 
 #define WS(Sig,Value,Mask)	d_mem->write_signal(Sig, Value, Mask)
 #ifdef _MBS1
@@ -2094,7 +2096,7 @@ void MC6809::pshs()
 	IMMBYTE(t);
 	SET_NPC;
 	SUB_ICOUNT(2);
-	LA(SD);
+	LAP(SD);
 	if(t & 0x80) { PUSHWORD(pPC); SUBALL_ICOUNT(2); }
 	if(t & 0x40) { PUSHWORD(pU);  SUBALL_ICOUNT(2); }
 	if(t & 0x20) { PUSHWORD(pY);  SUBALL_ICOUNT(2); }
@@ -2122,7 +2124,7 @@ void MC6809::puls()
 	if(t & 0x20) { PULLWORD(YD);  SUBALL_ICOUNT(2); }
 	if(t & 0x40) { PULLWORD(UD);  SUBALL_ICOUNT(2); }
 	if(t & 0x80) { PULLWORD(PCD); SUBALL_ICOUNT(2); }
-	LA(SD);
+	LAP(SD);
 
 	DASM_SET_PSH(t);
 }
@@ -2134,7 +2136,7 @@ void MC6809::pshu()
 	IMMBYTE(t);
 	SET_NPC;
 	SUB_ICOUNT(2);
-	LA(UD);
+	LAP(UD);
 	if(t & 0x80) { PSHUWORD(pPC); SUBALL_ICOUNT(2); }
 	if(t & 0x40) { PSHUWORD(pS);  SUBALL_ICOUNT(2); }
 	if(t & 0x20) { PSHUWORD(pY);  SUBALL_ICOUNT(2); }
@@ -2162,7 +2164,7 @@ void MC6809::pulu()
 	if(t & 0x20) { PULUWORD(YD);  SUBALL_ICOUNT(2); }
 	if(t & 0x40) { PULUWORD(SD);  SUBALL_ICOUNT(2); }
 	if(t & 0x80) { PULUWORD(PCD); SUBALL_ICOUNT(2); }
-	LA(UD);
+	LAP(UD);
 
 	DASM_SET_PSH(t);
 }

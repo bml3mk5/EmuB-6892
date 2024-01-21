@@ -123,11 +123,11 @@ void MEMORY::reset()
 	// clear color ram
 	srand((unsigned int)time(NULL));
 	int co = (rand() % 3) * 3 + 1;	// 1 4 7
-	int cg = (rand() % 5);
+//	int cg = (rand() % 5);
 	memset(color_ram, 0x3f, sizeof(color_ram));
-	color_reg = co + (cg == 0 ? 24 : 0); // + (co == 7 ? cg : 0);
+	color_reg = co + (co == 7 ? 24 : 0);
 
-	cg = (rand() % 5);
+	int cg = (rand() % 5);
 	write_data8(0xffd0, (cg == 0 ? co : 0));
 
 	// clear ig ram
@@ -264,19 +264,19 @@ void MEMORY::write_data8(uint32_t addr, uint32_t data)
 
 #ifdef _DEBUG_RAM
 	if (addr >= 0xff70 && addr <= 0xff7f) {
-		uint8_t ch = (data < 0x20 || data > 0x7f) ? 0x20 : data;
-		logging->out_debugf("mw %04x=%02x %c",addr,data,ch);
+		uint8_t ch = (data < 0x20 || data > 0x7e) ? '.' : data;
+		logging->out_debugf("mw %04x=%02x->%02x %c",addr,ram[addr],data,ch);
 	}
 #endif
 
 	// vram area
 	if (mem_vram_sel && L3_ADDR_VRAM_START <= addr && addr < L3_ADDR_VRAM_END) {
 #ifdef _DEBUG_CRAM
-//		if ((addr - ADDR_VRAM_START) < 0x0400) {
+		{
 			uint8_t ch=data;
-			ch = (ch < 0x20 || ch > 0x7f) ? 0x20 : ch;
-			logging->out_debugf("mw %04x=%02x->%02x %c c%02x->%02x",addr,ram[addr],data,ch,color_reg,color_ram[addr - ADDR_VRAM_START]);
-//		}
+			ch = (ch < 0x20 || ch > 0x7e) ? '.' : ch;
+			logging->out_debugf("mw %04x=%02x->%02x %c creg:%02x cram:%02x -> %02x inv:%02x",addr,ram[addr],data,ch,color_reg,color_ram[addr - L3_ADDR_VRAM_START],color_reg,color_reg_inv);
+		}
 #endif
 		color_ram[addr - L3_ADDR_VRAM_START] = (color_reg & 0x3f);
 	}
@@ -330,18 +330,27 @@ uint32_t MEMORY::read_data8(uint32_t addr)
 
 	// vram area
 	if (mem_vram_sel && L3_ADDR_VRAM_START <= addr && addr < L3_ADDR_VRAM_END) {
-#ifdef _DEBUG_CRAM
-//		if ((addr - ADDR_VRAM_START) < 0x0400) {
-			uint8_t ch=ram[addr];
-			ch = (ch < 0x20 || ch > 0x7f) ? 0x20 : ch;
-			logging->out_debugf("mr %04x=%02x %c c%02x r%02x",addr,ram[addr],ch,color_ram[addr - ADDR_VRAM_START],color_reg);
-//		}
-#endif
 		// 6bit
 		// if MK bit is set, do not read from color ram.
 		if ((color_reg & 0x80) == 0) {
+#ifdef _DEBUG_CRAM
+			{
+				uint8_t ch=ram[addr];
+				ch = (ch < 0x20 || ch > 0x7e) ? '.' : ch;
+				logging->out_debugf("mr %04x=%02x %c creg:%02x -> %02x",addr,ram[addr],ch,color_reg,color_ram[addr - L3_ADDR_VRAM_START]);
+			}
+#endif
 			color_reg = (color_ram[addr - L3_ADDR_VRAM_START] & 0x3f);
 		}
+#ifdef _DEBUG_CRAM
+		else {
+			{
+				uint8_t ch=ram[addr];
+				ch = (ch < 0x20 || ch > 0x7e) ? '.' : ch;
+				logging->out_debugf("mr %04x=%02x %c (creg:%02x cram:%02x)",addr,ram[addr],ch,color_reg,color_ram[addr - L3_ADDR_VRAM_START]);
+			}
+		}
+#endif
 	}
 
 	if (0xff00 <= addr && addr <= 0xffef) {

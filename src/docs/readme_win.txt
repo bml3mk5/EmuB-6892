@@ -1,9 +1,9 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
-                                                             Version 1.9.4
-                                                                2023/09/20
+                                                             Version 1.9.5
+                                                                2024/01/22
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
 ==============================================================================
 
 ● はじめに

@@ -131,6 +131,18 @@ void COMM::send_data(uint32_t data)
 		}
 	}
 //	logging->out_logf(LOG_DEBUG, _T("comm send data=%d pos:%d"),data,send_buff_w_pos);
+	if (send_buff_r_pos < send_buff_w_pos) {
+#ifdef USE_SOCKET
+		if (client_ch >= 0) {
+			emu->send_data_tcp(client_ch);
+		}
+#endif
+#ifdef USE_UART
+		if (uart_ch >= 0) {
+			emu->send_uart_data(uart_ch);
+		}
+#endif
+	}
 }
 
 #if 0
@@ -201,6 +213,7 @@ void COMM::cancel_my_event()
 
 void COMM::event_frame()
 {
+#if 0
 	if (send_buff_r_pos < send_buff_w_pos) {
 //		logging->out_logf(LOG_DEBUG, _T("event frame send_buff ch:%d w:%d r:%d") ,client_ch,send_buff_w_pos,send_buff_r_pos);
 #ifdef USE_SOCKET
@@ -218,6 +231,7 @@ void COMM::event_frame()
 //		send_buff_w_pos = 0;
 //		send_buff_r_pos = 0;
 	}
+#endif
 	if (recv_buff_r_pos > 0 && recv_buff_r_pos < recv_buff_w_pos) {
 //		logging->out_logf(LOG_DEBUG, _T("COMM::event_frame recv_buff num:%d ch:%d w:%d r:%d") ,cfg_num,client_ch,recv_buff_w_pos,recv_buff_r_pos);
 		memcpy(&recv_buff[0], &recv_buff[recv_buff_r_pos], recv_buff_w_pos - recv_buff_r_pos);

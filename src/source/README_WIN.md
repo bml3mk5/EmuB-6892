@@ -1,6 +1,6 @@
 # HITACHI BASIC MASTER LEVEL3 MARK5 Emulator Windows(VC++) Edition
 
-#### Copyright(C) Common Source Code Project, Sasaji 2011-2023 All Rights Reserved.
+#### Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
 
 ## ファイル構成
 
