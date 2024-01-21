@@ -9,7 +9,7 @@
 ### このソフトは、日立ベーシックマスターレベル3マーク5(MB-6892)のエミュレータです。
 
 
-## [Documents(Japanese) ドキュメント](tree/master/src/docs)
+## [Documents(Japanese) ドキュメント](../../tree/master/src/docs)
 
 
 ## Disclaimer 免責事項

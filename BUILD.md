@@ -2,5 +2,5 @@
 
 ## コンパイル方法
 
- * [こちらをご覧ください](blob/master/src/source/README.md)
+ * [こちらをご覧ください](src/source/README.md)
 
