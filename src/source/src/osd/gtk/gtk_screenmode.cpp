@@ -40,6 +40,22 @@ void ScreenMode::Enum(int desktop_width, int desktop_height, int bits_per_pixel)
 
 	// enumerate screen mode for fullscreen
 	GdkDisplay *display = gdk_display_get_default();
+#if GTK_CHECK_VERSION(3,22,0)
+	if (display) {
+		int nums = gdk_display_get_n_monitors(display);
+		for(int disp_no = 0; disp_no < nums; disp_no++) {
+			GdkMonitor *monitor = gdk_display_get_monitor(display, disp_no);
+			GdkRectangle re;
+			gdk_monitor_get_geometry(monitor, &re);
+			CDisplayDevice *item = new CDisplayDevice();
+			item->re.x = re.x;
+			item->re.y = re.y;
+			item->re.w = re.width;
+			item->re.h = re.height;
+			disp_devices.Add(item);
+		}
+	} else
+#else
 	GdkScreen *screen = NULL;
 	if (display) {
 		screen = gdk_display_get_default_screen(display);
@@ -56,7 +72,9 @@ void ScreenMode::Enum(int desktop_width, int desktop_height, int bits_per_pixel)
 			item->re.h = re.height;
 			disp_devices.Add(item);
 		}
-	} else {
+	} else
+#endif
+	{
 		CDisplayDevice *item = new CDisplayDevice();
 		item->re.x = 0;
 		item->re.y = 0;
@@ -82,7 +100,7 @@ void ScreenMode::Enum(int desktop_width, int desktop_height, int bits_per_pixel)
 void ScreenMode::GetDesktopSize(int *width, int *height, int *bpp)
 {
 	// desktop size on the primary monitor
-#if GTK_CHECK_VERSION(3,26,0)
+#if GTK_CHECK_VERSION(3,22,0)
 	GdkDisplay *display = gdk_display_get_default();
 	GdkMonitor *primary = NULL;
 	if (display) {
@@ -98,19 +116,24 @@ void ScreenMode::GetDesktopSize(int *width, int *height, int *bpp)
 		if (width) *width = 0;
 		if (height) *height = 0;
 	}
-
-	GdkWindow *root = gdk_get_default_root_window();
-	if (root) {
-		if (bpp) {
-			GdkVisual *visual = gdk_window_get_visual(root);
-			if (visual) {
-				*bpp = gdk_visual_get_depth(visual);
-			} else {
-				*bpp = _RGB888;
-			}
+	if (bpp) {
+		GdkVisual *visual = NULL;
+# if GTK_CHECK_VERSION(3,26,0)
+		GdkWindow *root = gdk_get_default_root_window();
+		if (root) {
+			visual = gdk_window_get_visual(root);
 		}
-	} else {
-		if (bpp) *bpp = 1;
+# else
+		GdkScreen *screen = gdk_display_get_default_screen(display);
+		if (screen) {
+			visual = gdk_screen_get_system_visual(screen);
+		}
+# endif
+		if (visual) {
+			*bpp = gdk_visual_get_depth(visual);
+		} else {
+			*bpp = _RGB888;
+		}
 	}
 #else
 	GdkDisplay *display = gdk_display_get_default();

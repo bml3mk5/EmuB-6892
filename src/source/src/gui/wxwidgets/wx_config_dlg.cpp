@@ -355,7 +355,7 @@ void MyConfigDlg::InitDialog()
 	szrFdd = new wxStaticBoxSizer(new MyStaticBox(page, wxID_ANY, CMsg::Floppy_Disk_Drive), wxVERTICAL);
 	bszr = new wxBoxSizer(wxHORIZONTAL);
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::When_start_up_mount_disk_at_), flags);
-	for(int drv=0; drv<MAX_DRIVE; drv++) {
+	for(int drv=0; drv<USE_FLOPPY_DISKS; drv++) {
 		wxString str = wxString::Format("%d", drv);
 		chkFDMount[drv] = new wxCheckBox(page, IDC_CHK_FDD_MOUNT0 + drv, str);
 		bszr->Add(chkFDMount[drv], flags);
@@ -465,7 +465,7 @@ void MyConfigDlg::InitDialog()
 	comExMem = new MyChoice(page, IDC_COMBO_EXMEM, wxDefaultPosition, wxDefaultSize, LABELS::exram_size);
 	bszr->Add(comExMem, flags);
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::LB_Now_SP), flags);
-	bszr->Add(new MyStaticText(page, wxID_ANY, LABELS::exram_size[config.exram_size_num]), flags);
+	bszr->Add(new MyStaticText(page, wxID_ANY, LABELS::exram_size[pConfig->exram_size_num]), flags);
 	bszr->Add(new wxStaticText(page, wxID_ANY, wxT(")")), flags);
 	szrMain->Add(bszr, flags);
 
@@ -517,7 +517,7 @@ void MyConfigDlg::InitDialog()
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::IO_ports_are_FF1E_FF1F_FF16_FF17), flags);
 	bszr2 = new wxBoxSizer(wxHORIZONTAL);
 	bszr2->Add(new MyStaticText(page, wxID_ANY, CMsg::Sound_chip), flags);
-	comFMOPN = new MyChoice(page, IDC_COMBO_FMOPN, wxDefaultPosition, wxDefaultSize, LABELS::type_of_soundcard, 0, emu->get_parami(VM::ParamChipTypeOnFmOpn), config.type_of_fmopn, CMsg::LB_Now_RB);
+	comFMOPN = new MyChoice(page, IDC_COMBO_FMOPN, wxDefaultPosition, wxDefaultSize, LABELS::type_of_soundcard, 0, emu->get_parami(VM::ParamChipTypeOnFmOpn), pConfig->type_of_fmopn, CMsg::LB_Now_RB);
 	bszr2->Add(comFMOPN, flags);
 	bszr->Add(bszr2, flags);
 	szrMain->Add(bszr, flags);
@@ -529,7 +529,7 @@ void MyConfigDlg::InitDialog()
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::IO_ports_are_FFE6_FFE7_FFEE_FFEF), flags);
 	bszr2 = new wxBoxSizer(wxHORIZONTAL);
 	bszr2->Add(new MyStaticText(page, wxID_ANY, CMsg::Sound_chip), flags);
-	comEXPSG = new MyChoice(page, IDC_COMBO_USE_EXPSG, wxDefaultPosition, wxDefaultSize, LABELS::type_of_soundcard, 0, emu->get_parami(VM::ParamChipTypeOnExPsg), config.type_of_expsg, CMsg::LB_Now_RB);
+	comEXPSG = new MyChoice(page, IDC_COMBO_USE_EXPSG, wxDefaultPosition, wxDefaultSize, LABELS::type_of_soundcard, 0, emu->get_parami(VM::ParamChipTypeOnExPsg), pConfig->type_of_expsg, CMsg::LB_Now_RB);
 	bszr2->Add(comEXPSG, flags);
 	bszr->Add(bszr2, flags);
 	szrMain->Add(bszr, flags);
@@ -567,20 +567,20 @@ void MyConfigDlg::UpdateDialog()
 	int fdd_type = emu->get_parami(VM::ParamFddType);
 	int io_port = emu->get_parami(VM::ParamIOPort);
 
-	chkPowerOff->SetValue(config.use_power_off);
+	chkPowerOff->SetValue(pConfig->use_power_off);
 #if defined(_MBS1)
 	for(i=0; i<2; i++) {
-		staSysMode[i]->Show((config.sys_mode & 1) == (1 - i));
+		staSysMode[i]->Show((pConfig->sys_mode & 1) == (1 - i));
 		radSysMode[i]->SetValue((emu->get_parami(VM::ParamSysMode) & 1) == (1 - i));
 	}
-	chkDIPSwitch->SetValue((config.dipswitch & 4) != 0);
+	chkDIPSwitch->SetValue((pConfig->dipswitch & 4) != 0);
 #else
-	staDIPSwitch[0]->Show((config.dipswitch & 4) != 0);
-	chkDIPSwitch[0]->SetValue((config.dipswitch & 4) != 0);
+	staDIPSwitch[0]->Show((pConfig->dipswitch & 4) != 0);
+	chkDIPSwitch[0]->SetValue((pConfig->dipswitch & 4) != 0);
 #endif
 
 	for(i=0; i<4; i++) {
-		staFDDType[i]->Show(config.fdd_type == i);
+		staFDDType[i]->Show(pConfig->fdd_type == i);
 		radFDDType[i]->SetValue(fdd_type == i);
 	}
 	change_fdd_type(fdd_type);
@@ -588,13 +588,13 @@ void MyConfigDlg::UpdateDialog()
 	for(i=0; LABELS::io_port[i] != CMsg::End; i++) {
 		int pos = LABELS::io_port_pos[i];
 		if ((1 << pos) & IOPORT_MSK_ALL) {
-			staIOPort[pos]->Show((config.io_port & (1 << pos)) != 0);
+			staIOPort[pos]->Show((pConfig->io_port & (1 << pos)) != 0);
 			chkIOPort[pos]->SetValue((io_port & (1 << pos)) != 0);
 		}
 	}
 #ifdef USE_OPENGL
-	comGLUse->Select(config.use_opengl);
-	comGLFilter->Select(config.gl_filter_type);
+	comGLUse->Select(pConfig->use_opengl);
+	comGLFilter->Select(pConfig->gl_filter_type);
 #else
 	comGLUse->Select(0);
 	comGLUse->Enable(false);
@@ -604,36 +604,36 @@ void MyConfigDlg::UpdateDialog()
 
 	int led_show = gui->GetLedBoxPhase(-1);
 	comLedShow->Select(led_show);
-	comLedPos->Select(config.led_pos);
+	comLedPos->Select(pConfig->led_pos);
 
 #if defined(_MBS1)
-	comDisptmg->Select(config.disptmg_skew + 2);
-	comCurdisp->Select(config.curdisp_skew + 2);
+	comDisptmg->Select(pConfig->disptmg_skew + 2);
+	comCurdisp->Select(pConfig->curdisp_skew + 2);
 #else
-	comDisptmg->Select(config.disptmg_skew);
-	comCurdisp->Select(config.curdisp_skew);
+	comDisptmg->Select(pConfig->disptmg_skew);
+	comCurdisp->Select(pConfig->curdisp_skew);
 #endif
 
-	comCapType->Select(config.capture_type);
+	comCapType->Select(pConfig->capture_type);
 
-	txtSnapPath->SetValue(config.snapshot_path.Get());
+	txtSnapPath->SetValue(pConfig->snapshot_path.Get());
 #if 0
-	txtFontPath->SetValue(config.font_path.Get());
+	txtFontPath->SetValue(pConfig->font_path.Get());
 #endif
-	txtMsgFont->SetValue(config.msgboard_msg_fontname.Get());
-	txtMsgSize->SetValue(wxString::Format(wxT("%d"), config.msgboard_msg_fontsize));
-	txtInfoFont->SetValue(config.msgboard_info_fontname.Get());
-	txtInfoSize->SetValue(wxString::Format(wxT("%d"), config.msgboard_info_fontsize));
+	txtMsgFont->SetValue(pConfig->msgboard_msg_fontname.Get());
+	txtMsgSize->SetValue(wxString::Format(wxT("%d"), pConfig->msgboard_msg_fontsize));
+	txtInfoFont->SetValue(pConfig->msgboard_info_fontname.Get());
+	txtInfoSize->SetValue(wxString::Format(wxT("%d"), pConfig->msgboard_info_fontsize));
 
-	int lang_selidx = clocale->SelectLocaleNameIndex(lang_list, config.language);
+	int lang_selidx = clocale->SelectLocaleNameIndex(lang_list, pConfig->language);
 	comLanguage->Select(lang_selidx);
 
-	chkWavReverse->SetValue(config.wav_reverse != 0);
-	chkWavHalf->SetValue(config.wav_half != 0);
-	radWavNoCorrect->SetValue(!config.wav_correct);
-	radWavCorrectCos->SetValue(config.wav_correct && config.wav_correct_type == 0);
-	radWavCorrectSin->SetValue(config.wav_correct && config.wav_correct_type == 1);
-//	if (config.wav_correct == 1) {
+	chkWavReverse->SetValue(pConfig->wav_reverse != 0);
+	chkWavHalf->SetValue(pConfig->wav_half != 0);
+	radWavNoCorrect->SetValue(!pConfig->wav_correct);
+	radWavCorrectCos->SetValue(pConfig->wav_correct && pConfig->wav_correct_type == 0);
+	radWavCorrectSin->SetValue(pConfig->wav_correct && pConfig->wav_correct_type == 1);
+//	if (pConfig->wav_correct == 1) {
 //		chkWavCorrect->SetValue(true);
 //		radWavCorrectCos->Enable(true);
 //		radWavCorrectSin->Enable(true);
@@ -643,14 +643,14 @@ void MyConfigDlg::UpdateDialog()
 //		radWavCorrectSin->Enable(false);
 //	}
 	for(i=0; i<2; i++) {
-		txtCorrectAmp[i]->SetValue(wxString::Format(wxT("%d"), config.wav_correct_amp[i]));
+		txtCorrectAmp[i]->SetValue(wxString::Format(wxT("%d"), pConfig->wav_correct_amp[i]));
 	}
 
-	comWavSampleRate->Select(config.wav_sample_rate);
-	comWavSampleBits->Select(config.wav_sample_bits);
+	comWavSampleRate->Select(pConfig->wav_sample_rate);
+	comWavSampleBits->Select(pConfig->wav_sample_bits);
 
-	for(i=0; i<MAX_DRIVE; i++) {
-		chkFDMount[i]->SetValue((config.mount_fdd & (1 << i)) != 0);
+	for(i=0; i<USE_FLOPPY_DISKS; i++) {
+		chkFDMount[i]->SetValue((pConfig->mount_fdd & (1 << i)) != 0);
 	}
 	chkDelayFd1->SetValue(FLG_DELAY_FDSEARCH != 0);
 	chkDelayFd2->SetValue(FLG_DELAY_FDSEEK != 0);
@@ -659,43 +659,43 @@ void MyConfigDlg::UpdateDialog()
 	chkFdSavePlain->SetValue(FLG_SAVE_FDPLAIN != 0);
 
 	for(i=0; i<MAX_PRINTER; i++) {
-		txtHostLPT[i]->SetValue(config.printer_server_host[i].Get());
-		txtPortLPT[i]->SetValue(wxString::Format(wxT("%d"), config.printer_server_port[i]));
-		txtDelayLPT[i]->SetValue(wxString::Format(wxT("%.1f"), config.printer_delay[i]));
+		txtHostLPT[i]->SetValue(pConfig->printer_server_host[i].Get());
+		txtPortLPT[i]->SetValue(wxString::Format(wxT("%d"), pConfig->printer_server_port[i]));
+		txtDelayLPT[i]->SetValue(wxString::Format(wxT("%.1f"), pConfig->printer_delay[i]));
 	}
 	for(i=0; i<MAX_COMM; i++) {
-		txtHostCOM[i]->SetValue(config.comm_server_host[i].Get());
-		txtPortCOM[i]->SetValue(wxString::Format(wxT("%d"), config.comm_server_port[i]));
-		comCOMBaud[i]->Select(config.comm_dipswitch[i] - 1);
+		txtHostCOM[i]->SetValue(pConfig->comm_server_host[i].Get());
+		txtPortCOM[i]->SetValue(wxString::Format(wxT("%d"), pConfig->comm_server_port[i]));
+		comCOMBaud[i]->Select(pConfig->comm_dipswitch[i] - 1);
 	}
 
 	int match = 0;
 	for(i=0; LABELS::comm_uart_baudrate[i] != NULL; i++) {
-		if (config.comm_uart_baudrate == (int)_tcstol(LABELS::comm_uart_baudrate[i], NULL, 10)) {
+		if (pConfig->comm_uart_baudrate == (int)_tcstol(LABELS::comm_uart_baudrate[i], NULL, 10)) {
 			match = i;
 			break;
 		}
 	}
 	comUartBaud->Select(match);
-	comUartDataBit->Select(config.comm_uart_databit - 7);
-	comUartParity->Select(config.comm_uart_parity);
-	comUartStopBit->Select(config.comm_uart_stopbit);
-	comUartFlowCtrl->Select(config.comm_uart_flowctrl);
+	comUartDataBit->Select(pConfig->comm_uart_databit - 7);
+	comUartParity->Select(pConfig->comm_uart_parity);
+	comUartStopBit->Select(pConfig->comm_uart_stopbit);
+	comUartFlowCtrl->Select(pConfig->comm_uart_flowctrl);
 
-	txtROMPath->SetValue(config.rom_path.Get());
+	txtROMPath->SetValue(pConfig->rom_path.Get());
 
 #if defined(_MBS1)
 	comExMem->Select(emu->get_parami(VM::ParamExMemNum));
-	chkMemNoWait->SetValue(config.mem_nowait);
+	chkMemNoWait->SetValue(pConfig->mem_nowait);
 #else
-	chkUseExMem->SetValue(config.exram_size_num == 1);
+	chkUseExMem->SetValue(pConfig->exram_size_num == 1);
 #endif
 	chkUndefOp->SetValue(FLG_SHOWMSG_UNDEFOP != 0);
 	chkClrCPUReg->SetValue(FLG_CLEAR_CPUREG != 0);
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)
-	comZ80BIntr->Select(config.z80b_card_out_irq);
+	comZ80BIntr->Select(pConfig->z80b_card_out_irq);
 # elif defined(USE_MPC_68008)
 	chkAddrErr->SetValue(FLG_SHOWMSG_ADDRERR != 0);
 # endif
@@ -703,7 +703,7 @@ void MyConfigDlg::UpdateDialog()
 	comFMOPN->Select(emu->get_parami(VM::ParamChipTypeOnFmOpn));
 	chkEXPSG->SetValue(IOPORT_USE_EXPSG != 0);
 	comEXPSG->Select(emu->get_parami(VM::ParamChipTypeOnExPsg));
-	comFMIntr->Select(config.opn_irq);
+	comFMIntr->Select(pConfig->opn_irq);
 #endif
 }
 
@@ -739,82 +739,82 @@ void MyConfigDlg::ModifyParam()
 		}
 	}
 
-	config.mount_fdd = 0;
-	for(i=0; i<MAX_DRIVE; i++) {
+	pConfig->mount_fdd = 0;
+	for(i=0; i<USE_FLOPPY_DISKS; i++) {
 		if (chkFDMount[i]->GetValue()) {
-			config.mount_fdd |= (1 << i);
+			pConfig->mount_fdd |= (1 << i);
 		}
 	}
-	config.option_fdd = (chkDelayFd1->GetValue() ? MSK_DELAY_FDSEARCH : 0)
+	pConfig->option_fdd = (chkDelayFd1->GetValue() ? MSK_DELAY_FDSEARCH : 0)
 		| (chkDelayFd2->GetValue() ? MSK_DELAY_FDSEEK : 0)
 		| (chkFdDensity->GetValue() ? 0 : MSK_CHECK_FDDENSITY)
 		| (chkFdMedia->GetValue() ? 0 : MSK_CHECK_FDMEDIA)
 		| (chkFdDensity->GetValue() ? MSK_SAVE_FDPLAIN : 0);
 
 	// immediate modify
-	config.use_power_off = chkPowerOff->GetValue();
+	pConfig->use_power_off = chkPowerOff->GetValue();
 #if defined(_MBS1)
-	emu->set_parami(VM::ParamSysMode, (radSysMode[0]->GetValue() ? 1 : 0) | (config.sys_mode & ~1));
-	config.dipswitch = chkDIPSwitch->GetValue() ? (config.dipswitch | 4) : (config.dipswitch & ~4);
+	emu->set_parami(VM::ParamSysMode, (radSysMode[0]->GetValue() ? 1 : 0) | (pConfig->sys_mode & ~1));
+	pConfig->dipswitch = chkDIPSwitch->GetValue() ? (pConfig->dipswitch | 4) : (pConfig->dipswitch & ~4);
 #else
-	config.dipswitch = chkDIPSwitch[0]->GetValue() ? (config.dipswitch | 4) : (config.dipswitch & ~4);
+	pConfig->dipswitch = chkDIPSwitch[0]->GetValue() ? (pConfig->dipswitch | 4) : (pConfig->dipswitch & ~4);
 #endif
 	emu->set_parami(VM::ParamFddType, fdd_type);
 	emu->set_parami(VM::ParamIOPort, io_port);
 
 #ifdef USE_OPENGL
-	config.use_opengl = comGLUse->GetCurrentSelection();
-	config.gl_filter_type = comGLFilter->GetCurrentSelection();
+	pConfig->use_opengl = comGLUse->GetCurrentSelection();
+	pConfig->gl_filter_type = comGLFilter->GetCurrentSelection();
 #endif
 #if defined(_MBS1)
-	config.disptmg_skew = comDisptmg->GetCurrentSelection() - 2;
-	config.curdisp_skew = comCurdisp->GetCurrentSelection() - 2;
+	pConfig->disptmg_skew = comDisptmg->GetCurrentSelection() - 2;
+	pConfig->curdisp_skew = comCurdisp->GetCurrentSelection() - 2;
 #else
-	config.disptmg_skew = comDisptmg->GetCurrentSelection();
-	config.curdisp_skew = comCurdisp->GetCurrentSelection();
+	pConfig->disptmg_skew = comDisptmg->GetCurrentSelection();
+	pConfig->curdisp_skew = comCurdisp->GetCurrentSelection();
 #endif
-	config.led_pos = comLedPos->GetCurrentSelection();
+	pConfig->led_pos = comLedPos->GetCurrentSelection();
 
-	config.capture_type = comCapType->GetCurrentSelection();
+	pConfig->capture_type = comCapType->GetCurrentSelection();
 
-	config.snapshot_path.Set(txtSnapPath->GetValue());
+	pConfig->snapshot_path.Set(txtSnapPath->GetValue());
 #if 0
-	config.font_path.Set(txtFontPath->GetValue());
+	pConfig->font_path.Set(txtFontPath->GetValue());
 #endif
-	config.msgboard_msg_fontname.Set(txtMsgFont->GetValue());
+	pConfig->msgboard_msg_fontname.Set(txtMsgFont->GetValue());
 	if (txtMsgSize->GetValue().ToULong(&value)) {
 		if (1 <= value && value <= 60) {
-			config.msgboard_msg_fontsize = (uint8_t)value;
+			pConfig->msgboard_msg_fontsize = (uint8_t)value;
 		}
 	}
-	config.msgboard_info_fontname.Set(txtInfoFont->GetValue());
+	pConfig->msgboard_info_fontname.Set(txtInfoFont->GetValue());
 	if (txtInfoSize->GetValue().ToULong(&value)) {
 		if (1 <= value && value <= 60) {
-			config.msgboard_info_fontsize = (uint8_t)value;
+			pConfig->msgboard_info_fontsize = (uint8_t)value;
 		}
 	}
 
-	clocale->ChooseLocaleName(lang_list, comLanguage->GetCurrentSelection(), config.language);
+	clocale->ChooseLocaleName(lang_list, comLanguage->GetCurrentSelection(), pConfig->language);
 
-	config.wav_reverse = chkWavReverse->GetValue() ? 1 : 0;
-	config.wav_half = chkWavHalf->GetValue() ? 1 : 0;
-	config.wav_correct = !radWavNoCorrect->GetValue();
-	config.wav_correct_type = radWavCorrectSin->GetValue() ? 1 : 0;
+	pConfig->wav_reverse = chkWavReverse->GetValue() ? 1 : 0;
+	pConfig->wav_half = chkWavHalf->GetValue() ? 1 : 0;
+	pConfig->wav_correct = !radWavNoCorrect->GetValue();
+	pConfig->wav_correct_type = radWavCorrectSin->GetValue() ? 1 : 0;
 	for(i=0; i<2; i++) {
 		if (txtCorrectAmp[i]->GetValue().ToULong(&value)) {
 			if (100 <= value && value <= 5000) {
-				config.wav_correct_amp[i] = (int)value;
+				pConfig->wav_correct_amp[i] = (int)value;
 			}
 		}
 	}
-	config.wav_sample_rate = comWavSampleRate->GetCurrentSelection();
-	config.wav_sample_bits = comWavSampleBits->GetCurrentSelection();
+	pConfig->wav_sample_rate = comWavSampleRate->GetCurrentSelection();
+	pConfig->wav_sample_bits = comWavSampleBits->GetCurrentSelection();
 
 	for(i=0; i<MAX_PRINTER; i++) {
-		config.printer_server_host[i].Set(txtHostLPT[i]->GetValue());
+		pConfig->printer_server_host[i].Set(txtHostLPT[i]->GetValue());
 		if (txtPortLPT[i]->GetValue().ToULong(&value)) {
 			if (1 <= value && value <= 65535) {
-				config.printer_server_port[i] = (int)value;
+				pConfig->printer_server_port[i] = (int)value;
 			}
 		}
 		double valued = 0.0;
@@ -822,46 +822,46 @@ void MyConfigDlg::ModifyParam()
 			if (valued < 0.1) valued = 0.1;
 			if (valued > 1000.0) valued = 1000.0;
 			valued = floor(valued * 10.0 + 0.5) / 10.0;
-			config.printer_delay[i] = valued;
+			pConfig->printer_delay[i] = valued;
 		}
 	}
 	for(i=0; i<MAX_COMM; i++) {
-		config.comm_server_host[i].Set(txtHostCOM[i]->GetValue());
+		pConfig->comm_server_host[i].Set(txtHostCOM[i]->GetValue());
 		if (txtPortCOM[i]->GetValue().ToULong(&value)) {
 			if (1 <= value && value <= 65535) {
-				config.comm_server_port[i] = (int)value;
+				pConfig->comm_server_port[i] = (int)value;
 			}
 		}
-		config.comm_dipswitch[i] = comCOMBaud[i]->GetCurrentSelection() + 1;
+		pConfig->comm_dipswitch[i] = comCOMBaud[i]->GetCurrentSelection() + 1;
 	}
 
 	i = comUartBaud->GetCurrentSelection();
-	config.comm_uart_baudrate = (int)_tcstol(LABELS::comm_uart_baudrate[i], NULL, 10);
-	config.comm_uart_databit = comUartDataBit->GetCurrentSelection() + 7;
-	config.comm_uart_parity = comUartParity->GetCurrentSelection();
-	config.comm_uart_stopbit = comUartStopBit->GetCurrentSelection();
-	config.comm_uart_flowctrl = comUartFlowCtrl->GetCurrentSelection();
+	pConfig->comm_uart_baudrate = (int)_tcstol(LABELS::comm_uart_baudrate[i], NULL, 10);
+	pConfig->comm_uart_databit = comUartDataBit->GetCurrentSelection() + 7;
+	pConfig->comm_uart_parity = comUartParity->GetCurrentSelection();
+	pConfig->comm_uart_stopbit = comUartStopBit->GetCurrentSelection();
+	pConfig->comm_uart_flowctrl = comUartFlowCtrl->GetCurrentSelection();
 
-	config.rom_path.Set(txtROMPath->GetValue());
+	pConfig->rom_path.Set(txtROMPath->GetValue());
 
 #if defined(_MBS1)
 	emu->set_parami(VM::ParamExMemNum, comExMem->GetCurrentSelection());
-	config.mem_nowait = chkMemNoWait->GetValue();
+	pConfig->mem_nowait = chkMemNoWait->GetValue();
 #else
-	config.exram_size_num = chkUseExMem->GetValue() ? 1 : 0;
+	pConfig->exram_size_num = chkUseExMem->GetValue() ? 1 : 0;
 #endif
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, chkUndefOp->GetValue());
-	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, chkClrCPUReg->GetValue());
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_UNDEFOP, chkUndefOp->GetValue());
+	BIT_ONOFF(pConfig->misc_flags, MSK_CLEAR_CPUREG, chkClrCPUReg->GetValue());
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)
-	config.z80b_card_out_irq = comZ80BIntr->GetCurrentSelection();
+	pConfig->z80b_card_out_irq = comZ80BIntr->GetCurrentSelection();
 # elif defined(USE_MPC_68008)
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_ADDRERR, chkAddrErr->GetValue());
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_ADDRERR, chkAddrErr->GetValue());
 # endif
 	emu->set_parami(VM::ParamChipTypeOnFmOpn, comFMOPN->GetCurrentSelection());
 	emu->set_parami(VM::ParamChipTypeOnExPsg, comEXPSG->GetCurrentSelection());
-	config.opn_irq = comFMIntr->GetCurrentSelection();
+	pConfig->opn_irq = comFMIntr->GetCurrentSelection();
 #endif
 
 	// set message font
@@ -873,7 +873,7 @@ void MyConfigDlg::ModifyParam()
 #endif
 
 	gui->ChangeLedBox(comLedShow->GetCurrentSelection());
-	gui->ChangeLedBoxPosition(config.led_pos);
+	gui->ChangeLedBoxPosition(pConfig->led_pos);
 }
 
 void MyConfigDlg::change_fdd_type(int index)

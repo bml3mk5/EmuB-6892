@@ -19,18 +19,11 @@
 #include "../../fileio.h"
 
 FFM_REC_AUDIO::FFM_REC_AUDIO(EMU *new_emu, REC_AUDIO *new_audio)
+	: FFM_REC_BASE(new_emu)
 {
-	emu = new_emu;
 	audio = new_audio;
 	rec_rate = 0;
-	rec_path = NULL;
 
-	avio = NULL;
-	fmtcont = NULL;
-
-	codcont = NULL;
-	frame = NULL;
-	packet = NULL;
 	store_samples[0].s = NULL;
 	store_samples[1].s = NULL;
 	store_sample_pos = 0;
@@ -48,21 +41,6 @@ void FFM_REC_AUDIO::Release()
 	if (fmtcont) {
 		// finish and flush
 		if (audio->NowRecording()) f_av_write_trailer(fmtcont);
-		f_avformat_free_context(fmtcont);
-		fmtcont = NULL;
-	}
-	if (avio) {
-		f_avio_close(avio);
-		avio = NULL;
-	}
-	if (packet) {
-		f_av_packet_free(&packet);
-		packet = NULL;
-	}
-	if (frame) {
-//		f_av_freep(&frame->data[0]);
-		f_av_frame_free(&frame);
-		frame = NULL;
 	}
 	if (store_samples[0].s) {
 		store_samples[0].s = NULL;
@@ -70,27 +48,14 @@ void FFM_REC_AUDIO::Release()
 	if (store_samples[1].s) {
 		store_samples[1].s = NULL;
 	}
-	if (codcont) {
-		codcont = NULL;
-	}
-}
 
-void FFM_REC_AUDIO::RemoveFile()
-{
-	FILEIO::RemoveFile(rec_path);
+	FFM_REC_BASE::Release();
 }
 
 bool FFM_REC_AUDIO::IsEnabled()
 {
 	return FFMPEG_LoadLibrary(USE_REC_AUDIO_FFMPEG);
 }
-
-/// supported codec table of ffmpeg
-struct st_codec_ids {
-	AVCodecID id;
-	const char *name;
-	const _TCHAR *ext;
-};
 
 static const struct st_codec_ids codec_ids[] = {
 	{ AV_CODEC_ID_AAC,	"mp4" /* "adts" */,	_T(".m4a") },
@@ -182,82 +147,38 @@ bool FFM_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 #endif
 
 	int num = 0;
-	AVCodecID codec_id = AV_CODEC_ID_NONE;
+//	AVCodecID codec_id = AV_CODEC_ID_NONE;
 	AVCodec *codec = NULL;
 	AVStream *stream = NULL;
-	char name[64];
+//	char name[64];
 	int ret;
 
 	if (path == NULL) return false;
 
 	if (!FFMPEG_LoadLibrary(USE_REC_AUDIO_FFMPEG)) return false;
 
-	num = emu->get_parami(VM::ParamRecAudioCodec);
-	codec_id = codec_ids[num].id;
-	strcpy(name, codec_ids[num].name);
-	UTILITY::tcscat(path, path_size, codec_ids[num].ext);
-
-	rec_path = path;
 	rec_rate = sample_rate;
 
-	logging->out_logf(LOG_DEBUG, _T("FFM_REC_AUDIO::Start: %d %s"), codec_id, name);
+	num = emu->get_parami(VM::ParamRecAudioCodec);
+//	codec_id = codec_ids[num].id;
+//	strcpy(name, codec_ids[num].name);
+	UTILITY::tcscat(path, path_size, codec_ids[num].ext);
 
-	// open file for output
-	CTchar crec_path(rec_path);
-	ret = f_avio_open(&avio, crec_path.GetN(), AVIO_FLAG_WRITE);
+	crec_path.Set(path);
+
+	logging->out_logf(LOG_DEBUG, _T("FFM_REC_AUDIO::Start: %d %s"), codec_ids[num].id, codec_ids[num].name);
+
+	// add stream
+	ret = AddStream(TYPE_AUDIO, codec_ids[num].id, codec_ids[num].name, codec, stream);
 	if (ret < 0) {
-		logging->out_logf(LOG_ERROR, _T("avio_open failed: %d"), ret);
-		goto FIN;
-	}
-	// alloc format context and search output codec
-	ret = f_avformat_alloc_output_context2(&fmtcont, NULL, name, crec_path.GetN());
-	if (ret < 0) {
-		// search output codec using file extension
-		ret = f_avformat_alloc_output_context2(&fmtcont, NULL, NULL, crec_path.GetN());
-		if (ret < 0) {
-			logging->out_logf(LOG_ERROR, _T("avformat_alloc_output_context2 failed: %d"), ret);
-			goto FIN;
-		}
-	}
-	logging->out_logf(LOG_DEBUG, _T("Output context name: \"%s\" [%s]"), fmtcont->oformat->name, fmtcont->oformat->long_name);
-
-	// attach io context with format context
-	fmtcont->pb = avio;
-
-	// whether use this codec on specified file format
-//	logging->out_debug(_T("avformat_query_codec -----"));
-//	ret = f_avformat_query_codec(fmtcont->oformat, codec_id, FF_COMPLIANCE_UNOFFICIAL); // FF_COMPLIANCE_NORMAL
-//	if (ret <= 0) {
-//		logging->out_logf(LOG_ERROR, _T("avformat_query_codec failed: %d"), ret);
-//		goto FIN;
-//	}
-
-//	strncpy(fmtcont->filename, crec_path.GetN(), sizeof(fmtcont->filename));
-	fmtcont->oformat->video_codec = AV_CODEC_ID_NONE;
-//	fmtcont->oformat->audio_codec = codec_id;
-	fmtcont->oformat->subtitle_codec = AV_CODEC_ID_NONE;
-
-	// find the specified audio encoder
-	logging->out_debug(_T("avcodec_find_encoder -----"));
-	codec = f_avcodec_find_encoder(codec_id);
-	if (!codec) {
-		logging->out_logf(LOG_ERROR, _T("avcodec_find_encoder: not found codec id: %d"), codec_id);
 		goto FIN;
 	}
 
-	// create a stream in the output file container
-	logging->out_debug(_T("avformat_new_stream -----"));
-	stream = f_avformat_new_stream(fmtcont, codec);
-	if (!stream) {
-		logging->out_log(LOG_ERROR, _T("avformat_new_stream failed."));
-		goto FIN;
-	}
-	codcont = stream->codec;
 	stream->id = fmtcont->nb_streams - 1;
 
 	// put bit rate
 //	codcont->bit_rate = bit_rates[emu->get_parami(VM::ParamRecAudioQuality)];
-	switch(codec_id) {
+	switch(fmtcont->oformat->audio_codec) {
 	case AV_CODEC_ID_MP2:
 		codcont->bit_rate = 256000;
 		break;
@@ -329,18 +250,13 @@ bool FFM_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 	store_sample_pos = 0;
 	write_error_count = 0;
 
+	f_avcodec_parameters_from_context(stream->codecpar, codcont);
+
 	// write the header of the output file container
 	logging->out_debug(_T("avformat_write_header -----"));
     ret = f_avformat_write_header(fmtcont, NULL);
 	if (ret < 0) {
 		logging->out_logf(LOG_ERROR, _T("avformat_write_header failed: %d"), ret);
-		goto FIN;
-	}
-
-	// allocate packet
-	packet = f_av_packet_alloc();
-	if (!packet) {
-		logging->out_log(LOG_ERROR, _T("av_packet_alloc failed."));
 		goto FIN;
 	}
 

@@ -36,7 +36,6 @@ private:
 	GtkWidget *chkMODE;
 	GtkWidget *radFDD[4];
 	GtkWidget *chkIO[IOPORT_NUMS];
-	GtkWidget *chkFDMount[MAX_DRIVE];
 
 	GtkWidget *comUseOpenGL;
 	GtkWidget *comGLFilter;
@@ -67,11 +66,18 @@ private:
 #endif
 
 #ifdef USE_FD1
+	GtkWidget *chkFDMount[USE_FLOPPY_DISKS];
 	GtkWidget *chkDelayFd1;
 	GtkWidget *chkDelayFd2;
 	GtkWidget *chkFdDensity;
 	GtkWidget *chkFdMedia;
 	GtkWidget *chkFdSavePlain;
+#endif
+
+#ifdef USE_HD1
+	GtkWidget *chkHDMount[USE_HARD_DISKS];
+
+	GtkWidget *chkDelayHd2;
 #endif
 
 #ifdef MAX_PRINTER

@@ -84,7 +84,10 @@ class MyLabel : public QLabel
 	Q_OBJECT
 
 public:
+	explicit MyLabel(const _TCHAR *text, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+	explicit MyLabel(const _TCHAR *text, int min_w, int min_h, int align = Qt::AlignLeft);
 	explicit MyLabel(CMsg::Id textid, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+	explicit MyLabel(CMsg::Id textid, int min_w, int min_h, int align = Qt::AlignLeft);
 
 	void setTextById(CMsg::Id textid);
 };
@@ -118,6 +121,17 @@ public:
 	explicit MyPushButton(CMsg::Id textid, QWidget *parent = nullptr);
 
 	void setTextById(CMsg::Id textid);
+};
+
+/**
+	@brief Slider control
+*/
+class MySlider : public QSlider
+{
+	Q_OBJECT
+
+public:
+	explicit MySlider(Qt::Orientation orient, int min_val, int max_val, int val, int min_w = 0, int min_h = 0);
 };
 
 /**

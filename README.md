@@ -1,4 +1,4 @@
-# HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
+# ![icon](src/bml3mk5_icon.png) HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
 
 #### Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
 
@@ -9,7 +9,10 @@
 ### このソフトは、日立ベーシックマスターレベル3マーク5(MB-6892)のエミュレータです。
 
 
-## [Documents(Japanese) ドキュメント](../../tree/master/src/docs)
+### [Downloads ダウンロード](https://github.com/bml3mk5/EmuB-6892/releases)
+
+
+### [Documents(Japanese) ドキュメント](../../tree/master/src/docs)
 
 
 ## Disclaimer 免責事項
@@ -37,7 +40,7 @@
 
   http://s-sasaji.ddo.jp/bml3mk5/
 
-  (Twitter: http://twitter.com/bml3mk5)
+  (X(Twitter): http://twitter.com/bml3mk5)
 
 ------------------------------------------------------------------------------
 

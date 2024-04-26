@@ -94,8 +94,8 @@ void MsgBoard::InitScreen(int width, int height)
 	}
 	if (enable && SetFont()) {
 		inited = true;
-		config.msgboard_msg_fontname.Set(msg.font->GetFontNamePtr());
-		config.msgboard_info_fontname.Set(info.font->GetFontNamePtr());
+		pConfig->msgboard_msg_fontname.Set(msg.font->GetFontNamePtr());
+		pConfig->msgboard_info_fontname.Set(info.font->GetFontNamePtr());
 	}
 	if (enable) {
 		logging->out_log_x(LOG_INFO , CMsg::MsgBoard_OK);
@@ -110,25 +110,25 @@ bool MsgBoard::SetFont()
 	_TCHAR font_name[64];
 
 	// フォントパスの設定
-	if (config.font_path.Length() > 0 && !CFont::AddFontPath(config.font_path)) {
-		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR, config.font_path);
+	if (pConfig->font_path.Length() > 0 && !CFont::AddFontPath(pConfig->font_path.Get())) {
+		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR, pConfig->font_path);
 	}
 
-	msg.font->SetFont((HWND)NULL, config.msgboard_msg_fontname, config.msgboard_msg_fontsize, FW_NORMAL, fg.Get());
+	msg.font->SetFont((HWND)NULL, pConfig->msgboard_msg_fontname.Get(), pConfig->msgboard_msg_fontsize, FW_NORMAL, fg.Get());
 	if (msg.font->GetFont() != NULL) {
 		CTchar xtitle(gMessages.Get(CMsg::message));
 		msg.font->GetFontName(font_name, sizeof(font_name) / sizeof(font_name[0]));
 		logging->out_logf_x(LOG_INFO, CMsg::MsgBoard_Use_VSTR_for_VSTR, font_name, xtitle.Get());
 	} else {
-		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_message, config.msgboard_msg_fontname);
+		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_message, pConfig->msgboard_msg_fontname);
 	}
-	info.font->SetFont((HWND)NULL, config.msgboard_info_fontname, config.msgboard_info_fontsize, FW_BOLD, fg.Get());
+	info.font->SetFont((HWND)NULL, pConfig->msgboard_info_fontname.Get(), pConfig->msgboard_info_fontsize, FW_BOLD, fg.Get());
 	if (info.font->GetFont() != NULL) {
 		CTchar xtitle(gMessages.Get(CMsg::info));
 		info.font->GetFontName(font_name, sizeof(font_name) / sizeof(font_name[0]));
 		logging->out_logf_x(LOG_INFO, CMsg::MsgBoard_Use_VSTR_for_VSTR, font_name, xtitle.Get());
 	} else {
-		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_info, config.msgboard_info_fontname);
+		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_info, pConfig->msgboard_info_fontname);
 	}
 	if (msg.font->GetFont() == NULL || info.font->GetFont() == NULL) {
 		enable = false;

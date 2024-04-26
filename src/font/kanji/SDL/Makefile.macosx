@@ -6,22 +6,25 @@ CC=gcc
 CDEFS=
 DBG_CDEFS=-D_DEBUG
 
-ARCH=-arch i386
+#ARCH=-arch i386
 #ARCH=-arch x86_64
+ARCH=-arch arm64 -arch x86_64
 
-MACMINVER=-mmacosx-version-min=10.6
+SDLDIR=/usr/local
 
-CFLAGS=$(ARCH) -Wall -O2 $(shell sdl-config --cflags)
-DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(shell sdl-config --cflags)
+MACMINVER=-mmacosx-version-min=10.9
+
+CFLAGS=$(ARCH) -Wall -O2 $(shell $(SDLDIR)/bin/sdl2-config --cflags)
+DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(shell $(SDLDIR)/bin/sdl2-config --cflags)
 
 LD=gcc
 
 LIBDIR=/usr/lib
-LOCALLIBDIR=/usr/local/lib
-LOCALLIBS=$(LOCALLIBDIR)/libSDLmain.a $(LOCALLIBDIR)/libSDL.a $(LOCALLIBDIR)/libSDL_ttf.a
+SDLLIBDIR=$(SDLDIR)/lib
+SDLLIBS=$(SDLLIBDIR)/libSDL2main.a $(SDLLIBDIR)/libSDL2.a $(SDLLIBDIR)/libSDL2_ttf.a
 
-SH_LDFLAGS=$(ARCH) $(shell sdl-config --libs) -lSDL_ttf -liconv
-ST_LDFLAGS=$(ARCH) $(shell sdl-config --static-libs) -L/usr/X11/lib -lfreetype -liconv
+SH_LDFLAGS=$(ARCH) $(shell $(SDLDIR)/bin/sdl2-config --libs) -lSDL2_ttf -liconv
+ST_LDFLAGS=$(ARCH) $(shell $(SDLDIR)/bin/sdl2-config --static-libs) -L/usr/X11/lib -liconv
 DBG_LDFLAGS=$(ST_LDFLAGS)
 
 EXEFILE=mkkanji
@@ -45,7 +48,7 @@ SH_OBJS=$(OBJS:%=$(SH_BUILDDIR)/%)
 ST_OBJS=$(OBJS:%=$(ST_BUILDDIR)/%)
 DBG_OBJS=$(OBJS:%=$(DBG_BUILDDIR)/%)
 
-LIBS=$(LOCALLIBS)
+LIBS=$(SDLLIBS)
 SH_LIBS=
 ST_LIBS=$(LIBS)
 DBG_LIBS=$(LIBS)

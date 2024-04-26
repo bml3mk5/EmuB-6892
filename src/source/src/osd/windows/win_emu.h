@@ -38,6 +38,12 @@
 #else
 #pragma comment(lib, "dinput.lib")
 #endif
+#ifdef USE_JOYSTICK
+#include <xinput.h>
+#define USE_JOYSTICK_DIRECTINPUT
+#define XUSER_MAX_COUNT 4
+#pragma comment(lib, "XInput.lib")
+#endif
 #endif
 
 #define WM_RESIZE  (WM_USER + 1)
@@ -56,7 +62,7 @@ class Connection;
 #define WM_SOCKET3 (WM_USER + 5)
 #define WM_SOCKET4 (WM_USER + 6)
 #define WM_SOCKET5 (WM_USER + 7)
-#endif
+#endif /* USE_SOCKET */
 
 #ifdef USE_UART
 class CommPorts;
@@ -105,9 +111,6 @@ private:
 	/// @name input private members
 	//@{
 #ifdef USE_JOYSTICK
-	int joyid_map[2];
-	uint32_t joy_xmin[2], joy_xmax[2];
-	uint32_t joy_ymin[2], joy_ymax[2];
 	INPUT dummy_key;
 	int send_dummy_key;
 #endif
@@ -123,6 +126,32 @@ private:
 //	LPDIRECTINPUTDEVICE lpdijoy;
 #endif
 	uint8_t key_dik_prev[256];
+#endif
+
+#ifdef USE_JOYSTICK_DIRECTINPUT
+	int joy_nums;
+	static BOOL CALLBACK attach_joy_device_callback(LPCDIDEVICEINSTANCE, LPVOID);
+	BOOL attach_joy_device(LPCDIDEVICEINSTANCE);
+	static bool is_xinput_device(const GUID *);
+#endif
+
+#ifdef USE_JOYSTICK
+	enum en_joy_dev_type {
+		JOY_DEV_DEFAULT = 0,
+		JOY_DEV_DINPUT,
+		JOY_DEV_XINPUT
+	};
+	struct st_joy_device {
+		en_joy_dev_type type;
+		int id;
+#ifdef USE_JOYSTICK_DIRECTINPUT
+		LPDIRECTINPUTDEVICE8 lp;	///< direct input device
+#endif
+	} joy_device[MAX_JOYSTICKS];
+#endif
+
+#if defined(USE_MOUSE_ABSOLUTE) || defined(USE_MOUSE_FLEXIBLE)
+	VmPoint mouse_position;
 #endif
 	//@}
 
@@ -351,6 +380,9 @@ public:
 	void update_mouse();
 	void enable_mouse(int mode);
 	void disable_mouse(int mode);
+
+	void mouse_move(int x, int y);
+	void mouse_leave();
 
 	void enable_joystick();
 	//@}

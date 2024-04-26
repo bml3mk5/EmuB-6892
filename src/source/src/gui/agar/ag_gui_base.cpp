@@ -560,7 +560,7 @@ void AG_GUI_BASE::update_recent_list(AG_MenuItem *mi, CRecentPathList &list, int
 	AG_MenuItemFreeChildren(mi);
 
 	for(int num=0; num<max; num++) {
-		file = list[num]->path;
+		file = list[num]->path.GetN();
 		if (!GetRecentFileStr(file, list[num]->num, path, 56)) break;
 		ms = AG_MenuAction(mi, path, NULL, fn, "%Cp %i %i", this, drv, num);
 		AG_GUI_MENU_ENABLE(ms, true);
@@ -585,14 +585,14 @@ void AG_GUI_BASE::update_recent_list(AG_MenuItem *mi, int type, int drv)
 
 	switch(type) {
 	case AG_FILE_DLG::DATAREC:
-		upd = config.recent_datarec_path.updated;
-		config.recent_datarec_path.updated = false;
-		max = config.recent_datarec_path.Count();
+		upd = pConfig->recent_datarec_path.updated;
+		pConfig->recent_datarec_path.updated = false;
+		max = pConfig->recent_datarec_path.Count();
 		break;
 	case AG_FILE_DLG::FLOPPY:
-		upd = config.recent_disk_path[drv].updated;
-		config.recent_disk_path[drv].updated = false;
-		max = config.recent_disk_path[drv].Count();
+		upd = pConfig->recent_disk_path[drv].updated;
+		pConfig->recent_disk_path[drv].updated = false;
+		max = pConfig->recent_disk_path[drv].Count();
 		break;
 	}
 	if (!upd) return;
@@ -602,15 +602,15 @@ void AG_GUI_BASE::update_recent_list(AG_MenuItem *mi, int type, int drv)
 	for(int num=0; num<max; num++) {
 		switch(type) {
 		case AG_FILE_DLG::DATAREC:
-			file = config.recent_datarec_path[num]->path;
-			if (!GetRecentFileStr(file, config.recent_datarec_path[num]->num, path, 56)) break;
+			file = pConfig->recent_datarec_path[num]->path;
+			if (!GetRecentFileStr(file, pConfig->recent_datarec_path[num]->num, path, 56)) break;
 			ms = AG_MenuAction(mi, path, NULL, OnSelectRecentDataRec, "%Cp %i", this, num);
 			AG_GUI_MENU_ENABLE(ms, true);
 			flag = true;
 			break;
 		case AG_FILE_DLG::FLOPPY:
-			file = config.recent_disk_path[drv][num]->path;
-			if (!GetRecentFileStr(file, config.recent_disk_path[drv][num]->num, path, 56)) break;
+			file = pConfig->recent_disk_path[drv][num]->path;
+			if (!GetRecentFileStr(file, pConfig->recent_disk_path[drv][num]->num, path, 56)) break;
 			ms = AG_MenuAction(mi, path, NULL, OnSelectRecentFloppyDisk, "%Cp %i %i", this, drv, num);
 			AG_GUI_MENU_ENABLE(ms, true);
 			flag = true;
@@ -657,7 +657,7 @@ bool AG_GUI_BASE::ShowOpenFloppyDiskDialog(int drv)
 	UTILITY::sprintf_utf8(title, 128, CMSG(Open_Floppy_Disk_VDIGIT), drv);
 	ShowMenu();
 	filebox->CreateLoad(AG_FILE_DLG::FLOPPY, title
-		, "*.d88", config.initial_disk_path, NULL, (void *)(intptr_t)drv);
+		, "*.d88", pConfig->GetInitialFloppyDiskPath(), NULL, (void *)(intptr_t)drv);
 	return true;
 }
 
@@ -676,17 +676,17 @@ bool AG_GUI_BASE::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	UTILITY::sprintf_utf8(title, 128, CMSG(New_Floppy_Disk_VDIGIT), drv);
 
 	char file_name[_MAX_PATH];
-	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, "d88");
+	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, _T("d88"));
 
 	ShowMenu();
 	filebox->CreateSave(AG_FILE_DLG::FLOPPY_NEW, title
-		, "*.d88", config.initial_disk_path, file_name, (void *)(intptr_t)((int)type << 8 | drv));
+		, "*.d88", pConfig->GetInitialFloppyDiskPath(), file_name, (void *)(intptr_t)((int)type << 8 | drv));
 	return true;
 }
 
 void AG_GUI_BASE::PostEtAgOpenRecentFloppyMessage(int drv, int num, int new_drv)
 {
-	emumsg.Send(EMUMSG_ID_RECENT_FD, new_drv, config.recent_disk_path[drv][num]->path, config.recent_disk_path[drv][num]->num, 0, true);
+	emumsg.Send(EMUMSG_ID_RECENT_FD, new_drv, pConfig->GetRecentFloppyDiskPathString(drv, num), pConfig->GetRecentFloppyDiskPathNumber(drv, num), 0, true);
 }
 
 /// show Play Paste text Dialog
@@ -694,7 +694,7 @@ bool AG_GUI_BASE::ShowOpenAutoKeyDialog(void)
 {
 	ShowMenu();
 	filebox->CreateLoad(AG_FILE_DLG::AUTOKEY, CMSG(Open_Text_File)
-		, "*.txt,*.bas,*.lpt", config.initial_autokey_path, NULL);
+		, "*.txt,*.bas,*.lpt", pConfig->GetInitialAutoKeyPath(), NULL);
 	return true;
 }
 /// show Print Data Save Dialog
@@ -702,7 +702,7 @@ bool AG_GUI_BASE::ShowSavePrinterDialog(int drv)
 {
 	ShowMenu();
 	filebox->CreateSave(AG_FILE_DLG::PRINTER, CMSG(Save_Printing_Data)
-		, "*.lpt", config.initial_printer_path, NULL, (void *)(intptr_t)drv);
+		, "*.lpt", pConfig->GetInitialPrinterPath(), NULL, (void *)(intptr_t)drv);
 	return true;
 }
 /// show About Dialog
@@ -821,7 +821,7 @@ void AG_GUI_BASE::OnUpdateCPUPower(AG_Event *event)
 //	AG_GUI_BASE *gui = (AG_GUI_BASE *)AG_PTR(1);
 	int num = AG_INT(2);
 
-	AG_GUI_MENU_CHECK(mi, config.cpu_power == num);
+	AG_GUI_MENU_CHECK(mi, pConfig->cpu_power == num);
 }
 // show Open Text dialog (auto key)
 void AG_GUI_BASE::OnSelectOpenAutoKey(AG_Event *event)
@@ -923,7 +923,7 @@ void AG_GUI_BASE::OnUpdateRecentDataRec(AG_Event *event)
 	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
 	AG_GUI_BASE *gui = (AG_GUI_BASE *)AG_PTR(1);
 
-	gui->update_recent_list(mi, config.recent_datarec_path, 0, OnSelectRecentDataRec);
+	gui->update_recent_list(mi, pConfig->GetRecentDataRecPathList(), 0, OnSelectRecentDataRec);
 }
 
 ////////////////////////////////////////
@@ -970,7 +970,7 @@ void AG_GUI_BASE::OnUpdateRecentFloppyDisk(AG_Event *event)
 	AG_GUI_BASE *gui = (AG_GUI_BASE *)AG_PTR(1);
 	int drv = AG_INT(2);
 
-	gui->update_recent_list(mi, config.recent_disk_path[drv], drv, OnSelectRecentFloppyDisk);
+	gui->update_recent_list(mi, pConfig->GetRecentFloppyDiskPathList(drv), drv, OnSelectRecentFloppyDisk);
 }
 // Show Blank Floppy Disk Dialog
 void AG_GUI_BASE::OnSelectOpenBlankFloppyDisk(AG_Event *event)

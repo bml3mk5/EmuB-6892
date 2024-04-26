@@ -115,7 +115,7 @@ public:
 //	bool IsHistoryEnabled(int index) const;
 
 	void SetCurrentCPUName(const char *name);
-	const _TCHAR *GetCurrentCPUName() const { return current_cpu_name; }
+	const _TCHAR *GetCurrentCPUName() const { return current_cpu_name.Get(); }
 
 	void Running(bool val) { now_running = val; }
 	bool NowRunning() const { return now_running; }
@@ -391,6 +391,8 @@ private:
 	void UsageBinaryFile(bool s, int num);
 	void UsageBinaryFileType();
 	void CommandSaveImageFile(int num);
+	bool SaveImageFile(int type, int w, int h);
+	bool SaveImageDumpFile(int type, int w, int h);
 	void UsageImageFile(bool s, int num);
 
 	void CommandSetBreakPoint(int num);

@@ -19,6 +19,8 @@
 #include "../../fileio.h"
 #include "../../config.h"
 #include "qt_input.h"
+#include "../../keycode.h"
+#include <QCursor>
 
 #define KEY_KEEP_FRAMES 3
 
@@ -26,11 +28,13 @@ void EMU_OSD::EMU_INPUT()
 {
 #ifdef USE_JOYSTICK
 	joymgr = nullptr;
-	for(int i=0; i<2; i++) {
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		joy[i] = nullptr;
-		joy_enabled[i] = false;
 	}
 #endif
+
+	mouse_logic_type = MOUSE_LOGIC_DEFAULT;
+	mouse_position.x = mouse_position.y = 0;
 
 	pressed_global_key = false;
 }
@@ -44,11 +48,8 @@ void EMU_OSD::initialize_joystick()
 {
 #ifdef USE_JOYSTICK
 	joymgr = QGamepadManager::instance();
-	for(int i = 0; i < 2; i++) {
-		joy_xmin[i] = -16384;
-		joy_xmax[i] = 16384;
-		joy_ymin[i] = -16384;
-		joy_ymax[i] = 16384;
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
+		memset(&joy_prm[i], 0, sizeof(joy_prm[i]));
 	}
 #endif
 
@@ -61,9 +62,15 @@ void EMU_OSD::reset_joystick()
 	if (!use_joystick) return;
 
 	const QList<int> pads = joymgr->connectedGamepads();
-	for(int i = 0; i < 2 && i < pads.length(); i++) {
+	for(int i = 0; i < MAX_JOYSTICKS && i < pads.length(); i++) {
 		delete joy[i];
 		joy[i] = new QGamepad(pads.at(i));
+		set_joy_range(true, joy[i]->axisRightX(), joy[i]->axisLeftX(), pConfig->joy_axis_threshold[i][0], joy_prm[i].x);
+		set_joy_range(true, joy[i]->axisRightY(), joy[i]->axisLeftY(), pConfig->joy_axis_threshold[i][1], joy_prm[i].y);
+		set_joy_range(false, joy[i]->axisRightX(), joy[i]->axisLeftX(), pConfig->joy_axis_threshold[i][2], joy_prm[i].z);
+		set_joy_range(false, joy[i]->axisRightY(), joy[i]->axisLeftY(), pConfig->joy_axis_threshold[i][3], joy_prm[i].r);
+		set_joy_range(false, joy[i]->axisRightX(), joy[i]->axisLeftX(), pConfig->joy_axis_threshold[i][4], joy_prm[i].u);
+		set_joy_range(false, joy[i]->axisRightY(), joy[i]->axisLeftY(), pConfig->joy_axis_threshold[i][5], joy_prm[i].v);
 		joy_enabled[i] = true;
 	}
 #endif
@@ -86,7 +93,6 @@ void EMU_OSD::release_joystick()
 	for(int i = 0; i < 2; i++) {
 		delete joy[i];
 		joy[i] = nullptr;
-		joy_enabled[i] = false;
 	}
 #endif
 }
@@ -131,16 +137,8 @@ void EMU_OSD::update_input()
 	}
 	lost_focus = false;
 
-#ifdef USE_JOYSTICK
+	// update joystick status
 	update_joystick();
-#endif
-#ifdef USE_KEY_TO_JOY
-	// emulate joystick #1 with keyboard
-	if(key_status[0x26]) joy_status[0] |= 0x01;	// up
-	if(key_status[0x28]) joy_status[0] |= 0x02;	// down
-	if(key_status[0x25]) joy_status[0] |= 0x04;	// left
-	if(key_status[0x27]) joy_status[0] |= 0x08;	// right
-#endif
 
 	// update mouse status
 	update_mouse();
@@ -148,32 +146,31 @@ void EMU_OSD::update_input()
 
 void EMU_OSD::update_mouse()
 {
-#if 0
 	if (!initialized) return;
 
 	// update mouse status
 	memset(mouse_status, 0, sizeof(mouse_status));
+
+#ifdef USE_MOUSE
 	if(!mouse_disabled) {
 		// get current status
-		VmPoint pt;
+		QPoint pt = QCursor::pos();
 
-//		Uint8_t mstat = SDL_GetMouseState(&(pt.x),&(pt.y));
+		if (mouse_logic_type == MOUSE_LOGIC_FLEXIBLE) {
+			mouse_status[0]  = pt.x() - mouse_position.x;
+			mouse_status[1]  = pt.y() - mouse_position.y;
+			mouse_position.x = pt.x();
+			mouse_position.y = pt.y();
 
-#ifndef USE_SDL2
-		mouse_status[0]  = pt.x - display_size.w / 2;
-		mouse_status[1]  = pt.y - display_size.h / 2;
-#else
-		mouse_status[0]  = pt.x - screen_size.w / 2;
-		mouse_status[1]  = pt.y - screen_size.h / 2;
-#endif
-//		mouse_status[2] =  (mstat & SDL_BUTTON(SDL_BUTTON_LEFT) ? 1 : 0);
-//		mouse_status[2] |= (mstat & SDL_BUTTON(SDL_BUTTON_RIGHT) ? 2 : 0);
-//		mouse_status[2] |= (mstat & SDL_BUTTON(SDL_BUTTON_MIDDLE) ? 4 : 0);
-		// move mouse cursor to the center of window
-		if(!(mouse_status[0] == 0 && mouse_status[1] == 0)) {
-			pt.x = display_width / 2;
-			pt.y = display_height / 2;
-//			SDL_WarpMouse(pt.x, pt.y);
+		} else {
+			mouse_status[0]  = pt.x() - display_size.w / 2;
+			mouse_status[1]  = pt.y() - display_size.h / 2;
+			// move mouse cursor to the center of window
+			if(!(mouse_status[0] == 0 && mouse_status[1] == 0)) {
+				pt.setX(display_size.w / 2);
+				pt.setY(display_size.h / 2);
+				QCursor::setPos(pt);
+			}
 		}
 	}
 #endif
@@ -214,32 +211,75 @@ void EMU_OSD::mouse_down_up(uint8_t UNUSED_PARAM(type), int buttons, int x, int 
 
 void EMU_OSD::update_joystick()
 {
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	memset(joy_status, 0, sizeof(joy_status));
+#endif
+#ifdef USE_JOYSTICK
+	memset(joy2joy_status, 0, sizeof(joy2joy_status));
+	if (use_joystick) {
+		// update joystick status
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			uint32_t joy_stat = 0;
+			if(joy_enabled[i]) {
+				QGamepad *pad = joy[i];
 
-	if (!use_joystick) return;
+				if(pad->buttonUp()) joy_stat |= JOYCODE_UP;
+				if(pad->buttonDown()) joy_stat |= JOYCODE_DOWN;
+				if(pad->buttonRight()) joy_stat |= JOYCODE_RIGHT;
+				if(pad->buttonLeft()) joy_stat |= JOYCODE_LEFT;
+				if(pad->buttonA()) joy_stat |= JOYCODE_BTN_A;
+				if(pad->buttonB()) joy_stat |= JOYCODE_BTN_B;
+				if(pad->buttonX()) joy_stat |= JOYCODE_BTN_C;
+				if(pad->buttonY()) joy_stat |= JOYCODE_BTN_D;
+				if(pad->buttonSelect()) joy_stat |= JOYCODE_BTN_E;
+				if(pad->buttonStart()) joy_stat |= JOYCODE_BTN_F;
+				if(pad->buttonL1()) joy_stat |= JOYCODE_BTN_G;
+				if(pad->buttonL2() != 0.0) joy_stat |= JOYCODE_BTN_H;
+				if(pad->buttonR1()) joy_stat |= JOYCODE_BTN_I;
+				if(pad->buttonR2() != 0.0) joy_stat |= JOYCODE_BTN_J;
 
-	// update joystick status
-	for(int i = 0; i < 2; i++) {
-		if(joy_enabled[i] == true) {
-			QGamepad *pad = joy[i];
+				// analog 10bits
+#ifdef USE_ANALOG_JOYSTICK
+				double x = pad->axisLeftX();
+				double y = pad->axisLeftY();
+				double z = pad->axisRightX();
+				double r = pad->axisRightY();
+				joy_status[i][1] = (int)((x - joy_prm[i].range.xoffset) * 1024.0 / joy_prm[i].range.xrange + 512.0);
+				joy_status[i][2] = (int)((y - joy_prm[i].range.yoffset) * 1024.0 / joy_prm[i].range.yrange + 512.0);
+				joy_status[i][3] = (int)((z - joy_prm[i].range.xoffset) * 1024.0 / joy_prm[i].range.xrange + 512.0);
+				joy_status[i][4] = (int)((r - joy_prm[i].range.yoffset) * 1024.0 / joy_prm[i].range.yrange + 512.0);
+#endif
 
-			if(pad->buttonUp()) joy_status[i] |= 0x01;
-			if(pad->buttonDown()) joy_status[i] |= 0x02;
-			if(pad->buttonRight()) joy_status[i] |= 0x04;
-			if(pad->buttonLeft()) joy_status[i] |= 0x08;
-			if(pad->buttonA()) joy_status[i] |= 0x10;
-			if(pad->buttonB()) joy_status[i] |= 0x20;
-			if(pad->buttonX()) joy_status[i] |= 0x40;
-			if(pad->buttonY()) joy_status[i] |= 0x80;
-			if(pad->buttonSelect()) joy_status[i] |= 0x100;
-			if(pad->buttonStart()) joy_status[i] |= 0x200;
-			if(pad->buttonL1()) joy_status[i] |= 0x400;
-			if(pad->buttonL2() != 0.0) joy_status[i] |= 0x800;
-			if(pad->buttonR1()) joy_status[i] |= 0x1000;
-			if(pad->buttonR2() != 0.0) joy_status[i] |= 0x2000;
+				joy2joy_status[i][0] = joy_stat;
+
+				// convert
+				convert_joy_status(i);
+			}
 		}
 	}
+#endif
+#ifdef USE_KEY2JOYSTICK
+	if (key2joy_enabled) {
+#ifndef USE_PIAJOYSTICKBIT
+		// update key 2 joystick status
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			for(int k = 0; k < 9; k++) {
+				joy_status[i][0] |= key2joy_status[i][k];
+			}
+		}
+#else
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			joy_status[i][0] |= key2joy_status[i];
+		}
+#endif
+	}
+#endif
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
+		joy_status[i][0] &= joy_mashing_mask[i][joy_mashing_count];
+	}
+	joy_mashing_count++;
+	joy_mashing_count &= 0xf;
 #endif
 }
 
@@ -320,18 +360,50 @@ void EMU_OSD::enable_mouse(int mode)
 	mouse_disabled &= (mode ? ~2 : ~1);
 	if(pmouse_disabled && !mouse_disabled) {
 		// hide mouse cursor
-		// move mouse cursor to the center of window
+
+		mouse_logic_type = MOUSE_LOGIC_PREPARE;
+
 		VmPoint pt;
+		// move mouse cursor to the center of window
 		pt.x = display_size.w / 2;
 		pt.y = display_size.h / 2;
 
+		mouse_position.x = pt.x;
+		mouse_position.y = pt.y;
+		QCursor::setPos(pt.x, pt.y);
 	}
 }
 
 void EMU_OSD::disable_mouse(int mode)
 {
 	// disable mouse emulation
+	if(!mouse_disabled) {
+		// show mouse cursor
+	}
 	mouse_disabled |= (mode ? 2 : 1);
+}
+
+void EMU_OSD::mouse_enter()
+{
+}
+
+void EMU_OSD::mouse_move(int x, int y)
+{
+	if (mouse_logic_type == MOUSE_LOGIC_PREPARE) {
+		if (mouse_position.x == x
+		 && mouse_position.y == y) {
+			// mouse warped
+			mouse_logic_type = MOUSE_LOGIC_DEFAULT;
+		} else {
+			mouse_position.x = x;
+			mouse_position.y = y;
+			mouse_logic_type = MOUSE_LOGIC_FLEXIBLE;
+		}
+	}
+}
+
+void EMU_OSD::mouse_leave()
+{
 }
 
 #if 0

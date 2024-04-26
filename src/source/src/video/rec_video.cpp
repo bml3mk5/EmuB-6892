@@ -23,9 +23,9 @@
 #include "../utils.h"
 #include "../csurface.h"
 
+#ifdef USE_REC_VIDEO
 const int fps[6] = {60, 30, 20, 15, 12, 10};
 
-#ifdef USE_REC_VIDEO
 #ifdef USE_REC_VIDEO_VFW
 #include "vfw/vfw_rec_video.h"
 #endif
@@ -252,7 +252,7 @@ bool REC_VIDEO::Start(int type, int fps_no, const VmRectWH &srcrect, CSurface *s
 		return false;
 	}
 
-	CreateFileName(rec_path);
+	CreateFileName(rec_path, NULL);
 
 	switch(rec_type) {
 #ifdef USE_REC_VIDEO_VFW
@@ -476,13 +476,13 @@ bool REC_VIDEO::IsRecordFrame()
 	return rc;
 }
 
-static const _TCHAR *capture_file_ext[] = {
-	_T(".bmp"),
-	_T(".png"),
+static const char *capture_file_ext[] = {
+	"bmp",
+	"png",
 	NULL
 };
 
-bool REC_VIDEO::Capture(int type, const VmRectWH &srcrect, CSurface *srcsurface, const VmRectWH &dstrect)
+bool REC_VIDEO::Capture(int type, const VmRectWH &srcrect, CSurface *srcsurface, const VmRectWH &dstrect, const _TCHAR *prefix, const _TCHAR *postfix)
 {
 	if (srcsurface == NULL) {
 		return false;
@@ -493,20 +493,18 @@ bool REC_VIDEO::Capture(int type, const VmRectWH &srcrect, CSurface *srcsurface,
 	_TCHAR file_path[_MAX_PATH];
 	VmRectWH re = { 0, 0, dstrect.w, dstrect.h };
 
-	CreateFileName(file_path);
-
 #ifndef USE_CAPTURE_SCREEN_PNG
-	config.capture_type = 0;
+	pConfig->capture_type = 0;
 #endif
-	if (1 < config.capture_type) {
-		config.capture_type = 0;
+	if (1 < pConfig->capture_type) {
+		pConfig->capture_type = 0;
 	}
 
-	// add ext
-	UTILITY::tcscat(file_path, _MAX_PATH, capture_file_ext[config.capture_type]);
+	// add file name
+	CreateFileName(file_path, capture_file_ext[pConfig->capture_type], prefix, postfix);
 
 	// create surface for capture
-	switch(config.capture_type) {
+	switch(pConfig->capture_type) {
 	case 1:	// PNG
 		rc = CreateSurfaceForPNG(dstrect, *srcsurface, bmpsurface);
 		break;
@@ -532,7 +530,7 @@ bool REC_VIDEO::Capture(int type, const VmRectWH &srcrect, CSurface *srcsurface,
 
 	CTchar cfile_path(file_path);
 
-	switch(config.capture_type) {
+	switch(pConfig->capture_type) {
 	case 1:	// PNG
 		// save surface
 		rc = SavePNG(type, &bmpsurface, cfile_path);
@@ -648,12 +646,14 @@ bool REC_VIDEO::SavePNG(int type, CSurface *surface, CTchar &file_name)
 #endif
 }
 
-void REC_VIDEO::CreateFileName(_TCHAR *file_path)
+void REC_VIDEO::CreateFileName(_TCHAR *file_path, const char *extension, const _TCHAR *prefix, const _TCHAR *postfix)
 {
-	int tim[8];
+//	int tim[8];
 	const _TCHAR *app_path;
 
-	app_path = config.snapshot_path.Length() > 0 ? config.snapshot_path : emu->application_path();
-	emu->get_timer(tim, 8);
-	UTILITY::stprintf(file_path, _MAX_PATH, _T("%s%04d-%02d-%02d_%02d-%02d-%02d"), app_path, tim[0], tim[1], tim[2], tim[4], tim[5], tim[6]);
+	app_path = pConfig->snapshot_path.Length() > 0 ? pConfig->snapshot_path.Get() : emu->application_path();
+	UTILITY::create_date_file_path(app_path, file_path, _MAX_PATH, extension, prefix, postfix);
+
+//	emu->get_timer(tim, 8);
+//	UTILITY::stprintf(file_path, _MAX_PATH, _T("%s%04d-%02d-%02d_%02d-%02d-%02d"), app_path, tim[0], tim[1], tim[2], tim[4], tim[5], tim[6]);
 }

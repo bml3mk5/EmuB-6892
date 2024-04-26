@@ -22,6 +22,7 @@
 
 #include "common.h"
 #include "vm/vm_defs.h"
+#include "emu.h"
 #include "cchar.h"
 #include "cptrlist.h"
 //#ifdef _UNICODE
@@ -71,25 +72,25 @@ enum IOPORT_MASKS {
 
 /// @ingroup Macros
 ///@{
-#define IOPORT_USE_5FDD		(config.io_port & IOPORT_MSK_5FDD)
-#define IOPORT_USE_3FDD		(config.io_port & IOPORT_MSK_3FDD)
-#define IOPORT_USE_PSG6		(config.io_port & IOPORT_MSK_PSG6)
-#define IOPORT_USE_EXPIA	(config.io_port & IOPORT_MSK_EXPIA)
-#define IOPORT_USE_EXACIA	(config.io_port & IOPORT_MSK_EXACIA)
-#define IOPORT_USE_PSG9		(config.io_port & IOPORT_MSK_PSG9)
-#define IOPORT_USE_KANJI	(config.io_port & IOPORT_MSK_KANJI)
-#define IOPORT_USE_EXPSG	(config.io_port & IOPORT_MSK_EXPSG)		/* for mbs1 */
-#define IOPORT_USE_FDD		(config.io_port & IOPORT_MSK_FDDALL)
-#define IOPORT_USE_OS9BD	(config.io_port & IOPORT_MSK_OS9BD)		/* for mbs1 */
-#define IOPORT_USE_CM01		(config.io_port & IOPORT_MSK_CM01)		/* for mbs1 */
-#define IOPORT_USE_KEYBD	(config.io_port & IOPORT_MSK_KEYBD)		/* for mbs1 */
-#define IOPORT_USE_MOUSE	(config.io_port & IOPORT_MSK_MOUSE)		/* for mbs1 */
-#define IOPORT_USE_FMOPN	(config.io_port & IOPORT_MSK_FMOPN)		/* for mbs1 */
-#define IOPORT_USE_DISROMB	(config.io_port & IOPORT_MSK_DISROMB)	/* for mbs1 */
-#define IOPORT_USE_DISIG	(config.io_port & IOPORT_MSK_DISIG)
-#define IOPORT_USE_RTC		(config.io_port & IOPORT_MSK_RTC)
-#define IOPORT_USE_Z80BCARD	(config.io_port & IOPORT_MSK_Z80BCARD)	/* for mbs1 */
-#define IOPORT_USE_MPC68008	(config.io_port & IOPORT_MSK_MPC68008)	/* for mbs1 */
+#define IOPORT_USE_5FDD		(pConfig->io_port & IOPORT_MSK_5FDD)
+#define IOPORT_USE_3FDD		(pConfig->io_port & IOPORT_MSK_3FDD)
+#define IOPORT_USE_PSG6		(pConfig->io_port & IOPORT_MSK_PSG6)
+#define IOPORT_USE_EXPIA	(pConfig->io_port & IOPORT_MSK_EXPIA)
+#define IOPORT_USE_EXACIA	(pConfig->io_port & IOPORT_MSK_EXACIA)
+#define IOPORT_USE_PSG9		(pConfig->io_port & IOPORT_MSK_PSG9)
+#define IOPORT_USE_KANJI	(pConfig->io_port & IOPORT_MSK_KANJI)
+#define IOPORT_USE_EXPSG	(pConfig->io_port & IOPORT_MSK_EXPSG)		/* for mbs1 */
+#define IOPORT_USE_FDD		(pConfig->io_port & IOPORT_MSK_FDDALL)
+#define IOPORT_USE_OS9BD	(pConfig->io_port & IOPORT_MSK_OS9BD)		/* for mbs1 */
+#define IOPORT_USE_CM01		(pConfig->io_port & IOPORT_MSK_CM01)		/* for mbs1 */
+#define IOPORT_USE_KEYBD	(pConfig->io_port & IOPORT_MSK_KEYBD)		/* for mbs1 */
+#define IOPORT_USE_MOUSE	(pConfig->io_port & IOPORT_MSK_MOUSE)		/* for mbs1 */
+#define IOPORT_USE_FMOPN	(pConfig->io_port & IOPORT_MSK_FMOPN)		/* for mbs1 */
+#define IOPORT_USE_DISROMB	(pConfig->io_port & IOPORT_MSK_DISROMB)	/* for mbs1 */
+#define IOPORT_USE_DISIG	(pConfig->io_port & IOPORT_MSK_DISIG)
+#define IOPORT_USE_RTC		(pConfig->io_port & IOPORT_MSK_RTC)
+#define IOPORT_USE_Z80BCARD	(pConfig->io_port & IOPORT_MSK_Z80BCARD)	/* for mbs1 */
+#define IOPORT_USE_MPC68008	(pConfig->io_port & IOPORT_MSK_MPC68008)	/* for mbs1 */
 ///@}
 
 /// @ingroup Enums
@@ -130,24 +131,28 @@ enum MISC_FLAG_MASKS {
 	MSK_USEJOYSTICK_ALL	= 0x044,
 	MSK_SHOWMSG_UNDEFOP	= 0x080,	///< bit7: show msg when undef opcode
 	MSK_SHOWMSG_ADDRERR	= 0x100,	///< bit8: show msg when address error
-	MSK_SHOWDLG_ALL		= 0x1ff,
+	MSK_USEKEY2JOYSTICK	= 0x400,	///< bit10: use key to joystick
+	MSK_PIAJOY_ALL		= 0x440,
+	MSK_SHOWDLG_ALL		= 0x5ff,
 	MSK_CLEAR_CPUREG	= 0x800,	///< bit11: clear CPU registers at power on
 };
 
 /// @ingroup Macros
 ///@{
-#define FLG_SHOWLEDBOX		(config.misc_flags & MSK_SHOWLEDBOX)
-#define FLG_SHOWMSGBOARD	(config.misc_flags & MSK_SHOWMSGBOARD)
-#define FLG_USEJOYSTICK		(config.misc_flags & MSK_USEJOYSTICK)
-#define FLG_INSIDELEDBOX	(config.misc_flags & MSK_INSIDELEDBOX)
-#define FLG_LEDBOX_ALL		(config.misc_flags & MSK_LEDBOX_ALL)
-#define FLG_USELIGHTPEN		(config.misc_flags & MSK_USELIGHTPEN)
-#define FLG_USEMOUSE		(config.misc_flags & MSK_USEMOUSE)
-#define FLG_USEPIAJOYSTICK	(config.misc_flags & MSK_USEPIAJOYSTICK)
-#define FLG_USEJOYSTICK_ALL	(config.misc_flags & MSK_USEJOYSTICK_ALL)
-#define FLG_SHOWMSG_UNDEFOP	(config.misc_flags & MSK_SHOWMSG_UNDEFOP)
-#define FLG_SHOWMSG_ADDRERR	(config.misc_flags & MSK_SHOWMSG_ADDRERR)
-#define FLG_CLEAR_CPUREG	(config.misc_flags & MSK_CLEAR_CPUREG)
+#define FLG_SHOWLEDBOX		(pConfig->misc_flags & MSK_SHOWLEDBOX)
+#define FLG_SHOWMSGBOARD	(pConfig->misc_flags & MSK_SHOWMSGBOARD)
+#define FLG_USEJOYSTICK		(pConfig->misc_flags & MSK_USEJOYSTICK)
+#define FLG_INSIDELEDBOX	(pConfig->misc_flags & MSK_INSIDELEDBOX)
+#define FLG_LEDBOX_ALL		(pConfig->misc_flags & MSK_LEDBOX_ALL)
+#define FLG_USELIGHTPEN		(pConfig->misc_flags & MSK_USELIGHTPEN)
+#define FLG_USEMOUSE		(pConfig->misc_flags & MSK_USEMOUSE)
+#define FLG_USEPIAJOYSTICK	(pConfig->misc_flags & MSK_USEPIAJOYSTICK)
+#define FLG_USEJOYSTICK_ALL	(pConfig->misc_flags & MSK_USEJOYSTICK_ALL)
+#define FLG_SHOWMSG_UNDEFOP	(pConfig->misc_flags & MSK_SHOWMSG_UNDEFOP)
+#define FLG_SHOWMSG_ADDRERR	(pConfig->misc_flags & MSK_SHOWMSG_ADDRERR)
+#define FLG_USEKEY2JOYSTICK (pConfig->misc_flags & MSK_USEKEY2JOYSTICK)
+#define FLG_PIAJOY_ALL		(pConfig->misc_flags & MSK_PIAJOY_ALL)
+#define FLG_CLEAR_CPUREG	(pConfig->misc_flags & MSK_CLEAR_CPUREG)
 ///@}
 
 /// @ingroup Enums
@@ -166,15 +171,15 @@ enum ORIGINAL_MASKS {
 
 /// @ingroup Macros
 ///@{
-#define FLG_ORIG_CURIG		(config.original & MSK_ORIG_CURIG)
-#define FLG_ORIG_PAL8		(config.original & MSK_ORIG_PAL8)		/* for mbs1 */
-#define FLG_ORIG_NOPAL64	(config.original & MSK_ORIG_NOPAL64)	/* for mbs1 */
-#define FLG_ORIG_NOPAL		(config.original & MSK_ORIG_NOPAL)		/* for mbs1 */
-#define FLG_ORIG_MOUSEEG	(config.original & MSK_ORIG_MOUSEEG)	/* for mbs1 */
-#define FLG_ORIG_LIMKEY		(config.original & MSK_ORIG_LIMKEY)
-#define FLG_ORIG_FDMSK		(config.original & MSK_ORIG_FDMSK)		/* for mbs1 */
-#define FLG_ORIG_FDINSERT	(config.original & MSK_ORIG_FDINSERT)
-#define FLG_ORIG_FDDRQ		(config.original & MSK_ORIG_FDDRQ)
+#define FLG_ORIG_CURIG		(pConfig->original & MSK_ORIG_CURIG)
+#define FLG_ORIG_PAL8		(pConfig->original & MSK_ORIG_PAL8)		/* for mbs1 */
+#define FLG_ORIG_NOPAL64	(pConfig->original & MSK_ORIG_NOPAL64)	/* for mbs1 */
+#define FLG_ORIG_NOPAL		(pConfig->original & MSK_ORIG_NOPAL)		/* for mbs1 */
+#define FLG_ORIG_MOUSEEG	(pConfig->original & MSK_ORIG_MOUSEEG)	/* for mbs1 */
+#define FLG_ORIG_LIMKEY		(pConfig->original & MSK_ORIG_LIMKEY)
+#define FLG_ORIG_FDMSK		(pConfig->original & MSK_ORIG_FDMSK)		/* for mbs1 */
+#define FLG_ORIG_FDINSERT	(pConfig->original & MSK_ORIG_FDINSERT)
+#define FLG_ORIG_FDDRQ		(pConfig->original & MSK_ORIG_FDDRQ)
 ///@}
 
 /// @ingroup Enums
@@ -195,11 +200,24 @@ enum OPTIONFDD_MASKS {
 
 /// @ingroup Macros
 ///@{
-#define FLG_DELAY_FDSEARCH	(config.option_fdd & MSK_DELAY_FDSEARCH)
-#define FLG_DELAY_FDSEEK	(config.option_fdd & MSK_DELAY_FDSEEK)
-#define FLG_CHECK_FDDENSITY	(config.option_fdd & MSK_CHECK_FDDENSITY)
-#define FLG_CHECK_FDMEDIA	(config.option_fdd & MSK_CHECK_FDMEDIA)
-#define FLG_SAVE_FDPLAIN	(config.option_fdd & MSK_SAVE_FDPLAIN)
+#define FLG_DELAY_FDSEARCH	(pConfig->option_fdd & MSK_DELAY_FDSEARCH)
+#define FLG_DELAY_FDSEEK	(pConfig->option_fdd & MSK_DELAY_FDSEEK)
+#define FLG_CHECK_FDDENSITY	(pConfig->option_fdd & MSK_CHECK_FDDENSITY)
+#define FLG_CHECK_FDMEDIA	(pConfig->option_fdd & MSK_CHECK_FDMEDIA)
+#define FLG_SAVE_FDPLAIN	(pConfig->option_fdd & MSK_SAVE_FDPLAIN)
+///@}
+
+/// @ingroup Enums
+/// @brief bit mask of Config::option_hdd
+enum OPTIONHDD_MASKS {
+	MSK_DELAY_HDSEEK	= 0x0002,	///< bit1: ignore delay by seeking track
+	MSK_DELAY_HD_MASK	= 0x0002,	///< delay hdd flags mask
+	MSK_DELAY_HD_SFT	= 0,		///< delay hdd flags shift
+};
+
+/// @ingroup Macros
+///@{
+#define FLG_DELAY_HDSEEK	(pConfig->option_hdd & MSK_DELAY_HDSEEK)
 ///@}
 
 /// @ingroup Enums
@@ -250,6 +268,8 @@ public:
 private:
 	void Set(const CDirPath &) {}
 	void Set(const _TCHAR *, int) {}
+//	CDirPath &operator=(const CTchar &src);
+//	CDirPath &operator=(const _TCHAR *src_str);
 };
 
 /// file path
@@ -301,19 +321,17 @@ public:
 	int version1;	// config file version
 	int version2;
 
+protected:
 	// recent files
 #ifdef USE_FD1
 	CDirPath initial_disk_path;
-#if defined(USE_FD8) || defined(USE_FD7)
-	CRecentPathList recent_disk_path[8];
-	CRecentPath opened_disk_path[8];
-#elif defined(USE_FD6) || defined(USE_FD5)
-	CRecentPathList recent_disk_path[6];
-	CRecentPath opened_disk_path[6];
-#else
-	CRecentPathList recent_disk_path[4];
-	CRecentPath opened_disk_path[4];
+	CRecentPathList recent_disk_path[USE_FLOPPY_DISKS];
+	CRecentPath opened_disk_path[USE_FLOPPY_DISKS];
 #endif
+#ifdef USE_HD1
+	CDirPath initial_hard_disk_path;
+	CRecentPathList recent_hard_disk_path[USE_HARD_DISKS];
+	CRecentPath opened_hard_disk_path[USE_HARD_DISKS];
 #endif
 #ifdef USE_DATAREC
 	CDirPath initial_datarec_path;
@@ -337,7 +355,20 @@ public:
 	CDirPath initial_binary_path;
 	CRecentPath recent_binary_path[2];
 #endif
+#ifdef USE_STATE
+	CDirPath initial_state_path;
+	CRecentPath saved_state_path;
+	CRecentPathList recent_state_path;
+#endif
+#ifdef USE_AUTO_KEY
+	CDirPath initial_autokey_path;
+	CRecentPath opened_autokey_path;
+#endif
+#ifdef USE_PRINTER
+	CDirPath initial_printer_path;
+#endif
 
+public:
 	// screen
 	int window_mode;
 	int window_position_x;
@@ -358,6 +389,9 @@ public:
 #ifdef USE_FD1
 	bool ignore_crc;
 	int  mount_fdd;
+#endif
+#ifdef USE_HD1
+	int  mount_hdd;
 #endif
 #ifdef USE_DIPSWITCH
 	uint8_t dipswitch;
@@ -404,6 +438,10 @@ public:
 	int8_t  curdisp_skew;
 
 	int fdd_type;
+
+	uint8_t rloss[2];
+	uint8_t gloss[2];
+	uint8_t bloss[2];
 #endif
 
 	// CONFIG_VERSION >= 0x05 on bml3mk5
@@ -421,6 +459,7 @@ public:
 	// bit0: show led  bit1: show msg  bit2: use joystick  bit3: inside led
 	// bit4: enable lightpen bit5: enable mouse bit6: use pia joystick
 	// bit7: show msg when undef opcode  bit8: show msg when address error
+	// bit10: use key 2 joystick
 	// bit11: clear CPU registers at power on
 	int misc_flags;
 	// bit0: show cursor on IG  bit1: set dark gray on palette 8 (on mbs1)
@@ -439,11 +478,9 @@ public:
 	// bit8: save plain image as it is (default: save it as converted d88 image)
 	int option_fdd;
 #endif
-
-#ifdef USE_STATE
-	CDirPath initial_state_path;
-	CRecentPath saved_state_path;
-	CRecentPathList recent_state_path;
+#ifdef USE_HD1
+	// bit1: ignore delay by seeking track
+	int option_hdd;
 #endif
 
 	int fps_no;
@@ -468,10 +505,9 @@ public:
 	int fdd_volume;
 	bool fdd_mute;
 #endif
-
-#ifdef USE_AUTO_KEY
-	CDirPath initial_autokey_path;
-	CRecentPath opened_autokey_path;
+#ifdef USE_HD1
+	int hdd_volume;
+	bool hdd_mute;
 #endif
 
 	//
@@ -548,9 +584,6 @@ public:
 #endif
 #endif
 
-#ifdef USE_PRINTER
-	CDirPath initial_printer_path;
-#endif
 #ifdef MAX_PRINTER
 	CTchar printer_server_host[MAX_PRINTER];
 	int    printer_server_port[MAX_PRINTER];
@@ -610,6 +643,10 @@ public:
 #endif
 
 #ifdef USE_DIRECTINPUT
+	enum en_direct_input_flags {
+		DIRECTINPUT_ENABLE = 0x01,
+		DIRECTINPUT_AVAIL = 0x04,
+	};
 	// bit0:enable/disable bit2:available
 	uint8_t use_direct_input;
 #endif
@@ -618,6 +655,11 @@ public:
 	int    debugger_imm_start;
 	CTchar debugger_server_host;
 	int    debugger_server_port;
+#endif
+
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	int    joy_mashing[MAX_JOYSTICKS][KEYBIND_JOY_BUTTONS];
+	int    joy_axis_threshold[MAX_JOYSTICKS][6];
 #endif
 
 #ifdef USE_PERFORMANCE_METER
@@ -642,6 +684,102 @@ public:
 	static bool get_number_in_path(_TCHAR *path, int *number);
 	static bool set_number_in_path(_TCHAR *path, size_t size, int number);
 
+#ifdef USE_DATAREC
+	const _TCHAR *GetInitialDataRecPath() const;
+	const _TCHAR *GetInitialDataRecPathForWinGUI();
+	void SetInitialDataRecPathFrom(const _TCHAR *path);
+	CRecentPathList &GetRecentDataRecPathList();
+	int GetRecentDataRecPathCount() const;
+	int GetRecentDataRecPathLength(int pos) const;
+	const _TCHAR *GetRecentDataRecPathString(int pos) const;
+	int GetRecentDataRecPathNumber(int pos) const;
+	void UpdateRecentDataRecPath(const _TCHAR *path, int num);
+	bool UpdatedRecentDataRecPath() const;
+	void RecentDataRecPathUpdated(bool val);
+	CRecentPath &GetOpenedDataRecPath();
+	const _TCHAR *GetOpenedDataRecPathString() const;
+	int GetOpenedDataRecPathNumber() const;
+	void SetOpenedDataRecPath(const _TCHAR *path, int num);
+	void SetNewOpenedDataRecPath(const _TCHAR *path, int num);
+	void ClearOpenedDataRecPath();
+	bool NowRealModeDataRec() const;
+	void SetRealModeDataRec(bool val);
+#endif
+#ifdef USE_FD1
+	const _TCHAR *GetInitialFloppyDiskPath() const;
+	const _TCHAR *GetInitialFloppyDiskPathForWinGUI();
+	void SetInitialFloppyDiskPathFrom(const _TCHAR *path);
+	CRecentPathList &GetRecentFloppyDiskPathList(int drv);
+	int GetRecentFloppyDiskPathCount(int drv) const;
+	int GetRecentFloppyDiskPathLength(int drv, int pos) const;
+	const _TCHAR *GetRecentFloppyDiskPathString(int drv, int pos) const;
+	int GetRecentFloppyDiskPathNumber(int drv, int pos) const;
+	void UpdateRecentFloppyDiskPath(int drv, const _TCHAR *path, int num);
+	bool UpdatedRecentFloppyDiskPath(int drv) const;
+	void RecentFloppyDiskPathUpdated(int drv, bool val);
+	CRecentPath &GetOpenedFloppyDiskPath(int drv);
+	const _TCHAR *GetOpenedFloppyDiskPathString(int drv) const;
+	int GetOpenedFloppyDiskPathNumber(int drv) const;
+	void SetOpenedFloppyDiskPath(int drv, const _TCHAR *path, int num);
+	void SetNewOpenedFloppyDiskPath(int drv, const _TCHAR *path, int num);
+	void ClearOpenedFloppyDiskPath(int drv);
+#endif
+#ifdef USE_HD1
+	const _TCHAR *GetInitialHardDiskPath() const;
+	const _TCHAR *GetInitialHardDiskPathForWinGUI();
+	void SetInitialHardDiskPathFrom(const _TCHAR *path);
+	CRecentPathList &GetRecentHardDiskPathList(int drv);
+	int GetRecentHardDiskPathCount(int drv) const;
+	int GetRecentHardDiskPathLength(int drv, int pos) const;
+	const _TCHAR *GetRecentHardDiskPathString(int drv, int pos) const;
+	int GetRecentHardDiskPathNumber(int drv, int pos) const;
+	void UpdateRecentHardDiskPath(int drv, const _TCHAR *path, int num);
+	CRecentPath &GetOpenedHardDiskPath(int drv);
+	const _TCHAR *GetOpenedHardDiskPathString(int drv) const;
+	int GetOpenedHardDiskPathNumber(int drv) const;
+	void SetOpenedHardDiskPath(int drv, const _TCHAR *path, int num);
+	void SetNewOpenedHardDiskPath(int drv, const _TCHAR *path, int num);
+	void ClearOpenedHardDiskPath(int drv);
+	int GetHardDiskDeviceType(int drv) const;
+	void SetHardDiskDeviceType(int drv, int num);
+	int GetHardDiskIndex(int drv) const;
+#endif
+#ifdef USE_STATE
+	const _TCHAR *GetInitialStatePath() const;
+	const _TCHAR *GetInitialStatePathForWinGUI();
+	void SetInitialStatePathFrom(const _TCHAR *path);
+	CRecentPathList &GetRecentStatePathList();
+	int GetRecentStatePathCount() const;
+	int GetRecentStatePathLength(int pos) const;
+	const _TCHAR *GetRecentStatePathString(int pos) const;
+	int GetRecentStatePathNumber(int pos) const;
+	void UpdateRecentStatePath(const _TCHAR *path, int num);
+	bool UpdatedRecentStatePath() const;
+	void RecentStatePathUpdated(bool val);
+	CRecentPath &GetSavedStatePath();
+	const _TCHAR *GetSavedStatePathString() const;
+	int GetSavedStatePathNumber() const;
+	void SetSavedStatePath(const _TCHAR *path, int num);
+	void SetNewSavedStatePath(const _TCHAR *path, int num);
+	void ClearSavedStatePath();
+#endif
+#ifdef USE_AUTO_KEY
+	const _TCHAR *GetInitialAutoKeyPath() const;
+	const _TCHAR *GetInitialAutoKeyPathForWinGUI();
+	void SetInitialAutoKeyPathFrom(const _TCHAR *path);
+	CRecentPath &GetOpenedAutoKeyPath();
+	const _TCHAR *GetOpenedAutoKeyPathString() const;
+	int GetOpenedAutoKeyPathNumber() const;
+	void SetOpenedAutoKeyPath(const _TCHAR *path, int num);
+	void SetNewOpenedAutoKeyPath(const _TCHAR *path, int num);
+	void ClearOpenedAutoKeyPath();
+#endif
+#ifdef USE_PRINTER
+	const _TCHAR *GetInitialPrinterPath() const;
+	const _TCHAR *GetInitialPrinterPathForWinGUI();
+	void SetInitialPrinterPathFrom(const _TCHAR *path);
+#endif
+
 private:
 	CSimpleIni *ini;
 
@@ -660,8 +798,7 @@ private:
 	static int conv_volume(int);
 };
 
-extern Config *pconfig;
-#define config (*pconfig)
+extern Config *pConfig;
 
 #endif /* CONFIG_H */
 

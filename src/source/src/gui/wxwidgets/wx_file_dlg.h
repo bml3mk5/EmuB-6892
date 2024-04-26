@@ -24,9 +24,12 @@ public:
 	MyFileDialog(const wxString& message, const wxString& defaultDir, const wxString& defaultFile, const wxString& wildcard, long style = wxFD_DEFAULT_STYLE);
 	MyFileDialog(const wxString& message, const wxString& defaultDir, const wxString& defaultFile, const CMsg::Id wildcard[], long style = wxFD_DEFAULT_STYLE);
 	MyFileDialog(CMsg::Id messageid, const wxString& defaultDir, const wxString& defaultFile, const CMsg::Id wildcard[], long style = wxFD_DEFAULT_STYLE);
+	MyFileDialog(const wxString& message, const wxString& defaultDir, const wxString& defaultFile, const char *wildcard, long style = wxFD_DEFAULT_STYLE);
+	MyFileDialog(CMsg::Id messageid, const wxString& defaultDir, const wxString& defaultFile, const char *wildcard, long style = wxFD_DEFAULT_STYLE);
 
 	void SetMessageById(CMsg::Id messageid);
 	void SetWildcardByIdList(const CMsg::Id wildcard[]);
+	void SetWildcardByString(const char *wildcard);
 };
 
 #endif /* WX_FILE_DLG_H */

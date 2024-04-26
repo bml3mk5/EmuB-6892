@@ -13,7 +13,7 @@
 //#define SI_CONVERT_GENERIC	// use generic simple.ini on all platform
 //#endif
 #include "keyboard.h"
-#include "../../emu.h"
+//#include "../../emu.h"
 #include "../../simple_ini.h"
 #include "display.h"
 #include "../pia.h"
@@ -21,6 +21,7 @@
 #include "keyrecord.h"
 #include "keyboard_bind.h"
 #include "../../config.h"
+#include "../../labels.h"
 #include "../../utility.h"
 
 #define KEYBOARD_COUNTER_CYCLE	1
@@ -30,57 +31,85 @@
 
 void KEYBOARD::initialize()
 {
-	key_stat = emu->key_buffer();
+	p_key_stat = emu->key_buffer();
 	kb_mode = 0x44;
-	scan_code = 0;
-	key_scan_code = 0;
-	key_pressed = 0;
+	m_scan_code = 0;
+	m_key_scan_code = 0;
+	m_key_pressed = 0;
 	kb_nmi = 0x7f;
 
-	mouse_stat = emu->mouse_buffer();
+	p_mouse_stat = emu->mouse_buffer();
 	lpen_flg = 0;
 	lpen_flg_prev = 0;
 	lpen_bl = false;
 
-#ifdef USE_JOYSTICK
-	joy_stat = emu->joy_buffer();
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		p_joy_stat[i] = emu->joy_buffer(i);
+		p_joy_real_stat[i] = emu->joy_real_buffer(i);
+#ifdef USE_PIAJOYSTICK
+		joy_pia[i] = 0;
+#endif
+	}
 #ifdef USE_PIAJOYSTICK
 	joy_pia_sel = 0;
-	joy_pia[0] = 0;
-	joy_pia[1] = 0;
 #endif
 #endif
 
-	key_mod = emu->get_key_mod_ptr();
-	pause_pressed = false;
-	altkey_pressed = false;
-	modesw_pressed = false;
-	powersw_pressed = false;
+	p_key_mod = emu->get_key_mod_ptr();
+	m_pause_pressed = false;
+	m_altkey_pressed = false;
+	m_modesw_pressed = false;
+	m_powersw_pressed = false;
 
 	memset(vm_key_stat, 0, sizeof(vm_key_stat));
 	emu->set_vm_key_status_buffer(vm_key_stat, KEYBIND_KEYS);
 
-	counter = 0;
+	m_counter = 0;
 	remain_count = -1;
 //	frame_counter = 0;
 //	event_counter = 0;
 
 	memcpy(scan2key_map, scan2key_defmap, sizeof(scan2key_defmap));
-	memcpy(scan2joy_map, scan2joy_defmap, sizeof(scan2joy_defmap));
-#ifdef USE_PIAJOYSTICKBIT
-	memcpy(sjoy2joy_map, sjoy2joyb_defmap, sizeof(sjoy2joy_defmap));
-#else
+#ifdef USE_JOYSTICK
+	memcpy(joy2key_map, joy2key_defmap, sizeof(joy2key_defmap));
+#ifdef USE_PIAJOYSTICK
+# ifdef USE_PIAJOYSTICKBIT
+	memcpy(sjoy2joy_map, sjoy2joybit_defmap, sizeof(sjoy2joy_defmap));
+# else
 	memcpy(sjoy2joy_map, sjoy2joy_defmap, sizeof(sjoy2joy_defmap));
+# endif
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+# ifdef USE_PIAJOYSTICKBIT
+	memcpy(scan2joy_map, scan2joybit_defmap, sizeof(scan2joy_defmap));
+# else
+	memcpy(scan2joy_map, scan2joy_defmap, sizeof(scan2joy_defmap));
+# endif
 #endif
 	for(int i=0; i<KEYBIND_PRESETS; i++) {
 		memcpy(scan2key_preset_map[i], scan2key_defmap, sizeof(scan2key_defmap));
-		memcpy(scan2joy_preset_map[i], scan2joy_defmap, sizeof(scan2joy_defmap));
-#ifdef USE_PIAJOYSTICKBIT
-		memcpy(sjoy2joy_preset_map[i], sjoy2joyb_defmap, sizeof(sjoy2joy_defmap));
-#else
+#ifdef USE_JOYSTICK
+		memcpy(joy2key_preset_map[i], joy2key_defmap, sizeof(joy2key_defmap));
+#ifdef USE_PIAJOYSTICK
+# ifdef USE_PIAJOYSTICKBIT
+		memcpy(sjoy2joy_preset_map[i], sjoy2joybit_defmap, sizeof(sjoy2joy_defmap));
+# else
 		memcpy(sjoy2joy_preset_map[i], sjoy2joy_defmap, sizeof(sjoy2joy_defmap));
+# endif
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+# ifdef USE_PIAJOYSTICKBIT
+		memcpy(scan2joy_preset_map[i], scan2joybit_defmap, sizeof(scan2joy_defmap));
+# else
+		memcpy(scan2joy_preset_map[i], scan2joy_defmap, sizeof(scan2joy_defmap));
+# endif
 #endif
 	}
+
+	clear_joy2joyk_map();
 
 	// load keybind
 	if (load_ini_file() != true) {
@@ -90,43 +119,105 @@ void KEYBOARD::initialize()
 	convert_map();
 
 	// for dialog box
-	emu->set_parami(VM::ParamVmKeyMapSize0, 128);
-	emu->set_paramv(VM::ParamVmKeyMap0, (void *)kb2scan_map);
-	emu->set_parami(VM::ParamVmKeyMapSize1, 128);
-	emu->set_paramv(VM::ParamVmKeyMap1, (void *)kb2scan_map);
-	emu->set_parami(VM::ParamVmKeyMapSize2, 16);
-#ifdef USE_PIAJOYSTICKBIT
-	emu->set_paramv(VM::ParamVmKeyMap2, (void *)kb2sjoyb_map);
-#else
-	emu->set_paramv(VM::ParamVmKeyMap2, (void *)kb2sjoy_map);
+	int max_tabs = 0;
+	for(; max_tabs < 4 && LABELS::keybind_tab[max_tabs] != CMsg::End; max_tabs++) {}
+
+	int idx = 0;
+	gKeybind.SetVmKeyMap(idx, kb_scan2key_map, (int)(sizeof(kb_scan2key_map) / sizeof(kb_scan2key_map[0])));
+#ifdef USE_JOYSTICK
+	idx++;
+	gKeybind.SetVmKeyMap(idx, kb_scan2key_map, (int)(sizeof(kb_scan2key_map) / sizeof(kb_scan2key_map[0])));
+#ifdef USE_PIAJOYSTICK
+	idx++;
+# ifdef USE_PIAJOYSTICKBIT
+	gKeybind.SetVmKeyMap(idx, kb_sjoy2joybit_map, (int)(sizeof(kb_sjoy2joybit_map) / sizeof(kb_sjoy2joybit_map[0])));
+# else
+	gKeybind.SetVmKeyMap(idx, kb_sjoy2joy_map, (int)(sizeof(kb_sjoy2joy_map) / sizeof(kb_sjoy2joy_map[0])));
+# endif
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	idx++;
+# ifdef USE_PIAJOYSTICKBIT
+	gKeybind.SetVmKeyMap(idx, kb_sjoy2joybit_map, (int)(sizeof(kb_sjoy2joybit_map) / sizeof(kb_sjoy2joybit_map[0])));
+# else
+	gKeybind.SetVmKeyMap(idx, kb_scan2joy_map, (int)(sizeof(kb_scan2joy_map) / sizeof(kb_scan2joy_map[0])));
+# endif
 #endif
 
-	emu->set_parami(VM::ParamVkKeyMapKeys0, KEYBIND_KEYS);
-	emu->set_parami(VM::ParamVkKeyMapKeys1, KEYBIND_KEYS);
-	emu->set_parami(VM::ParamVkKeyMapKeys2, KEYBIND_JOYS);
-	emu->set_parami(VM::ParamVkKeyMapAssign, KEYBIND_ASSIGN);
-	emu->set_paramv(VM::ParamVkKeyDefMap0, (void *)scan2key_defmap);
-	emu->set_paramv(VM::ParamVkKeyDefMap1, (void *)scan2joy_defmap);
-#ifdef USE_PIAJOYSTICKBIT
-	emu->set_paramv(VM::ParamVkKeyDefMap2, (void *)sjoy2joyb_defmap);
-#else
-	emu->set_paramv(VM::ParamVkKeyDefMap2, (void *)sjoy2joy_defmap);
+	idx = 0;
+	gKeybind.SetVkKeySize(idx, KEYBIND_KEYS);
+#ifdef USE_JOYSTICK
+	idx++;
+	gKeybind.SetVkKeySize(idx, KEYBIND_KEYS);
+#ifdef USE_PIAJOYSTICK
+	idx++;
+	gKeybind.SetVkKeySize(idx, KEYBIND_JOYS);
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	idx++;
+	gKeybind.SetVkKeySize(idx, KEYBIND_JOYS);
 #endif
 
-	emu->set_paramv(VM::ParamVkKeyMap0, (void *)scan2key_map);
-	emu->set_paramv(VM::ParamVkKeyMap1, (void *)scan2joy_map);
-	emu->set_paramv(VM::ParamVkKeyMap2, (void *)sjoy2joy_map);
+	idx = 0;
+	gKeybind.SetVkKeyDefMap(idx, scan2key_defmap);
+#ifdef USE_JOYSTICK
+	idx++;
+	gKeybind.SetVkKeyDefMap(idx, joy2key_defmap);
+#ifdef USE_PIAJOYSTICK
+	idx++;
+# ifdef USE_PIAJOYSTICKBIT
+	gKeybind.SetVkKeyDefMap(idx, sjoy2joybit_defmap);
+# else
+	gKeybind.SetVkKeyDefMap(idx, sjoy2joy_defmap);
+# endif
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	idx++;
+# ifdef USE_PIAJOYSTICKBIT
+	gKeybind.SetVkKeyDefMap(idx, scan2joybit_defmap);
+# else
+	gKeybind.SetVkKeyDefMap(idx, scan2joy_defmap);
+# endif
+#endif
 
-	emu->set_parami(VM::ParamVkKeyPresets, KEYBIND_PRESETS);
+	idx = 0;
+	gKeybind.SetVkKeyMap(idx, scan2key_map);
+#ifdef USE_JOYSTICK
+	idx++;
+	gKeybind.SetVkKeyMap(idx, joy2key_map);
+#ifdef USE_PIAJOYSTICK
+	idx++;
+	gKeybind.SetVkKeyMap(idx, sjoy2joy_map);
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	idx++;
+	gKeybind.SetVkKeyMap(idx, scan2joy_map);
+#endif
+
 	for(int i=0; i<KEYBIND_PRESETS; i++) {
-		emu->set_paramv(VM::ParamVkKeyPresetMap00 + i * KEYBIND_MAX_NUM, (void *)scan2key_preset_map[i]);
-		emu->set_paramv(VM::ParamVkKeyPresetMap01 + i * KEYBIND_MAX_NUM, (void *)scan2joy_preset_map[i]);
-		emu->set_paramv(VM::ParamVkKeyPresetMap02 + i * KEYBIND_MAX_NUM, (void *)sjoy2joy_preset_map[i]);
+		idx = 0;
+		gKeybind.SetVkKeyPresetMap(idx, i, scan2key_preset_map[i]);
+#ifdef USE_JOYSTICK
+		idx++;
+		gKeybind.SetVkKeyPresetMap(idx, i, joy2key_preset_map[i]);
+#ifdef USE_PIAJOYSTICK
+		idx++;
+		gKeybind.SetVkKeyPresetMap(idx, i, sjoy2joy_preset_map[i]);
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+		idx++;
+		gKeybind.SetVkKeyPresetMap(idx, i, scan2joy_preset_map[i]);
+#endif
 	}
 
 #ifdef USE_KEY_RECORD
-	reckey->set_key_scan_code_ptr(&key_scan_code);
-	reckey->set_counter_ptr(&counter);
+	reckey->set_key_scan_code_ptr(&m_key_scan_code);
+	reckey->set_counter_ptr(&m_counter);
 	reckey->set_remain_count_ptr(&remain_count);
 	reckey->set_kb_mode_ptr(&kb_mode);
 #endif
@@ -140,9 +231,76 @@ void KEYBOARD::convert_map()
 	emu->clear_vm_key_map();
 	for(int k=0; k<KEYBIND_KEYS; k++) {
 		for(int i=0; i<KEYBIND_ASSIGN; i++) {
-			emu->set_vm_key_map(scan2key_map[k][i], k);
+			emu->set_vm_key_map(scan2key_map[k].d[i], k);
 		}
 	}
+#ifdef USE_PIAJOYSTICK
+	emu->clear_joy2joy_idx();
+	for(uint32_t k=0; k<KEYBIND_JOYS; k++) {
+#ifndef USE_PIAJOYSTICKBIT
+		emu->set_joy2joy_idx(k, sjoy2joy_defmap[k].d[0]);
+#else
+		emu->set_joy2joy_idx(k, sjoy2joybit_defmap[k].d[0]);
+#endif
+	}
+	emu->clear_joy2joy_map();
+	for(uint32_t k=0; k<KEYBIND_JOYS; k++) {
+		for(int i=0; i<KEYBIND_ASSIGN; i++) {
+			emu->set_joy2joy_map(i, k, sjoy2joy_map[k].d[i]);
+		}
+	}
+#endif
+#ifdef USE_KEY2JOYSTICK
+	emu->clear_key2joy_map();
+	for(uint32_t k=0; k<KEYBIND_JOYS; k++) {
+		for(int i=0; i<KEYBIND_ASSIGN; i++) {
+#ifndef USE_PIAJOYSTICKBIT
+			if (k >= 0x0c) {
+				// buttons
+				emu->set_key2joy_map(scan2joy_map[k].d[i], i, (k - 0x0c) | 0x80000000);
+			} else {
+				// allows
+				emu->set_key2joy_map(scan2joy_map[k].d[i], i, k);
+			}
+#else
+			if (k >= 4) {
+				// buttons
+				emu->set_key2joy_map(scan2joy_map[k].d[i], i, (k - 4) | 0x80000000);
+			} else {
+				// allows
+				emu->set_key2joy_map(scan2joy_map[k].d[i], i, k);
+			}
+#endif
+		}
+	}
+#endif
+}
+
+void KEYBOARD::reset()
+{
+	kb_mode = 0;
+	m_scan_code = 0;
+	m_key_scan_code = 0;
+	m_key_pressed = 0;
+	kb_nmi = 0x7f;
+
+	lpen_flg = 0;
+	lpen_flg_prev = 0;
+	lpen_bl = false;
+
+	m_counter = 0;
+	remain_count = -1;
+	remain_count_max = FLG_ORIG_LIMKEY ? (KEYBOARD_COUNTER_MAX << 3) - 2 : -1;
+
+#ifdef USE_PIAJOYSTICK
+	joy_pia_sel = 0;
+	joy_pia[0] = 0;
+	joy_pia[1] = 0;
+#endif
+#ifdef _DEBUG_KEYBOARD
+	frame_counter = 0;
+	event_counter = 0;
+#endif
 }
 
 void KEYBOARD::release()
@@ -161,6 +319,14 @@ void KEYBOARD::save_keybind()
 	save_ini_file();
 }
 
+void KEYBOARD::clear_joy2joyk_map()
+{
+}
+
+void KEYBOARD::set_joy2joyk_map(int num, int idx, uint32_t joy_code)
+{
+}
+
 /// cfg file is no longer supported.
 bool KEYBOARD::load_cfg_file()
 {
@@ -173,10 +339,55 @@ void KEYBOARD::save_cfg_file()
 }
 
 // ----------------------------------------------------------------------------
+
+void KEYBOARD::load_ini_file_one(CSimpleIni *ini, const _TCHAR *section_name, int rows, uint32_t *map, uint32_t *preset)
+{
+	_TCHAR section[100];
+	int cols = KEYBIND_ASSIGN;
+
+	const CSimpleIniSection *csection = ini->Find(section_name);
+	int count = 0;
+	if (csection) {
+		memset(map, 0, sizeof(uint32_t) * rows * cols);
+		count = csection->Count();
+	}
+	for (int idx = 0; idx < count; idx++) {
+		const CSimpleIniItem *item = csection->Item(idx);
+		int k = 0;
+		int i = 0;
+		int rc = _stscanf(item->GetKey().Get(), _T("%02x_%d"), &k, &i);
+		if (rc != 2 || k < 0 || k >= rows || i < 0 || i >= cols) {
+			continue;
+		}
+		long v = item->GetLong(0);
+		map[k * cols + i] = (uint32_t)(v & 0xffffffff);
+	}
+	for (int no = 0; no < KEYBIND_PRESETS; no++) {
+		uint32_t *preset1 = &preset[no * rows * cols];
+		UTILITY::stprintf(section, 100, _T("%sPreset%d"), section_name, no + 1);
+		csection = ini->Find(section);
+		count = 0;
+		if (csection) {
+			memset(preset1, 0, sizeof(uint32_t) * rows * cols);
+			count = csection->Count();
+		}
+		for (int idx = 0; idx < count; idx++) {
+			const CSimpleIniItem *item = csection->Item(idx);
+			int k = 0;
+			int i = 0;
+			int rc = _stscanf(item->GetKey().Get(), _T("%02x_%d"), &k, &i);
+			if (rc != 2 || k < 0 || k >= rows || i < 0 || i >= cols) {
+				continue;
+			}
+			long v = item->GetLong(0);
+			preset1[k * cols + i] = (uint32_t)(v & 0xffffffff);
+		}
+	}
+}
+
 bool KEYBOARD::load_ini_file()
 {
 	const _TCHAR *app_path;
-	_TCHAR section[100];
 
 	CSimpleIni *ini = new CSimpleIni();
 //#ifdef _UNICODE
@@ -203,161 +414,56 @@ bool KEYBOARD::load_ini_file()
 		return false;
 	}
 
-
-	UTILITY::stprintf(section, 100, _T("Keyboard"));
-	const CSimpleIniSection *csection = ini->Find(section);
-	int count = 0;
-	if (csection) {
-		memset(scan2key_map, 0, sizeof(scan2key_map));
-		count = csection->Count();
-	}
-	for (int idx = 0; idx < count; idx++) {
-		const CSimpleIniItem *item = csection->Item(idx);
-		int k = 0;
-		int i = 0;
-		int rc = _stscanf(item->GetKey(), _T("%02x_%d"), &k, &i);
-		if (rc != 2 || k < 0 || k >= KEYBIND_KEYS || i < 0 || i >= KEYBIND_ASSIGN) {
-			continue;
-		}
-		long v = item->GetLong(0);
-		scan2key_map[k][i] = (uint32_t)(v & 0xffffffff);
-	}
-	for (int no = 0; no < KEYBIND_PRESETS; no++) {
-		UTILITY::stprintf(section, 100, _T("KeyboardPreset%d"), no + 1);
-		csection = ini->Find(section);
-		count = 0;
-		if (csection) {
-			memset(scan2key_preset_map[no], 0, sizeof(scan2key_preset_map[no]));
-			count = csection->Count();
-		}
-		for (int idx = 0; idx < count; idx++) {
-			const CSimpleIniItem *item = csection->Item(idx);
-			int k = 0;
-			int i = 0;
-			int rc = _stscanf(item->GetKey(), _T("%02x_%d"), &k, &i);
-			if (rc != 2 || k < 0 || k >= KEYBIND_KEYS || i < 0 || i >= KEYBIND_ASSIGN) {
-				continue;
-			}
-			long v = item->GetLong(0);
-			scan2key_preset_map[no][k][i] = (uint32_t)(v & 0xffffffff);
-		}
-	}
-	UTILITY::stprintf(section, 100, _T("Joypad"));
-	csection = ini->Find(section);
-	count = 0;
-	if (csection) {
-		memset(scan2joy_map, 0, sizeof(scan2joy_map));
-		count = csection->Count();
-	}
-	for (int idx = 0; idx < count; idx++) {
-		const CSimpleIniItem *item = csection->Item(idx);
-		int k = 0;
-		int i = 0;
-		int rc = _stscanf(item->GetKey(), _T("%02x_%d"), &k, &i);
-		if (rc != 2 || k < 0 || k >= KEYBIND_KEYS || i < 0 || i >= KEYBIND_ASSIGN) {
-			continue;
-		}
-		long v = item->GetLong(0);
-		scan2joy_map[k][i] = (uint32_t)(v & 0xffffffff);
-	}
-	for (int no = 0; no < KEYBIND_PRESETS; no++) {
-		UTILITY::stprintf(section, 100, _T("JoypadPreset%d"), no + 1);
-		csection = ini->Find(section);
-		count = 0;
-		if (csection) {
-			memset(scan2joy_preset_map[no], 0, sizeof(scan2joy_preset_map[no]));
-			count = csection->Count();
-		}
-		for (int idx = 0; idx < count; idx++) {
-			const CSimpleIniItem *item = csection->Item(idx);
-			int k = 0;
-			int i = 0;
-			int rc = _stscanf(item->GetKey(), _T("%02x_%d"), &k, &i);
-			if (rc != 2 || k < 0 || k >= KEYBIND_KEYS || i < 0 || i >= KEYBIND_ASSIGN) {
-				continue;
-			}
-			long v = item->GetLong(0);
-			scan2joy_preset_map[no][k][i] = (uint32_t)(v & 0xffffffff);
-		}
-	}
+	load_ini_file_one(ini, _T("Keyboard2Key"), KEYBIND_KEYS, (uint32_t *)scan2key_map, (uint32_t *)scan2key_preset_map);
+#ifdef USE_JOYSTICK
+	load_ini_file_one(ini, _T("Joypad2Key"), KEYBIND_KEYS, (uint32_t *)joy2key_map, (uint32_t *)joy2key_preset_map);
 #ifdef USE_PIAJOYSTICK
-	UTILITY::stprintf(section, 100, _T("JoypadPIA"));
-	csection = ini->Find(section);
-	count = 0;
-	if (csection) {
-		memset(sjoy2joy_map, 0, sizeof(sjoy2joy_map));
-		count = csection->Count();
-	}
-	for (int idx = 0; idx < count; idx++) {
-		const CSimpleIniItem *item = csection->Item(idx);
-		int k = 0;
-		int i = 0;
-		int rc = _stscanf(item->GetKey(), _T("%02x_%d"), &k, &i);
-		if (rc != 2 || k < 0 || k >= KEYBIND_JOYS || i < 0 || i >= KEYBIND_ASSIGN) {
-			continue;
-		}
-		long v = item->GetLong(0);
-		sjoy2joy_map[k][i] = (uint32_t)(v & 0xffffffff);
-	}
-	for (int no = 0; no < KEYBIND_PRESETS; no++) {
-		UTILITY::stprintf(section, 100, _T("JoypadPIAPreset%d"), no + 1);
-		csection = ini->Find(section);
-		count = 0;
-		if (csection) {
-			memset(sjoy2joy_preset_map[no], 0, sizeof(sjoy2joy_preset_map[no]));
-			count = csection->Count();
-		}
-		for (int idx = 0; idx < count; idx++) {
-			const CSimpleIniItem *item = csection->Item(idx);
-			int k = 0;
-			int i = 0;
-			int rc = _stscanf(item->GetKey(), _T("%02x_%d"), &k, &i);
-			if (rc != 2 || k < 0 || k >= KEYBIND_JOYS || i < 0 || i >= KEYBIND_ASSIGN) {
-				continue;
-			}
-			long v = item->GetLong(0);
-			sjoy2joy_preset_map[no][k][i] = (uint32_t)(v & 0xffffffff);
-		}
-	}
+	load_ini_file_one(ini, _T("Joypad2Joy"), KEYBIND_JOYS, (uint32_t *)sjoy2joy_map, (uint32_t *)sjoy2joy_preset_map);
 #endif
-#if 0
-	// convert system key (alt) 0x60 -> 0x78
-	for (int k = 0x60; k <= 0x61; k++) {
-		for (int i = 0; i < KEYBIND_ASSIGN; i++) {
-			if (scan2key_map[k+0x18][i] == 0) {
-				scan2key_map[k+0x18][i] = scan2key_map[k][i];
-			}
-			scan2key_map[k][i] = 0;
-			if (scan2joy_map[k+0x18][i] == 0) {
-				scan2joy_map[k+0x18][i] = scan2joy_map[k][i];
-			}
-			scan2joy_map[k][i] = 0;
-			for (int no = 0; no < KEYBIND_PRESETS; no++) {
-				if (scan2key_preset_map[no][k+0x18][i] == 0) {
-					scan2key_preset_map[no][k+0x18][i] = scan2key_preset_map[no][k][i];
-				}
-				scan2key_preset_map[no][k][i] = 0;
-				if (scan2joy_preset_map[no][k+0x18][i] == 0) {
-					scan2joy_preset_map[no][k+0x18][i] = scan2joy_preset_map[no][k][i];
-				}
-				scan2joy_preset_map[no][k][i] = 0;
-			}
-		}
-	}
 #endif
-//	keys.clear();
+#ifdef USE_KEY2JOYSTICK
+	load_ini_file_one(ini, _T("Keyboard2Joy"), KEYBIND_JOYS, (uint32_t *)scan2joy_map, (uint32_t *)scan2joy_preset_map);
+#endif
 
 	delete ini;
 
 	return true;
 }
 
+void KEYBOARD::save_ini_file_one(CSimpleIni *ini, const _TCHAR *section_name, int rows, const uint32_t *map, const uint32_t *preset)
+{
+	_TCHAR section[100];
+	_TCHAR key[100];
+	int cols = KEYBIND_ASSIGN;
+
+    for (int k = 0; k < rows; k++) {
+		for (int i = 0; i < cols; i++) {
+			UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
+			const uint32_t v = map[k * cols + i];
+			if (v != 0) {
+				ini->SetLongValue(section_name, key, v, NULL, true);
+			}
+		}
+	}
+    for (int no = 0; no < KEYBIND_PRESETS; no++) {
+		UTILITY::stprintf(section, 100, _T("%sPreset%d"), section_name, no + 1);
+		for (int k = 0; k < rows; k++) {
+			for (int i = 0; i < cols; i++) {
+				const uint32_t *preset1 = &preset[no * rows * cols];
+				UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
+				const uint32_t v = preset1[k * cols + i];
+				if (v != 0) {
+					ini->SetLongValue(section, key, v, NULL, true);
+				}
+			}
+		}
+	}
+}
+
 void KEYBOARD::save_ini_file()
 {
 	const _TCHAR *app_path;
 	_TCHAR comment[100];
-	_TCHAR section[100];
-	_TCHAR key[100];
 
 	CSimpleIni *ini = new CSimpleIni();
 //#ifdef _UNICODE
@@ -368,67 +474,15 @@ void KEYBOARD::save_ini_file()
 	UTILITY::stprintf(comment, 100, _T("; %s keybind file"), _T(DEVICE_NAME));
 	ini->SetValue(_T(""), _T("Version"), _T(VK_KEY_TYPE), comment);
 
-	UTILITY::stprintf(section, 100, _T("Keyboard"));
-    for (int k = 0; k < KEYBIND_KEYS; k++) {
-		for (int i = 0; i < KEYBIND_ASSIGN; i++) {
-			UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
-			if (scan2key_map[k][i] != 0) {
-				ini->SetLongValue(section, key, scan2key_map[k][i], NULL, true);
-			}
-		}
-	}
-    for (int no = 0; no < KEYBIND_PRESETS; no++) {
-		UTILITY::stprintf(section, 100, _T("KeyboardPreset%d"), no + 1);
-		for (int k = 0; k < KEYBIND_KEYS; k++) {
-			for (int i = 0; i < KEYBIND_ASSIGN; i++) {
-				UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
-				if (scan2key_preset_map[no][k][i] != 0) {
-					ini->SetLongValue(section, key, scan2key_preset_map[no][k][i], NULL, true);
-				}
-			}
-		}
-	}
-	UTILITY::stprintf(section, 100, _T("Joypad"));
-    for (int k = 0; k < KEYBIND_KEYS; k++) {
-		for (int i = 0; i < KEYBIND_ASSIGN; i++) {
-			UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
-			if (scan2joy_map[k][i] != 0) {
-				ini->SetLongValue(section, key, scan2joy_map[k][i], NULL, true);
-			}
-		}
-	}
-    for (int no = 0; no < KEYBIND_PRESETS; no++) {
-		UTILITY::stprintf(section, 100, _T("JoypadPreset%d"), no + 1);
-		for (int k = 0; k < KEYBIND_KEYS; k++) {
-			for (int i = 0; i < KEYBIND_ASSIGN; i++) {
-				UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
-				if (scan2joy_preset_map[no][k][i] != 0) {
-					ini->SetLongValue(section, key, scan2joy_preset_map[no][k][i], NULL, true);
-				}
-			}
-		}
-	}
+	save_ini_file_one(ini, _T("Keyboard2Key"), KEYBIND_KEYS, (const uint32_t *)scan2key_map, (const uint32_t *)scan2key_preset_map);
+#ifdef USE_JOYSTICK
+	save_ini_file_one(ini, _T("Joypad2Key"), KEYBIND_KEYS, (const uint32_t *)joy2key_map, (const uint32_t *)joy2key_preset_map);
 #ifdef USE_PIAJOYSTICK
-	UTILITY::stprintf(section, 100, _T("JoypadPIA"));
-    for (int k = 0; k < KEYBIND_JOYS; k++) {
-		for (int i = 0; i < KEYBIND_ASSIGN; i++) {
-			UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
-			if (sjoy2joy_map[k][i] != 0) {
-				ini->SetLongValue(section, key, sjoy2joy_map[k][i], NULL, true);
-			}
-		}
-	}
-    for (int no = 0; no < KEYBIND_PRESETS; no++) {
-		UTILITY::stprintf(section, 100, _T("JoypadPIAPreset%d"), no + 1);
-		for (int k = 0; k < KEYBIND_JOYS; k++) {
-			for (int i = 0; i < KEYBIND_ASSIGN; i++) {
-				UTILITY::stprintf(key, 100, _T("%02x_%d"), k, i);
-				if (sjoy2joy_preset_map[no][k][i] != 0) {
-					ini->SetLongValue(section, key, sjoy2joy_preset_map[no][k][i], NULL, true);
-				}
-			}
-		}
-	}
+	save_ini_file_one(ini, _T("Joypad2Joy"), KEYBIND_JOYS, (const uint32_t *)sjoy2joy_map, (const uint32_t *)sjoy2joy_preset_map);
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	save_ini_file_one(ini, _T("Keyboard2Joy"), KEYBIND_JOYS, (const uint32_t *)scan2joy_map, (const uint32_t *)scan2joy_preset_map);
 #endif
 
 	// save ini file
@@ -447,33 +501,6 @@ void KEYBOARD::save_ini_file()
 }
 
 // ----------------------------------------------------------------------------
-
-void KEYBOARD::reset()
-{
-	kb_mode = 0;
-	scan_code = 0;
-	key_scan_code = 0;
-	key_pressed = 0;
-	kb_nmi = 0x7f;
-
-	lpen_flg = 0;
-	lpen_flg_prev = 0;
-	lpen_bl = false;
-
-	counter = 0;
-	remain_count = -1;
-	remain_count_max = FLG_ORIG_LIMKEY ? (KEYBOARD_COUNTER_MAX << 3) - 2 : -1;
-
-#ifdef USE_PIAJOYSTICK
-	joy_pia_sel = 0;
-	joy_pia[0] = 0;
-	joy_pia[1] = 0;
-#endif
-#ifdef _DEBUG_KEYBOARD
-	frame_counter = 0;
-	event_counter = 0;
-#endif
-}
 
 void KEYBOARD::write_signal(int id, uint32_t data, uint32_t mask)
 {
@@ -520,7 +547,7 @@ void KEYBOARD::write_io8(uint32_t addr, uint32_t data)
 			kb_mode = data;
 
 			// keyborad irq interrupt
-			if ((kb_mode & 0x40) && (key_scan_code & 0x80) != 0) {
+			if ((kb_mode & 0x40) && (m_key_scan_code & 0x80) != 0) {
 				d_board->write_signal(SIG_CPU_IRQ, SIG_IRQ_KEYBOARD_MASK, SIG_IRQ_KEYBOARD_MASK);
 			} else {
 				d_board->write_signal(SIG_CPU_IRQ, 0, SIG_IRQ_KEYBOARD_MASK);
@@ -566,8 +593,8 @@ uint32_t KEYBOARD::read_io8(uint32_t addr)
 			break;
 		case ADDR_KEYBOARD:
 			// keyboard (0xffe0)
-			data = key_scan_code;
-			key_scan_code &= 0x7f;
+			data = m_key_scan_code;
+			m_key_scan_code &= 0x7f;
 
 			emu->recognized_key(data);
 
@@ -593,9 +620,9 @@ void KEYBOARD::clear_scan_code(int key_counter)
 //	}
 
 	// if kb bit3 is set, enable scan_code is between 0x00 and 0x07
-	scan_code = (key_counter) & ((kb_mode & 0x08) ? 0x07 : 0x7f);
-	if (key_scan_code < 0x80) {
-		key_scan_code = scan_code;
+	m_scan_code = (key_counter) & ((kb_mode & 0x08) ? 0x07 : 0x7f);
+	if (m_key_scan_code < 0x80) {
+		m_key_scan_code = m_scan_code;
 	}
 
 //	logging->out_debugf("kbd csc fr:%04d ct:%03x rc:%02d s:%02x k:%02x"
@@ -608,31 +635,31 @@ void KEYBOARD::update_scan_code(int key_counter)
 	bool pressed = false;
 
 	// if kb bit3 is set, enable scan_code is between 0x00 and 0x07
-	scan_code = (key_counter) & ((kb_mode & 0x08) ? 0x07 : 0x7f);
-	if (scan_code == 0x7f) {
-		if (key_pressed == 1) {
+	m_scan_code = (key_counter) & ((kb_mode & 0x08) ? 0x07 : 0x7f);
+	if (m_scan_code == 0x7f) {
+		if (m_key_pressed == 1) {
 			pressed = true;
-			scan_code |= 0x80;
+			m_scan_code |= 0x80;
 			remain_count = remain_count_max;
 		}
-		if (key_pressed > 0) key_pressed--;
-	} else if (scan_code >= 0x70) {
+		if (m_key_pressed > 0) m_key_pressed--;
+	} else if (m_scan_code >= 0x70) {
 		// no assaign
 	} else {
 #ifdef _BML3MK5
-		pressed = pressing_key(scan_code);
+		pressed = pressing_key(m_scan_code);
 #endif
 		if (pressed == true) {
-			scan_code |= 0x80;
-			key_pressed = 2;
+			m_scan_code |= 0x80;
+			m_key_pressed = 2;
 			remain_count = remain_count_max;
 		}
 	}
 
-	if (key_scan_code < 0x80) {
-		key_scan_code = scan_code;
-	} else if (scan_code >= 0x80) {
-		key_scan_code = scan_code;
+	if (m_key_scan_code < 0x80) {
+		m_key_scan_code = m_scan_code;
+	} else if (m_scan_code >= 0x80) {
+		m_key_scan_code = m_scan_code;
 	}
 
 	// keyborad irq interrupt
@@ -659,19 +686,19 @@ void KEYBOARD::update_special_key()
 		switch(code) {
 			case 0x7d:
 				// mode switch
-				if (pressed && modesw_pressed == false) {
+				if (pressed && m_modesw_pressed == false) {
 #ifdef _BML3MK5
 					emu->change_dipswitch(2);
 #endif
 				}
-				modesw_pressed = pressed;
+				m_modesw_pressed = pressed;
 				break;
 			case 0x7e:
 				// power switch
-				if (pressed	&& powersw_pressed == false) {
+				if (pressed	&& m_powersw_pressed == false) {
 					emumsg.Send(EMUMSG_ID_RESET);
 				}
-				powersw_pressed = pressed;
+				m_powersw_pressed = pressed;
 				break;
 			case 0x7f:
 				// reset switch
@@ -701,16 +728,16 @@ void KEYBOARD::update_special_key()
 void KEYBOARD::update_light_pen()
 {
 #ifdef USE_KEY_RECORD
-	reckey->processing_lightpen_status(mouse_stat);
+	reckey->processing_lightpen_status(p_mouse_stat);
 #endif
 
-	if ((lpen_bl && FLG_USELIGHTPEN) || config.reckey_playing) {
-		lpen_flg = (mouse_stat[2] & 1) ? 0x80 : 0;
+	if ((lpen_bl && FLG_USELIGHTPEN) || pConfig->reckey_playing) {
+		lpen_flg = (p_mouse_stat[2] & 1) ? 0x80 : 0;
 		if (lpen_flg != 0) {
 			// push light pen
 			// LPSTB signal
 			d_disp->write_signal(DISPLAY::SIG_DISPLAY_LPSTB
-				,((mouse_stat[0] & 0xffff) << 16) | (mouse_stat[1] & 0xffff)
+				,((p_mouse_stat[0] & 0xffff) << 16) | (p_mouse_stat[1] & 0xffff)
 				, 0xffffffff);
 
 			// IRQ interrupt
@@ -718,7 +745,7 @@ void KEYBOARD::update_light_pen()
 
 		}
 #if 0
-		if (config.reckey_playing) {
+		if (pConfig->reckey_playing) {
 			lpen_flg = (reckey->get_lpen_recp_stat(2) & 1) ? 0x80 : 0;
 			if (lpen_flg != 0) {
 				// push light pen
@@ -742,7 +769,7 @@ void KEYBOARD::update_light_pen()
 
 uint8_t KEYBOARD::get_kb_mode()
 {
-	return (config.now_power_off ? 4 : (kb_mode & 0x07));
+	return (pConfig->now_power_off ? 4 : (kb_mode & 0x07));
 }
 
 void KEYBOARD::update_system_key()
@@ -754,16 +781,16 @@ void KEYBOARD::update_system_key()
 		switch(code) {
 			case 0x78:
 				// pause
-				if (pressed && pause_pressed == false) {
+				if (pressed && m_pause_pressed == false) {
 //					emu->set_pause(2, emu->get_pause(2) ? false : true);
 					emumsg.Send(EMUMSG_ID_PAUSE);
 				}
-				pause_pressed = pressed;
+				m_pause_pressed = pressed;
 				break;
 			case 0x79:
 				// alt
-				altkey_pressed = pressed;
-				*key_mod = (altkey_pressed) ? (*key_mod) | KEY_MOD_ALT_KEY : (*key_mod) & ~KEY_MOD_ALT_KEY;
+				m_altkey_pressed = pressed;
+				*p_key_mod = (m_altkey_pressed) ? (*p_key_mod) | KEY_MOD_ALT_KEY : (*p_key_mod) & ~KEY_MOD_ALT_KEY;
 				break;
 		}
 	}
@@ -771,56 +798,45 @@ void KEYBOARD::update_system_key()
 
 void KEYBOARD::update_joy_pia()
 {
-#ifdef USE_PIAJOYSTICK
-	uint32_t code = 0;
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	joy_pia[0] = 0;
 	joy_pia[1] = 0;
 
-	if (FLG_USEPIAJOYSTICK) {
-#ifdef USE_PIAJOYSTICKBIT
-		for(int n = 0; n < 8; n++) {
-			for(int i=0; i<2; i++) {
-				code = sjoy2joy_map[n][i];
-				if (code == 0) continue;
-				if ((joy_stat[i] & code) == code) {
-					joy_pia[i] |= (1 << n);
-				}
-			}
+	if (FLG_PIAJOY_ALL) {
+#ifndef USE_PIAJOYSTICKBIT
+		// MB-S1 port
+		// (b0:up, b1:down, b2:left, b3:right, b4:trig2, b5:trig1
+		for(int i=0; i<MAX_JOYSTICKS; i++) {
+			joy_pia[i] = (p_joy_stat[i][0] & 0xf);
+			joy_pia[i] |= ((p_joy_stat[i][0] & 0x20000) >> 13);
+			joy_pia[i] |= ((p_joy_stat[i][0] & 0x10000) >> 11);
 		}
 #else
-		for(int n = 0; sjoy2joy_allow_map[n] >= 0; n++) {
-			for(int i=0; i<2; i++) {
-				code = sjoy2joy_map[sjoy2joy_allow_map[n]][i];
-				if ((joy_stat[i] & code) == code) {
-					joy_pia[i] = sjoy2joy_allow_map[n];
-				}
-			}
-		}
-		for(int n = 0; sjoy2joy_button_map[n] >= 0; n++) {
-			for(int i=0; i<2; i++) {
-				code = sjoy2joy_map[sjoy2joy_button_map[n]][i];
-				if (joy_stat[i] & code) {
-					joy_pia[i] |= (0x10 << (sjoy2joy_button_map[n] - 0x10));
-					// irq
-					d_pia->write_signal(i == 0 ? PIA::SIG_PIA_CA1 : PIA::SIG_PIA_CA2,0,1);
-				} else {
-					d_pia->write_signal(i == 0 ? PIA::SIG_PIA_CA1 : PIA::SIG_PIA_CA2,1,1);
-				}
-			}
-		}
-		d_pia->write_signal(PIA::SIG_PIA_PA, ~joy_pia[joy_pia_sel], 0x3f);	// negative
+		uint32_t stat = (p_joy_stat[0][0] | p_joy_stat[1][0]);
+		joy_pia[0] =((stat & 0xf) | ((stat >> 12) & 0xf0)) & 0xff;
 #endif
 	}
+
 #ifdef USE_KEY_RECORD
 	reckey->processing_joypia_status(joy_pia);
 #endif
 
-#ifdef USE_PIAJOYSTICKBIT
-	if (FLG_USEPIAJOYSTICK) {
-		d_pia->write_signal(PIA::SIG_PIA_PB, sjoy2joy_map[0x17][0] ? ~joy_pia[0] : joy_pia[0], 0xff);
+	if(FLG_PIAJOY_ALL != 0 || pConfig->reckey_playing) {
+#ifndef USE_PIAJOYSTICKBIT
+		for(int i=0; i<2; i++) {
+			// irq
+			if (joy_pia[i] & ~0xf) {
+				d_pia->write_signal(i == 0 ? PIA::SIG_PIA_CA1 : PIA::SIG_PIA_CA2, 0, 1);
+			} else {
+				d_pia->write_signal(i == 0 ? PIA::SIG_PIA_CA1 : PIA::SIG_PIA_CA2, 1, 1);
+			}
+		}
+		d_pia->write_signal(PIA::SIG_PIA_PA, ~joy_pia[joy_pia_sel], 0x3f);	// negative
+#else
+		d_pia->write_signal(PIA::SIG_PIA_PB, sjoy2joy_map[0x17].d[0] ? ~joy_pia[0] : joy_pia[0], 0xff);
+#endif
 	}
-#endif
-#endif
+#endif /* USE_PIAJOYSTICK || USE_KEY2JOYSTICK */
 }
 
 // ----------------------------------------------------------------------------
@@ -831,6 +847,11 @@ bool KEYBOARD::pressing_key(int key_code)
 	bool pressed = false;
 	int i = 0;
 
+#ifdef USE_KEY_RECORD
+	reckey->playing_key();
+#endif
+
+#if 0
 	for(i=0; i<2; i++) {
 		code = scan2key_map[key_code][i];
 		if (code == 0) break;
@@ -841,32 +862,46 @@ bool KEYBOARD::pressing_key(int key_code)
 			break;
 		}
 	}
-#ifdef USE_JOYSTICK
-	if (pressed != true && FLG_USEJOYSTICK) {
-		for(i=0; i<2; i++) {
-			code = scan2joy_map[key_code][i];
+#else
+	// key pressed ?
+	if (vm_key_stat[key_code] & VM_KEY_STATUS_MASK) {
+		pressed = true;
+	}
+
+#endif
+#if defined(USE_JOYSTICK)
+	if (!pressed && FLG_USEJOYSTICK) {
+		for(i=0; i<MAX_JOYSTICKS; i++) {
+			code = joy2key_map[key_code].d[i];
 			if (code == 0) continue;
 
 			// joypad pressed ?
 			// allow key or button
-			if (
-				((scan2joy_map[0x81][0] & 1) == 0 && ((joy_stat[i] & 0xf & code) == code || (joy_stat[i] & 0xfffffff0 & code) == code))
-			||  ((scan2joy_map[0x81][0] & 1) != 0 && ((joy_stat[i] & 0xf) == code || (joy_stat[i] & 0xfffffff0) == code))
-			) {
-				pressed = true;
-				break;
+			if (!(joy2key_map[KEYBIND_KEYS - 1].d[0] & 1)) {
+				if ((p_joy_real_stat[i][0] & 0xf & code) == code || (p_joy_real_stat[i][0] & 0xfffffff0 & code) == code) {
+					pressed = true;
+					break;
+				}
+			} else {
+				if ((p_joy_real_stat[i][0] & 0xf) == code || (p_joy_real_stat[i][0] & 0xfffffff0) == code) {
+					pressed = true;
+					break;
+				}
 			}
 		}
 	}
 #endif
+#if 0
 	if (pressed != true) {
 		// auto key pressed ?
 		if (vm_key_stat[key_code]) {
 			pressed = true;
 		}
 	}
+#endif
 #ifdef USE_KEY_RECORD
-	pressed = reckey->processing_keys(key_code, pressed);
+//	pressed = reckey->processing_keys(key_code, pressed);
+	reckey->recording_key(key_code, pressed);
 #endif
 
 	return pressed;
@@ -917,8 +952,8 @@ void KEYBOARD::update_keyboard()
 		logging->out_debugf("kbd ukd 1 fr:%04d ct:%03x rc:%4d s:-- k:%02x"
 		, frame_counter, counter, remain_count, key_scan_code);
 #endif
-		key_scan_code &= 0x7f;
-		counter = (counter - 2) % KEYBOARD_COUNTER_MAX;
+		m_key_scan_code &= 0x7f;
+		m_counter = (m_counter - 2) % KEYBOARD_COUNTER_MAX;
 		// release IRQ interrupt
 		d_board->write_signal(SIG_CPU_IRQ, 0, SIG_IRQ_KEYBOARD_MASK);
 	}
@@ -932,14 +967,14 @@ void KEYBOARD::update_keyboard()
 //#endif
 
 	// when not press a key, count up and scan the key
-	if (key_scan_code < 0x80) {
-		if ((counter & 1) == 0) {
-			clear_scan_code(counter >> 1);
+	if (m_key_scan_code < 0x80) {
+		if ((m_counter & 1) == 0) {
+			clear_scan_code(m_counter >> 1);
 		} else {
-			update_scan_code(counter >> 1);
+			update_scan_code(m_counter >> 1);
 		}
-		if (!now_reset) counter++;
-		if (counter >= KEYBOARD_COUNTER_MAX) counter = 0;
+		if (!now_reset) m_counter++;
+		if (m_counter >= KEYBOARD_COUNTER_MAX) m_counter = 0;
 	}
 }
 
@@ -1001,8 +1036,8 @@ void KEYBOARD::save_state(FILEIO *fio)
 	vm_state.lpen_flg_prev = lpen_flg_prev;
 	vm_state.lpen_bl = lpen_bl ? 1 : 0;
 	vm_state.lpen_bl |= FLG_USELIGHTPEN ? 2 : 0;	// add version 2
-	vm_state.key_pressed = key_pressed;
-	vm_state.counter = Int32_LE(counter);
+	vm_state.key_pressed = m_key_pressed;
+	vm_state.counter = Int32_LE(m_counter);
 	vm_state.remain_count = Int32_LE(remain_count);
 
 	fio->Fwrite(&vm_state_ident, sizeof(vm_state_ident), 1);
@@ -1021,13 +1056,13 @@ bool KEYBOARD::load_state(FILEIO *fio)
 	lpen_flg = vm_state.lpen_flg;
 	lpen_flg_prev = vm_state.lpen_flg_prev;
 	lpen_bl = (vm_state.lpen_bl & 1) ? true : false;
-	key_pressed = vm_state.key_pressed;
-	counter = Int32_LE(vm_state.counter);
+	m_key_pressed = vm_state.key_pressed;
+	m_counter = Int32_LE(vm_state.counter);
 	remain_count = Int32_LE(vm_state.remain_count);
 	if (vm_state_i.version >= 2) {
-		config.misc_flags = (vm_state.lpen_bl & 2) ? (config.misc_flags | MSK_USELIGHTPEN) : (config.misc_flags & ~MSK_USELIGHTPEN);
+		pConfig->misc_flags = (vm_state.lpen_bl & 2) ? (pConfig->misc_flags | MSK_USELIGHTPEN) : (pConfig->misc_flags & ~MSK_USELIGHTPEN);
 	}
-	key_scan_code = 0;
+	m_key_scan_code = 0;
 #ifdef USE_PIAJOYSTICK
 	if (FLG_USEPIAJOYSTICK) {
 		// set pia a port for joystick
@@ -1061,7 +1096,7 @@ uint32_t KEYBOARD::debug_read_io8(uint32_t addr)
 			break;
 		case ADDR_KEYBOARD:
 			// keyboard (0xffe0)
-			data = key_scan_code;
+			data = m_key_scan_code;
 			break;
 	}
 	return data;

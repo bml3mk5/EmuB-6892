@@ -93,6 +93,11 @@ int EMU::translate_global_key(int code)
 	} else if (KEYCODE_F13 <= code && code <= KEYCODE_F15) {
 		code = code + GLOBALKEY_F13 - KEYCODE_F13;
 	}
+	if (key_mod & KEY_MOD_SHIFT_KEY) {
+		if (GLOBALKEY_0 <= code && code <= GLOBALKEY_9) {
+			code = code + GLOBALKEY_SFT_0 - GLOBALKEY_0;
+		}
+	}
 	return code;
 }
 

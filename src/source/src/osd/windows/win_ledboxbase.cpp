@@ -54,7 +54,7 @@ bool LedBoxBase::InitScreen()
 	parent_pt.w = led[LED_TYPE_BASE]->Width();
 	parent_pt.h = led[LED_TYPE_BASE]->Height();
 #ifdef USE_PERFORMANCE_METER
-	if (config.show_pmeter) {
+	if (pConfig->show_pmeter) {
 		parent_pt.w += 108;
 	}
 #endif
@@ -303,7 +303,7 @@ void LedBoxBase::Update(uint64_t flag)
 
 #ifdef USE_PERFORMANCE_METER
 		// for debug
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			HGDIOBJ hBrush = GetStockObject(DKGRAY_BRUSH);
 			HGDIOBJ hPen = GetStockObject(BLACK_PEN);
 			SelectObject(hMainDC , hBrush);
@@ -331,7 +331,7 @@ void LedBoxBase::Update(uint64_t flag)
 			DeleteObject(hBrush);
 			DeleteObject(hPen);
 		}
-#endif		
+#endif
 
 		if (visible && !inside) {
 			need_update_dialog();

@@ -17,6 +17,7 @@
 #include "cchar.h"
 #include "osd/windowmode.h"
 #include "osd/screenmode.h"
+#include "osd/keybind.h"
 #include "msgs.h"
 
 #ifdef USE_FD1
@@ -54,6 +55,10 @@
 #define UART_BUFFER_MAX 0x400
 #endif
 
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#define MAX_JOYSTICKS	2
+#endif
+
 #ifdef USE_DEBUGGER
 #include "debugger_defs.h"
 #endif
@@ -61,6 +66,7 @@
 class FIFOINT;
 class FILEIO;
 class GUI;
+class DEVICE;
 //class LedBox;
 #ifdef USE_MESSAGE_BOARD
 class MsgBoard;
@@ -131,6 +137,10 @@ protected:
 
 	virtual void initialize_joystick();
 	virtual void release_joystick();
+	virtual void convert_joy_status(int num);
+
+	virtual void initialize_key2joy();
+	virtual void release_key2joy();
 
 	virtual void initialize_mouse(bool enable);
 //#ifdef USE_MOUSE_ABSOLUTE
@@ -175,18 +185,105 @@ protected:
 	/// @see EnumKeyModFlags
 	int  key_mod;
 
+#ifdef USE_KEY2JOYSTICK
+#ifndef USE_PIAJOYSTICKBIT
+	/// @brief keycode to joystick position
+	uint32_t key2joy_map[MAX_JOYSTICKS][KEY_STATUS_SIZE];
+	/// @brief key to joystick #1, #2 status
+	uint32_t key2joy_status[MAX_JOYSTICKS][9];
+#else
+	/// @brief keycode to joystick position
+	uint32_t key2joy_map[KEY_STATUS_SIZE];
+	/// @brief key to joystick #1, #2 status
+	uint32_t key2joy_status[MAX_JOYSTICKS];
+#endif
+	/// @brief enable key2joystick
+	bool key2joy_enabled;
+
+	const uint32_key_assign_t *key2joy_scancode;
+#endif
+
 #ifdef USE_JOYSTICK
-	uint32_t joy_status[2];	// joystick #1, #2 (b0 = up, b1 = down, b2 = left, b3 = right, b4-b27 = trigger #1-#24
-	int joy_num;
-	bool joy_enabled[2];
+	/// @brief joystick range
+	struct st_joy_range {
+		bool enable;
+		int range;
+		int offset;
+		int mintd;	// upper threshold
+		int maxtd;	// lower threshold
+	};
+	/// @brief joystick parameters
+	struct st_joy_params {
+		struct st_joy_range x;
+		struct st_joy_range y;
+		struct st_joy_range z;
+		struct st_joy_range r;
+		struct st_joy_range u;
+		struct st_joy_range v;
+		int has_pov;
+	} joy_prm[MAX_JOYSTICKS];
+#endif
+
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#ifdef USE_ANALOG_JOYSTICK
+	/// @brief joystick #1, #2 status
+	///
+	/// 0: b0 = Y up, b1 = Y down, b2 = X  left, b3 = X  right
+	///    b4 = Z up, b5 = Z down, b6 = Rz left, b7 = Rz right
+	///    b8 = V up, b9 = V down, b10 = U left, b11 = U right
+	///    b16-b31 = trigger #1-#16
+	/// 1: reserved
+	/// 2: analog stick X axis
+	/// 3: analog stick Y axis
+	/// 4: analog stick Z axis
+	/// 5: analog stick R axis
+	/// 6: analog stick U axis
+	/// 7: analog stick V axis
+	uint32_t joy_status[MAX_JOYSTICKS][8];
+#else
+	/// @brief joystick #1, #2 status
+	///
+	/// 0: b0 = Y up, b1 = Y down, b2 = X  left, b3 = X  right
+	///    b4 = Z up, b5 = Z down, b6 = Rz left, b7 = Rz right
+	///    b8 = V up, b9 = V down, b10 = U left, b11 = U right
+	///    b16-b31 = trigger #1-#16
+	/// 1: reserved
+	uint32_t joy_status[MAX_JOYSTICKS][2];
+#endif
+#ifndef USE_PIAJOYSTICKBIT
+	/// @brief joystick keybind to array 
+	static const int joy_allow_map[16];
+#endif
+	/// @brief joystick #1, #2 button mashing mask (b16-b31)
+	uint32_t joy_mashing_mask[MAX_JOYSTICKS][16];
+	/// @brief joystick button mashing count
+	int joy_mashing_count;
+#endif
+
+#ifdef USE_JOYSTICK
+	/// @brief joystick to joystick position
+	uint32_t joy2joy_map[MAX_JOYSTICKS][32];
+	uint32_t joy2joy_idx[32];
+	int joy2joy_map_size;
+#ifdef USE_ANALOG_JOYSTICK
+	/// @brief analog mapping
+	int joy2joy_ana_map[MAX_JOYSTICKS][6];
+	bool joy2joy_ana_rev[MAX_JOYSTICKS][6];
+	/// @brief real joystick #1, #2 status
+	uint32_t joy2joy_status[MAX_JOYSTICKS][8];
+#else
+	/// @brief real joystick #1, #2 status
+	uint32_t joy2joy_status[MAX_JOYSTICKS][2];
+#endif
+	bool joy_enabled[MAX_JOYSTICKS];
 	bool use_joystick;
 #endif
 
-	int mouse_status[3];	// x, y, button (b0 = left, b1 = right)
+	/// @brief mouse status
+	///
+	/// 0: x position, 1: y position, 2: button on/off (b0 = left, b1 = right)
+	int mouse_status[3];
 	int mouse_disabled;
-#ifdef USE_MOUSE_ABSOLUTE
-	VmPoint mouse_position;
-#endif
 
 #ifdef USE_AUTO_KEY
 	FIFOINT* autokey_buffer;
@@ -268,6 +365,7 @@ protected:
 #define DISABLE_SURFACE	1
 	int  disable_screen;
 
+	bool first_invalidate_default;
 	bool first_invalidate;
 	bool self_invalidate;
 	bool skip_frame;
@@ -333,7 +431,7 @@ protected:
 		int wait_count;
 		uint32_t flags;
 	} disk_insert_t;
-	disk_insert_t disk_insert[MAX_DRIVE];
+	disk_insert_t disk_insert[USE_FLOPPY_DISKS];
 
 	// d88 bank switch
 	D88Files d88_files;
@@ -345,6 +443,15 @@ protected:
 #define OPEN_DISK_FLAGS_FORCELY			0x1000
 	//@}
 
+	// ----------------------------------------
+	// hard disk
+	// ----------------------------------------
+#ifdef USE_HD1
+	/// @name hard disk private methods
+	//@{
+	void initialize_hard_disk_insert();
+	//@}
+#endif
 
 	// ----------------------------------------
 	// media
@@ -538,21 +645,32 @@ public:
 #ifdef USE_FD1
 	/// @name floppy disk menu for ui
 	//@{
-	int  open_disk_main(int drv, const _TCHAR* file_path, int offset, uint32_t flags);
-	bool open_disk(int drv, const _TCHAR* file_path, int bank_num, int offset, uint32_t flags);
-	void update_disk_info(int drv, const _TCHAR* file_path, int bank_num);
-	bool open_disk_by_bank_num(int drv, const _TCHAR* file_path, int bank_num, uint32_t flags, bool multiopen);
-	bool open_disk_with_sel_bank(int drv, int bank_num, uint32_t flags = 0);
-	void close_disk(int drv, uint32_t flags = 0);
-	int  change_disk(int drv);
-	int  get_disk_side(int drv);
-	void toggle_disk_write_protect(int drv);
-	bool disk_write_protected(int drv);
-	bool disk_inserted(int drv);
+	int  open_floppy_disk_main(int drv, const _TCHAR* file_path, int offset, uint32_t flags);
+	bool open_floppy_disk(int drv, const _TCHAR* file_path, int bank_num, int offset, uint32_t flags);
+	void update_floppy_disk_info(int drv, const _TCHAR* file_path, int bank_num);
+	bool open_floppy_disk_by_bank_num(int drv, const _TCHAR* file_path, int bank_num, uint32_t flags, bool multiopen);
+	bool open_floppy_disk_with_sel_bank(int drv, int bank_num, uint32_t flags = 0);
+	void close_floppy_disk(int drv, uint32_t flags = 0);
+	int  change_floppy_disk(int drv);
+	int  get_floppy_disk_side(int drv);
+	void toggle_floppy_disk_write_protect(int drv);
+	bool floppy_disk_write_protected(int drv);
+	bool floppy_disk_inserted(int drv);
 	bool changed_cur_bank(int drv);
 	D88File *get_d88_file(int drv) { return &d88_files.GetFile(drv); }
 	bool create_blank_floppy_disk(const _TCHAR* file_path, uint8_t type);
-	bool is_same_disk(int drv, const _TCHAR *file_path, int bank_num);
+	bool is_same_floppy_disk(int drv, const _TCHAR *file_path, int bank_num);
+	//@}
+#endif
+#ifdef USE_HD1
+	/// @name hard disk menu for ui
+	//@{
+	bool open_hard_disk(int drv, const _TCHAR* file_path, uint32_t flags);
+	void update_hard_disk_info(int drv, const _TCHAR* file_path, int bank_num);
+	void close_hard_disk(int drv, uint32_t flags = 0);
+	bool hard_disk_mounted(int drv);
+	bool create_blank_hard_disk(const _TCHAR* file_path, uint8_t type);
+	bool is_same_hard_disk(int drv, const _TCHAR *file_path);
 	//@}
 #endif
 #ifdef USE_DATAREC
@@ -680,7 +798,10 @@ public:
 	int  is_shown_message_board();
 	void change_use_joypad(int num);
 	bool is_enable_joypad(int num);
+	void toggle_enable_key2joy();
+	bool is_enable_key2joy();
 
+	void modify_joytype();
 	void save_keybind();
 
 	void change_archtecture(int id, int num, bool reset);
@@ -707,6 +828,36 @@ public:
 	void set_vm_key_map(uint32_t key_code, int vm_scan_code);
 //	int get_vm_key_map(uint32_t key_code) const;
 
+	/// @return real joystick status
+	/// @see joy_buffer()
+	uint32_t* joy_real_buffer(int num) {
+#if defined(USE_JOYSTICK)
+		return joy2joy_status[num];
+#else
+		return NULL;
+#endif
+	}
+	void modify_joy_threshold();
+	void modify_joy_mashing();
+
+	void clear_joy2joy_idx();
+	void set_joy2joy_idx(int pos, uint32_t joy_code);
+
+	void clear_joy2joy_map();
+	void set_joy2joy_map(int num, int pos, uint32_t joy_code);
+//	uint32_t get_joy2joy_map(int num, int pos) const;
+
+	void set_joy2joy_ana_map(int num, int pos, uint32_t joy_code);
+
+	void clear_joy2joyk_map();
+	void set_joy2joyk_map(int num, int idx, uint32_t joy_code);
+
+	void clear_key2joy_map();
+	void set_key2joy_map(uint32_t key_code, int num, uint32_t joy_code);
+	uint8_t get_key2joy_map(uint32_t key_code) const;
+	inline bool key2joy_down(int code);
+	inline void key2joy_up(int code);
+
 	void clear_vm_key_status(uint8_t mask);
 	void vm_key_down(int code, uint8_t mask);
 	void vm_key_up(int code, uint8_t mask);
@@ -719,19 +870,27 @@ public:
 #endif
 	virtual void reset_joystick();
 	virtual void update_joystick();
+	virtual void enable_joystick();
+
+	virtual void set_joy_range(bool enable, int mintd, int maxtd, int threshold, struct st_joy_range &out);
+	virtual void set_joy_threshold(int threshold, struct st_joy_range &out);
+
+	virtual void reset_key2joy();
 
 	virtual void update_mouse();
 	virtual void enable_mouse(int mode);
 	virtual void disable_mouse(int mode);
 	void toggle_mouse();
 	bool get_mouse_enabled();
+	virtual void mouse_enter();
+	virtual void mouse_move(int x, int y);
+	virtual void mouse_leave();
 
 #ifdef USE_AUTO_KEY
 	virtual void parse_auto_key(const char *buf, int size, int &prev_code, int &prev_mod);
 	virtual void parsed_auto_key(int prev_code, int prev_mod);
 #endif
 	virtual void update_autokey();
-	virtual void enable_joystick();
 	//@}
 	/// @name screen device procedures for host machine
 	//@{
@@ -826,7 +985,7 @@ public:
 	DebuggerSocket *get_debugger_socket() { return debugger_socket; }
 	bool now_debugging;
 
-	bool debugger_save_image(int width, int height, CSurface *surface);
+	bool debugger_save_image(int width, int height, CSurface *surface, const _TCHAR *prefix = NULL, const _TCHAR *postfix = NULL);
 	//@}
 #endif
 
@@ -835,6 +994,7 @@ public:
 	// ----------------------------------------
 
 	// power off
+	void power_on();
 	void power_off();
 	void toggle_power_on_off();
 
@@ -843,11 +1003,15 @@ public:
 	uint8_t* key_buffer() {
 		return key_status;
 	}
-#ifdef USE_JOYSTICK
-	uint32_t* joy_buffer() {
-		return joy_status;
-	}
+	/// @return virtual joystick status (converted by binding)
+	/// @see joy_real_buffer()
+	uint32_t* joy_buffer(int num) {
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+		return joy_status[num];
+#else
+		return NULL;
 #endif
+	}
 	int* mouse_buffer() {
 		return mouse_status;
 	}
@@ -928,10 +1092,14 @@ public:
 #endif
 	/// @name load rom image
 	//@{
-	static bool load_data_from_file(const _TCHAR *file_path, const _TCHAR *file_name
+	static int load_data_from_file(const _TCHAR *file_path, const _TCHAR *file_name
 		, uint8_t *data, size_t size
-		, const uint8_t *first_data = NULL, size_t first_data_size = 0
-		, const uint8_t *last_data = NULL,  size_t last_data_size = 0);
+		, const uint8_t *first_data = NULL, size_t first_data_size = 0, size_t first_data_pos = 0
+		, const uint8_t *last_data = NULL,  size_t last_data_size = 0, size_t last_data_pos = 0);
+	static int load_data_from_file_i(const _TCHAR *file_path, const _TCHAR *file_name
+		, uint8_t *data, size_t size
+		, const uint8_t *first_data = NULL, size_t first_data_size = 0, size_t first_data_pos = 0
+		, const uint8_t *last_data = NULL,  size_t last_data_size = 0, size_t last_data_pos = 0);
 	//@}
 
 	/// @name send message to ui from vm

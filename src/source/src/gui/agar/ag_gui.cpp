@@ -14,9 +14,11 @@
 #include "ag_file_dlg.h"
 #include "ag_config_dlg.h"
 #include "ag_keybind_dlg.h"
+#include "ag_joyset_dlg.h"
 #include "../../clocale.h"
 #include "../../main.h"
 #include "../../depend.h"
+#include "../../labels.h"
 #if defined(USE_LIB_GTK)
 #include <gtk/gtk.h>
 #endif
@@ -54,6 +56,7 @@ int GUI::Init()
 	// dialog
 	configbox = new AG_CONFIG_DLG(emu, this);
 	keybindbox = new AG_KEYBIND_DLG(emu, this);
+	joysetbox = new AG_JOYSET_DLG(emu, this);
 
 	return rc;
 }
@@ -65,6 +68,9 @@ AG_DLG *GUI::GetDlgPtr(int id)
 	switch(id) {
 		case ID_KEYBINDBOX:
 			p = keybindbox;
+			break;
+		case ID_JOYSETBOX:
+			p = joysetbox;
 			break;
 		default:
 			p = configbox;
@@ -147,7 +153,7 @@ void GUI::set_menu_item(AG_Menu *menu)
 			ms = AG_MenuAction(mi,     menu_str(CMSG(CPU_x16_Alt)), NULL, OnSelectCPUPower, "%Cp %i", this, 5);
 				 AG_MenuSetPollFn(ms, OnUpdateCPUPower, "%Cp %i", this, 5);
 			AG_MenuSeparator(mi);
-			ms = AG_MenuAction(mi, menu_str(CMSG(Sync_With_CPU_Speed_Alt)), NULL, OnSelectSyncIRQ, "%Cp", this);
+			ms = AG_MenuAction(mi, menu_str(CMSG(Sync_Devices_With_CPU_Speed_Alt)), NULL, OnSelectSyncIRQ, "%Cp", this);
 				AG_MenuSetPollFn(ms, OnUpdateSyncIRQ, "%Cp", this);
 #ifdef _MBS1
 //		AG_MenuSeparator(mt_control);
@@ -196,7 +202,7 @@ void GUI::set_menu_item(AG_Menu *menu)
 		AG_MenuSeparator(mt_tape);
 		mi = AG_MenuDynamicItem(mt_tape, menu_str(CMSG(Recent_Files)), NULL, OnUpdateRecentDataRec, "%Cp", this);
 	}
-	for(int drv=0; drv<USE_DRIVE; drv++) {
+	for(int drv=0; drv<USE_FLOPPY_DISKS; drv++) {
 		sprintf(name,CMSG(FDDVDIGIT),drv);
 		mt_fdd = AG_MenuNode(menu->root, name, NULL);
 		{
@@ -353,35 +359,15 @@ void GUI::set_menu_item(AG_Menu *menu)
 //				 AG_MenuSetPollFn(ms, OnUpdateSoundStopRecord, "%Cp", this);
 		}
 		AG_MenuSeparator(mt_sound);
-//		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F2000Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 0);
-//			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 0);
-//		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F4000Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 1);
-//			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 1);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F8000Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 2);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 2);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F11025Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 3);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 3);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F22050Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 4);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 4);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F44100Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 5);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 5);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F48000Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 6);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 6);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(F96000Hz)), NULL, OnSelectSoundRate, "%Cp %i", this, 7);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, 7);
+		for(int i=0; LABELS::sound_samples[i] != CMsg::End; i++) {
+			mi = AG_MenuAction(mt_sound, menu_str(CMSGV(LABELS::sound_samples[i])), NULL, OnSelectSoundRate, "%Cp %i", this, i+2);
+				 AG_MenuSetPollFn(mi, OnUpdateSoundRate, "%Cp %i", this, i+2);
+		}
 		AG_MenuSeparator(mt_sound);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(S50msec)), NULL, OnSelectSoundLatency, "%Cp %i", this, 0);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundLatency, "%Cp %i", this, 0);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(S75msec)), NULL, OnSelectSoundLatency, "%Cp %i", this, 1);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundLatency, "%Cp %i", this, 1);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(S100msec)), NULL, OnSelectSoundLatency, "%Cp %i", this, 2);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundLatency, "%Cp %i", this, 2);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(S200msec)), NULL, OnSelectSoundLatency, "%Cp %i", this, 3);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundLatency, "%Cp %i", this, 3);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(S300msec)), NULL, OnSelectSoundLatency, "%Cp %i", this, 4);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundLatency, "%Cp %i", this, 4);
-		mi = AG_MenuAction(mt_sound, menu_str(CMSG(S400msec)), NULL, OnSelectSoundLatency, "%Cp %i", this, 5);
-			 AG_MenuSetPollFn(mi, OnUpdateSoundLatency, "%Cp %i", this, 5);
+		for(int i=0; LABELS::sound_late[i] != CMsg::End; i++) {
+			mi = AG_MenuAction(mt_sound, menu_str(CMSGV(LABELS::sound_late[i])), NULL, OnSelectSoundLatency, "%Cp %i", this, i);
+				 AG_MenuSetPollFn(mi, OnUpdateSoundLatency, "%Cp %i", this, i);
+		}
 	}
 	mt_devices = AG_MenuNode(menu->root, CMSG(Devices), NULL);
 	{
@@ -440,6 +426,17 @@ void GUI::set_menu_item(AG_Menu *menu)
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Show_Performance_Meter)), NULL, OnSelectPMeter, "%Cp", this);
 			 AG_MenuSetPollFn(mi, OnUpdatePMeter, "%Cp", this);
 #endif
+#ifdef USE_LIGHTPEN
+		AG_MenuSeparator(mt_options);
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Enable_Lightpen_Alt)), NULL, OnSelectEnableLightpen, "%Cp", this);
+			 AG_MenuSetPollFn(mi, OnUpdateEnableLightpen, "%Cp", this);
+#endif
+#ifdef USE_MOUSE
+		AG_MenuSeparator(mt_options);
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Mouse_Alt)), NULL, OnSelectEnableMouse, "%Cp", this);
+			 AG_MenuSetPollFn(mi, OnUpdateEnableMouse, "%Cp", this);
+#endif
+#ifdef USE_JOYSTICK
 		AG_MenuSeparator(mt_options);
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_Key_Assigned_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, 1);
 			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, 1);
@@ -447,19 +444,15 @@ void GUI::set_menu_item(AG_Menu *menu)
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_PIA_Type_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, 2);
 			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, 2);
 #endif
-#ifdef USE_LIGHTPEN
-		mi = AG_MenuAction(mt_options, menu_str(CMSG(Enable_Lightpen_Alt)), NULL, OnSelectEnableLightpen, "%Cp", this);
-			 AG_MenuSetPollFn(mi, OnUpdateEnableLightpen, "%Cp", this);
 #endif
-#ifdef USE_MOUSE
-		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Mouse_Alt)), NULL, OnSelectEnableMouse, "%Cp", this);
-			 AG_MenuSetPollFn(mi, OnUpdateEnableMouse, "%Cp", this);
+#ifdef USE_KEY2JOYSTICK
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Enable_Key_to_Joypad)), NULL, OnSelectEnableKey2Joy, "%Cp", this);
+			 AG_MenuSetPollFn(mi, OnUpdateEnableKey2Joy, "%Cp", this);
 #endif
+		AG_MenuSeparator(mt_options);
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Loosen_Key_Stroke_Game)), NULL, OnSelectLoosenKeyStroke, "%Cp", this);
 			 AG_MenuSetPollFn(mi, OnUpdateLoosenKeyStroke, "%Cp", this);
-		AG_MenuSeparator(mt_options);
-		mi = AG_MenuAction(mt_options, menu_str(CMSG(Keybind_Alt)), NULL, OnSelectKeybindBox, "%Cp", this);
-		mi = AG_MenuAction(mt_options, menu_str(CMSG(Virtual_Keyboard)), NULL, OnSelectVirtualKeyboard, "%Cp", this);
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Virtual_Keyboard_)), NULL, OnSelectVirtualKeyboard, "%Cp", this);
 			 AG_MenuSetPollFn(mi, OnUpdateVirtualKeyboard, "%Cp", this);
 #ifdef USE_DEBUGGER
 		AG_MenuSeparator(mt_options);
@@ -468,6 +461,8 @@ void GUI::set_menu_item(AG_Menu *menu)
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Stop_Debugger)), NULL, OnSelectCloseDebugger, "%Cp", this);
 #endif
 		AG_MenuSeparator(mt_options);
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Joypad_Setting_)), NULL, OnSelectJoypadSetting, "%Cp", this);
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Keybind_Alt)), NULL, OnSelectKeybindBox, "%Cp", this);
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Configure_Alt)), NULL, OnSelectConfigureBox, "%Cp", this);
 	}
 	mt_help = AG_MenuNode(menu->root, CMSG(Help), NULL);
@@ -491,6 +486,13 @@ void GUI::ProcessUserEvent(int id)
 	}
 }
 
+// create joypad setting dialog
+bool GUI::ShowJoySettingDialog(void)
+{
+	ShowMenu();
+	joysetbox->Create();
+	return true;
+}
 // create keybind dialog
 bool GUI::ShowKeybindDialog(void)
 {
@@ -510,7 +512,7 @@ bool GUI::ShowLoadStateDialog(void)
 {
 	ShowMenu();
 	filebox->CreateLoad(AG_FILE_DLG::STATUS, CMSG(Load_Status_Data)
-		, "*.l3r", config.initial_state_path, NULL);
+		, "*.l3r", pConfig->GetInitialStatePath(), NULL);
 	return true;
 }
 // save State
@@ -518,7 +520,7 @@ bool GUI::ShowSaveStateDialog(bool cont)
 {
 	ShowMenu();
 	filebox->CreateSave(AG_FILE_DLG::STATUS, CMSG(Save_Status_Data)
-		, "*.l3r", config.initial_state_path, NULL);
+		, "*.l3r", pConfig->GetInitialStatePath(), NULL);
 	return true;
 }
 // save State and RecordKey
@@ -530,7 +532,7 @@ bool GUI::ShowRecordStateAndRecKeyDialog(void)
 {
 	ShowMenu();
 	filebox->CreateSave(AG_FILE_DLG::STATUS_AND_RECKEY, CMSG(Save_Status_Data)
-		, "*.l3r", config.initial_state_path, NULL);
+		, "*.l3r", pConfig->GetInitialStatePath(), NULL);
 	return true;
 }
 // Play RecordKey
@@ -538,7 +540,7 @@ bool GUI::ShowPlayRecKeyDialog(void)
 {
 	ShowMenu();
 	filebox->CreateLoad(AG_FILE_DLG::RECKEY, CMSG(Play_Recorded_Keys)
-		, "*.l3k", config.initial_state_path, NULL);
+		, "*.l3k", pConfig->GetInitialStatePath(), NULL);
 	return true;
 }
 // Record RecordKey
@@ -546,14 +548,14 @@ void GUI::RecordRecKeyBox(bool with_status)
 {
 	ShowMenu();
 	filebox->CreateSave(with_status ? AG_FILE_DLG::RECKEY_AFTER_STATUS : AG_FILE_DLG::RECKEY, CMSG(Record_Input_Keys)
-		, "*.l3k", config.initial_state_path, NULL);
+		, "*.l3k", pConfig->GetInitialStatePath(), NULL);
 }
 // show Data Recorder Load Dialog
 bool GUI::ShowLoadDataRecDialog(void)
 {
 	ShowMenu();
 	filebox->CreateLoad(AG_FILE_DLG::DATAREC, CMSG(Play_Data_Recorder_Tape)
-		, "*.l3,*.l3b,*.l3c,*.wav,*.t9x", config.initial_datarec_path, NULL);
+		, "*.l3,*.l3b,*.l3c,*.wav,*.t9x", pConfig->GetInitialDataRecPath(), NULL);
 	return true;
 }
 // show Data Recorder Save Dialog
@@ -561,7 +563,7 @@ bool GUI::ShowSaveDataRecDialog(void)
 {
 	ShowMenu();
 	filebox->CreateSave(AG_FILE_DLG::DATAREC, CMSG(Record_Data_Recorder_Tape)
-		, "*.l3,*.l3b,*.l3c,*.wav,*.t9x", config.initial_datarec_path, NULL);
+		, "*.l3,*.l3b,*.l3c,*.wav,*.t9x", pConfig->GetInitialDataRecPath(), NULL);
 	return true;
 }
 
@@ -665,7 +667,7 @@ void GUI::OnUpdateRecentState(AG_Event *event)
 	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
 	GUI *gui = (GUI *)AG_PTR(1);
 
-	gui->update_recent_list(mi, config.recent_state_path, 0, OnSelectRecentState);
+	gui->update_recent_list(mi, pConfig->GetRecentStatePathList(), 0, OnSelectRecentState);
 }
 
 // Show Play RecordKey Dialog
@@ -1001,6 +1003,22 @@ void GUI::OnUpdateUseJoypad(AG_Event *event)
 	AG_GUI_MENU_CHECK(mi, gui->IsEnableJoypad(num));
 }
 
+// Change EnableKey2Joy
+void GUI::OnSelectEnableKey2Joy(AG_Event *event)
+{
+	GUI *gui = (GUI *)AG_PTR(1);
+
+	gui->ToggleEnableKey2Joypad();
+}
+// update EnableKey2Joy
+void GUI::OnUpdateEnableKey2Joy(AG_Event *event)
+{
+	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
+	GUI *gui = (GUI *)AG_PTR(1);
+
+	AG_GUI_MENU_CHECK(mi, gui->IsEnableKey2Joypad());
+}
+
 #ifdef USE_LIGHTPEN
 // Change EnableLightpen
 void GUI::OnSelectEnableLightpen(AG_Event *event)
@@ -1046,6 +1064,13 @@ void GUI::OnUpdateLoosenKeyStroke(AG_Event *event)
 	GUI *gui = (GUI *)AG_PTR(1);
 
 	AG_GUI_MENU_CHECK(mi, gui->IsLoosenKeyStroke());
+}
+
+// create joypad setting dialog
+void GUI::OnSelectJoypadSetting(AG_Event *event)
+{
+	GUI *gui = (GUI *)AG_PTR(1);
+	gui->ShowJoySettingDialog();
 }
 
 // create keybind dialog

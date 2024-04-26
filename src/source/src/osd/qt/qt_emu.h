@@ -41,11 +41,11 @@ class QMainWindow;
 class FIFO;
 class FILEIO;
 class GUI;
-#ifdef USE_LEDBOX
-class LedBox;
-#endif
 #ifdef USE_MESSAGE_BOARD
 class MsgBoard;
+#endif
+#ifdef USE_LEDBOX
+class LedBox;
 #endif
 class CSurface;
 class CPixelFormat;
@@ -86,11 +86,16 @@ private:
 	bool pressed_global_key;
 
 #ifdef USE_JOYSTICK
-	int joy_xmin[2], joy_xmax[2];
-	int joy_ymin[2], joy_ymax[2];
 	QGamepadManager *joymgr;
-	QGamepad *joy[2];
+	QGamepad *joy[MAX_JOYSTICKS];
 #endif
+
+	enum en_mouse_logic_type {
+		MOUSE_LOGIC_DEFAULT = 0,
+		MOUSE_LOGIC_FLEXIBLE,
+		MOUSE_LOGIC_PREPARE
+	} mouse_logic_type;
+	VmPoint mouse_position;
 	//@}
 
 private:
@@ -265,6 +270,9 @@ public:
 	void mouse_down_up(uint8_t type, int buttons, int x, int y);
 	void enable_mouse(int mode);
 	void disable_mouse(int mode);
+	void mouse_enter();
+	void mouse_move(int x, int y);
+	void mouse_leave();
 	//@}
 	/// @name screen device procedures for host machine
 	//@{

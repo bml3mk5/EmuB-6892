@@ -94,6 +94,11 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 		// unknown key code
 		n_code = code | KEYCODE_EXTENDED;
 	}
+
+	if (n_code == KEYCODE_LSHIFT || n_code == KEYCODE_RSHIFT) {
+		BIT_ONOFF(key_mod, KEY_MOD_SHIFT_KEY, (type & 1) == 0);
+	}
+
 	if (new_code) *new_code = n_code;
 	if (new_keep_frames) *new_keep_frames = n_keep_frames;
 

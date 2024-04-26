@@ -159,10 +159,19 @@
     <ClCompile Include="..\src\gui\wxwidgets\wx_gui.cpp">
       <Filter>Source Files\GUI Source Files\wxWidgets</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\gui\wxwidgets\wx_joyset_dlg.cpp">
+      <Filter>Source Files\GUI Source Files\wxWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\wxwidgets\wx_keybind_ctrl.cpp">
+      <Filter>Source Files\GUI Source Files\wxWidgets</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\gui\wxwidgets\wx_keybind_dlg.cpp">
       <Filter>Source Files\GUI Source Files\wxWidgets</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gui\wxwidgets\wx_ledbox.cpp">
+      <Filter>Source Files\GUI Source Files\wxWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\wxwidgets\wx_logging_dlg.cpp">
       <Filter>Source Files\GUI Source Files\wxWidgets</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gui\wxwidgets\wx_recaud_dlg.cpp">
@@ -210,10 +219,16 @@
     <ClCompile Include="..\src\osd\emu_sound.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\osd\keybind.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\osd\logging.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\osd\opengl.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\parseopt.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\osd\screenmode.cpp">
@@ -286,6 +301,9 @@
       <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
     </ClCompile>
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_audio.cpp">
+      <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\ffmpeg\ffm_rec_base.cpp">
       <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
     </ClCompile>
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_video.cpp">
@@ -560,10 +578,19 @@
     <ClInclude Include="..\src\gui\wxwidgets\wx_gui.h">
       <Filter>Header Files\GUI Header Files\wxWidgets</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\gui\wxwidgets\wx_joyset_dlg.h">
+      <Filter>Header Files\GUI Header Files\wxWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\wxwidgets\wx_keybind_ctrl.h">
+      <Filter>Header Files\GUI Header Files\wxWidgets</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\gui\wxwidgets\wx_keybind_dlg.h">
       <Filter>Header Files\GUI Header Files\wxWidgets</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gui\wxwidgets\wx_ledbox.h">
+      <Filter>Header Files\GUI Header Files\wxWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\wxwidgets\wx_logging_dlg.h">
       <Filter>Header Files\GUI Header Files\wxWidgets</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gui\wxwidgets\wx_recaud_dlg.h">
@@ -614,7 +641,13 @@
     <ClInclude Include="..\src\osd\emu_input.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\osd\keybind.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\osd\opengl.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\parseopt.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osd\screenmode.h">
@@ -671,9 +704,6 @@
     <ClInclude Include="..\src\osd\wxwidgets\wxw_vkeyboardbase.h">
       <Filter>Header Files\OSD Header Files\wxWidgets</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\parseopt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\rec_video_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -693,6 +723,9 @@
       <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
     </ClInclude>
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_audio.h">
+      <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\ffmpeg\ffm_rec_base.h">
       <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
     </ClInclude>
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_video.h">

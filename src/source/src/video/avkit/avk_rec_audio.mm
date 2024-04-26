@@ -32,11 +32,13 @@ AVK_REC_AUDIO::AVK_REC_AUDIO(EMU *new_emu, REC_AUDIO *new_audio)
 	frame_count = 0;
 	store_sample_pos = 0;
 	use_float = false;
+	sample_idx = 0;
 	write_error_count = 0;
 
 	asset = nil;
-	store_buffer = NULL;
-	sample_buffer = NULL;
+//	store_buffer = NULL;
+	sample_buffer[0] = NULL;
+	sample_buffer[1] = NULL;
 	rec_file = nil;
 }
 
@@ -222,70 +224,74 @@ bool AVK_REC_AUDIO::Start(const _TCHAR *path, size_t path_size, int sample_rate)
 	}
 
 	// create buffer
-	sts = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault,
-				NULL,
-				asbd.mBytesPerFrame * SAMPLE_BUFFER_SIZE,
-				NULL,
-				NULL,
-				0,
-				asbd.mBytesPerFrame * SAMPLE_BUFFER_SIZE,
-				0,
-				&store_buffer);
-	if (sts != 0) {
-		logging->out_logf(LOG_ERROR, "CMBlockBufferCreateWithMemoryBlock Failed: %d", sts);
-		CFRelease(desc);
-		desc = NULL;
-		return false;
-	}
-	CMBlockBufferAssureBlockMemory(store_buffer);
+	for(int n = 0; n < 2; n++) {
+		CMBlockBufferRef store_buffer = NULL;
+		sts = CMBlockBufferCreateWithMemoryBlock(kCFAllocatorDefault,
+			NULL,
+			asbd.mBytesPerFrame * SAMPLE_BUFFER_SIZE,
+			NULL,
+			NULL,
+			0,
+			asbd.mBytesPerFrame * SAMPLE_BUFFER_SIZE,
+			0,
+			&store_buffer);
+		if (sts != 0) {
+			logging->out_logf(LOG_ERROR, "CMBlockBufferCreateWithMemoryBlock Failed: %d", sts);
+			CFRelease(desc);
+			desc = NULL;
+			return false;
+		}
+		CMBlockBufferAssureBlockMemory(store_buffer);
 
 #if 1
-	sts = CMAudioSampleBufferCreateWithPacketDescriptions(kCFAllocatorDefault,
-				store_buffer,
-				true,
-				NULL,
-				NULL,
-				desc,
-				SAMPLE_BUFFER_SIZE,
-				CMTimeMake(0, rec_rate),
-				NULL,
-				&sample_buffer);
-	if (sts != 0) {
-		logging->out_logf(LOG_ERROR, "CMAudioSampleBufferCreateWithPacketDescriptions Failed: %d", sts);
-		CFRelease(store_buffer);
-		store_buffer = NULL;
-		CFRelease(desc);
-		return false;
-	}
+		sts = CMAudioSampleBufferCreateWithPacketDescriptions(kCFAllocatorDefault,
+			store_buffer,
+			true,
+			NULL,
+			NULL,
+			desc,
+			SAMPLE_BUFFER_SIZE,
+			CMTimeMake(0, rec_rate),
+			NULL,
+			&sample_buffer[n]);
+		if (sts != 0) {
+			logging->out_logf(LOG_ERROR, "CMAudioSampleBufferCreateWithPacketDescriptions Failed: %d", sts);
+			CFRelease(store_buffer);
+			store_buffer = NULL;
+			CFRelease(desc);
+			return false;
+		}
 #else
-	CMSampleTimingInfo timing_info;
-	timing_info.duration = CMTimeMake(1, rec_rate);
-	timing_info.presentationTimeStamp = CMTimeMake(0, rec_rate);
-	//	timing_info.decodeTimeStamp = CMTimeMake(0, 1);
+		CMSampleTimingInfo timing_info;
+		timing_info.duration = CMTimeMake(1, rec_rate);
+		timing_info.presentationTimeStamp = CMTimeMake(0, rec_rate);
+//		timing_info.decodeTimeStamp = CMTimeMake(0, 1);
 
-	size_t size_array = asbd.mBytesPerFrame;
-	sts = CMSampleBufferCreate(kCFAllocatorDefault,
-				store_buffer,			// CMBlockBufferRef
-				true,					// Boolean dataReady
-				NULL,					// CMSampleBufferMakeDataReadyCallback
-				NULL,					// makeDataReadyRefcon
-				desc,					// CMFormatDescriptionRef
-				SAMPLE_BUFFER_SIZE,		// numSamples
-				1,						// CMItemCount numSampleTimingEntries
-				&timing_info,			// const CMSampleTimingInfo *
-				1,						// CMItemCount numSampleSizeEntries
-				&size_array,			// const size_t *sampleSizeArray
-				&sample_buffer);
-	if (sts != 0) {
-		// CMSampleBuffer.h kCMSampleBufferError_InvalidSampleData
-		logging->out_logf(LOG_ERROR, "CMSampleBufferCreate Failed: %d", sts);
-		CFRelease(store_buffer);
-		store_buffer = NULL;
-		CFRelease(desc);
-		return false;
-	}
+		size_t size_array = asbd.mBytesPerFrame;
+		sts = CMSampleBufferCreate(kCFAllocatorDefault,
+			store_buffer,			// CMBlockBufferRef
+			true,					// Boolean dataReady
+			NULL,					// CMSampleBufferMakeDataReadyCallback
+			NULL,					// makeDataReadyRefcon
+			desc,					// CMFormatDescriptionRef
+			SAMPLE_BUFFER_SIZE,		// numSamples
+			1,						// CMItemCount numSampleTimingEntries
+			&timing_info,			// const CMSampleTimingInfo *
+			1,						// CMItemCount numSampleSizeEntries
+			&size_array,			// const size_t *sampleSizeArray
+			&sample_buffer[n]);
+		if (sts != 0) {
+			// CMSampleBuffer.h kCMSampleBufferError_InvalidSampleData
+			logging->out_logf(LOG_ERROR, "CMSampleBufferCreate Failed: %d", sts);
+			CFRelease(store_buffer);
+			store_buffer = NULL;
+			CFRelease(desc);
+			return false;
+		}
 #endif
+	}
 
+	sample_idx = 0;
 	store_sample_pos = 0;
 	write_error_count = 0;
 
@@ -367,8 +373,10 @@ void AVK_REC_AUDIO::Stop()
 	}
 #endif
 
-	CFRelease(sample_buffer);
-	sample_buffer = NULL;
+	CFRelease(sample_buffer[0]);
+	sample_buffer[0] = NULL;
+	CFRelease(sample_buffer[1]);
+	sample_buffer[1] = NULL;
 
 	//	if (rc) emu->out_msg_x(_T("Video file was saved."));
 
@@ -386,6 +394,7 @@ bool AVK_REC_AUDIO::Record(int32_t *buffer, int samples)
 {
 	char *p;
 	for(int i=0; i<(samples << 1); i+=2) {
+		CMBlockBufferRef store_buffer = CMSampleBufferGetDataBuffer(sample_buffer[sample_idx]);
 		if (use_float) {
 			CMBlockBufferGetDataPointer(store_buffer, store_sample_pos * sizeof(Float32) * 2, NULL, NULL, &p);
 			Float32 *store_samples = (Float32 *)p;
@@ -410,7 +419,7 @@ bool AVK_REC_AUDIO::Record(int32_t *buffer, int samples)
 		store_sample_pos++;
 
 		if (store_sample_pos >= SAMPLE_BUFFER_SIZE) {
-			OSStatus sts = CMSampleBufferMakeDataReady(sample_buffer);
+			OSStatus sts = CMSampleBufferMakeDataReady(sample_buffer[sample_idx]);
 			if (sts == kCMSampleBufferError_BufferNotReady) {
 				logging->out_log(LOG_ERROR, "CMSampleBufferMakeDataReady failed.");
 			}
@@ -431,11 +440,9 @@ bool AVK_REC_AUDIO::Record(int32_t *buffer, int samples)
 
 //				BOOL rc = [input appendSampleBuffer:sbuf];
 #endif
-				BOOL rc = [input appendSampleBuffer:sample_buffer];
+				BOOL rc = [input appendSampleBuffer:sample_buffer[sample_idx]];
 				if (!rc) {
-//					NSError *err = [asset error];
 					if (!write_error_count) logging->out_log(LOG_ERROR, "appendSampleBuffer failed.");
-//					if (err) logging->out_log(LOG_ERROR, [[err description] UTF8String]);
 					write_error_count++;
 				}
 
@@ -443,6 +450,7 @@ bool AVK_REC_AUDIO::Record(int32_t *buffer, int samples)
 			}
 			frame_count += store_sample_pos;
 			store_sample_pos = 0;
+			sample_idx = 1 - sample_idx;
 		}
 	}
 	return true;

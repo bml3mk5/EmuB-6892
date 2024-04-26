@@ -1,6 +1,5 @@
 /** @file gtk_recaudbox.cpp
 
-	HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
 	Skelton for retropc emulator
 
 	@author Sasaji

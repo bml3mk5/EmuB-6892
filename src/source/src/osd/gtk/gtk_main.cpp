@@ -21,7 +21,7 @@
 #include "../../gui/gui.h"
 #include "../../clocale.h"
 #include "gtk_main.h"
-#include "../../parseopt.h"
+#include "../../osd/SDL/sdl_parseopt.h"
 
 #undef LOG_MEASURE
 
@@ -78,7 +78,9 @@ static void OnExit(GtkWidget *, gpointer);
 static gboolean OnKeyDown(GtkWidget *, GdkEvent *, gpointer);
 static gboolean OnKeyUp(GtkWidget *, GdkEvent *, gpointer);
 static gboolean OnMouseDown(GtkWidget *, GdkEvent *, gpointer);
-//static gboolean OnMotion(GtkWidget *, GdkEvent *, gpointer);
+static gboolean OnMotionNotify(GtkWidget *, GdkEvent *, gpointer);
+//static gboolean OnEnterNotify(GtkWidget *, GdkEvent *, gpointer);
+//static gboolean OnLeaveNotify(GtkWidget *, GdkEvent *, gpointer);
 
 /**
  *	main
@@ -120,11 +122,11 @@ int main(int argc, char* argv[])
 	logging->set_receiver(emu);
 
 	// load config
-	pconfig = new Config;
-	config.load(options->get_ini_file());
+	pConfig = new Config;
+	pConfig->load(options->get_ini_file());
 
 	// change language if need
-	clocale->ChangeLocaleIfNeed(config.language);
+	clocale->ChangeLocaleIfNeed(pConfig->language);
 	logging->out_logc(LOG_INFO, _T("Locale:["), clocale->GetLocaleName(), _T("] Lang:["), clocale->GetLanguageName(), _T("]"), NULL);
 
 	gui = new GUI(argc, argv, emu);
@@ -164,11 +166,11 @@ int main(int argc, char* argv[])
 #ifdef USE_SDL2
 	/* SDL2 */
 #ifdef USE_OPENGL
-	emu->set_use_opengl(config.use_opengl);
+	emu->set_use_opengl(pConfig->use_opengl);
 #endif
 	// create window
 	emu->init_screen_mode();
-	if (!emu->create_screen(config.disp_device_no, config.window_position_x, config.window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {
+	if (!emu->create_screen(pConfig->disp_device_no, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {
 		rc = 1;
 		goto ERROR_FIN;
 	}
@@ -183,11 +185,11 @@ int main(int argc, char* argv[])
 #endif
 
 #ifdef USE_OPENGL
-	emu->set_use_opengl(config.use_opengl);
+	emu->set_use_opengl(pConfig->use_opengl);
 #endif
 	// create window
 	emu->init_screen_mode();
-	if (!emu->create_screen(config.disp_device_no, config.window_position_x, config.window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {
+	if (!emu->create_screen(pConfig->disp_device_no, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {
 		rc = 1;
 		goto ERROR_FIN;
 	}
@@ -202,7 +204,9 @@ int main(int argc, char* argv[])
 		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyDown), NULL);
 		g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyUp), NULL);
 		g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnMouseDown), NULL);
-//		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotion), NULL);
+		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotionNotify), NULL);
+//		g_signal_connect(G_OBJECT(window), "enter-notify-event", G_CALLBACK(OnEnterNotify), NULL);
+//		g_signal_connect(G_OBJECT(window), "leave-notify-event", G_CALLBACK(OnLeaveNotify), NULL);
 		// Window title
 		gtk_window_set_title(GTK_WINDOW(window), DEVICE_NAME);
 		// set icon
@@ -227,12 +231,12 @@ int main(int argc, char* argv[])
 	logging->out_log(LOG_DEBUG, _T("EMU::initialize"));
 	emu->initialize();
 	// restore screen mode
-	if(config.window_mode >= 0 && config.window_mode < 8) {
-		emu->change_screen_mode(config.window_mode);
+	if(pConfig->window_mode >= 0 && pConfig->window_mode < 8) {
+		emu->change_screen_mode(pConfig->window_mode);
 	}
-	else if(config.window_mode >= 8) {
-		int prev_mode = config.window_mode;
-		config.window_mode = 0;	// initialize window mode
+	else if(pConfig->window_mode >= 8) {
+		int prev_mode = pConfig->window_mode;
+		pConfig->window_mode = 0;	// initialize window mode
 		emu->change_screen_mode(prev_mode);
 	}
 	if (!emu->create_offlinesurface()) {
@@ -242,10 +246,10 @@ int main(int argc, char* argv[])
 #if 0
 	// set again
 	logging->out_log(LOG_DEBUG, _T("EMU::set_window again"));
-	emu->set_window(config.window_mode, desktop_width, desktop_height);
+	emu->set_window(pConfig->window_mode, desktop_width, desktop_height);
 	if (need_resize == 1) {
 		// resize window if need
-		if (!emu->create_screen(config.disp_device_no, 0, 0, config.screen_width, config.screen_height, video_flags)) {
+		if (!emu->create_screen(pConfig->disp_device_no, 0, 0, pConfig->screen_width, pConfig->screen_height, video_flags)) {
 			rc = 1;
 			goto ERROR_FIN;
 		}
@@ -304,10 +308,10 @@ ERROR_FIN:
 	}
 
 	// save config
-	config.save();
-	config.release();
+	pConfig->save();
+	pConfig->release();
 
-	delete pconfig;
+	delete pConfig;
 	delete gui;
 	delete emu;
 	delete clocale;
@@ -457,6 +461,24 @@ static int event_proc(SDL_Event *e)
 
 void set_icon(GtkWindow *window)
 {
+	bool icon_cached = false;
+
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkIconTheme *theme = gtk_icon_theme_get_default();
+	if (theme) {
+		icon_cached = (gtk_icon_theme_has_icon(theme, CONFIG_NAME) == TRUE);
+		logging->out_logf(LOG_DEBUG, _T("GtkIconTheme: %sfound icon '%s'.")
+			, icon_cached ? _T("") : _T("no ")
+			, _T(CONFIG_NAME));
+	}
+#endif
+	if (icon_cached) {
+		// exists cached icon in icon theme
+		gtk_window_set_icon_name(GTK_WINDOW(window), CONFIG_NAME);
+		return;
+	}
+
+	// load icon from resouce directory
 	char buf[_MAX_PATH];
 	sprintf(buf, "%s%s.png", options->get_res_path(), CONFIG_NAME);
 	GError *error = NULL;
@@ -510,13 +532,29 @@ gboolean OnMouseDown(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 	return FALSE;
 }
 
-#if 0
-gboolean OnMotion(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+gboolean OnMotionNotify(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
 	if (emu) {
-		EMU_OSD *emu_osd = (EMU_OSD *)emu;
-		emu_osd->update_mouse_event((GdkEventMotion *)event);
+		emu->mouse_move((int)event->motion.x, (int)event->motion.y);
 	}
+	return FALSE;
+}
+
+#if 0
+gboolean OnEnterNotify(GtkWidget *, GdkEvent *, gpointer)
+{
+	if (emu) {
+		emu->mouse_enter();
+	}
+	return FALSE;
+}
+
+gboolean OnLeaveNotify(GtkWidget *, GdkEvent *, gpointer)
+{
+	if (emu) {
+		emu->mouse_leave();
+	}
+	return FALSE;
 }
 #endif
 
@@ -621,7 +659,7 @@ static int emu_event_loop(void *param)
 
 			frames.total++;
 
-			if(config.fps_no >= 0) {
+			if(pConfig->fps_no >= 0) {
 				if (fskip_remain <= 0) {
 					// constant frames per 1 second
 					if (gui->NeedUpdateScreen()) {
@@ -630,7 +668,7 @@ static int emu_event_loop(void *param)
 					} else {
 						frames.skip++;
 					}
-					fskip_remain = fskip[config.fps_no];
+					fskip_remain = fskip[pConfig->fps_no];
 #ifdef LOG_MEASURE
 					skip_reason |= 0x11;
 #endif
@@ -689,7 +727,7 @@ static int emu_event_loop(void *param)
 		}
 		current_time = SDL_GetTicks();
 #ifdef USE_PERFORMANCE_METER
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			lpCount2 = current_time;
 		}
 #endif
@@ -719,7 +757,7 @@ static int emu_event_loop(void *param)
 			frames.total = frames.draw = 0;
 		}
 #ifdef USE_PERFORMANCE_METER
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			lpCount3 =  current_time;
 			if (lpCount3 > lpCount1) {
 				gdPMvalue = ((lpCount2 - lpCount1) * 100 / (lpCount3 - lpCount1)) & 0xfff;

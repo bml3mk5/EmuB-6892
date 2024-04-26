@@ -28,7 +28,7 @@ debugger {
 }
 
 INCLUDEPATH += include
-win32:INCLUDEPATH += /Devel/include/ffmpeg341
+win32:INCLUDEPATH += /Devel/include/ffmpeg441
 win32:INCLUDEPATH += /Devel/include
 !win32:INCLUDEPATH += /usr/local/include
 !win32:INCLUDEPATH += $(HOME)/Devel/ffmpeg
@@ -82,7 +82,9 @@ SOURCES +=\
 	../src/osd/emu_input_keysym.cpp \
 	../src/osd/emu_screen.cpp \
 	../src/osd/emu_sound.cpp \
+	../src/osd/keybind.cpp \
 	../src/osd/opengl.cpp \
+	../src/osd/parseopt.cpp \
 	../src/osd/logging.cpp \
 	../src/osd/screenmode.cpp \
 	../src/osd/vkeyboardbase.cpp \
@@ -92,14 +94,19 @@ SOURCES +=\
 	../src/gui/qt/qt_dialog.cpp \
 	../src/gui/qt/qt_aboutbox.cpp \
 	../src/gui/qt/qt_configbox.cpp \
+	../src/gui/qt/qt_filebox.cpp \
 	../src/gui/qt/qt_gui.cpp \
 	../src/gui/qt/qt_keybindbox.cpp \
+	../src/gui/qt/qt_keybindctrl.cpp \
+	../src/gui/qt/qt_joysetbox.cpp \
 	../src/gui/qt/qt_ledbox.cpp \
 	../src/gui/qt/qt_vkeyboard.cpp \
 	../src/gui/qt/qt_volumebox.cpp \
 	../src/gui/qt/qt_recvidbox.cpp \
 	../src/gui/qt/qt_recaudbox.cpp \
+	../src/gui/qt/qt_loggingbox.cpp \
 	../src/video/ffmpeg/ffm_loadlib.cpp \
+	../src/video/ffmpeg/ffm_rec_base.cpp \
 	../src/video/ffmpeg/ffm_rec_audio.cpp \
 	../src/video/ffmpeg/ffm_rec_video.cpp \
 	../src/video/qt/qt_bitmap.cpp \
@@ -192,11 +199,12 @@ HEADERS  +=\
 	../src/loadlibrary.h \
 	../src/logging.h \
 	../src/msgboard.h \
-	../src/parseopt.h \
 	../src/osd/d88_files.h \
 	../src/osd/debugger_console.h \
 	../src/osd/emu_input.h \
+	../src/osd/keybind.h \
 	../src/osd/opengl.h \
+	../src/osd/parseopt.h \
 	../src/osd/qt/qt_cbitmap.h \
 	../src/osd/qt/qt_clocale.h \
 	../src/osd/qt/qt_ccolor.h \
@@ -228,13 +236,17 @@ HEADERS  +=\
 	../src/gui/qt/qt_dialog.h \
 	../src/gui/qt/qt_aboutbox.h \
 	../src/gui/qt/qt_configbox.h \
+	../src/gui/qt/qt_filebox.h \
 	../src/gui/qt/qt_gui.h \
 	../src/gui/qt/qt_keybindbox.h \
+	../src/gui/qt/qt_keybindctrl.h \
+	../src/gui/qt/qt_joysetbox.h \
 	../src/gui/qt/qt_ledbox.h \
 	../src/gui/qt/qt_vkeyboard.h \
 	../src/gui/qt/qt_volumebox.h \
 	../src/gui/qt/qt_recvidbox.h \
 	../src/gui/qt/qt_recaudbox.h \
+	../src/gui/qt/qt_loggingbox.h \
 	../src/gui/gui.h \
 	../src/gui/gui_base.h \
 	../src/gui/gui_keybinddata.h \
@@ -243,6 +255,7 @@ HEADERS  +=\
 	../src/gui/vkeyboard_bml3mk5.h \
 	../src/video/ffmpeg/ffm_loadlib.h \
 	../src/video/ffmpeg/ffm_rec_audio.h \
+	../src/video/ffmpeg/ffm_rec_base.h \
 	../src/video/ffmpeg/ffm_rec_video.h \
 	../src/video/wave/wav_rec_audio.h \
 	../src/video/qt/qt_bitmap.h \

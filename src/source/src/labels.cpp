@@ -186,6 +186,28 @@ const _TCHAR *capture_fmt[] = {
 	NULL
 };
 
+/// sound samples
+const CMsg::Id sound_samples[] = {
+	CMsg::F8000Hz,
+	CMsg::F11025Hz,
+	CMsg::F22050Hz,
+	CMsg::F44100Hz,
+	CMsg::F48000Hz,
+	CMsg::F96000Hz,
+	CMsg::End
+};
+
+/// sound late
+const CMsg::Id sound_late[] = {
+	CMsg::S50msec,
+	CMsg::S75msec,
+	CMsg::S100msec,
+	CMsg::S200msec,
+	CMsg::S300msec,
+	CMsg::S400msec,
+	CMsg::End
+};
+
 /// baud rate
 const CMsg::Id comm_baud[] = {
 	CMsg::S_300baud_F_1200baud, CMsg::S_600baud_F_2400baud, CMsg::S_1200baud_F_4800baud, CMsg::S_2400baud_F_9600baud, CMsg::End
@@ -302,27 +324,44 @@ const CMsg::Id volume[] = {
 /// Keybind labels
 const CMsg::Id keybind_col[][2] = {
 #ifdef _MBS1
+	// _MBS1
 	{ CMsg::S1_Key,		CMsg::BindVDIGIT },
+#ifdef USE_JOYSTICK
 	{ CMsg::S1_Key,		CMsg::JoypadVDIGIT },
+#ifdef USE_PIAJOYSTICK
 	{ CMsg::PIA_on_S1,	CMsg::JoypadVDIGIT },
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	{ CMsg::PIA_on_S1,  CMsg::BindVDIGIT },
+#endif
 #else
+	// _BML3MK5
 	{ CMsg::Level3_Key,	CMsg::BindVDIGIT },
+#ifdef USE_JOYSTICK
 	{ CMsg::Level3_Key,	CMsg::JoypadVDIGIT },
+#ifdef USE_PIAJOYSTICK
 	{ CMsg::PIA_on_L3,	CMsg::JoypadVDIGIT },
 #endif
-	{ CMsg::End,	CMsg::End }
+#endif
+#ifdef USE_KEY2JOYSTICK
+	{ CMsg::PIA_on_L3,  CMsg::BindVDIGIT },
+#endif
+#endif
+	{ CMsg::End, CMsg::End }
 };
 
 /// Keybind tabs
 const CMsg::Id keybind_tab[] = {
-#ifdef _MBS1
 	CMsg::Keyboard,
+#ifdef USE_JOYSTICK
 	CMsg::Joypad_Key_Assigned,
+#ifdef USE_PIAJOYSTICK
 	CMsg::Joypad_PIA_Type,
-#else
-	CMsg::Keyboard,
-	CMsg::Joypad_Key_Assigned,
-	CMsg::Joypad_PIA_Type,
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	CMsg::Key_to_Joypad,
 #endif
 	CMsg::End
 };
@@ -342,11 +381,34 @@ const CMsg::Id keybind_btn[] = {
 	CMsg::Save_Preset_4,
 	CMsg::End
 };
+
 /// Keybind options
 const CMsg::Id keybind_combi[] = {
 	CMsg::Null,
+#ifdef USE_JOYSTICK
 	CMsg::Recognize_as_another_key_when_pressed_two_buttons,
+#ifdef USE_PIAJOYSTICK
+# ifndef USE_PIAJOYSTICKBIT
+	CMsg::Null,
+# else
 	CMsg::Signals_are_negative_logic,
+# endif
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+	CMsg::Null,
+#endif
+	CMsg::End
+};
+
+/// Joypad axis
+const CMsg::Id joypad_axis[] = {
+	CMsg::X_axis,
+	CMsg::Y_axis,
+	CMsg::Z_axis,
+	CMsg::R_axis,
+	CMsg::U_axis,
+	CMsg::V_axis,
 	CMsg::End
 };
 

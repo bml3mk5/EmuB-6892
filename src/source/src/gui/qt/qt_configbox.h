@@ -96,7 +96,7 @@ private:
 	MyComboBox *comRate;
 	MyComboBox *comBits;
 
-	QCheckBox *chkDrive[MAX_DRIVE];
+	QCheckBox *chkDrive[USE_FLOPPY_DISKS];
 	QCheckBox *chkDelayFd1;
 	QCheckBox *chkDelayFd2;
 	QCheckBox *chkFdDensity;

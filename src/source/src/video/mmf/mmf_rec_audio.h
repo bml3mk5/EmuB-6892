@@ -45,11 +45,16 @@ private:
 	LONGLONG frame_duration;
 	UINT32 bytes_per_sample;
 	int sample_buffer_size;
-	int sample_is_multiple;
+//	int sample_is_multiple;
 	int write_error_count;
 
 	IMFSinkWriter *sinkWriter;
-	IMFMediaBuffer *mediaBuffers[2];
+	enum {
+		BUFFER_COUNT = 16
+	};
+	IMFMediaBuffer *mediaBuffers[BUFFER_COUNT];
+	IMFSample *mediaSamples[BUFFER_COUNT];
+	int buffer_idx;
 
 	void Release();
 	void RemoveFile();

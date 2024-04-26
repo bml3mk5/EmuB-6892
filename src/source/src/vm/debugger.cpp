@@ -237,6 +237,35 @@ uint32_t DEBUGGER::read_io32w(uint32_t addr, int* wait)
 	return data;
 }
 
+void DEBUGGER::write_dma_data8(uint32_t addr, uint32_t data)
+{
+#ifdef _MBS1
+	find_mem_break_trace_points(this, BreakPoints::BP_WRITE_MEMORY, addr, 1, data);
+	uint32_t phy_addr = d_mem->debug_latch_address(addr);
+	find_mem_break_trace_points(this, BreakPoints::BP_WRITE_MEMORY_PH, phy_addr, 1, data);
+#else
+	find_mem_break_trace_points(this, BreakPoints::BP_WRITE_MEMORY, addr, 1, data);
+#endif
+	d_mem->write_dma_data8(addr, data);
+#ifdef _MBS1
+	find_basic_break_trace_points(this, BreakPoints::BP_BASIC_NUMBER, d_mem, phy_addr, data);
+#else
+	find_basic_break_trace_points(this, BreakPoints::BP_BASIC_NUMBER, d_mem, addr, data);
+#endif
+}
+uint32_t DEBUGGER::read_dma_data8(uint32_t addr)
+{
+	uint32_t data = d_mem->read_dma_data8(addr);
+#ifdef _MBS1
+	find_mem_break_trace_points(this, BreakPoints::BP_READ_MEMORY, addr, 1, data);
+	uint32_t phy_addr = d_mem->debug_latch_address(addr);
+	find_mem_break_trace_points(this, BreakPoints::BP_READ_MEMORY_PH, phy_addr, 1, data);
+#else
+	find_mem_break_trace_points(this, BreakPoints::BP_READ_MEMORY, addr, 1, data);
+#endif
+	return data;
+}
+
 void DEBUGGER::write_signal(int id, uint32_t data, uint32_t mask)
 {
 	d_mem->write_signal(id, data, mask);
@@ -373,6 +402,18 @@ uint32_t DEBUGGER_BUS::fetch_op(uint32_t addr, int *wait)
 void DEBUGGER_BUS::latch_address(uint32_t addr, int *wait)
 {
 	d_mem->latch_address(addr, wait);
+}
+
+void DEBUGGER_BUS::write_dma_data8(uint32_t addr, uint32_t data)
+{
+	d_parent->find_mem_break_trace_points(this, BreakPoints::BP_WRITE_MEMORY, addr, 1, data);
+	d_mem->write_dma_data8(addr, data);
+}
+uint32_t DEBUGGER_BUS::read_dma_data8(uint32_t addr)
+{
+	uint32_t data = d_mem->read_dma_data8(addr);
+	d_parent->find_mem_break_trace_points(this, BreakPoints::BP_READ_MEMORY, addr, 1, data);
+	return data;
 }
 
 void DEBUGGER_BUS::write_io8(uint32_t addr, uint32_t data)

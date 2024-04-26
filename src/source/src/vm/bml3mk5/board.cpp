@@ -157,8 +157,8 @@ void BOARD::save_state(FILEIO *fio)
 	memset(&vm_state, 0, sizeof(vm_state));
 	vm_state.fdd_type = Int32_LE(vm->get_parami(VM::ParamFddType));
 	vm_state.io_port = Int32_LE(vm->get_parami(VM::ParamIOPort));
-	vm_state.flags = ((config.sync_irq ? 1 : 0) | (config.realmode_datarec ? 2 : 0)
-		| (config.use_power_off ? 4 : 0) | (config.now_power_off ? 8 : 0));
+	vm_state.flags = ((pConfig->sync_irq ? 1 : 0) | (pConfig->NowRealModeDataRec() ? 2 : 0)
+		| (pConfig->use_power_off ? 4 : 0) | (pConfig->now_power_off ? 8 : 0));
 
 	vm_state.now_halt = Uint16_LE(now_halt);
 	vm_state.now_nmi  = Uint16_LE(now_nmi);
@@ -182,10 +182,10 @@ bool BOARD::load_state(FILEIO *fio)
 	// load config flags
 	vm->set_parami(VM::ParamFddType, Int32_LE(vm_state.fdd_type));
 	vm->set_parami(VM::ParamIOPort, Int32_LE(vm_state.io_port));
-	config.sync_irq = ((vm_state.flags & 1) ? true : false);
-	config.realmode_datarec = ((vm_state.flags & 2) ? true : false);
-	config.use_power_off = ((vm_state.flags & 4) ? true : false);
-	config.now_power_off = ((vm_state.flags & 8) ? true : false);
+	pConfig->sync_irq = ((vm_state.flags & 1) ? true : false);
+	pConfig->SetRealModeDataRec((vm_state.flags & 2) ? true : false);
+	pConfig->use_power_off = ((vm_state.flags & 4) ? true : false);
+	pConfig->now_power_off = ((vm_state.flags & 8) ? true : false);
 
 	if (Uint16_LE(vm_state_i.version) >= 2) {
 		now_halt = Uint16_LE(vm_state.now_halt);
@@ -202,7 +202,7 @@ bool BOARD::load_state(FILEIO *fio)
 		preset_register_id = -1;
 	}
 
-	vm->set_pause(3, config.now_power_off);
+	vm->set_pause(3, pConfig->now_power_off);
 
 	return true;
 }

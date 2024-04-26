@@ -31,16 +31,20 @@ MMF_REC_AUDIO::MMF_REC_AUDIO(EMU *new_emu, REC_AUDIO *new_audio)
 	rec_rate = 0;
 	rec_path = NULL;
 
+	streamIndex = 0;
 	sample_time = 0;
 	frame_duration = 0;
 	bytes_per_sample = 0;
 	write_error_count = 0;
 	sample_buffer_size = 0;
-	sample_is_multiple = 0;
+//	sample_is_multiple = 0;
 
 	sinkWriter = NULL;
-	mediaBuffers[0] = NULL;
-	mediaBuffers[1] = NULL;
+	for(int n=0; n<BUFFER_COUNT; n++) {
+		mediaBuffers[n] = NULL;
+		mediaSamples[n] = NULL;
+	}
+	buffer_idx = 0;
 }
 
 MMF_REC_AUDIO::~MMF_REC_AUDIO()
@@ -53,8 +57,10 @@ MMF_REC_AUDIO::~MMF_REC_AUDIO()
 
 void MMF_REC_AUDIO::Release()
 {
-	SafeRelease(mediaBuffers[1]);
-	SafeRelease(mediaBuffers[0]);
+	for(int n=0; n<BUFFER_COUNT; n++) {
+		SafeRelease(mediaSamples[n]);
+		SafeRelease(mediaBuffers[n]);
+	}
 	SafeRelease(sinkWriter);
 }
 
@@ -74,6 +80,7 @@ bool MMF_REC_AUDIO::IsEnabled()
 
 enum codec_ids {
 	CODEC_AAC = 0,
+	CODEC_AAC4,
 	CODEC_ADTS,
 #ifdef USE_MMF_AUDIO_WMA
 	CODEC_WMAV2,
@@ -92,7 +99,8 @@ typedef struct {
 } codTypes_t;
 
 static const codTypes_t codTypes[] = {
-	{ CODEC_AAC, MFAudioFormat_AAC, MFTranscodeContainerType_MPEG4, _T(".m4a") },
+	{ CODEC_AAC,  MFAudioFormat_AAC, MFTranscodeContainerType_MPEG4, _T(".m4a") },
+	{ CODEC_AAC4, MFAudioFormat_AAC, MFTranscodeContainerType_MPEG4, _T(".m4a") },
 //	{ CODEC_ADTS, MFAudioFormat_AAC, {0, 0, 0, 0 }, _T(".aac") },
 #ifdef USE_MMF_AUDIO_WMA
 	{ CODEC_WMAV2, MFAudioFormat_WMAudioV8, MFTranscodeContainerType_ASF, _T(".wma") },
@@ -104,7 +112,8 @@ static const codTypes_t codTypes[] = {
 const _TCHAR **MMF_REC_AUDIO::GetCodecList()
 {
 	static const _TCHAR *list[] = {
-		_T("MPEG-4(AAC)"),
+		_T("MPEG-4(AAC@L2)"),
+		_T("MPEG-4(AAC@L4)"),
 //		_T("ADTS"),
 #ifdef USE_MMF_AUDIO_WMA
 		_T("WMAudioV8"),
@@ -178,13 +187,21 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 
 	rec_rate = sample_rate;
 	bytes_per_sample = channels * bits_per_sample / 8;
-	sample_buffer_size = rec_rate / 10;
+	
+	sample_buffer_size = rec_rate / 10;	// 0.1s
+	// 100ns unit
+//	frame_duration = ((LONGLONG)1000 * sample_buffer_size / sample_rate) * 10 * 1000;
+	frame_duration = 1000 * 1000;	// sample_buffer_size / sample_rate = 0.1
 
 	logging->out_logf(LOG_DEBUG, _T("MMF_REC_AUDIO::Start: %d"), codTypeNum);
 
 	// open file for output
 	if (codTypes[codTypeNum].cnt.Data1) {
 		hr = MMF_CreateAttributes(&attr, 1);
+		if (FAILED(hr)) {
+			MMF_OutLog(LOG_ERROR, _T("MMF_CreateAttributes Failed."), hr);
+			goto FIN;
+		}
 		attr->SetGUID(MF_TRANSCODE_CONTAINERTYPE, codTypes[codTypeNum].cnt);
 	}
 
@@ -213,22 +230,24 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 	switch(codTypes[codTypeNum].num) {
 	case CODEC_WAVE:
 		// Linear PCM
-		sample_is_multiple = 0;
+//		sample_is_multiple = 0;
 		// MF_MT_AUDIO_SAMPLES_PER_SECOND      {UINT32}
 		hr = otype->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, rec_rate);
 		// MF_MT_AUDIO_BITS_PER_SAMPLE         {UINT32}
 		hr = otype->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, bits_per_sample);
 		// MF_MT_AUDIO_BLOCK_ALIGNMENT         {UINT32}
-		hr = otype->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, bytes_per_sample); // channel * int16_t 		// MF_MT_AUDIO_AVG_BYTES_PER_SECOND    {UINT32}
+		hr = otype->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, bytes_per_sample); // channel * int16_t
+		// MF_MT_AUDIO_AVG_BYTES_PER_SECOND    {UINT32}
 		hr = otype->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, rec_rate * bytes_per_sample);
 		// MF_MT_ALL_SAMPLES_INDEPENDENT   {UINT32 (BOOL)}
 		hr = otype->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, TRUE);
 		break;
 
 	case CODEC_AAC:
+	case CODEC_AAC4:
 	case CODEC_ADTS:
 		// AAC
-		sample_is_multiple = 1;
+//		sample_is_multiple = 1;
 		// bit rate
 		// MF_MT_AUDIO_AVG_BYTES_PER_SECOND    {UINT32}
 		hr = otype->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, bit_rate / 8);
@@ -245,7 +264,7 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 		// MF_MT_AAC_PAYLOAD_TYPE              {UINT32}
 		hr = otype->SetUINT32(MF_MT_AAC_PAYLOAD_TYPE, (codTypes[codTypeNum].num == CODEC_ADTS ? 1 : 0));
 		// MF_MT_AAC_AUDIO_PROFILE_LEVEL_INDICATION   {UINT32}
-		hr = otype->SetUINT32(MF_MT_AAC_AUDIO_PROFILE_LEVEL_INDICATION, 0x29);
+		hr = otype->SetUINT32(MF_MT_AAC_AUDIO_PROFILE_LEVEL_INDICATION, (codTypes[codTypeNum].num == CODEC_AAC4 ? 0x2a : 0x29));
 		//
 #if 0
 		memset(&aac_config_info, 0, sizeof(aac_config_info));
@@ -266,7 +285,7 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 #ifdef USE_MMF_AUDIO_WMA
 	case CODEC_WMAV2:
 		// Windows Media Audio
-		sample_is_multiple = 1;
+//		sample_is_multiple = 1;
 		// bit rate
 		// MF_MT_AUDIO_AVG_BYTES_PER_SECOND    {UINT32}
 		hr = otype->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, 8005); //bit_rate / 8);
@@ -302,7 +321,7 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 
 	case CODEC_WMAV3:
 		// Windows Media Audio
-		sample_is_multiple = 1;
+//		sample_is_multiple = 1;
 		// bit rate
 		// MF_MT_AUDIO_AVG_BYTES_PER_SECOND    {UINT32}
 		hr = otype->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, 8005);
@@ -371,15 +390,27 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 	}
 
 	// create sample buffer
-	hr = MMF_CreateMemoryBuffer(sample_buffer_size * bytes_per_sample, &mediaBuffers[0]);
-	if (FAILED(hr)) {
-		MMF_OutLog(LOG_ERROR, _T("MMF_CreateMemoryBuffer Failed."), hr);
-		goto FIN;
-	}
-	hr = MMF_CreateMemoryBuffer(sample_buffer_size * bytes_per_sample, &mediaBuffers[1]);
+	for(int n=0; n<BUFFER_COUNT; n++) {
+		hr = MMF_CreateMemoryBuffer(sample_buffer_size * bytes_per_sample, &mediaBuffers[n]);
+		if (FAILED(hr)) {
+			MMF_OutLog(LOG_ERROR, _T("MMF_CreateMemoryBuffer Failed."), hr);
+			goto FIN;
+		}
+		// Create a media sample and add the buffer to the sample.
+		hr = MMF_CreateSample(&mediaSamples[n]);
+		if (FAILED(hr)) {
+			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: MMF_CreateSample Failed."), hr); 
+			goto FIN;
+		}
 
-//	frame_duration = ((LONGLONG)1000 * sample_buffer_size / sample_rate) * 10 * 1000;
-	frame_duration = 1000 * 1000;	// sample_buffer_size / sample_rate = 0.1
+		hr = mediaSamples[n]->AddBuffer(mediaBuffers[n]);
+		if (FAILED(hr)) {
+			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: IMFSample::AddBuffer Failed."), hr); 
+			goto FIN;
+		}
+	}
+
+	buffer_idx = 0;
 
 	// Tell the sink writer to start accepting data.
 	hr = sinkWriter->BeginWriting();
@@ -428,61 +459,35 @@ bool MMF_REC_AUDIO::Restart()
 bool MMF_REC_AUDIO::Record(int32_t *buffer, int samples)
 {
 	bool rc = false;
-	BYTE *p[2];
-	int16_t *store_samples[2];
+	BYTE *p;
+	int16_t *store_samples;
 	HRESULT hr;
-	int sample_buffer_size_half = (sample_buffer_size >> 1);
-	int pos = 0;
 
-	hr = mediaBuffers[0]->Lock(&p[0], NULL, NULL);
+	hr = mediaBuffers[buffer_idx]->Lock(&p, NULL, NULL);
 	if (FAILED(hr)) {
 		if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("Record: IMFMediaBuffer::Lock Failed."), hr); 
 		goto FIN;
 	}
-	hr = mediaBuffers[1]->Lock(&p[1], NULL, NULL);
-	store_samples[0] = (int16_t *)p[0];
-	store_samples[1] = (int16_t *)p[1];
-	if (sample_is_multiple) {
-		if (store_sample_pos < sample_buffer_size_half)
-			store_samples[0] += (store_sample_pos << 1);
-		else
-			store_samples[1] += ((store_sample_pos - sample_buffer_size_half) << 1);
-	} else {
-		store_samples[0] += (store_sample_pos << 1);
-	}
+	store_samples = (int16_t *)p;
+
+	store_samples += (store_sample_pos << 1);
+
 	for(int i=0; i<(samples << 1); i+=2) {
-		if (sample_is_multiple) {
-			pos = (store_sample_pos / sample_buffer_size_half);
 #ifdef USE_AUDIO_U8
-			store_samples[pos][0] = (int16_t)((buffer[i] - 128) * 256);
-			store_samples[pos][1] = (int16_t)((buffer[i+1] - 128) * 256);
+		store_samples[0] = (int16_t)((buffer[i] - 128) * 256);
+		store_samples[1] = (int16_t)((buffer[i+1] - 128) * 256);
 #else
-			store_samples[pos][0] = (int16_t)buffer[i];
-			store_samples[pos][1] = (int16_t)buffer[i+1];
+		store_samples[0] = (int16_t)buffer[i];
+		store_samples[1] = (int16_t)buffer[i+1];
 #endif
-			store_samples[pos]+=2;
-			store_sample_pos++;
+		store_samples += 2;
+		store_sample_pos++;
 
-			// Set the data length of the buffer.
-			hr = mediaBuffers[pos]->SetCurrentLength((store_sample_pos - (pos * sample_buffer_size_half)) * sizeof(int16_t) * 2);
-		} else {
-#ifdef USE_AUDIO_U8
-			store_samples[0][0] = (int16_t)((buffer[i] - 128) * 256);
-			store_samples[0][1] = (int16_t)((buffer[i+1] - 128) * 256);
-#else
-			store_samples[0][0] = (int16_t)buffer[i];
-			store_samples[0][1] = (int16_t)buffer[i+1];
-#endif
-			store_samples[0]+=2;
-			store_sample_pos++;
-
-			// Set the data length of the buffer.
-			hr = mediaBuffers[0]->SetCurrentLength(store_sample_pos * sizeof(int16_t) * 2);
-		}
+		// Set the data length of the buffer.
+		hr = mediaBuffers[buffer_idx]->SetCurrentLength(store_sample_pos * bytes_per_sample);
 
 		if (store_sample_pos >= sample_buffer_size) {
-			mediaBuffers[0]->Unlock();
-			mediaBuffers[1]->Unlock();
+			mediaBuffers[buffer_idx]->Unlock();
 
 			hr = WriteSample();
 			if (FAILED(hr)) {
@@ -492,14 +497,11 @@ bool MMF_REC_AUDIO::Record(int32_t *buffer, int samples)
 			// continue store data
 			store_sample_pos = 0;
 
-			hr = mediaBuffers[0]->Lock(&p[0], NULL, NULL);
-			hr = mediaBuffers[1]->Lock(&p[1], NULL, NULL);
-			store_samples[0] = (int16_t *)p[0];
-			store_samples[1] = (int16_t *)p[1];
+			hr = mediaBuffers[buffer_idx]->Lock(&p, NULL, NULL);
+			store_samples = (int16_t *)p;
 		}
 	}
-	mediaBuffers[0]->Unlock();
-	mediaBuffers[1]->Unlock();
+	mediaBuffers[buffer_idx]->Unlock();
 
 FIN:
 	rc = (SUCCEEDED(hr));
@@ -511,47 +513,42 @@ FIN:
 
 HRESULT MMF_REC_AUDIO::WriteSample()
 {
-	IMFSample *pSample = NULL;
 	HRESULT hr;
 
 	do {
-		// Create a media sample and add the buffer to the sample.
-		hr = MMF_CreateSample(&pSample);
-		if (FAILED(hr)) {
-			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: MMF_CreateSample Failed."), hr); 
-			break;
-		}
-
-		hr = pSample->AddBuffer(mediaBuffers[0]);
-		if (FAILED(hr)) {
-			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: IMFSample::AddBuffer Failed."), hr); 
-			break;
-		}
-
-		if (sample_is_multiple) hr = pSample->AddBuffer(mediaBuffers[1]);
-
 		// Set the time stamp and the duration.
-		hr = pSample->SetSampleTime(sample_time);
+		hr = mediaSamples[buffer_idx]->SetSampleTime(sample_time);
 		if (FAILED(hr)) {
 			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: IMFSample::SetSampleTime Failed."), hr); 
 			break;
 		}
 		sample_time += frame_duration;
 
-		hr = pSample->SetSampleDuration(frame_duration);
+		hr = mediaSamples[buffer_idx]->SetSampleDuration(frame_duration);
 		if (FAILED(hr)) {
 			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: IMFSample::SetSampleDuration Failed."), hr); 
 			break;
 		}
 
-		hr = sinkWriter->WriteSample(streamIndex, pSample);
+#if 0
+		MF_SINK_WRITER_STATISTICS streamStat;
+		do {
+			memset(&streamStat, 0, sizeof(streamStat));
+			streamStat.cb = sizeof(streamStat);
+			hr = sinkWriter->GetStatistics(streamIndex, &streamStat);
+		} while (streamStat.dwByteCountQueued > 0);
+#endif
+
+		hr = sinkWriter->WriteSample(streamIndex, mediaSamples[buffer_idx]);
+
+		// replace target of buffer
+		buffer_idx = (buffer_idx + 1) % BUFFER_COUNT;
+
 		if (FAILED(hr)) {
 			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: IMFSinkWriter::WriteSample Failed."), hr); 
 			break;
 		}
 	} while(0);
-
-	SafeRelease(pSample);
 
 	return hr;
 }

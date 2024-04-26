@@ -82,6 +82,7 @@ typedef union {
 	int32_t s32;
 	uint32_t d;
 	int32_t sd;
+	float fl;
 } pair32_t;
 
 /// @ingroup Typedefs
@@ -96,6 +97,7 @@ typedef union {
 	} b;
 	uint64_t u64;
 	int64_t s64;
+	double db;
 } pair64_t;
 
 /// @ingroup Macros
@@ -165,8 +167,12 @@ uint64_t swap64(uint64_t x);
 ///@{
 uint16_t conv_to_uint16_le(uint8_t *);
 uint32_t conv_to_uint32_le(uint8_t *);
+int16_t conv_to_int16_le(uint8_t *);
+int32_t conv_to_int32_le(uint8_t *);
 void conv_from_uint16_le(uint8_t *, uint16_t);
 void conv_from_uint32_le(uint8_t *, uint32_t);
+void conv_from_int16_le(uint8_t *, int16_t);
+void conv_from_int32_le(uint8_t *, int32_t);
 ///@}
 
 #ifndef MAX
@@ -195,6 +201,9 @@ void conv_from_uint32_le(uint8_t *, uint32_t);
 #define TO_BCD_LO(v)	((v) % 10)
 /// @ingroup Macros
 #define TO_BCD_HI(v)	(int)(((v) % 100) / 10)
+
+/// @ingroup Macros
+#define NUM_OF_ARRAY(a)	(int)(sizeof(a)/sizeof(a[0]))
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
 /// @ingroup Macros

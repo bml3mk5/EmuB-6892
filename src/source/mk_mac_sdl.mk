@@ -17,11 +17,11 @@ LD:=g++
 
 FFMPEGDIR:=$(HOME)/Devel/ffmpeg
 
-MACMINVER:=-mmacosx-version-min=10.7
+MACMINVER:=-mmacosx-version-min=10.9
 
 COMMONCFLAGS:=-I/usr/local/include -I/usr/X11/include -I$(FFMPEGDIR) -I./include
 
-COMMONLDFLAGS:=-lm -lz -lbz2 -liconv -Wl,-framework,OpenGL -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,IOKit -Wl,-framework,AudioUnit -Wl,-framework,ForceFeedback -Wl,-framework,QTKit -Wl,-framework,AVFoundation -Wl,-framework,CoreMedia -Wl,-framework,CoreVideo -Wl,-framework,AudioToolbox
+COMMONLDFLAGS:=-lm -lz -lbz2 -liconv -Wl,-framework,OpenGL -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,CoreAudio -Wl,-framework,IOKit -Wl,-framework,AudioUnit -Wl,-framework,ForceFeedback -Wl,-framework,QTKit -Wl,-framework,AVFoundation -Wl,-framework,CoreMedia -Wl,-framework,CoreVideo -Wl,-framework,AudioToolbox -Wl,-framework,Metal
 
 CFLAGS:=$(CFLAGS) $(COMMONCFLAGS) $(MACMINVER)
 CXXFLAGS:=$(CXXFLAGS) $(COMMONCFLAGS) $(MACMINVER)
@@ -75,10 +75,10 @@ EMUOBJS:=$(SRCDIR)/config.o \
 	$(SRCDIR)/labels.o \
 	$(SRCDIR)/msgs.o \
 	$(SRCDIR)/simple_ini.o \
-	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/debugger_bpoint.o \
 	$(SRCDIR)/debugger_socket.o \
 	$(SRCDIR)/debugger_symbol.o \
+	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/utility.o
 
 EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
@@ -106,7 +106,9 @@ EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
 	$(SRCOSD)/emu_input_keysym.o \
 	$(SRCOSD)/emu_screen.o \
 	$(SRCOSD)/emu_sound.o \
+	$(SRCOSD)/keybind.o \
 	$(SRCOSD)/logging.o \
+	$(SRCOSD)/parseopt.o \
 	$(SRCOSD)/screenmode.o \
 	$(SRCOSD)/simple_clocale.o \
 	$(SRCOSD)/vkeyboardbase.o \
@@ -187,6 +189,7 @@ GUIOBJSAGAR:=$(SRCGUIAGAR)/ag_gui_base.o \
 GUIOBJSCOCOA:=$(SRCGUICOCOA)/cocoa_gui.o \
 	$(SRCGUICOCOA)/cocoa_basepanel.o \
 	$(SRCGUICOCOA)/cocoa_volumepanel.o \
+	$(SRCGUICOCOA)/cocoa_keybindctrl.o \
 	$(SRCGUICOCOA)/cocoa_keybindpanel.o \
 	$(SRCGUICOCOA)/cocoa_recaudpanel.o \
 	$(SRCGUICOCOA)/cocoa_recvidpanel.o \
@@ -196,12 +199,14 @@ GUIOBJSCOCOA:=$(SRCGUICOCOA)/cocoa_gui.o \
 	$(SRCGUICOCOA)/cocoa_fontpanel.o \
 	$(SRCGUICOCOA)/cocoa_ledbox.o \
 	$(SRCGUICOCOA)/cocoa_vkeyboard.o \
+	$(SRCGUICOCOA)/cocoa_joysetpanel.o \
+	$(SRCGUICOCOA)/cocoa_loggingpanel.o \
 	$(SRCGUICOCOA)/cocoa_configpanel.o
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
 VIDOBJSQTKIT:=$(SRCVIDQTKIT)/qt_rec_video.o
 VIDOBJSAVKIT:=$(SRCVIDAVKIT)/avk_rec_common.o $(SRCVIDAVKIT)/avk_rec_audio.o $(SRCVIDAVKIT)/avk_rec_video.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
 VIDOBJSCOCOA:=$(SRCVIDCOCOA)/cocoa_rec_video.o $(SRCVIDCOCOA)/cocoa_bitmap.o
 
 VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSQTKIT) $(VIDOBJSAVKIT) $(VIDOBJSFFM) $(VIDOBJSCOCOA) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o

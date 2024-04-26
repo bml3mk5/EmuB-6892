@@ -192,7 +192,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 #ifdef USE_SCREEN_ROTATE
 	VmRectWH prev_source_size = source_size;
 
-	if(config.monitor_type & 1) {
+	if(pConfig->monitor_type & 1) {
 		stretch_changed |= (source_size.w != screen_size.h);
 		stretch_changed |= (source_size.h != screen_size.w);
 		stretch_changed |= (source_aspect_size.w != screen_aspect_size.h);
@@ -217,8 +217,8 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	}
 
 	// fullscreen and stretch screen
-	if(config.stretch_screen && !now_window && display_size.w >= source_size.w && display_size.h >= source_size.h) {
-		if (config.stretch_screen == 1) {
+	if(pConfig->stretch_screen && !now_window && display_size.w >= source_size.w && display_size.h >= source_size.h) {
+		if (pConfig->stretch_screen == 1) {
 			// fit to full screen
 			mixed_size = source_size;
 			if (mixed_ratio.w < mixed_ratio.h) {
@@ -268,7 +268,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 			VmSize min_size;
 			SIZE_IN(min_size, LIMIT_MIN_WINDOW_WIDTH, LIMIT_MIN_WINDOW_HEIGHT);
 #ifdef USE_SCREEN_ROTATE
-			if(config.monitor_type & 1) {
+			if(pConfig->monitor_type & 1) {
 				SWAP(int, min_size.w, min_size.h);
 			}
 #endif
@@ -466,7 +466,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 #endif
 #endif
 
-	change_rec_video_size(config.screen_video_size);
+	change_rec_video_size(pConfig->screen_video_size);
 
 	first_invalidate = true;
 	screen_size_changed = false;
@@ -509,7 +509,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	lock_screen();
 
 #ifdef USE_SCREEN_ROTATE
-	if(config.monitor_type) {
+	if(pConfig->monitor_type) {
 		sufSource = sufRotate;
 	} else
 #endif
@@ -531,7 +531,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 			d3dpp.Windowed = TRUE;
 		}
 		// save buffer to dib temporary
-		if (config.use_direct3d && pD3Dorigin && sufOrigin && sufOrigin->IsEnable()) {
+		if (pConfig->use_direct3d && pD3Dorigin && sufOrigin && sufOrigin->IsEnable()) {
 #ifdef USE_SCREEN_D3D_TEXTURE
 			copy_d3dtex_dib(pD3Dorigin->GetD3DTexture(), sufOrigin->GetBuffer(), true);
 #else
@@ -583,7 +583,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 			}
 		}
 #ifdef USE_SCREEN_ROTATE
-		if(config.monitor_type) {
+		if(pConfig->monitor_type) {
 			pD3Dsource = pD3Drotate;
 		} else
 #endif
@@ -610,17 +610,17 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 #ifdef USE_LEDBOX
 	if (gui) {
 #ifdef USE_SCREEN_D3D_TEXTURE
-		if (config.use_direct3d) {
-			gui->SetLedBoxPosition(now_window, stretched_size.x, stretched_size.y, stretched_size.w, stretched_size.h, config.led_pos | (is_fullscreen() ? 0x10 : 0));
+		if (pConfig->use_direct3d) {
+			gui->SetLedBoxPosition(now_window, stretched_size.x, stretched_size.y, stretched_size.w, stretched_size.h, pConfig->led_pos | (is_fullscreen() ? 0x10 : 0));
 		} else
 #endif
-			gui->SetLedBoxPosition(now_window, mixed_size.x, mixed_size.y, mixed_size.w, mixed_size.h, config.led_pos | (is_fullscreen() ? 0x10 : 0));
+			gui->SetLedBoxPosition(now_window, mixed_size.x, mixed_size.y, mixed_size.w, mixed_size.h, pConfig->led_pos | (is_fullscreen() ? 0x10 : 0));
 	}
 #endif
 #ifdef USE_MESSAGE_BOARD
 	if (msgboard) {
 #ifdef USE_SCREEN_D3D_TEXTURE
-		if (config.use_direct3d) {
+		if (pConfig->use_direct3d) {
 			msgboard->SetSize(stretched_size.w, stretched_size.h);
 			msgboard->SetMessagePos(4 + stretched_size.x,  - 4 + stretched_size.y, 2);
 			msgboard->SetInfoPos(- 4 + stretched_size.x, 4 + stretched_size.y, 1);
@@ -669,7 +669,7 @@ void EMU_OSD::draw_screen()
 	}
 #endif
 	// draw screen
-	if (!config.now_power_off) {
+	if (!pConfig->now_power_off) {
 		vm->draw_screen();
 	} else {
 		fill_gray();
@@ -695,13 +695,13 @@ void EMU_OSD::draw_screen()
 	// rotate screen
 	// right turn
 	// src and dst should be the same size
-	if(config.monitor_type) {
-		int rtype = (config.monitor_type & 3);
+	if(pConfig->monitor_type) {
+		int rtype = (pConfig->monitor_type & 3);
 		VmSize ss, ds;
 		SIZE_IN(ss, screen_size.w, screen_size.h);
 		SIZE_IN(ds, source_size.w, source_size.h);
 #ifdef USE_DIRECT3D
-		if (config.use_direct3d) {
+		if (pConfig->use_direct3d) {
 			int nw0 = rotate_matrix[rtype].x[0] < 0 ? (ss.w - 1) : 0;
 			int nh0 = rotate_matrix[rtype].y[0] < 0 ? (ss.h - 1) : 0;
 			int nw1 = rotate_matrix[rtype].x[1] < 0 ? (ss.w - 1) : 0;
@@ -745,7 +745,7 @@ void EMU_OSD::draw_screen()
 
 #ifdef USE_DIRECT3D
 #ifndef USE_SCREEN_D3D_TEXTURE
-	if (config.use_direct3d) {
+	if (pConfig->use_direct3d) {
 		if (FLG_SHOWLEDBOX && ledbox) {
 			ledbox->Draw(pD3Dsource->GetD3DSurface());
 		}
@@ -770,7 +770,7 @@ bool EMU_OSD::mix_screen()
 	lock_screen();
 
 #ifdef USE_DIRECT3D
-	if (pD3Device != NULL && config.use_direct3d) {
+	if (pD3Device != NULL && pConfig->use_direct3d) {
 		// mix d3d screen buffer
 #ifndef USE_SCREEN_D3D_TEXTURE
 #ifdef USE_SCREEN_D3D_MIX_SURFACE
@@ -802,7 +802,7 @@ bool EMU_OSD::mix_screen()
 	// stretch screen
 #ifdef USE_SMOOTH_STRETCH
 	//	if(stretch_screen) {
-	if(stretch_screen && (!config.use_direct3d)) {
+	if(stretch_screen && (!pConfig->use_direct3d)) {
 #if 0
 		StretchBlt(sufStretch1->GetDC(), 0, 0, source_size.w * stretch_power.w, source_size.h * stretch_power.h, sufSource->GetDC(), 0, 0, source_size.w, source_size.h, SRCCOPY);
 #else
@@ -871,7 +871,7 @@ void EMU_OSD::need_update_screen()
 scrntype* EMU_OSD::screen_buffer(int y)
 {
 #ifdef USE_DIRECT3D
-	if (lpD3DBmp && config.use_direct3d) {
+	if (lpD3DBmp && pConfig->use_direct3d) {
 		return lpD3DBmp + screen_size.w * y;
 	} else
 #endif
@@ -885,7 +885,7 @@ scrntype* EMU_OSD::screen_buffer(int y)
 int EMU_OSD::screen_buffer_offset()
 {
 #ifdef USE_DIRECT3D
-	if (lpD3DBmp && config.use_direct3d) {
+	if (lpD3DBmp && pConfig->use_direct3d) {
 		return screen_size.w;
 	} else
 #endif
@@ -926,8 +926,8 @@ void EMU_OSD::update_screen_d3d()
 //			pD3Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 //			pD3Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-			pD3Device->SetSamplerState(0, D3DSAMP_MAGFILTER, config.d3d_filter_type);
-			pD3Device->SetSamplerState(0, D3DSAMP_MINFILTER, config.d3d_filter_type);
+			pD3Device->SetSamplerState(0, D3DSAMP_MAGFILTER, pConfig->d3d_filter_type);
+			pD3Device->SetSamplerState(0, D3DSAMP_MINFILTER, pConfig->d3d_filter_type);
 
 			hre = pD3Device->BeginScene();
 			if (hre == D3D_OK) {
@@ -958,7 +958,7 @@ void EMU_OSD::update_screen_d3d()
 			if (pD3Dsuf) {
 #ifdef USE_SCREEN_D3D_MIX_SURFACE
 				// copy to back buffer from offline surface
-				hre = pD3Device->StretchRect(pD3Dmixsuf->GetD3DSurface(), &reD3Dmix, pD3Dsuf, &reD3Dsuf, (_D3DTEXTUREFILTERTYPE)config.d3d_filter_type);
+				hre = pD3Device->StretchRect(pD3Dmixsuf->GetD3DSurface(), &reD3Dmix, pD3Dsuf, &reD3Dsuf, (_D3DTEXTUREFILTERTYPE)pConfig->d3d_filter_type);
 #else
 				// copy to back buffer from offline surface
 				RECT src_re;
@@ -966,7 +966,7 @@ void EMU_OSD::update_screen_d3d()
 				src_re.top = vm_screen_size.y;
 				src_re.right = vm_screen_size.w - vm_screen_size.x - vm_screen_size.x;
 				src_re.bottom = vm_screen_size.h - vm_screen_size.y - vm_screen_size.y;
-				hre = pD3Device->StretchRect(pD3Dsource->GetD3DSurface(), &src_re, pD3Dsuf, &reD3Dsuf, (_D3DTEXTUREFILTERTYPE)config.d3d_filter_type);
+				hre = pD3Device->StretchRect(pD3Dsource->GetD3DSurface(), &src_re, pD3Dsuf, &reD3Dsuf, (_D3DTEXTUREFILTERTYPE)pConfig->d3d_filter_type);
 #ifdef USE_LEDBOX
 				if (FLG_SHOWLEDBOX && gui) {
 					gui->DrawLedBox(pD3Dsuf);
@@ -1013,7 +1013,7 @@ void EMU_OSD::update_screen(HDC hdc)
 	mix_screen();
 
 #ifdef USE_DIRECT3D
-	if (pD3Device != NULL && config.use_direct3d) {
+	if (pD3Device != NULL && pConfig->use_direct3d) {
 		update_screen_d3d();
 	} else
 #endif
@@ -1205,7 +1205,7 @@ void EMU_OSD::capture_screen()
 	lock_screen();
 
 #ifdef USE_DIRECT3D
-	if (pD3Dorigin != NULL && config.use_direct3d) {
+	if (pD3Dorigin != NULL && pConfig->use_direct3d) {
 #ifdef USE_SCREEN_D3D_TEXTURE
 		copy_d3dtex_dib(pD3Dorigin->GetD3DTexture(), sufOrigin->GetBuffer(), true);
 #else
@@ -1215,7 +1215,7 @@ void EMU_OSD::capture_screen()
 #endif
 //	copy_dib_rec_video();
 
-	rec_video->Capture(CAPTURE_SCREEN_TYPE, rec_video_stretched_size, sufOrigin, rec_video_size[config.screen_video_size]);
+	rec_video->Capture(CAPTURE_SCREEN_TYPE, rec_video_stretched_size, sufOrigin, rec_video_size[pConfig->screen_video_size]);
 
 	unlock_screen();
 }
@@ -1226,7 +1226,7 @@ void EMU_OSD::capture_screen()
 //bool EMU::start_rec_video(int type, int fps_no, bool show_dialog)
 //{
 //#ifdef USE_REC_VIDEO
-//	int size = config.screen_video_size;
+//	int size = pConfig->screen_video_size;
 //	return rec_video->Start(type, fps_no, rec_video_size[size], sufOrigin, show_dialog);
 //#else
 //	return false;
@@ -1241,7 +1241,7 @@ void EMU_OSD::record_rec_video()
 #ifdef USE_REC_VIDEO
 	if (rec_video->IsRecordFrame()) {
 #ifdef USE_DIRECT3D
-		if (pD3Device != NULL && config.use_direct3d) {
+		if (pD3Device != NULL && pConfig->use_direct3d) {
 #ifdef USE_SCREEN_D3D_TEXTURE
 			copy_d3dtex_dib(pD3Dorigin->GetD3DTexture(), sufOrigin->GetBuffer(), true);
 #else
@@ -1249,7 +1249,7 @@ void EMU_OSD::record_rec_video()
 #endif
 		}
 #endif
-		rec_video->Record(rec_video_stretched_size, sufOrigin, rec_video_size[config.screen_video_size]);
+		rec_video->Record(rec_video_stretched_size, sufOrigin, rec_video_size[pConfig->screen_video_size]);
 	}
 #endif
 }
@@ -1258,13 +1258,13 @@ void EMU_OSD::record_rec_video()
 void EMU_OSD::resume_window_placement()
 {
 	if (now_screenmode == NOW_FULLSCREEN) {
-		config.window_position_x = window_dest.x;
-		config.window_position_y = window_dest.y;
+		pConfig->window_position_x = window_dest.x;
+		pConfig->window_position_y = window_dest.y;
 	} else {
 		WINDOWINFO wid;
 		GetWindowInfo(hMainWindow, &wid);
-		config.window_position_x = wid.rcWindow.left;
-		config.window_position_y = wid.rcWindow.top;
+		pConfig->window_position_x = wid.rcWindow.left;
+		pConfig->window_position_y = wid.rcWindow.top;
 	}
 }
 
@@ -1309,7 +1309,7 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 		int width = wm->width;
 		int height = wm->height;
 #ifdef USE_SCREEN_ROTATE
-		if (config.monitor_type & 1) {
+		if (pConfig->monitor_type & 1) {
 			int v = width;
 			width = height;
 			height = v;
@@ -1358,12 +1358,12 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 			// resize client
 			set_client_pos(dest_x, dest_y, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE);
 		}
-		config.window_mode = prev_window_mode = mode;
-		config.window_position_x = dest_x;
-		config.window_position_y = dest_y;
-		config.disp_device_no = 0;
-		config.screen_width = width;
-		config.screen_height = height;
+		pConfig->window_mode = prev_window_mode = mode;
+		pConfig->window_position_x = dest_x;
+		pConfig->window_position_y = dest_y;
+		pConfig->disp_device_no = 0;
+		pConfig->screen_width = width;
+		pConfig->screen_height = height;
 		window_mode_power = wm->power;
 
 		// set screen size to emu class
@@ -1404,7 +1404,7 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 			}
 			// get width and height
 			const CDisplayDevice *dd = screen_mode.GetDisp(disp_no);
-			dev_name = dd->name;
+			dev_name = dd->name.Get();
 			left = dd->re.x;
 			top = dd->re.y;
 			width = dd->re.w;
@@ -1422,7 +1422,7 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 			sm = screen_mode.GetMode(disp_no, (mode - 8) % VIDEO_MODE_MAX);
 
 			const CDisplayDevice *dd = screen_mode.GetDisp(disp_no);
-			dev_name = dd->name;
+			dev_name = dd->name.Get();
 			left =  dd->re.x;
 			top = dd->re.y;
 			width = sm ? sm->width : dd->re.w;
@@ -1452,10 +1452,10 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 			prev_screenmode = now_screenmode;
 			now_screenmode = NOW_FULLSCREEN;
 
-			config.window_mode = mode;
-			config.disp_device_no = disp_no;
-			config.screen_width = width;
-			config.screen_height = height;
+			pConfig->window_mode = mode;
+			pConfig->disp_device_no = disp_no;
+			pConfig->screen_width = width;
+			pConfig->screen_height = height;
 
 			// remove menu
 			gui->ScreenModeChanged(true);
@@ -1546,7 +1546,7 @@ HRESULT EMU_OSD::create_d3device(HWND hWnd)
 
 		pD3Device->GetDeviceCaps(&d3dcaps);
 		if ((d3dcaps.Caps & D3DCAPS_READ_SCANLINE) == 0 || (d3dcaps.PresentationIntervals & D3DPRESENT_INTERVAL_ONE) == 0) {
-			if (config.use_direct3d != 0) config.use_direct3d = 2;
+			if (pConfig->use_direct3d != 0) pConfig->use_direct3d = 2;
 		}
 	}
 
@@ -1575,7 +1575,7 @@ void EMU_OSD::create_d3dofflinesurface()
 
 #ifdef USE_LEDBOX
 		ledbox->CreateTexture(pD3Device);
-		gui->ChangeLedBoxPosition(config.led_pos);
+		gui->ChangeLedBoxPosition(pConfig->led_pos);
 #endif
 #ifdef USE_MESSAGE_BOARD
 		msgboard->CreateTexture(pD3Device);
@@ -1609,7 +1609,7 @@ void EMU_OSD::create_d3dofflinesurface()
 			break;
 		}
 
-		if(config.monitor_type) {
+		if(pConfig->monitor_type) {
 			pD3Dsource = pD3Drotate;
 		} else
 #endif
@@ -1690,7 +1690,7 @@ void EMU_OSD::terminate_d3device()
 
 void EMU_OSD::set_d3dpresent_interval()
 {
-	if (config.use_direct3d == 2) {
+	if (pConfig->use_direct3d == 2) {
 		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 	} else {
 		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;

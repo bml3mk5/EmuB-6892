@@ -1,6 +1,5 @@
 /** @file cocoa_recaudpanel.mm
 
- HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
  Skelton for retropc emulator
  SDL edition + Cocoa GUI
 
@@ -16,6 +15,7 @@
 #import "../../config.h"
 #import "../../emu.h"
 #import "../../clocale.h"
+#import "../../utility.h"
 
 extern EMU *emu;
 
@@ -77,79 +77,62 @@ static const int type_ids[] = {
 
 	CocoaView *view = [self contentView];
 
-	CocoaLayout *box_all = [CocoaLayout create:VerticalBox :0 :COCOA_DEFAULT_MARGIN :_T("box_all")];
+	CocoaLayout *box_all = [CocoaLayout create:view :VerticalBox :0 :COCOA_DEFAULT_MARGIN :_T("box_all")];
 	CocoaLayout *box_tab = [box_all addBox:TabViewBox :0 :COCOA_DEFAULT_MARGIN :_T("box_tab")];
 
-	tabView = [CocoaTabView create];
-	[box_tab addControl:tabView :300 :32];
-	[view addSubview:tabView];
+	tabView = [CocoaTabView create:box_tab width:300 height:32];
 	CocoaRecAudioTabViewDelegate *dele = [[CocoaRecAudioTabViewDelegate alloc] initWithPanel:self];
 	[tabView setDelegate:dele];
 
 
 	NSTabViewItem *tab;
 	CocoaView *tab_view;
-	CocoaLabel *label;
+//	CocoaLabel *label;
 
 	CocoaLayout *vbox;
 	CocoaLayout *hbox;
 
 	for(i=0; type_ids[i] != 0; i++) {
-		tab = [tabView addTabItem:_tgettext(type_label[i])];
+		tab = [tabView addTabItemT:_tgettext(type_label[i])];
 		tab_view = (CocoaView *)[tab view];
+		[box_tab setContentView:tab_view];
 
 		enables[i] = emu->rec_sound_enabled(type_ids[i]);
 
-		_TCHAR name[10];
-		_stprintf(name, _T("V%d"), i);
+		char name[10];
+		UTILITY::sprintf(name, sizeof(name), "V%d", i);
 		vbox = [box_tab addBox:VerticalBox :0 :0 :name];
-		_stprintf(name, _T("H%d"), i);
+		UTILITY::sprintf(name, sizeof(name), "H%d", i);
 		hbox = [vbox addBox:HorizontalBox :CenterPos | MiddlePos :0 :name];
 
 		switch(type_ids[i]) {
 		case RECORD_AUDIO_TYPE_WAVE:
-			label = [CocoaLabel createI:CMsg::Select_a_sample_rate_on_sound_menu_in_advance];
-			[hbox addControl:label];
-			[tab_view addSubview:label];
-
+			[CocoaLabel createI:hbox title:CMsg::Select_a_sample_rate_on_sound_menu_in_advance];
 			break;
 		default:
-			label = [CocoaLabel createI:CMsg::Codec_Type];
-				[hbox addControl:label width:120];
-			[tab_view addSubview:label];
+			[CocoaLabel createI:hbox title:CMsg::Codec_Type width:120];
 
 			const char **codlbl = emu->get_rec_sound_codec_list(type_ids[i]);
-			codbtn[i] = [CocoaPopUpButton createT:codlbl action:nil selidx:codnums[i]];
-			[hbox addControl:codbtn[i] width:160];
-			[tab_view addSubview:codbtn[i]];
+			codbtn[i] = [CocoaPopUpButton createT:hbox items:codlbl action:nil selidx:codnums[i] width:160];
 
-//			label = [CocoaLabel create:re titleid:CMsg::Quality];
-//			[tab_view addSubview:label];
+//			[CocoaLabel create:re titleid:CMsg::Quality];
 
 //			const char **qualbl = emu->get_rec_audio_quality_list(type_ids[i]);
 //			quabtn[i] = [CocoaPopUpButton create:re items:qualbl action:nil selidx:quanums[i]];
-//			[tab_view addSubview:quabtn[i]];
 			break;
 		}
 
 		if (!enables[i]) {
 			hbox = [vbox addBox:HorizontalBox :0 :0 :_T("Hlib")];
-			label = [CocoaLabel createI:CMsg::Need_install_library];
-			[hbox addControl:label];
-			[tab_view addSubview:label];
+			[CocoaLabel createI:hbox title:CMsg::Need_install_library];
 		}
 	}
 
 	// button
 
 	hbox = [box_all addBox:HorizontalBox :RightPos | TopPos :0 :_T("BTN")];
-	CocoaButton *btnCancel = [CocoaButton createI:CMsg::Cancel action:@selector(dialogCancel:)];
-	[hbox addControl:btnCancel :120 :32];
-	[view addSubview:btnCancel];
-
-	btnOK = [CocoaButton createI:CMsg::Start action:@selector(dialogOk:)];
-	[hbox addControl:btnOK :120 :32];
-	[view addSubview:btnOK];
+	[CocoaButton createI:hbox title:CMsg::Cancel action:@selector(dialogCancel:) width:120];
+	btnOK = [CocoaButton createI:hbox title:CMsg::Start action:@selector(dialogOk:) width:120];
 
 	[box_all realize:self];
 
@@ -158,12 +141,12 @@ static const int type_ids[] = {
 
 - (NSInteger)runModal
 {
-	return type_ids[0] ? [NSApp runModalForWindow:self] : NSCancelButton;
+	return type_ids[0] ? [NSApp runModalForWindow:self] : NSModalResponseCancel;
 }
 
 - (void)close
 {
-	[NSApp stopModalWithCode:NSCancelButton];
+	[NSApp stopModalWithCode:NSModalResponseCancel];
 	[super close];
 }
 
@@ -177,7 +160,7 @@ static const int type_ids[] = {
 //	emu->set_parami(VM::ParamRecAudioQuality, quanum);
 
     // OK button is pushed
-	[NSApp stopModalWithCode:NSOKButton];
+	[NSApp stopModalWithCode:NSModalResponseOK];
 	[super close];
 }
 

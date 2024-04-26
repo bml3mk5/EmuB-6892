@@ -23,10 +23,13 @@
 void EMU_OSD::EMU_INPUT()
 {
 #ifdef USE_JOYSTICK
-	for(int i=0; i<2; i++) {
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		joy[i] = NULL;
 	}
 #endif
+
+	mouse_logic_type = MOUSE_LOGIC_DEFAULT;
+	mouse_position.x = mouse_position.y = 0;
 
 	pressed_global_key = false;
 }
@@ -52,11 +55,8 @@ void EMU_OSD::initialize_input()
 void EMU_OSD::initialize_joystick()
 {
 #ifdef USE_JOYSTICK
-	for(int i = 0; i < 2; i++) {
-		joy_xmin[i] = -16384;
-		joy_xmax[i] = 16384;
-		joy_ymin[i] = -16384;
-		joy_ymax[i] = 16384;
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		memset(&joy_prm[i], 0, sizeof(joy_prm[i]));
 	}
 #endif
 
@@ -68,14 +68,30 @@ void EMU_OSD::reset_joystick()
 #ifdef USE_JOYSTICK
 	if (!use_joystick) return;
 
-	joy_num = SDL_NumJoysticks();
-	for(int i = 0; i < joy_num && i < 2; i++) {
+	int joy_num = SDL_NumJoysticks();
+	for(int i = 0; i < joy_num && i < MAX_JOYSTICKS; i++) {
 #ifndef USE_SDL2
 		if (!SDL_JoystickOpened(i)) {
 #else
 		if (!SDL_JoystickGetAttached(joy[i])) {
 #endif
 			if ((joy[i] = SDL_JoystickOpen(i)) != NULL) {
+				int axes = SDL_JoystickNumAxes(joy[i]);
+				set_joy_range(axes >= 1, -32768, 32767, pConfig->joy_axis_threshold[i][0], joy_prm[i].x);
+				set_joy_range(axes >= 2, -32768, 32767, pConfig->joy_axis_threshold[i][1], joy_prm[i].y);
+				set_joy_range(axes >= 3, -32768, 32767, pConfig->joy_axis_threshold[i][2], joy_prm[i].z);
+				set_joy_range(axes >= 4, -32768, 32767, pConfig->joy_axis_threshold[i][3], joy_prm[i].u);
+				set_joy_range(axes >= 5, -32768, 32767, pConfig->joy_axis_threshold[i][4], joy_prm[i].v);
+				set_joy_range(axes >= 6, -32768, 32767, pConfig->joy_axis_threshold[i][5], joy_prm[i].r);
+
+				joy_prm[i].has_pov = SDL_JoystickNumHats(joy[i]) >= 1 ? 1 : 0;
+
+#ifndef USE_SDL2
+				CTchar cstr(SDL_JoystickName(i));
+#else
+				CTchar cstr(SDL_JoystickName(joy[i]));
+#endif
+				logging->out_logf(LOG_DEBUG, _T("Joypad #%d: %s"), i, cstr.Get());
 				joy_enabled[i] = true;
 			}
 		}
@@ -97,7 +113,7 @@ void EMU_OSD::release_joystick()
 
 #ifdef USE_JOYSTICK
 	// release joystick
-	for(int i = 0; i < 2; i++) {
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
 		if (joy[i] != NULL) {
 			SDL_JoystickClose(joy[i]);
 		}
@@ -146,16 +162,8 @@ void EMU_OSD::update_input()
 	}
 	lost_focus = false;
 
-#ifdef USE_JOYSTICK
+	// update joystick status
 	update_joystick();
-#endif
-#ifdef USE_KEY_TO_JOY
-	// emulate joystick #1 with keyboard
-	if(key_status[0x26]) joy_status[0] |= 0x01;	// up
-	if(key_status[0x28]) joy_status[0] |= 0x02;	// down
-	if(key_status[0x25]) joy_status[0] |= 0x04;	// left
-	if(key_status[0x27]) joy_status[0] |= 0x08;	// right
-#endif
 
 	// update mouse status
 	update_mouse();
@@ -173,27 +181,42 @@ void EMU_OSD::update_mouse()
 		VmPoint pt;
 		Uint8 mstat = SDL_GetMouseState(&(pt.x),&(pt.y));
 
-#ifndef USE_SDL2
-		mouse_status[0]  = pt.x - display_size.w / 2;
-		mouse_status[1]  = pt.y - display_size.h / 2;
-#else
-		mouse_status[0]  = pt.x - screen_size.w / 2;
-		mouse_status[1]  = pt.y - screen_size.h / 2;
-#endif
 		mouse_status[2] =  (mstat & SDL_BUTTON(SDL_BUTTON_LEFT) ? 1 : 0);
 		mouse_status[2] |= (mstat & SDL_BUTTON(SDL_BUTTON_RIGHT) ? 2 : 0);
 		mouse_status[2] |= (mstat & SDL_BUTTON(SDL_BUTTON_MIDDLE) ? 4 : 0);
-		// move mouse cursor to the center of window
-		if(!(mouse_status[0] == 0 && mouse_status[1] == 0)) {
+
+		switch(mouse_logic_type) {
+		case MOUSE_LOGIC_FLEXIBLE:
+			mouse_status[0]  = pt.x - mouse_position.x;
+			mouse_status[1]  = pt.y - mouse_position.y;
+			mouse_position.x = pt.x;
+			mouse_position.y = pt.y;
+			break;
+
+		case MOUSE_LOGIC_DEFAULT:
 #ifndef USE_SDL2
-			pt.x = display_size.w / 2;
-			pt.y = display_size.h / 2;
-			SDL_WarpMouse(pt.x, pt.y);
+			mouse_status[0]  = pt.x - display_size.w / 2;
+			mouse_status[1]  = pt.y - display_size.h / 2;
 #else
-			pt.x = screen_size.w / 2;
-			pt.y = screen_size.h / 2;
-			SDL_WarpMouseInWindow(window, pt.x, pt.y);
+			mouse_status[0]  = pt.x - screen_size.w / 2;
+			mouse_status[1]  = pt.y - screen_size.h / 2;
 #endif
+			// move mouse cursor to the center of window
+			if(!(mouse_status[0] == 0 && mouse_status[1] == 0)) {
+#ifndef USE_SDL2
+				pt.x = display_size.w / 2;
+				pt.y = display_size.h / 2;
+				SDL_WarpMouse(pt.x, pt.y);
+#else
+				pt.x = screen_size.w / 2;
+				pt.y = screen_size.h / 2;
+				SDL_WarpMouseInWindow(window, pt.x, pt.y);
+#endif
+			}
+			break;
+
+		default:
+			break;
 		}
 	}
 #endif
@@ -218,37 +241,123 @@ void EMU_OSD::update_mouse()
 
 void EMU_OSD::update_joystick()
 {
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	memset(joy_status, 0, sizeof(joy_status));
-
-	if (!use_joystick) return;
-
-	// update joystick status
-	SDL_JoystickUpdate();
-	for(int i = 0; i < 2; i++) {
-		if(joy_enabled[i] == true) {
-#ifndef USE_SDL2
-			if (SDL_JoystickOpened(i)) {
-#else
-			if (SDL_JoystickGetAttached(joy[i])) {
 #endif
-				int x = SDL_JoystickGetAxis(joy[i], 0);
-				int y = SDL_JoystickGetAxis(joy[i], 1);
-				if(y < joy_ymin[i]) joy_status[i] |= 0x01;
-				if(y > joy_ymax[i]) joy_status[i] |= 0x02;
-				if(x < joy_xmin[i]) joy_status[i] |= 0x04;
-				if(x > joy_xmax[i]) joy_status[i] |= 0x08;
-				int nbuttons = SDL_JoystickNumButtons(joy[i]);
-				for(int n=0; n<nbuttons && n<28; n++) {
-					if (SDL_JoystickGetButton(joy[i], n)) {
-						joy_status[i] |= (0x10 << n);
+#ifdef USE_JOYSTICK
+	memset(joy2joy_status, 0, sizeof(joy2joy_status));
+	if (use_joystick) {
+		// update joystick status
+		SDL_JoystickUpdate();
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			uint32_t joy_stat = 0;
+			if(joy_enabled[i]) {
+#ifndef USE_SDL2
+				if (SDL_JoystickOpened(i)) {
+#else
+				if (SDL_JoystickGetAttached(joy[i])) {
+#endif
+					int axes = SDL_JoystickNumAxes(joy[i]);
+					int x = SDL_JoystickGetAxis(joy[i], 0);
+					int y = SDL_JoystickGetAxis(joy[i], 1);
+					if(y < joy_prm[i].y.mintd) joy_stat |= JOYCODE_UP;
+					if(y > joy_prm[i].y.maxtd) joy_stat |= JOYCODE_DOWN;
+					if(x < joy_prm[i].x.mintd) joy_stat |= JOYCODE_LEFT;
+					if(x > joy_prm[i].x.maxtd) joy_stat |= JOYCODE_RIGHT;
+
+					int z = axes >= 3 ? SDL_JoystickGetAxis(joy[i], 2) : joy_prm[i].z.offset;
+					int r = axes >= 6 ? SDL_JoystickGetAxis(joy[i], 5) : joy_prm[i].r.offset;
+					if(r < joy_prm[i].r.mintd) joy_stat |= JOYCODE_R_UP;
+					if(r > joy_prm[i].r.maxtd) joy_stat |= JOYCODE_R_DOWN;
+					if(z < joy_prm[i].z.mintd) joy_stat |= JOYCODE_Z_LEFT;
+					if(z > joy_prm[i].z.maxtd) joy_stat |= JOYCODE_Z_RIGHT;
+
+					int u = axes >= 4 ? SDL_JoystickGetAxis(joy[i], 3) : joy_prm[i].u.offset;
+					int v = axes >= 5 ? SDL_JoystickGetAxis(joy[i], 4) : joy_prm[i].v.offset;
+					if(v < joy_prm[i].v.mintd) joy_stat |= JOYCODE_V_UP;
+					if(v > joy_prm[i].v.maxtd) joy_stat |= JOYCODE_V_DOWN;
+					if(u < joy_prm[i].u.mintd) joy_stat |= JOYCODE_U_LEFT;
+					if(u > joy_prm[i].u.maxtd) joy_stat |= JOYCODE_U_RIGHT;
+
+					int nbuttons = SDL_JoystickNumButtons(joy[i]);
+					for(int n=0; n<nbuttons && n<16; n++) {
+						if (SDL_JoystickGetButton(joy[i], n)) {
+							joy_stat |= (0x10000 << n);
+						}
 					}
+
+					if (joy_prm[i].has_pov) {
+						int hatpos = SDL_JoystickGetHat(joy[i], 0);
+						switch(hatpos) {
+						case SDL_HAT_UP:
+							joy_stat |= JOYCODE_POV_UP;
+							break;
+						case SDL_HAT_RIGHTUP:
+							joy_stat |= JOYCODE_POV_UPRIGHT;
+							break;
+						case SDL_HAT_RIGHT:
+							joy_stat |= JOYCODE_POV_RIGHT;
+							break;
+						case SDL_HAT_RIGHTDOWN:
+							joy_stat |= JOYCODE_POV_DOWNRIGHT;
+							break;
+						case SDL_HAT_DOWN:
+							joy_stat |= JOYCODE_POV_DOWN;
+							break;
+						case SDL_HAT_LEFTDOWN:
+							joy_stat |= JOYCODE_POV_DOWNLEFT;
+							break;
+						case SDL_HAT_LEFT:
+							joy_stat |= JOYCODE_POV_LEFT;
+							break;
+						case SDL_HAT_LEFTUP:
+							joy_stat |= JOYCODE_POV_UPLEFT;
+							break;
+						}
+					}
+
+#ifdef USE_ANALOG_JOYSTICK
+					// analog 10bits
+					joy2joy_status[i][2] = (x - joy_prm[i].x.offset) * 1024 / joy_prm[i].x.range + 512;
+					joy2joy_status[i][3] = (y - joy_prm[i].y.offset) * 1024 / joy_prm[i].y.range + 512;
+					joy2joy_status[i][4] = (z - joy_prm[i].z.offset) * 1024 / joy_prm[i].z.range + 512;
+					joy2joy_status[i][5] = (r - joy_prm[i].r.offset) * 1024 / joy_prm[i].r.range + 512;
+					joy2joy_status[i][6] = (u - joy_prm[i].u.offset) * 1024 / joy_prm[i].u.range + 512;
+					joy2joy_status[i][7] = (v - joy_prm[i].v.offset) * 1024 / joy_prm[i].v.range + 512;
+#endif
+				} else {
+					joy_enabled[i] = false;
 				}
-			} else {
-				joy_enabled[i] = false;
 			}
+			joy2joy_status[i][0] = joy_stat;
+
+			// convert
+			convert_joy_status(i);
 		}
 	}
+#endif
+#ifdef USE_KEY2JOYSTICK
+	if (key2joy_enabled) {
+#ifndef USE_PIAJOYSTICKBIT
+		// update key 2 joystick status
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			for(int k = 0; k < 9; k++) {
+				joy_status[i][0] |= key2joy_status[i][k];
+			}
+		}
+#else
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			joy_status[i][0] |= key2joy_status[i];
+		}
+#endif
+	}
+#endif
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
+		joy_status[i][0] &= joy_mashing_mask[i][joy_mashing_count];
+	}
+	joy_mashing_count++;
+	joy_mashing_count &= 0xf;
 #endif
 }
 
@@ -328,15 +437,24 @@ void EMU_OSD::enable_mouse(int mode)
 	if(pmouse_disabled && !mouse_disabled) {
 		// hide mouse cursor
 		SDL_ShowCursor(SDL_DISABLE);
-		// move mouse cursor to the center of window
+
+		mouse_logic_type = MOUSE_LOGIC_DEFAULT;
+
 		VmPoint pt;
+		// move mouse cursor to the center of window
 #ifndef USE_SDL2
 		pt.x = display_size.w / 2;
 		pt.y = display_size.h / 2;
+
+		mouse_position.x = pt.x;
+		mouse_position.y = pt.y;
 		SDL_WarpMouse(pt.x, pt.y);
 #else
 		pt.x = screen_size.w / 2;
 		pt.y = screen_size.h / 2;
+
+		mouse_position.x = pt.x;
+		mouse_position.y = pt.y;
 		SDL_WarpMouseInWindow(window, pt.x, pt.y);
 #endif
 	}
@@ -346,9 +464,33 @@ void EMU_OSD::disable_mouse(int mode)
 {
 	// disable mouse emulation
 	if(!mouse_disabled) {
+		// show mouse cursor
 		SDL_ShowCursor(SDL_ENABLE);
 	}
 	mouse_disabled |= (mode ? 2 : 1);
+}
+
+void EMU_OSD::mouse_enter()
+{
+}
+
+void EMU_OSD::mouse_move(int x, int y)
+{
+	if (mouse_logic_type == MOUSE_LOGIC_PREPARE) {
+		if (mouse_position.x == x
+		 && mouse_position.y == y) {
+			// mouse warped
+			mouse_logic_type = MOUSE_LOGIC_DEFAULT;
+		} else {
+			mouse_position.x = x;
+			mouse_position.y = y;
+			mouse_logic_type = MOUSE_LOGIC_FLEXIBLE;
+		}
+	}
+}
+
+void EMU_OSD::mouse_leave()
+{
 }
 
 #if 0

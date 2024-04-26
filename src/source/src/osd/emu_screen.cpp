@@ -77,7 +77,9 @@ void EMU::EMU_SCREEN()
 
 	// initialize update flags
 	disable_screen = DISABLE_SURFACE;
-	first_invalidate = self_invalidate = false;
+	first_invalidate_default = false;
+	first_invalidate = false;
+	self_invalidate = false;
 	skip_frame = false;
 
 	//
@@ -107,8 +109,8 @@ void EMU::initialize_screen()
 {
 	logging->out_debug(_T("EMU::initialize_screen"));
 
-	change_pixel_aspect(config.pixel_aspect);
-	change_rec_video_size(config.screen_video_size);
+	change_pixel_aspect(pConfig->pixel_aspect);
+	change_rec_video_size(pConfig->screen_video_size);
 }
 
 ///
@@ -202,7 +204,7 @@ void EMU::set_display_size(int width, int height, int power, bool now_window)
 void EMU::set_vm_display_size()
 {
 	if (vm) {
-		int new_size = config.screen_video_size;
+		int new_size = pConfig->screen_video_size;
 		int l = mixed_size.x;
 		int t = mixed_size.y;
 		int r = l + mixed_size.w;
@@ -284,7 +286,7 @@ void EMU::capture_screen()
 bool EMU::start_rec_video(int type, int fps_no, bool show_dialog)
 {
 #ifdef USE_REC_VIDEO
-	int size = config.screen_video_size;
+	int size = pConfig->screen_video_size;
 	return rec_video->Start(type, fps_no, rec_video_size[size], sufOrigin, show_dialog);
 #else
 	return false;
@@ -341,7 +343,7 @@ bool EMU::now_rec_video()
 void EMU::resize_rec_video(int num)
 {
 #ifdef USE_EMU_INHERENT_SPEC
-	config.screen_video_size = num;
+	pConfig->screen_video_size = num;
 	change_rec_video_size(num);
 
 	// send display size to vm
@@ -419,22 +421,22 @@ void EMU::enum_window_mode(int max_width, int max_height)
 /// matching window or fullscreen size
 void EMU::find_screen_mode()
 {
-	if (config.window_mode < 8) {
+	if (pConfig->window_mode < 8) {
 		// matching window size at last time
-		int find = window_mode.Find(config.screen_width, config.screen_height);
+		int find = window_mode.Find(pConfig->screen_width, pConfig->screen_height);
 		if (find >= 0) {
-			config.window_mode = find;
+			pConfig->window_mode = find;
 		} else {
-			config.window_mode = 0;
+			pConfig->window_mode = 0;
 		}
 	} else {
 		// matching fullscreen size at last time
-		int find = screen_mode.FindMode(config.disp_device_no, config.screen_width, config.screen_height);
+		int find = screen_mode.FindMode(pConfig->disp_device_no, pConfig->screen_width, pConfig->screen_height);
 		if (find >= 0) {
-			config.window_mode = find + (config.disp_device_no * VIDEO_MODE_MAX) + 8;
+			pConfig->window_mode = find + (pConfig->disp_device_no * VIDEO_MODE_MAX) + 8;
 		} else {
 			// default window
-			config.window_mode = 0;
+			pConfig->window_mode = 0;
 		}
 	}
 }
@@ -449,8 +451,8 @@ void EMU::enum_screen_mode(uint32_t flags)
 /// @param[in] mode 0 - 7: window size  8 -:  fullscreen size  -1: switch over  -2: shift window mode
 void EMU::change_screen_mode(int mode)
 {
-//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,config.window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
-//	if (mode == config.window_mode) return;
+//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,pConfig->window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
+//	if (mode == pConfig->window_mode) return;
 	if (now_resizing) {
 		// ignore events
 		return;
@@ -468,13 +470,13 @@ void EMU::change_screen_mode(int mode)
 			// no change
 			return;
 		} else {
-			mode = ((config.window_mode + 1) % window_mode.Count());
+			mode = ((pConfig->window_mode + 1) % window_mode.Count());
 		}
 	}
 	if (now_screenmode != NOW_FULLSCREEN) {
-		prev_window_mode = config.window_mode;
+		prev_window_mode = pConfig->window_mode;
 	}
-//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,config.window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
+//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,pConfig->window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
 	set_window(mode, desktop_size.w, desktop_size.h);
 }
 
@@ -501,13 +503,13 @@ void EMU::change_maximize_window(int width, int height, bool maximize)
 void EMU::change_stretch_screen(int num)
 {
 	if (num < 0) {
-		num = (config.stretch_screen + 1);
+		num = (pConfig->stretch_screen + 1);
 	}
 	num = (num % 3);
-	if (config.stretch_screen == num) {
+	if (pConfig->stretch_screen == num) {
 		num = 0;
 	}
-	config.stretch_screen = num;
+	pConfig->stretch_screen = num;
 	if (now_screenmode != NOW_WINDOW) {
 		// change screen
 		set_display_size(-1, -1, 10, now_screenmode == NOW_WINDOW);
@@ -529,11 +531,11 @@ void EMU::set_window(int mode, int cur_width, int cur_height)
 void EMU::change_pixel_aspect(int mode)
 {
 	if (mode < 0) {
-		mode = (config.pixel_aspect + 1) % get_pixel_aspect_count();
+		mode = (pConfig->pixel_aspect + 1) % get_pixel_aspect_count();
 	}
-	config.pixel_aspect = get_pixel_aspect(mode, &mixed_ratio.w, &mixed_ratio.h);
+	pConfig->pixel_aspect = get_pixel_aspect(mode, &mixed_ratio.w, &mixed_ratio.h);
 
-	set_display_size(config.screen_width, config.screen_height, now_screenmode != NOW_WINDOW ? 10 : window_mode_power, now_screenmode == NOW_WINDOW);
+	set_display_size(pConfig->screen_width, pConfig->screen_height, now_screenmode != NOW_WINDOW ? 10 : window_mode_power, now_screenmode == NOW_WINDOW);
 }
 
 /// kind of aspect ratio
@@ -569,7 +571,7 @@ int EMU::get_pixel_aspect(int mode, int *wratio, int *hratio)
 		break;
 	}
 #ifdef USE_SCREEN_ROTATE
-	if (config.monitor_type & 1) {
+	if (pConfig->monitor_type & 1) {
 		SWAP(int, *wratio, *hratio);
 	}
 #endif

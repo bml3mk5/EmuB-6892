@@ -28,7 +28,7 @@ private:
 
 	uint8_t font[0x20000];
 
-	bool font_enable;
+	int  font_enable;
 
 	//for resume
 #pragma pack(1)

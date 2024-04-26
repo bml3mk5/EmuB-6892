@@ -11,8 +11,12 @@
 #include "qt_keybindbox.h"
 #include "ui_qt_keybindbox.h"
 #include "qt_dialog.h"
-#include "../../emu_osd.h"
+//#include "../../emu_osd.h"
+#include "../../labels.h"
+//#include "../../utility.h"
+#include "../../keycode.h"
 #include <QKeyEvent>
+#include <QTimer>
 
 extern EMU *emu;
 
@@ -22,13 +26,12 @@ MyKeybindBox::MyKeybindBox(QWidget *parent) :
 {
 	setWindowTitle(CMSG(Keybind));
 
-	int tab;
+	int tab_num;
 
 //	ui->setupUi(this);
 
-	for(tab=0; tab<KEYBIND_MAX_NUM; tab++) {
-		tables[tab] = nullptr;
-		kbdata[tab] = new KeybindData();
+	for(tab_num=0; tab_num<KeybindData::TABS_MAX; tab_num++) {
+		tables.push_back(new MyTableWidget(tab_num));
 	}
 
 	QVBoxLayout *vbox_all = new QVBoxLayout(this);
@@ -44,14 +47,14 @@ MyKeybindBox::MyKeybindBox(QWidget *parent) :
 
 
 	curr_tab = 0;
-	for(tab=0; tab<KEYBIND_MAX_NUM; tab++) {
+	for(tab_num=0; tab_num<(int)tables.size(); tab_num++) {
 		QWidget *titmWidget = new QWidget();
 		QVBoxLayout *vbox = new QVBoxLayout(titmWidget);
-		tables[tab] = new MyTableWidget(tab, kbdata[tab]);
-		tables[tab]->setMinimumSize(400, 400);
-		vbox->addWidget(tables[tab]);
-		tabWidget->addTab(titmWidget, tab == 1 ? CMsg::Joypad_Key_Assigned : (tab == 2 ? CMsg::Joypad_PIA_Type : CMsg::Keyboard));
+		tables[tab_num]->setMinimumSize(400, 400);
+		vbox->addWidget(tables[tab_num]);
+		tabWidget->addTab(titmWidget, LABELS::keybind_tab[tab_num]);
 	}
+	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
 	// right button
 	char label[128];
@@ -83,6 +86,33 @@ MyKeybindBox::MyKeybindBox(QWidget *parent) :
 	QSpacerItem *spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	vbox_btn->addSpacerItem(spc);
 
+	//
+
+	joy_mask = ~0;
+	hbox = new QHBoxLayout();
+	vbox_all->addLayout(hbox);
+	MyCheckBox *chk;
+	chk = new MyCheckBox(CMsg::Enable_Z_axis);
+	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
+	chk->setProperty("num", 0);
+	chk->setChecked((joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0);
+	hbox->addWidget(chk);
+	chk = new MyCheckBox(CMsg::Enable_R_axis);
+	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
+	chk->setProperty("num", 1);
+	chk->setChecked((joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0);
+	hbox->addWidget(chk);
+	chk = new MyCheckBox(CMsg::Enable_U_axis);
+	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
+	chk->setProperty("num", 2);
+	chk->setChecked((joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0);
+	hbox->addWidget(chk);
+	chk = new MyCheckBox(CMsg::Enable_V_axis);
+	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
+	chk->setProperty("num", 3);
+	chk->setChecked((joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0);
+	hbox->addWidget(chk);
+
 	QDialogButtonBox *btn = new QDialogButtonBox(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 	vbox_all->addWidget(btn, Qt::AlignRight);
 	connect(btn, SIGNAL(accepted()), this, SLOT(accept()));
@@ -91,17 +121,12 @@ MyKeybindBox::MyKeybindBox(QWidget *parent) :
 
 MyKeybindBox::~MyKeybindBox()
 {
-	for(int tab=0; tab<KEYBIND_MAX_NUM; tab++) {
-		delete kbdata[tab];
-	}
-
-//	delete ui;
 }
 
 void MyKeybindBox::setData()
 {
-	for(int tab=0; tab<KEYBIND_MAX_NUM; tab++) {
-		kbdata[tab]->SetData();
+	for(int tab_num=0; tab_num<(int)tables.size(); tab_num++) {
+		tables[tab_num]->setData();
 	}
 
 	emu->save_keybind();
@@ -127,7 +152,7 @@ void MyKeybindBox::loadPreset()
 {
 	int num = sender()->property("num").toInt();
 
-	kbdata[curr_tab]->LoadPreset(num);
+	tables[curr_tab]->loadPreset(num);
 	update();
 }
 
@@ -135,106 +160,33 @@ void MyKeybindBox::savePreset()
 {
 	int num = sender()->property("num").toInt();
 
-	kbdata[curr_tab]->SavePreset(num);
+	tables[curr_tab]->savePreset(num);
 
 	update();
 }
 
-//
-
-MyTableWidget::MyTableWidget(int tab, KeybindData *data, QWidget *parent)
- : QTableWidget(parent)
+void MyKeybindBox::tabChanged(int index)
 {
-	kbdata = data;
-	tab_num = tab;
-
-#ifdef USE_PIAJOYSTICKBIT
-	kbdata->Init(emu, tab, tab == 0 ? 0 : 1, tab == 2 ? 2 : 0);
-#else
-	kbdata->Init(emu, tab, tab == 0 ? 0 : 1, tab == 2 ? 1 : 0);
-#endif
-
-	_TCHAR label[128];
-
-	int rows = kbdata->GetNumberOfRows();
-	int cols = kbdata->GetNumberOfColumns();
-
-	setColumnCount(cols);
-	for(int col=0; col<cols; col++) {
-		QString qlabel = tr("Key%1").arg(col + 1);
-		QTableWidgetItem *itm = new QTableWidgetItem(qlabel);
-		setHorizontalHeaderItem(col, itm);
-	}
-
-	setRowCount(rows);
-	for(int row=0; row<rows; row++) {
-		kbdata->GetCellString(row, -1, label);
-		QTableWidgetItem *itm = new QTableWidgetItem(label);
-		setVerticalHeaderItem(row, itm);
-
-		for(int col=0; col<cols; col++) {
-			kbdata->GetCellString(row, col, label);
-			QTableWidgetItem *itm = new QTableWidgetItem(label);
-			itm->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-			setItem(row, col, itm);
-		}
-	}
-
-	connect(this, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(cellDoubleClick(int, int)));
+	curr_tab = index;
 }
 
-void MyTableWidget::update()
+void MyKeybindBox::toggleAxis(bool checked)
 {
-	_TCHAR label[128];
-
-	if (!kbdata) return;
-
-	int rows = kbdata->GetNumberOfRows();
-	int cols = kbdata->GetNumberOfColumns();
-	for(int row=0; row<rows; row++) {
-		for(int col=0; col<cols; col++) {
-			kbdata->GetCellString(row, col, label);
-			QTableWidgetItem *itm = item(row, col);
-			if (itm) {
-				itm->setText(label);
-			}
-		}
+	int num = sender()->property("num").toInt();
+	uint32_t mask = 0;
+	switch(num) {
+	case 0:
+		mask = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
+		break;
+	case 1:
+		mask = (JOYCODE_R_UP | JOYCODE_R_DOWN);
+		break;
+	case 2:
+		mask = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
+		break;
+	case 3:
+		mask = (JOYCODE_V_UP | JOYCODE_V_DOWN);
+		break;
 	}
-
-	QTableWidget::update();
-}
-
-/// override keyevent on table
-void MyTableWidget::keyPressEvent(QKeyEvent *event)
-{
-	_TCHAR label[128];
-
-//	if (event->isAutoRepeat()) return;
-    int code = event->key();
-    uint32_t vk_key = event->nativeVirtualKey();
-    uint32_t scan_code = event->nativeScanCode();
-	uint32_t mod = static_cast<uint32_t>(event->modifiers());
-	(dynamic_cast<EMU_OSD *>(emu))->translate_keysym_(0, code, vk_key, scan_code, mod, &code);
-
-	QTableWidgetItem *itm = currentItem();
-	if (!itm) return;
-	if (itm->row() < 0 || itm->column() < 0) return;
-
-	kbdata->SetVkCode(itm->row(), itm->column(), static_cast<uint32_t>(code), label);
-	itm->setText(label);
-}
-
-//void MyTableWidget::keyReleaseEvent(QKeyEvent *event)
-//{
-//}
-
-void MyTableWidget::cellDoubleClick(int row, int column)
-{
-	_TCHAR label[128];
-
-	QTableWidgetItem *itm = this->item(row, column);
-	if (!itm) return;
-
-	kbdata->SetVkCode(itm->row(), itm->column(), 0, label);
-	itm->setText(label);
+	BIT_ONOFF(joy_mask, mask, checked);
 }

@@ -1,4 +1,4 @@
-/** @file ag_gui_config.cpp
+/** @file ag_gui_pConfig->cpp
 
 	Skelton for retropc emulator
 	SDL + Ager edition
@@ -35,13 +35,13 @@ int AG_GUI_BASE::ConfigLoad()
 #if defined(_WIN32)
 #ifdef AG_PATHSEPMULTI
 	AG_PrtString(agConfig, "font-path", "%s;%s;%s;%s\\fonts"
-						,config.font_path.GetN(),emu->resource_path(),emu->application_path(),SDL_getenv("SystemRoot"));
+						,pConfig->font_path.GetN(),emu->resource_path(),emu->application_path(),SDL_getenv("SystemRoot"));
 #else
 	AG_PrtString(agConfig, "font-path", "%s:%s:%s:%s\\fonts"
-						,config.font_path.GetN(),emu->resource_path(),emu->application_path(),SDL_getenv("SystemRoot"));
+						,pConfig->font_path.GetN(),emu->resource_path(),emu->application_path(),SDL_getenv("SystemRoot"));
 #endif
-	strcpy(fdata[0].name, config.menu_fontname); fdata[0].size = config.menu_fontsize;
-	AG_SetInt(agConfig, "font.size", config.menu_fontsize);
+	strcpy(fdata[0].name, pConfig->menu_fontname.GetN()); fdata[0].size = pConfig->menu_fontsize;
+	AG_SetInt(agConfig, "font.size", pConfig->menu_fontsize);
 
 #elif defined(linux)
 	AG_PrtString(agConfig, "font-path", "%s:"
@@ -52,21 +52,21 @@ int AG_GUI_BASE::ConfigLoad()
 										"/usr/share/fonts/opentype/ipafont:"
 										"/usr/share/fonts/truetype/freefont:"
 										"/usr/X11R6/lib/X11/fonts/TTF"
-						,config.font_path.GetN(),emu->resource_path(),emu->application_path(),getenv("HOME"));
-	strcpy(fdata[0].name, config.menu_fontname);  fdata[0].size = config.menu_fontsize;
-	strcpy(fdata[1].name, "ttf-japanese-gothic.ttf"); fdata[1].size = config.menu_fontsize;
-	strcpy(fdata[2].name, "fonts-japanese-gothic.ttf"); fdata[2].size = config.menu_fontsize;
-	AG_SetInt(agConfig, "font.size", config.menu_fontsize);
+						,pConfig->font_path.GetN(),emu->resource_path(),emu->application_path(),getenv("HOME"));
+	strcpy(fdata[0].name, pConfig->menu_fontname.GetN());  fdata[0].size = pConfig->menu_fontsize;
+	strcpy(fdata[1].name, "ttf-japanese-gothic.ttf"); fdata[1].size = pConfig->menu_fontsize;
+	strcpy(fdata[2].name, "fonts-japanese-gothic.ttf"); fdata[2].size = pConfig->menu_fontsize;
+	AG_SetInt(agConfig, "font.size", pConfig->menu_fontsize);
 
 #elif defined(__APPLE__) && defined(__MACH__)
 	AG_PrtString(agConfig, "font-path", "%s:"
 										"%s:%s:"
 										"%s/Library/Fonts:/Library/Fonts:"
 										"/System/Library/Fonts"
-						,config.font_path.GetN(),emu->resource_path(),emu->application_path(),getenv("HOME"));
-	strcpy(fdata[0].name, config.menu_fontname);  fdata[0].size = config.menu_fontsize;
-	strcpy(fdata[1].name, "Hiragino Sans GB W3.otf");  fdata[1].size = config.menu_fontsize;
-	AG_SetInt(agConfig, "font.size", config.menu_fontsize);
+						,pConfig->font_path.GetN(),emu->resource_path(),emu->application_path(),getenv("HOME"));
+	strcpy(fdata[0].name, pConfig->menu_fontname.GetN());  fdata[0].size = pConfig->menu_fontsize;
+	strcpy(fdata[1].name, "Hiragino Sans GB W3.otf");  fdata[1].size = pConfig->menu_fontsize;
+	AG_SetInt(agConfig, "font.size", pConfig->menu_fontsize);
 
 #elif defined(__FreeBSD__)
 	AG_PrtString(agConfig, "font-path", "%s:"
@@ -75,10 +75,10 @@ int AG_GUI_BASE::ConfigLoad()
 										"/usr/share/fonts/TTF:"
 										"/usr/local/share/font-mona-ipa/fonts/:"
 										"/usr/local/lib/X11/fonts/TTF"
-						,config.font_path.GetN(),emu->resource_path(),emu->application_path(),getenv("HOME"));
-	strcpy(fdata[0].name, config.menu_fontname);  fdata[0].size = config.menu_fontsize;
-	strcpy(fdata[1].name, "ipagp.ttf");  fdata[1].size = config.menu_fontsize;
-	AG_SetInt(agConfig, "font.size", config.menu_fontsize);
+						,pConfig->font_path.GetN(),emu->resource_path(),emu->application_path(),getenv("HOME"));
+	strcpy(fdata[0].name, pConfig->menu_fontname.GetN());  fdata[0].size = pConfig->menu_fontsize;
+	strcpy(fdata[1].name, "ipagp.ttf");  fdata[1].size = pConfig->menu_fontsize;
+	AG_SetInt(agConfig, "font.size", pConfig->menu_fontsize);
 
 #endif
 

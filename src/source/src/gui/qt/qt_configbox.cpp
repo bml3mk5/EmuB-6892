@@ -81,11 +81,11 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 		radSysMode[row] = new MyRadioButton(sys_mode_labels[row]);
 		radSysMode[row]->setMinimumSize(16, 0);
 		griSysMode->addWidget(radSysMode[row], row, 1);
-		radSysMode[row]->setChecked((config.sys_mode & 1) == (1 - row));
+		radSysMode[row]->setChecked((pConfig->sys_mode & 1) == (1 - row));
 	}
 	QHBoxLayout *hbox_dip = new QHBoxLayout();
 	chkDipSwitch = new MyCheckBox(CMsg::NEWON7);
-	chkDipSwitch->setChecked((config.dipswitch & 4) != 0);
+	chkDipSwitch->setChecked((pConfig->dipswitch & 4) != 0);
 	hbox_dip->addItem(new QSpacerItem(16,1));
 	hbox_dip->addWidget(chkDipSwitch);
 	griSysMode->addLayout(hbox_dip, 2, 1);
@@ -100,7 +100,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lblModeSwitch->setMinimumSize(16, 0);
 	griDipSwitch->addWidget(lblModeSwitch, 0, 0);
 	chkModeSwitch = new MyCheckBox(CMsg::MODE_Switch);
-	chkModeSwitch->setChecked((config.dipswitch & 4) != 0);
+	chkModeSwitch->setChecked((pConfig->dipswitch & 4) != 0);
 	griDipSwitch->addWidget(chkModeSwitch, 0, 1);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	griDipSwitch->addItem(spc, 0, 2);
@@ -114,7 +114,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 		lblFddTypes[row] = new QLabel(">");
 		lblFddTypes[row]->setMinimumSize(16, 0);
 		griFddType->addWidget(lblFddTypes[row], row, 0);
-		lblFddTypes[row]->setVisible(config.fdd_type == row);
+		lblFddTypes[row]->setVisible(pConfig->fdd_type == row);
 		radFddTypes[row] = new MyRadioButton(LABELS::fdd_type[row]);
 		griFddType->addWidget(radFddTypes[row], row, 1);
 		radFddTypes[row]->setChecked(fdd_type == row);
@@ -124,7 +124,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 
 	// Power Off
 	chkPowerOff = new MyCheckBox(CMsg::Enable_the_state_of_power_off);
-	chkPowerOff->setChecked(config.use_power_off);
+	chkPowerOff->setChecked(pConfig->use_power_off);
 	vbox0l->addWidget(chkPowerOff);
 
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
@@ -190,7 +190,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	vboxOpenGL->addLayout(hboxUseOpenGL);
 	lbl = new MyLabel(CMsg::Method_ASTERISK);
 	hboxUseOpenGL->addWidget(lbl);
-	comUseOpenGL = new MyComboBox(nullptr, LABELS::opengl_use, config.use_opengl);
+	comUseOpenGL = new MyComboBox(nullptr, LABELS::opengl_use, pConfig->use_opengl);
 	hboxUseOpenGL->addWidget(comUseOpenGL);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	hboxUseOpenGL->addSpacerItem(spc);
@@ -199,7 +199,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	vboxOpenGL->addLayout(hboxGLFilter);
 	lbl = new MyLabel(CMsg::Filter_Type);
 	hboxGLFilter->addWidget(lbl);
-	comGLFilter = new MyComboBox(nullptr, LABELS::opengl_filter, config.gl_filter_type);
+	comGLFilter = new MyComboBox(nullptr, LABELS::opengl_filter, pConfig->gl_filter_type);
 	hboxGLFilter->addWidget(comGLFilter);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	hboxGLFilter->addSpacerItem(spc);
@@ -217,9 +217,9 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	hboxCRTCdisptmg->addWidget(lbl);
 	comCRTCdisptmg = new MyComboBox(nullptr, LABELS::disp_skew);
 #if defined(_MBS1)
-	comCRTCdisptmg->setCurrentIndex(config.disptmg_skew + 2);
+	comCRTCdisptmg->setCurrentIndex(pConfig->disptmg_skew + 2);
 #else
-	comCRTCdisptmg->setCurrentIndex(config.disptmg_skew);
+	comCRTCdisptmg->setCurrentIndex(pConfig->disptmg_skew);
 #endif
 	hboxCRTCdisptmg->addWidget(comCRTCdisptmg);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
@@ -235,9 +235,9 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	hboxCRTCcurdisp->addWidget(lbl);
 	comCRTCcurdisp = new MyComboBox(nullptr, LABELS::disp_skew,
 #if defined(_MBS1)
-		config.curdisp_skew + 2
+		pConfig->curdisp_skew + 2
 #else
-		config.curdisp_skew
+		pConfig->curdisp_skew
 #endif
 	);
 	hboxCRTCcurdisp->addWidget(comCRTCcurdisp);
@@ -254,7 +254,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	// LED position
 	lbl = new MyLabel(CMsg::Position);
 	hboxLED->addWidget(lbl);
-	comLEDPos = new MyComboBox(nullptr, LABELS::led_pos, config.led_pos);
+	comLEDPos = new MyComboBox(nullptr, LABELS::led_pos, pConfig->led_pos);
 	hboxLED->addWidget(comLEDPos);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	hboxLED->addSpacerItem(spc);
@@ -265,7 +265,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Capture_Type);
 	hboxCapType->addWidget(lbl);
 	comCapType = new MyComboBox(nullptr, LABELS::capture_fmt);
-	comCapType->setCurrentIndex(config.capture_type);
+	comCapType->setCurrentIndex(pConfig->capture_type);
 	hboxCapType->addWidget(comCapType);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	hboxCapType->addSpacerItem(spc);
@@ -276,7 +276,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Snapshot_Path);
 	hboxSnapPath->addWidget(lbl);
 	linSnapPath = new QLineEdit();
-	linSnapPath->setText(QTChar::fromTChar(config.snapshot_path.Get()));
+	linSnapPath->setText(QTChar::fromTChar(pConfig->snapshot_path.Get()));
 	linSnapPath->setMinimumSize(368, 0);
 	hboxSnapPath->addWidget(linSnapPath);
 	MyPushButton *btnSnapPath = new MyPushButton(CMsg::Folder_);
@@ -292,7 +292,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Font_Path);
 	hboxFontPath->addWidget(lbl);
 	linFontPath = new QLineEdit();
-	linFontPath->setText(QTChar::fromTChar(config.font_path.Get()));
+	linFontPath->setText(QTChar::fromTChar(pConfig->font_path.Get()));
 	linFontPath->setMinimumSize(256, 0);
 	hboxFontPath->addWidget(linFontPath);
 	MyPushButton *btnFontPath = new MyPushButton(CMsg::Folder_);
@@ -308,13 +308,13 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Message_Font);
 	hboxMsgFont->addWidget(lbl);
 	linMsgFont = new QLineEdit();
-	linMsgFont->setText(QTChar::fromTChar(config.msgboard_msg_fontname.Get()));
+	linMsgFont->setText(QTChar::fromTChar(pConfig->msgboard_msg_fontname.Get()));
 	linMsgFont->setMinimumSize(192, 0);
 	hboxMsgFont->addWidget(linMsgFont);
 	lbl = new MyLabel(CMsg::_Size);
 	hboxMsgFont->addWidget(lbl);
 	linMsgSize = new QLineEdit();
-	linMsgSize->setText(QString::number(config.msgboard_msg_fontsize));
+	linMsgSize->setText(QString::number(pConfig->msgboard_msg_fontsize));
 	linMsgSize->setMinimumSize(32, 0);
 	hboxMsgFont->addWidget(linMsgSize);
 	MyPushButton *btnMsgFont = new MyPushButton(CMsg::Font_);
@@ -329,13 +329,13 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Info_Font);
 	hboxInfoFont->addWidget(lbl);
 	linInfoFont = new QLineEdit();
-	linInfoFont->setText(QTChar::fromTChar(config.msgboard_info_fontname.Get()));
+	linInfoFont->setText(QTChar::fromTChar(pConfig->msgboard_info_fontname.Get()));
 	linInfoFont->setMinimumSize(192, 0);
 	hboxInfoFont->addWidget(linInfoFont);
 	lbl = new MyLabel(CMsg::_Size);
 	hboxInfoFont->addWidget(lbl);
 	linInfoSize = new QLineEdit();
-	linInfoSize->setText(QString::number(config.msgboard_info_fontsize));
+	linInfoSize->setText(QString::number(pConfig->msgboard_info_fontsize));
 	linInfoSize->setMinimumSize(32, 0);
 	hboxInfoFont->addWidget(linInfoSize);
 	MyPushButton *btnInfoFont = new MyPushButton(CMsg::Font_);
@@ -347,7 +347,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	// language
 	lang_list.Clear();
 	clocale->GetLocaleNamesWithDefault(lang_list);
-	int lang_selidx = clocale->SelectLocaleNameIndex(lang_list, config.language);
+	int lang_selidx = clocale->SelectLocaleNameIndex(lang_list, pConfig->language);
 
 	QHBoxLayout *hboxLanguage = new QHBoxLayout();
 	vbox1->addLayout(hboxLanguage);
@@ -383,10 +383,10 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	QHBoxLayout *hboxLoadWav = new QHBoxLayout();
 	vboxLoadWav->addLayout(hboxLoadWav);
 	chkReverse = new MyCheckBox(CMsg::Reverse_Wave);
-	chkReverse->setChecked(config.wav_reverse);
+	chkReverse->setChecked(pConfig->wav_reverse);
 	hboxLoadWav->addWidget(chkReverse);
 	chkHalf = new MyCheckBox(CMsg::Half_Wave);
-	chkHalf->setChecked(config.wav_half);
+	chkHalf->setChecked(pConfig->wav_half);
 	hboxLoadWav->addWidget(chkHalf);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	hboxLoadWav->addSpacerItem(spc);
@@ -395,7 +395,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	vboxLoadWav->addLayout(hboxCorrect);
 	lbl = new MyLabel(CMsg::Correct);
 	hboxCorrect->addWidget(lbl);
-	int correct_type = (config.wav_correct ? config.wav_correct_type + 1 : 0);
+	int correct_type = (pConfig->wav_correct ? pConfig->wav_correct_type + 1 : 0);
 	radNoCorr = new MyRadioButton(CMsg::None_);
 	radNoCorr->setChecked(correct_type == 0);
 	hboxCorrect->addWidget(radNoCorr);
@@ -414,7 +414,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 		lbl = new QLabel(i == 0 ? "1200Hz" : "2400Hz");
 		hboxCorrAmp->addWidget(lbl);
 		linCorrAmp[i] = new QLineEdit();
-		linCorrAmp[i]->setText(QString::number(config.wav_correct_amp[i]));
+		linCorrAmp[i]->setText(QString::number(pConfig->wav_correct_amp[i]));
         linCorrAmp[i]->setMaxLength(5);
         linCorrAmp[i]->setFixedWidth(64);
 		hboxCorrAmp->addWidget(linCorrAmp[i]);
@@ -433,7 +433,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Sample_Rate);
 	hboxRate->addWidget(lbl);
 	comRate = new MyComboBox(nullptr, LABELS::wav_sampling_rate);
-	comRate->setCurrentIndex(config.wav_sample_rate);
+	comRate->setCurrentIndex(pConfig->wav_sample_rate);
 	hboxRate->addWidget(comRate);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	hboxRate->addSpacerItem(spc);
@@ -443,7 +443,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Sample_Bits);
 	hboxBits->addWidget(lbl);
 	comBits = new MyComboBox(nullptr, LABELS::wav_sampling_bits);
-	comBits->setCurrentIndex(config.wav_sample_bits);
+	comBits->setCurrentIndex(pConfig->wav_sample_bits);
 	hboxBits->addWidget(comBits);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	hboxBits->addSpacerItem(spc);
@@ -460,9 +460,9 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 
 	lbl = new MyLabel(CMsg::When_start_up_mount_disk_at_);
 	hboxMountFdd->addWidget(lbl);
-	for(int i=0; i<MAX_DRIVE; i++) {
+	for(int i=0; i<USE_FLOPPY_DISKS; i++) {
 		chkDrive[i] = new QCheckBox(QString::number(i));
-		chkDrive[i]->setChecked((config.mount_fdd & (1 << i)) != 0);
+		chkDrive[i]->setChecked((pConfig->mount_fdd & (1 << i)) != 0);
 		hboxMountFdd->addWidget(chkDrive[i]);
 	}
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
@@ -508,18 +508,18 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 		lbl = new QLabel(tr("LPT") + QString::number(i));
 		gbox3->addWidget(lbl, row, 0);
 		linLPTHost[i] = new QLineEdit();
-		linLPTHost[i]->setText(QTChar::fromTChar(config.printer_server_host[i].Get()));
+		linLPTHost[i]->setText(QTChar::fromTChar(pConfig->printer_server_host[i].Get()));
 		linLPTHost[i]->setMinimumSize(128, 0);
 		gbox3->addWidget(linLPTHost[i], row, 1);
 		linLPTPort[i] = new QLineEdit();
-		linLPTPort[i]->setText(QString::number(config.printer_server_port[i]));
+		linLPTPort[i]->setText(QString::number(pConfig->printer_server_port[i]));
 		linLPTPort[i]->setMinimumSize(64, 0);
 		gbox3->addWidget(linLPTPort[i], row, 2);
 		QHBoxLayout *hbox = new QHBoxLayout();
 		lbl = new MyLabel(CMsg::_Print_delay);
 		hbox->addWidget(lbl);
 		linLPTDelay[i] = new QLineEdit();
-		linLPTDelay[i]->setText(QString::number(config.printer_delay[i], 'f', 1));
+		linLPTDelay[i]->setText(QString::number(pConfig->printer_delay[i], 'f', 1));
 		linLPTDelay[i]->setMinimumSize(32, 0);
 		linLPTDelay[i]->setFixedWidth(32);
 		hbox->addWidget(linLPTDelay[i]);
@@ -534,14 +534,14 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 		lbl = new QLabel(tr("COM") + QString::number(i));
 		gbox3->addWidget(lbl, row, 0);
 		linCOMHost[i] = new QLineEdit();
-		linCOMHost[i]->setText(QTChar::fromTChar(config.comm_server_host[i].Get()));
+		linCOMHost[i]->setText(QTChar::fromTChar(pConfig->comm_server_host[i].Get()));
 		linCOMHost[i]->setMinimumSize(128, 0);
 		gbox3->addWidget(linCOMHost[i], row, 1);
 		linCOMPort[i] = new QLineEdit();
-		linCOMPort[i]->setText(QString::number(config.comm_server_port[i]));
+		linCOMPort[i]->setText(QString::number(pConfig->comm_server_port[i]));
 		linCOMPort[i]->setMinimumSize(64, 0);
 		gbox3->addWidget(linCOMPort[i], row, 2);
-		comCOMBaud[i] = new MyComboBox(nullptr, LABELS::comm_baud, config.comm_dipswitch[i] - 1);
+		comCOMBaud[i] = new MyComboBox(nullptr, LABELS::comm_baud, pConfig->comm_dipswitch[i] - 1);
 		gbox3->addWidget(comCOMBaud[i], row, 3);
 
 		row++;
@@ -558,13 +558,13 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Hostname);
 	hbox3->addWidget(lbl);
 	QLineEdit *linHost = new QLineEdit();
-	linHost->setText(QTChar::fromTChar(config.debugger_server_host.Get()));
+	linHost->setText(QTChar::fromTChar(pConfig->debugger_server_host.Get()));
 	linHost->setMinimumSize(128, 0);
 	hbox3->addWidget(linHost);
 	lbl = new MyLabel(CMsg::_Port);
 	hbox3->addWidget(lbl);
 	QLineEdit *linPort = new QLineEdit();
-	linPort->setText(QString::number(config.debugger_server_port));
+	linPort->setText(QString::number(pConfig->debugger_server_port));
 	linPort->setMinimumSize(64, 0);
 	hbox3->addWidget(linPort);
 	spc = new QSpacerItem(1,1, QSizePolicy::MinimumExpanding);
@@ -583,7 +583,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	MyComboBox *comUartBaud = new MyComboBox(nullptr, LABELS::comm_uart_baudrate);
 	int match = 0;
 	for(int i=0; LABELS::comm_uart_baudrate[i] != NULL; i++) {
-		if (config.comm_uart_baudrate == (int)_tcstol(LABELS::comm_uart_baudrate[i], NULL, 10)) {
+		if (pConfig->comm_uart_baudrate == (int)_tcstol(LABELS::comm_uart_baudrate[i], NULL, 10)) {
 			match = i;
 			break;
 		}
@@ -595,26 +595,26 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::Data_Bit);
 	hboxUart->addWidget(lbl);
 	MyComboBox *comUartDataBit = new MyComboBox(nullptr, LABELS::comm_uart_databit);
-	comUartDataBit->setCurrentIndex(config.comm_uart_databit - 7);
+	comUartDataBit->setCurrentIndex(pConfig->comm_uart_databit - 7);
 	hboxUart->addWidget(comUartDataBit);
 	hboxUart = new QHBoxLayout();
 	vboxUart->addLayout(hboxUart);
 	lbl = new MyLabel(CMsg::Parity);
 	hboxUart->addWidget(lbl);
-	MyComboBox *comUartParity = new MyComboBox(nullptr, LABELS::comm_uart_parity, config.comm_uart_parity);
+	MyComboBox *comUartParity = new MyComboBox(nullptr, LABELS::comm_uart_parity, pConfig->comm_uart_parity);
 	hboxUart->addWidget(comUartParity);
 	hboxUart = new QHBoxLayout();
 	vboxUart->addLayout(hboxUart);
 	lbl = new MyLabel(CMsg::Stop_Bit);
 	hboxUart->addWidget(lbl);
 	MyComboBox *comUartStopBit = new MyComboBox(nullptr, LABELS::comm_uart_stopbit);
-	comUartStopBit->setCurrentIndex(config.comm_uart_stopbit);
+	comUartStopBit->setCurrentIndex(pConfig->comm_uart_stopbit);
 	hboxUart->addWidget(comUartStopBit);
 	hboxUart = new QHBoxLayout();
 	vboxUart->addLayout(hboxUart);
 	lbl = new MyLabel(CMsg::Flow_Control);
 	hboxUart->addWidget(lbl);
-	MyComboBox *comUartFlowCtrl = new MyComboBox(nullptr, LABELS::comm_uart_flowctrl, config.comm_uart_flowctrl);
+	MyComboBox *comUartFlowCtrl = new MyComboBox(nullptr, LABELS::comm_uart_flowctrl, pConfig->comm_uart_flowctrl);
 	hboxUart->addWidget(comUartFlowCtrl);
 	lbl = new MyLabel(CMsg::Need_re_connect_to_serial_port_when_modified_this);
 	vboxUart->addWidget(lbl);
@@ -636,7 +636,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	lbl = new MyLabel(CMsg::ROM_Path_ASTERISK);
 	hboxRomPath->addWidget(lbl);
 	linRomPath = new QLineEdit();
-	linRomPath->setText(QTChar::fromTChar(config.rom_path.Get()));
+	linRomPath->setText(QTChar::fromTChar(pConfig->rom_path.Get()));
 	linRomPath->setMinimumSize(368, 0);
 	hboxRomPath->addWidget(linRomPath);
 	MyPushButton *btnRomPath = new MyPushButton(CMsg::Folder_);
@@ -660,7 +660,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	hboxExRam->addWidget(comExMem);
 	lbl = new MyLabel(CMsg::LB_Now_SP);
 	hboxExRam->addWidget(lbl);
-	lbl = new MyLabel(exram_labels[config.exram_size_num]);
+	lbl = new MyLabel(exram_labels[pConfig->exram_size_num]);
 	hboxExRam->addWidget(lbl);
 	lbl = new QLabel(")");
 	hboxExRam->addWidget(lbl);
@@ -668,11 +668,11 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	hboxExRam->addSpacerItem(spc);
 
 	chkMemNoWait = new MyCheckBox(CMsg::No_wait_to_access_the_main_memory);
-	chkMemNoWait->setChecked(config.mem_nowait);
+	chkMemNoWait->setChecked(pConfig->mem_nowait);
 	vbox4->addWidget(chkMemNoWait);
 #else
 	chkExMem = new MyCheckBox(CMsg::Use_Extended_Memory_64KB);
-	chkExMem->setChecked(config.exram_size_num != 0);
+	chkExMem->setChecked(pConfig->exram_size_num != 0);
 	vbox4->addWidget(chkExMem);
 #endif
 
@@ -693,7 +693,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	for(int n=0; z80b_card_irq_labels[n] != CMsg::End; n++) {
 		comZ80BIntr->addItemById(z80b_card_irq_labels[n]);
 	}
-	comZ80BIntr->setCurrentIndex(config.z80b_card_out_irq);
+	comZ80BIntr->setCurrentIndex(pConfig->z80b_card_out_irq);
 	hboxZ80BIntr->addWidget(comZ80BIntr);
 	spc = new QSpacerItem(1,1, QSizePolicy::MinimumExpanding);
 	hboxZ80BIntr->addSpacerItem(spc);
@@ -733,7 +733,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	QHBoxLayout *hboxFmopn = new QHBoxLayout();
 	lbl = new MyLabel(CMsg::Sound_chip);
 	hboxFmopn->addWidget(lbl);
-	comFmopn = new MyComboBox(nullptr, LABELS::type_of_soundcard, emu->get_parami(VM::ParamChipTypeOnFmOpn), config.type_of_fmopn, CMsg::LB_Now_RB);
+	comFmopn = new MyComboBox(nullptr, LABELS::type_of_soundcard, emu->get_parami(VM::ParamChipTypeOnFmOpn), pConfig->type_of_fmopn, CMsg::LB_Now_RB);
 	hboxFmopn->addWidget(comFmopn);
 	spc = new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding);
 	hboxFmopn->addSpacerItem(spc);
@@ -752,7 +752,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	QHBoxLayout *hboxExpsg = new QHBoxLayout();
 	lbl = new MyLabel(CMsg::Sound_chip);
 	hboxExpsg->addWidget(lbl);
-	comExpsg = new MyComboBox(nullptr, LABELS::type_of_soundcard, emu->get_parami(VM::ParamChipTypeOnExPsg), config.type_of_expsg, CMsg::LB_Now_RB);
+	comExpsg = new MyComboBox(nullptr, LABELS::type_of_soundcard, emu->get_parami(VM::ParamChipTypeOnExPsg), pConfig->type_of_expsg, CMsg::LB_Now_RB);
 	hboxExpsg->addWidget(comExpsg);
 	spc = new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding);
 	hboxExpsg->addSpacerItem(spc);
@@ -766,7 +766,7 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	hboxFMIntr->addWidget(lbl);
 	comFMIntr = new MyComboBox();
 	comFMIntr->addItemsById(LABELS::fmopn_irq);
-	comFMIntr->setCurrentIndex(config.opn_irq);
+	comFMIntr->setCurrentIndex(pConfig->opn_irq);
 	hboxFMIntr->addWidget(comFMIntr);
 	spc = new QSpacerItem(1,1, QSizePolicy::MinimumExpanding);
 	hboxFMIntr->addSpacerItem(spc);
@@ -827,7 +827,7 @@ void MyConfigBox::toggledExpsg(bool checked)
 
 void MyConfigBox::pressedSnapPath()
 {
-	QString dir = QTChar::fromTChar(config.snapshot_path.Get());
+	QString dir = QTChar::fromTChar(pConfig->snapshot_path.Get());
 	QFileDialog dlg(this, CMSG(Select_a_folder_to_save_snapshot_images), dir);
 	dlg.setAcceptMode(QFileDialog::AcceptOpen);
 	dlg.setFileMode(QFileDialog::Directory);	// select a folder only
@@ -872,7 +872,7 @@ void MyConfigBox::pressedInfoFont()
 
 void MyConfigBox::pressedRomPath()
 {
-	QString dir = QTChar::fromTChar(config.rom_path.Get());
+	QString dir = QTChar::fromTChar(pConfig->rom_path.Get());
 	QFileDialog dlg(this, "Select a folder containing the rom images.", dir);
 	dlg.setAcceptMode(QFileDialog::AcceptOpen);
 	dlg.setFileMode(QFileDialog::Directory);	// select a folder only
@@ -903,15 +903,15 @@ void MyConfigBox::setDatas()
 	// Mode Tab
 
 	// Power Off
-	config.use_power_off = chkPowerOff->isChecked();
+	pConfig->use_power_off = chkPowerOff->isChecked();
 	// MODE Switch
 #if defined(_MBS1)
-	int sys_mode = (config.sys_mode & ~1);
+	int sys_mode = (pConfig->sys_mode & ~1);
 	sys_mode |= (radSysMode[0]->isChecked() ? 1 : 0);
 	emu->set_parami(VM::ParamSysMode, sys_mode);
-	config.dipswitch = (chkDipSwitch->isChecked() ? config.dipswitch | 4 : config.dipswitch & ~4);
+	pConfig->dipswitch = (chkDipSwitch->isChecked() ? pConfig->dipswitch | 4 : pConfig->dipswitch & ~4);
 #else
-	config.dipswitch = (chkModeSwitch->isChecked() ? config.dipswitch | 4 : config.dipswitch & ~4);
+	pConfig->dipswitch = (chkModeSwitch->isChecked() ? pConfig->dipswitch | 4 : pConfig->dipswitch & ~4);
 #endif
 	// FDD Type
 	for(int i=0; i<4; i++) {
@@ -933,70 +933,70 @@ void MyConfigBox::setDatas()
 	// Screen tab
 
 	// use opengl
-	config.use_opengl = comUseOpenGL->currentIndex() & 0xff;
+	pConfig->use_opengl = comUseOpenGL->currentIndex() & 0xff;
 	// opengl filter
-	config.gl_filter_type = comGLFilter->currentIndex() & 0xff;
+	pConfig->gl_filter_type = comGLFilter->currentIndex() & 0xff;
 #if defined(_MBS1)
 	// CRTC disptmg
-	config.disptmg_skew = static_cast<int8_t>(comCRTCdisptmg->currentIndex()) - 2;
+	pConfig->disptmg_skew = static_cast<int8_t>(comCRTCdisptmg->currentIndex()) - 2;
 	// CRTC curdisp
-	config.curdisp_skew = static_cast<int8_t>(comCRTCcurdisp->currentIndex()) - 2;
+	pConfig->curdisp_skew = static_cast<int8_t>(comCRTCcurdisp->currentIndex()) - 2;
 #else
 	// CRTC disptmg
-	config.disptmg_skew = static_cast<int8_t>(comCRTCdisptmg->currentIndex());
+	pConfig->disptmg_skew = static_cast<int8_t>(comCRTCdisptmg->currentIndex());
 	// CRTC curdisp
-	config.curdisp_skew = static_cast<int8_t>(comCRTCcurdisp->currentIndex());
+	pConfig->curdisp_skew = static_cast<int8_t>(comCRTCcurdisp->currentIndex());
 #endif
 	// LED
 	int led_show = comLED->currentIndex();
 	// LED position
-	config.led_pos = comLEDPos->currentIndex() & 0xff;
+	pConfig->led_pos = comLEDPos->currentIndex() & 0xff;
 	// capture type
-	config.capture_type = comCapType->currentIndex() & 0xff;
+	pConfig->capture_type = comCapType->currentIndex() & 0xff;
 	// Snapshot path
 	QTChar snapshot_path(linSnapPath->text());
-	config.snapshot_path.Set(snapshot_path.toTChar());
+	pConfig->snapshot_path.Set(snapshot_path.toTChar());
 	// message font
 	QTChar msg_fontname(linMsgFont->text());
-	config.msgboard_msg_fontname.Set(msg_fontname.toTChar());
+	pConfig->msgboard_msg_fontname.Set(msg_fontname.toTChar());
 	value = linMsgSize->text().toInt();
 	if (1 <= value && value <= 60) {
-		config.msgboard_msg_fontsize = value & 0xff;
+		pConfig->msgboard_msg_fontsize = value & 0xff;
 	}
 	// info font
 	QTChar info_fontname(linInfoFont->text());
-	config.msgboard_info_fontname.Set(info_fontname.toTChar());
+	pConfig->msgboard_info_fontname.Set(info_fontname.toTChar());
 	value = linInfoSize->text().toInt();
 	if (1 <= value && value <= 60) {
-		config.msgboard_info_fontsize = value & 0xff;
+		pConfig->msgboard_info_fontsize = value & 0xff;
 	}
 	// language
 	value = comLanguage->currentIndex();
-	clocale->ChooseLocaleName(lang_list, value, config.language);
+	clocale->ChooseLocaleName(lang_list, value, pConfig->language);
 
 	// Tape, FDD tab
 
-	config.wav_reverse = chkReverse->isChecked();
-	config.wav_half = chkHalf->isChecked();
-	config.wav_correct = !radNoCorr->isChecked();
-	config.wav_correct_type = radCOS->isChecked() ? 0 :
+	pConfig->wav_reverse = chkReverse->isChecked();
+	pConfig->wav_half = chkHalf->isChecked();
+	pConfig->wav_correct = !radNoCorr->isChecked();
+	pConfig->wav_correct_type = radCOS->isChecked() ? 0 :
 		radSIN->isChecked() ? 1 : 0;
 	for(int i=0; i<2; i++) {
 		value = linCorrAmp[i]->text().toInt();
 		if (100 <= value && value <= 5000) {
-			config.wav_correct_amp[i] = value;
+			pConfig->wav_correct_amp[i] = value;
 		}
 	}
-	config.wav_sample_rate = comRate->currentIndex() & 0xff;
-	config.wav_sample_bits = comBits->currentIndex() & 0xff;
+	pConfig->wav_sample_rate = comRate->currentIndex() & 0xff;
+	pConfig->wav_sample_bits = comBits->currentIndex() & 0xff;
 
 	// mount drive
-	for(int i=0; i<MAX_DRIVE; i++) {
+	for(int i=0; i<USE_FLOPPY_DISKS; i++) {
 		mount_fdd |= chkDrive[i]->isChecked() ? (1 << i) : 0;
 	}
-	config.mount_fdd = mount_fdd;
+	pConfig->mount_fdd = mount_fdd;
 
-	config.option_fdd = (chkDelayFd1->isChecked() ? MSK_DELAY_FDSEARCH : 0)
+	pConfig->option_fdd = (chkDelayFd1->isChecked() ? MSK_DELAY_FDSEARCH : 0)
 		| (chkDelayFd2->isChecked() ? MSK_DELAY_FDSEEK : 0)
 		| (chkFdDensity->isChecked() ? 0 : MSK_CHECK_FDDENSITY)
 		| (chkFdMedia->isChecked() ? 0 : MSK_CHECK_FDMEDIA)
@@ -1006,55 +1006,55 @@ void MyConfigBox::setDatas()
 
 	for(int i=0; i<MAX_PRINTER; i++) {
 		QTChar lpt_host(linLPTHost[i]->text());
-		config.printer_server_host[i].Set(lpt_host.toTChar());
+		pConfig->printer_server_host[i].Set(lpt_host.toTChar());
 		value = linLPTPort[i]->text().toInt();
 		if (0 <= value && value <= 65535) {
-			config.printer_server_port[i] = value;
+			pConfig->printer_server_port[i] = value;
 		}
 		double valued = 0.0;
 		valued = linLPTDelay[i]->text().toDouble();
 		if (valued < 0.1) valued = 0.1;
 		if (valued > 1000.0) valued = 1000.0;
 		valued = floor(valued * 10.0 + 0.5) / 10.0;
-		config.printer_delay[i] = valued;
+		pConfig->printer_delay[i] = valued;
 	}
 	for(int i=0; i<MAX_COMM; i++) {
 		QTChar com_host(linCOMHost[i]->text());
-		config.comm_server_host[i].Set(com_host.toTChar());
+		pConfig->comm_server_host[i].Set(com_host.toTChar());
 		value = linCOMPort[i]->text().toInt();
 		if (0 <= value && value <= 65535) {
-			config.comm_server_port[i] = value;
+			pConfig->comm_server_port[i] = value;
 		}
-		config.comm_dipswitch[i] = comCOMBaud[i]->currentIndex() + 1;
+		pConfig->comm_dipswitch[i] = comCOMBaud[i]->currentIndex() + 1;
 	}
 
 	// CPU, Memory tab
 
 	// ROM
 	QTChar rom_path(linRomPath->text());
-	config.rom_path.Set(rom_path.toTChar());
+	pConfig->rom_path.Set(rom_path.toTChar());
 	// ex ram
 #if defined(_MBS1)
 	emu->set_parami(VM::ParamExMemNum, comExMem->currentIndex() & 0xff);
-	config.mem_nowait = chkMemNoWait->isChecked();
+	pConfig->mem_nowait = chkMemNoWait->isChecked();
 #else
-	config.exram_size_num = chkExMem->isChecked() ? 1 : 0;
+	pConfig->exram_size_num = chkExMem->isChecked() ? 1 : 0;
 #endif
 	//
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, chkUndefOp->isChecked());
-	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, chkClrCPUReg->isChecked());
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_UNDEFOP, chkUndefOp->isChecked());
+	BIT_ONOFF(pConfig->misc_flags, MSK_CLEAR_CPUREG, chkClrCPUReg->isChecked());
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)
-	config.z80b_card_out_irq = comZ80BIntr->currentIndex();
+	pConfig->z80b_card_out_irq = comZ80BIntr->currentIndex();
 # elif defined(USE_MPC_68008)
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_ADDRERR, chkAddrErr->isChecked());
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_ADDRERR, chkAddrErr->isChecked());
 # endif
-	config.opn_irq = comFMIntr->currentIndex();
+	pConfig->opn_irq = comFMIntr->currentIndex();
 	emu->set_parami(VM::ParamChipTypeOnFmOpn, comFmopn->currentIndex());
 	emu->set_parami(VM::ParamChipTypeOnExPsg, comExpsg->currentIndex());
 #endif
 
 	gui->ChangeLedBox(led_show);
-	gui->ChangeLedBoxPosition(config.led_pos);
+	gui->ChangeLedBoxPosition(pConfig->led_pos);
 }

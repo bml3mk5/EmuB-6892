@@ -27,6 +27,7 @@
 #include "vkeyboard.h"
 #endif
 #include "../msgs.h"
+#include "../labels.h"
 #include "../utility.h"
 // -------------------------------------
 #if defined(USE_SDL) || defined(USE_SDL2)
@@ -85,8 +86,8 @@ int GUI_BASE::Init()
 /// called by initialize() on EMU class
 void GUI_BASE::InitializedEmu()
 {
-	next_sound_frequency = config.sound_frequency;
-	next_sound_latency = config.sound_latency;
+	next_sound_frequency = pConfig->sound_frequency;
+	next_sound_latency = pConfig->sound_latency;
 }
 
 #if defined(_WIN32)
@@ -685,13 +686,13 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_HC80_RAMDISK0:
 		case ID_HC80_RAMDISK1:
 		case ID_HC80_RAMDISK2:
-			config.device_type = LOWORD(wParam) - ID_HC80_RAMDISK0;
+			pConfig->device_type = LOWORD(wParam) - ID_HC80_RAMDISK0;
 			break;
 #endif
 #ifdef _MZ800
 		case ID_MZ800_MODE_MZ800:
 		case ID_MZ800_MODE_MZ700:
-			config.boot_mode = LOWORD(wParam) - ID_MZ800_MODE_MZ800;
+			pConfig->boot_mode = LOWORD(wParam) - ID_MZ800_MODE_MZ800;
 			if(emu) {
 				emu->update_config();
 			}
@@ -703,7 +704,7 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_PASOPIA_MODE_OABASIC:
 		case ID_PASOPIA_MODE_OABASIC_NO_DISK:
 		case ID_PASOPIA_MODE_MINI_PASCAL:
-			config.boot_mode = LOWORD(wParam) - ID_PASOPIA_MODE_TBASIC_V1_0;
+			pConfig->boot_mode = LOWORD(wParam) - ID_PASOPIA_MODE_TBASIC_V1_0;
 			if(emu) {
 				emu->update_config();
 			}
@@ -711,7 +712,7 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_PASOPIA_DEVICE_RAM_PAC:
 		case ID_PASOPIA_DEVICE_KANJI_ROM:
 		case ID_PASOPIA_DEVICE_JOYSTICK:
-			config.device_type = LOWORD(wParam) - ID_PASOPIA_DEVICE_RAM_PAC;
+			pConfig->device_type = LOWORD(wParam) - ID_PASOPIA_DEVICE_RAM_PAC;
 			break;
 #endif
 #ifdef _PC98DO
@@ -720,7 +721,7 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_PC8801_MODE_V1H:
 		case ID_PC8801_MODE_V2:
 		case ID_PC8801_MODE_N:
-			config.boot_mode = LOWORD(wParam) - ID_PC98DO_MODE_PC98;
+			pConfig->boot_mode = LOWORD(wParam) - ID_PC98DO_MODE_PC98;
 			if(emu) {
 				emu->update_config();
 			}
@@ -731,7 +732,7 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_PC8801_MODE_V1H:
 		case ID_PC8801_MODE_V2:
 		case ID_PC8801_MODE_N:
-			config.boot_mode = LOWORD(wParam) - ID_PC8801_MODE_V1S;
+			pConfig->boot_mode = LOWORD(wParam) - ID_PC8801_MODE_V1S;
 			if(emu) {
 				emu->update_config();
 			}
@@ -739,15 +740,15 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_PC8801_DEVICE_JOYSTICK:
 		case ID_PC8801_DEVICE_MOUSE:
 		case ID_PC8801_DEVICE_JOYMOUSE:
-			config.device_type = LOWORD(wParam) - ID_PC8801_DEVICE_JOYSTICK;
+			pConfig->device_type = LOWORD(wParam) - ID_PC8801_DEVICE_JOYSTICK;
 			break;
 #endif
 #if defined(_PC9801E) || defined(_PC9801VM) || defined(_PC98DO) || defined(_PC8801MA)
 		case ID_PC9801_CPU_CLOCK_HIGH:
-			config.cpu_clock_low = false;
+			pConfig->cpu_clock_low = false;
 			break;
 		case ID_PC9801_CPU_CLOCK_LOW:
-			config.cpu_clock_low = true;
+			pConfig->cpu_clock_low = true;
 			break;
 #endif
 		case ID_CPU_POWER0:
@@ -855,6 +856,25 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 #endif
 #ifdef USE_FD6
 		FD_MENU_PREITEMS(5, ID_OPEN_FD6, ID_CLOSE_FD6, ID_CHANGE_FD6, ID_WRITEPROTECT_FD6, ID_OPEN_BLANK_2D_FD6, ID_OPEN_BLANK_2DD_FD6, ID_OPEN_BLANK_2HD_FD6)
+#endif
+#ifdef USE_HD1
+#define HD_MENU_PREITEMS(drv, ID_OPEN_HD, ID_CLOSE_HD, ID_OPEN_BLANK_10MB_HD, ID_OPEN_BLANK_20MB_HD, ID_OPEN_BLANK_40MB_HD) \
+		case ID_OPEN_HD: \
+			ShowOpenHardDiskDialog(drv); \
+			return 0; \
+		case ID_CLOSE_HD: \
+			PostEtCloseHardDiskMessage(drv); \
+			return 0; \
+		case ID_OPEN_BLANK_10MB_HD: \
+			ShowOpenBlankHardDiskDialog(drv, 0); \
+			return 0; \
+		case ID_OPEN_BLANK_20MB_HD: \
+			ShowOpenBlankHardDiskDialog(drv, 1); \
+			return 0; \
+		case ID_OPEN_BLANK_40MB_HD: \
+			ShowOpenBlankHardDiskDialog(drv, 2); \
+			return 0;
+		HD_MENU_PREITEMS(0, ID_OPEN_HD1, ID_CLOSE_HD1, ID_OPEN_BLANK_10MB_HD1, ID_OPEN_BLANK_20MB_HD1, ID_OPEN_BLANK_40MB_HD1)
 #endif
 #ifdef USE_DATAREC
 		case ID_PLAY_DATAREC:
@@ -1027,7 +1047,7 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_SCREEN_MONITOR_TYPE1:
 		case ID_SCREEN_MONITOR_TYPE2:
 		case ID_SCREEN_MONITOR_TYPE3:
-			config.monitor_type = (id - ID_SCREEN_MONITOR_TYPE0);
+			pConfig->monitor_type = (id - ID_SCREEN_MONITOR_TYPE0);
 			if(emu) {
 				emu->update_config();
 #ifdef USE_SCREEN_ROTATE
@@ -1163,7 +1183,7 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_SOUND_DEVICE_TYPE1:
 		case ID_SOUND_DEVICE_TYPE2:
 		case ID_SOUND_DEVICE_TYPE3:
-			config.sound_device_type = LOWORD(wParam) - ID_SOUND_DEVICE_TYPE0;
+			pConfig->sound_device_type = LOWORD(wParam) - ID_SOUND_DEVICE_TYPE0;
 			//if(emu) {
 			//	emu->update_config();
 			//}
@@ -1281,6 +1301,14 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 		case ID_OPTIONS_JOYPAD_A:
 			ChangeUseJoypad(-1);
 			return 0;
+#ifdef USE_KEY2JOYSTICK
+		case ID_OPTIONS_KEY2JOYPAD:
+			ToggleEnableKey2Joypad();
+			return 0;
+#endif
+		case ID_OPTIONS_JOYSETTING:
+			ShowJoySettingDialog();
+			return 0;
 #ifdef USE_MOUSE
 		case ID_OPTIONS_MOUSE:
 			ToggleUseMouse();
@@ -1307,6 +1335,9 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 			return 0;
 		case ID_OPTIONS_CONFIG:
 			ShowConfigureDialog();
+			return 0;
+		case ID_OPTIONS_LOGGING:
+			ShowLoggingDialog();
 			return 0;
 		case ID_OPTIONS_FDD_TYPE_A:
 			ChangeFddType(-1);
@@ -1362,6 +1393,11 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 #endif
 #ifdef USE_FD6
 			FD_MENU_RECENT(5, ID_RECENT_FD6, ID_SELECT_D88_BANK6)
+#endif
+#ifdef USE_HD1
+#define HD_MENU_RECENT(drv, ID_RECENT_HD) \
+			MENU_RECENT_WITH_DRV(drv, ID_RECENT_HD, PostEtOpenRecentHardDiskMessage)
+			HD_MENU_RECENT(0, ID_RECENT_HD1)
 #endif
 #ifdef USE_CART1
 			MENU_RECENT_WITH_DRV(0, ID_RECENT_CART, PostEtOpenRecentCartridgeMessage)
@@ -1500,6 +1536,18 @@ bool GUI_BASE::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 }
 #endif
 
+#ifdef USE_HD1
+bool GUI_BASE::ShowOpenHardDiskDialog(int drv)
+{
+	return false;
+}
+
+bool GUI_BASE::ShowOpenBlankHardDiskDialog(int drv, uint8_t type)
+{
+	return false;
+}
+#endif
+
 #ifdef USE_CART1
 bool GUI_BASE::ShowOpenCartridgeDialog(int drv)
 {
@@ -1594,12 +1642,22 @@ bool GUI_BASE::ShowSndFilterDialog(void)
 }
 #endif
 
+bool GUI_BASE::ShowJoySettingDialog(void)
+{
+	return false;
+}
+
 bool GUI_BASE::ShowKeybindDialog(void)
 {
 	return false;
 }
 
 bool GUI_BASE::ShowConfigureDialog(void)
+{
+	return false;
+}
+
+bool GUI_BASE::ShowLoggingDialog(void)
 {
 	return false;
 }
@@ -1642,7 +1700,7 @@ void GUI_BASE::PostEtReset(void)
 }
 bool GUI_BASE::NowPowerOff(void)
 {
-	return config.now_power_off;
+	return pConfig->now_power_off;
 }
 /// SpecialReset
 void GUI_BASE::PostEtSpecialReset(void)
@@ -1661,7 +1719,7 @@ void GUI_BASE::Dipswitch(int bit)
 }
 uint8_t GUI_BASE::GetDipswitch(void)
 {
-	return config.dipswitch;
+	return pConfig->dipswitch;
 }
 #ifdef _MBS1
 /// change system mode
@@ -1721,7 +1779,7 @@ void GUI_BASE::PostEtCPUPower(int num)
 }
 int GUI_BASE::GetCPUPower(void)
 {
-	return config.cpu_power;
+	return pConfig->cpu_power;
 }
 // change FDD Type
 void GUI_BASE::ChangeFddType(int num)
@@ -1730,7 +1788,7 @@ void GUI_BASE::ChangeFddType(int num)
 }
 int GUI_BASE::GetFddType(void)
 {
-	return config.fdd_type;
+	return pConfig->fdd_type;
 }
 int GUI_BASE::NextFddType(void)
 {
@@ -1742,17 +1800,17 @@ void GUI_BASE::PostEtToggleSyncIRQ(void)
 }
 bool GUI_BASE::NowSyncIRQ(void)
 {
-	return config.sync_irq;
+	return pConfig->sync_irq;
 }
 #ifdef _MBS1
 void GUI_BASE::ToggleMemNoWait(void)
 {
-	config.mem_nowait = !config.mem_nowait;
-	emu->out_info_x(config.mem_nowait ? CMsg::Memory_Without_Wait : CMsg::Memory_With_Wait);
+	pConfig->mem_nowait = !pConfig->mem_nowait;
+	emu->out_info_x(pConfig->mem_nowait ? CMsg::Memory_Without_Wait : CMsg::Memory_With_Wait);
 }
 bool GUI_BASE::NowMemNoWait(void)
 {
-	return config.mem_nowait;
+	return pConfig->mem_nowait;
 }
 #endif
 
@@ -1761,12 +1819,12 @@ bool GUI_BASE::NowMemNoWait(void)
 /// Frame Rate
 void GUI_BASE::ChangeFrameRate(int num)
 {
-	config.fps_no = num;
+	pConfig->fps_no = num;
 //	gui->emu->update_config();
 }
 int GUI_BASE::GetFrameRateNum(void)
 {
-	return config.fps_no;
+	return pConfig->fps_no;
 }
 /// Toggle Window <-> Fullscreen
 void GUI_BASE::TogglgScreenMode(void)
@@ -1787,13 +1845,13 @@ void GUI_BASE::ChangeFullScreenMode(int num)
 /// Get current window mode number
 int GUI_BASE::GetWindowMode(void)
 {
-	int num = config.window_mode;
+	int num = pConfig->window_mode;
 	return num < 8 ? num : -1;
 }
 /// Get current fullscreen mode number
 int GUI_BASE::GetFullScreenMode(void)
 {
-	int num = config.window_mode - 8;
+	int num = pConfig->window_mode - 8;
 	return num >= 0 ? num : -1;
 }
 /// Get number of window modes
@@ -1897,7 +1955,7 @@ void GUI_BASE::PostEtChangeDrawMode(void)
 }
 int GUI_BASE::GetDrawMode(void)
 {
-	return config.scan_line;
+	return pConfig->scan_line;
 }
 /// Change Stretch Screen
 void GUI_BASE::ChangeStretchScreen(int num)
@@ -1906,7 +1964,7 @@ void GUI_BASE::ChangeStretchScreen(int num)
 }
 int GUI_BASE::GetStretchScreen(void)
 {
-	return config.stretch_screen;
+	return pConfig->stretch_screen;
 }
 #if 0
 /// Change Cutoff Screen
@@ -1916,17 +1974,17 @@ void GUI_BASE::ToggleCutoutScreen(void)
 }
 bool GUI_BASE::NowCutoutedScreen(void)
 {
-	return config.cutout_screen;
+	return pConfig->cutout_screen;
 }
 #endif
 void GUI_BASE::ChangePixelAspect(int num)
 {
 	emu->change_pixel_aspect(num);
-//	emu->change_screen_mode(config.window_mode);
+//	emu->change_screen_mode(pConfig->window_mode);
 }
 int GUI_BASE::GetPixelAspectMode(void)
 {
-	return config.pixel_aspect;
+	return pConfig->pixel_aspect;
 }
 int GUI_BASE::GetPixelAspectModeCount(void)
 {
@@ -1961,7 +2019,7 @@ void GUI_BASE::PostEtResizeRecordVideoSurface(int num)
 }
 int GUI_BASE::GetRecordVideoSurfaceNum()
 {
-	return config.screen_video_size;
+	return pConfig->screen_video_size;
 }
 void GUI_BASE::PostEtCaptureScreen(void)
 {
@@ -1980,7 +2038,7 @@ void GUI_BASE::PostEtChangeAfterImage(void)
 }
 int GUI_BASE::GetAfterImageMode(void)
 {
-	return config.afterimage;
+	return pConfig->afterimage;
 }
 #endif
 #ifdef USE_KEEPIMAGE
@@ -1995,7 +2053,7 @@ void GUI_BASE::PostEtChangeKeepImage(void)
 }
 int GUI_BASE::GetKeepImageMode(void)
 {
-	return config.keepimage;
+	return pConfig->keepimage;
 }
 #endif
 #ifdef _MBS1
@@ -2004,10 +2062,10 @@ void GUI_BASE::ChangeRGBType(int num)
 {
 	switch(num) {
 	case 1:
-		config.tvsuper = (config.tvsuper | 0x10);
+		pConfig->tvsuper = (pConfig->tvsuper | 0x10);
 		break;
 	default:
-		config.tvsuper = (config.tvsuper & ~0x10);
+		pConfig->tvsuper = (pConfig->tvsuper & ~0x10);
 		break;
 	}
 }
@@ -2018,7 +2076,7 @@ void GUI_BASE::ChangeRGBType(void)
 }
 int GUI_BASE::GetRGBTypeMode(void)
 {
-	return ((config.tvsuper & 0x10) >> 4);
+	return ((pConfig->tvsuper & 0x10) >> 4);
 }
 #endif
 #ifdef USE_DIRECT3D
@@ -2033,7 +2091,7 @@ void GUI_BASE::ChangeUseDirect3D(void)
 }
 int GUI_BASE::GetDirect3DMode(void)
 {
-	return config.use_direct3d;
+	return pConfig->use_direct3d;
 }
 void GUI_BASE::ChangeDirect3DFilter(int num)
 {
@@ -2045,15 +2103,15 @@ void GUI_BASE::ChangeDirect3DFilter(int num)
 	};
 
 	if (num < 0) {
-		num = (config.d3d_filter_type + 1) % 3;
+		num = (pConfig->d3d_filter_type + 1) % 3;
 	}
-	config.d3d_filter_type = num;
+	pConfig->d3d_filter_type = num;
 
 	emu->out_infoc_x(CMsg::Direct3D_Filter, CMsg::Colon_Space, list[num], 0);
 }
 int GUI_BASE::GetDirect3DFilter(void)
 {
-	return config.d3d_filter_type;
+	return pConfig->d3d_filter_type;
 }
 #endif
 #ifdef USE_OPENGL
@@ -2068,7 +2126,7 @@ void GUI_BASE::ChangeUseOpenGL(void)
 }
 int GUI_BASE::GetOpenGLMode(void)
 {
-	return config.use_opengl;
+	return pConfig->use_opengl;
 }
 void GUI_BASE::ChangeOpenGLFilter(int num)
 {
@@ -2079,9 +2137,9 @@ void GUI_BASE::ChangeOpenGLFilter(int num)
 	};
 
 	if (num < 0) {
-		num = (config.gl_filter_type + 1) % 2;
+		num = (pConfig->gl_filter_type + 1) % 2;
 	}
-	config.gl_filter_type = num;
+	pConfig->gl_filter_type = num;
 
 	emu->change_opengl_attr();
 
@@ -2089,7 +2147,7 @@ void GUI_BASE::ChangeOpenGLFilter(int num)
 }
 int GUI_BASE::GetOpenGLFilter(void)
 {
-	return config.gl_filter_type;
+	return pConfig->gl_filter_type;
 }
 #endif
 
@@ -2129,12 +2187,12 @@ void GUI_BASE::ChangeSoundFrequency(int num)
 
 	emu->out_infoc_x(CMsg::Frequency, CMsg::Colon_Space, list[num], need_restart, 0);
 
-	config.sound_frequency = num;
+	pConfig->sound_frequency = num;
 //	gui->emu->update_config();
 }
 int GUI_BASE::GetSoundFrequencyNum()
 {
-	return config.sound_frequency;
+	return pConfig->sound_frequency;
 }
 void GUI_BASE::ChangeSoundLatency(int num)
 {
@@ -2154,12 +2212,12 @@ void GUI_BASE::ChangeSoundLatency(int num)
 
 	emu->out_infoc_x(CMsg::Latency, CMsg::Colon_Space, list[num], need_restart, 0);
 
-	config.sound_latency = num;
+	pConfig->sound_latency = num;
 //	gui->emu->update_config();
 }
 int GUI_BASE::GetSoundLatencyNum()
 {
-	return config.sound_latency;
+	return pConfig->sound_latency;
 }
 
 #ifdef USE_DATAREC
@@ -2173,7 +2231,7 @@ void GUI_BASE::PostEtLoadDataRecMessage(const _TCHAR *file_path)
 }
 void GUI_BASE::PostEtLoadRecentDataRecMessage(int num)
 {
-	emumsg.Send(EMUMSG_ID_RECENT_DATAREC, config.recent_datarec_path[num]->path);
+	emumsg.Send(EMUMSG_ID_RECENT_DATAREC, pConfig->GetRecentDataRecPathString(num));
 }
 
 void GUI_BASE::PostEtSaveDataRecMessage(const _TCHAR *file_path)
@@ -2204,7 +2262,7 @@ void GUI_BASE::PostEtToggleRealModeDataRecMessage(void)
 }
 bool GUI_BASE::NowRealModeDataRec(void)
 {
-	return config.realmode_datarec;
+	return pConfig->NowRealModeDataRec();
 }
 bool GUI_BASE::IsOpenedLoadDataRecFile(void)
 {
@@ -2230,7 +2288,7 @@ void GUI_BASE::PostEtOpenFloppyMessage(int drv, const _TCHAR *file_path, int ban
 void GUI_BASE::PostEtOpenRecentFloppyMessage(int drv, int num)
 {
 	int new_drv = ShowSelectFloppyDriveDialog(drv);
-	emumsg.Send(EMUMSG_ID_RECENT_FD, new_drv, config.recent_disk_path[drv][num]->path, config.recent_disk_path[drv][num]->num, 0, true);
+	emumsg.Send(EMUMSG_ID_RECENT_FD, new_drv, pConfig->GetRecentFloppyDiskPathString(drv, num), pConfig->GetRecentFloppyDiskPathNumber(drv, num), 0, true);
 }
 /// send message to emu thread in order to open floppy disk image.
 void GUI_BASE::PostEtOpenFloppySelectedVolume(int drv, int bank_num)
@@ -2247,7 +2305,7 @@ void GUI_BASE::PostEtChangeSideFloppyDisk(int drv)
 }
 int GUI_BASE::GetSideFloppyDisk(int drv)
 {
-	return emu->get_disk_side(drv);
+	return emu->get_floppy_disk_side(drv);
 }
 void GUI_BASE::PostEtToggleWriteProtectFloppyDisk(int drv)
 {
@@ -2255,24 +2313,24 @@ void GUI_BASE::PostEtToggleWriteProtectFloppyDisk(int drv)
 }
 bool GUI_BASE::InsertedFloppyDisk(int drv)
 {
-	return emu->disk_inserted(drv);
+	return emu->floppy_disk_inserted(drv);
 }
 bool GUI_BASE::WriteProtectedFloppyDisk(int drv)
 {
-	return emu->disk_write_protected(drv);
+	return emu->floppy_disk_write_protected(drv);
 }
 
 bool GUI_BASE::OpenFloppyDisk(int drv, const _TCHAR* path, int bank_num, uint32_t flags, bool multiopen)
 {
-	return emu->open_disk_by_bank_num(drv, path, bank_num, flags, multiopen);
+	return emu->open_floppy_disk_by_bank_num(drv, path, bank_num, flags, multiopen);
 }
 void GUI_BASE::CloseFloppyDisk(int drv)
 {
-	emu->close_disk(drv);
+	emu->close_floppy_disk(drv);
 }
 bool GUI_BASE::OpenFloppyDiskSelectedVolume(int drv, int bank_num)
 {
-	return emu->open_disk_with_sel_bank(drv, bank_num);
+	return emu->open_floppy_disk_with_sel_bank(drv, bank_num);
 }
 
 void GUI_BASE::GetMultiVolumeStr(int num, const _TCHAR *name, _TCHAR *str, size_t slen)
@@ -2287,6 +2345,29 @@ D88File *GUI_BASE::GetD88File(int drv)
 }
 #endif
 
+#ifdef USE_HD1
+/// send message to emu thread in order to open hard disk image.
+void GUI_BASE::PostEtOpenHardDiskMessage(int drv, const _TCHAR *file_path, uint32_t flags)
+{
+	_TCHAR path[_MAX_PATH];
+	UTILITY::get_long_full_path_name(file_path, path);
+	emumsg.Send(EMUMSG_ID_OPEN_HD, drv, path, 0, flags, false);
+}
+/// send message to emu thread in order to open hard disk image.
+void GUI_BASE::PostEtOpenRecentHardDiskMessage(int drv, int num)
+{
+	emumsg.Send(EMUMSG_ID_RECENT_HD, drv, pConfig->GetRecentHardDiskPathString(drv, num), pConfig->GetRecentHardDiskPathNumber(drv, num), 0, false);
+}
+void GUI_BASE::PostEtCloseHardDiskMessage(int drv)
+{
+	emumsg.Send(EMUMSG_ID_CLOSE_HD, drv, 0);
+}
+bool GUI_BASE::MountedHardDisk(int drv)
+{
+	return emu->hard_disk_mounted(drv);
+}
+#endif
+
 #ifdef USE_CART1
 // Cartridge
 
@@ -2298,7 +2379,7 @@ void GUI_BASE::PostEtOpenCartridgeMessage(int drv, const _TCHAR *file_path)
 }
 void GUI_BASE::PostEtOpenRecentCartridgeMessage(int drv, int num)
 {
-	emumsg.Send(EMUMSG_ID_RECENT_CART, drv, config.recent_datarec_path[drv][num]->path);
+	emumsg.Send(EMUMSG_ID_RECENT_CART, drv, pConfig->recent_datarec_path[drv][num]->path);
 }
 void GUI_BASE::PostEtCloseCartridgeMessage(int drv)
 {
@@ -2321,7 +2402,7 @@ void GUI_BASE::PostEtToggleWriteProtectQuickDisk(int drv)
 }
 void GUI_BASE::PostEtOpenRecentQuickDiskMessage(int drv, int num)
 {
-	emumsg.Send(EMUMSG_ID_RECENT_QD, drv, config.recent_quickdisk_path[drv][num]->path);
+	emumsg.Send(EMUMSG_ID_RECENT_QD, drv, pConfig->recent_quickdisk_path[drv][num]->path);
 }
 void GUI_BASE::PostEtCloseQuickDiskMessage(int drv)
 {
@@ -2340,7 +2421,7 @@ void GUI_BASE::PostEtOpenMediaMessage(const _TCHAR *file_path)
 }
 void GUI_BASE::PostEtOpenRecentMediaMessage(int num)
 {
-	emumsg.Send(EMUMSG_ID_RECENT_MEDIA, config.recent_media_path[num]->path);
+	emumsg.Send(EMUMSG_ID_RECENT_MEDIA, pConfig->recent_media_path[num]->path);
 }
 void GUI_BASE::PostEtCloseMediaMessage()
 {
@@ -2365,7 +2446,7 @@ void GUI_BASE::PostEtSaveBinaryMessage(int drv, const _TCHAR *file_path)
 }
 void GUI_BASE::PostEtOpenRecentBinaryMessage(int drv, int num)
 {
-	emumsg.Send(EMUMSG_ID_RECENT_BINARY, drv, config.recent_binary_path[drv][num]->path);
+	emumsg.Send(EMUMSG_ID_RECENT_BINARY, drv, pConfig->recent_binary_path[drv][num]->path);
 }
 void GUI_BASE::PostEtCloseBinaryMessage(int drv)
 {
@@ -2412,7 +2493,7 @@ void GUI_BASE::EnablePrinterDirect(int drv)
 }
 bool GUI_BASE::IsEnablePrinterDirect(int drv)
 {
-	return config.printer_direct[drv];
+	return pConfig->printer_direct[drv];
 }
 void GUI_BASE::PostEtTogglePrinterOnlineMessage(int drv)
 {
@@ -2426,7 +2507,7 @@ void GUI_BASE::PostEtTogglePrinterOnlineMessage(int drv)
 //}
 bool GUI_BASE::IsOnlinePrinter(int drv)
 {
-	return config.printer_online[drv];
+	return pConfig->printer_online[drv];
 }
 #endif
 
@@ -2447,7 +2528,7 @@ void GUI_BASE::ToggleEnableCommServer(int drv)
 bool GUI_BASE::IsEnableCommServer(int drv)
 {
 #ifdef MAX_COMM
-	return config.comm_server[drv];
+	return pConfig->comm_server[drv];
 #else
 	return false;
 #endif
@@ -2479,21 +2560,24 @@ bool GUI_BASE::NowConnectingComm(int drv, int num)
 void GUI_BASE::ToggleCommThroughMode(int drv)
 {
 #ifdef MAX_COMM
-	config.comm_through[drv] = (config.comm_through[drv] ? false : true);
+	if (drv <= 0 && drv < MAX_COMM) {
+		pConfig->comm_through[drv] = !pConfig->comm_through[drv];
+	}
 #endif
 }
 bool GUI_BASE::NowCommThroughMode(int drv)
 {
 #ifdef MAX_COMM
-	return config.comm_through[drv];
-#else
-	return false;
+	if (drv <= 0 && drv < MAX_COMM) {
+		return pConfig->comm_through[drv];
+	}
 #endif
+	return false;
 }
 void GUI_BASE::ToggleCommBinaryMode(int drv)
 {
 #ifdef MAX_COMM
-	if (config.comm_binary[drv]) {
+	if (pConfig->comm_binary[drv]) {
 		SendCommTelnetCommand(drv, 0x10);
 	} else {
 		SendCommTelnetCommand(drv, 0x00);
@@ -2503,7 +2587,7 @@ void GUI_BASE::ToggleCommBinaryMode(int drv)
 bool GUI_BASE::NowCommBinaryMode(int drv)
 {
 #ifdef MAX_COMM
-	return config.comm_binary[drv];
+	return pConfig->comm_binary[drv];
 #else
 	return false;
 #endif
@@ -2543,7 +2627,7 @@ void GUI_BASE::PostEtLoadStatusMessage(const _TCHAR *file_path)
 void GUI_BASE::PostEtLoadRecentStatusMessage(int num)
 {
 #ifdef USE_STATE
-	emumsg.Send(EMUMSG_ID_RECENT_STATE, config.recent_state_path[num]->path);
+	emumsg.Send(EMUMSG_ID_RECENT_STATE, pConfig->GetRecentStatePathString(num));
 #endif
 }
 void GUI_BASE::PostEtSaveStatusMessage(const _TCHAR *file_path, bool sys_pause)
@@ -2552,7 +2636,7 @@ void GUI_BASE::PostEtSaveStatusMessage(const _TCHAR *file_path, bool sys_pause)
 	_TCHAR path[_MAX_PATH];
 	UTILITY::get_long_full_path_name(file_path, path);
 	emumsg.Send(EMUMSG_ID_SAVE_STATE, path, sys_pause);
-	config.initial_state_path.SetFromPath(path);
+	pConfig->SetInitialStatePathFrom(path);
 #endif
 }
 
@@ -2621,11 +2705,11 @@ void GUI_BASE::StopRecordRecKey(void)
 }
 bool GUI_BASE::NowPlayingRecKey(void)
 {
-	return config.reckey_playing;
+	return pConfig->reckey_playing;
 }
 bool GUI_BASE::NowRecordingRecKey(void)
 {
-	return config.reckey_recording;
+	return pConfig->reckey_recording;
 }
 
 
@@ -2639,17 +2723,17 @@ void GUI_BASE::ChangeLedBox(int phase)
 	switch(phase) {
 	case 2:
 #ifdef USE_OUTSIDE_LEDBOX
-		config.misc_flags |= MSK_SHOWLEDBOX;
-		config.misc_flags &= ~MSK_INSIDELEDBOX;
+		pConfig->misc_flags |= MSK_SHOWLEDBOX;
+		pConfig->misc_flags &= ~MSK_INSIDELEDBOX;
 		break;
 #endif
 	case 1:
-		config.misc_flags |= MSK_SHOWLEDBOX;
-		config.misc_flags |= MSK_INSIDELEDBOX;
+		pConfig->misc_flags |= MSK_SHOWLEDBOX;
+		pConfig->misc_flags |= MSK_INSIDELEDBOX;
 		break;
 	default: // hide
-		config.misc_flags &= ~MSK_SHOWLEDBOX;
-		config.misc_flags &= ~MSK_INSIDELEDBOX;
+		pConfig->misc_flags &= ~MSK_SHOWLEDBOX;
+		pConfig->misc_flags &= ~MSK_INSIDELEDBOX;
 		break;
 	}
 
@@ -2666,17 +2750,17 @@ void GUI_BASE::ToggleLedBox(void)
 	switch(GetLedBoxPhase(-1)) {
 	case 1:
 #ifdef USE_OUTSIDE_LEDBOX
-		config.misc_flags |= MSK_SHOWLEDBOX;
-		config.misc_flags &= ~MSK_INSIDELEDBOX;
+		pConfig->misc_flags |= MSK_SHOWLEDBOX;
+		pConfig->misc_flags &= ~MSK_INSIDELEDBOX;
 		break;
 #endif
 	case 2:
-		config.misc_flags &= ~MSK_SHOWLEDBOX;
-		config.misc_flags |= MSK_INSIDELEDBOX;
+		pConfig->misc_flags &= ~MSK_SHOWLEDBOX;
+		pConfig->misc_flags |= MSK_INSIDELEDBOX;
 		break;
 	case 0:
-		config.misc_flags |= MSK_SHOWLEDBOX;
-		config.misc_flags |= MSK_INSIDELEDBOX;
+		pConfig->misc_flags |= MSK_SHOWLEDBOX;
+		pConfig->misc_flags |= MSK_INSIDELEDBOX;
 		break;
 	default:
 		break;
@@ -2706,7 +2790,7 @@ void GUI_BASE::ToggleShowLedBox(void)
 #ifdef USE_LEDBOX
 	if (!ledbox) return;
 //	emu->show_led();
-	config.misc_flags ^= MSK_SHOWLEDBOX;
+	pConfig->misc_flags ^= MSK_SHOWLEDBOX;
 	ledbox->Show(FLG_LEDBOX_ALL);
 
 	switch(GetLedBoxPhase(0)) {
@@ -2728,7 +2812,7 @@ void GUI_BASE::ToggleInsideLedBox(void)
 #ifdef USE_LEDBOX
 	if (!ledbox) return;
 //	emu->inside_led();
-	config.misc_flags ^= MSK_INSIDELEDBOX;
+	pConfig->misc_flags ^= MSK_INSIDELEDBOX;
 	ledbox->Show(FLG_LEDBOX_ALL);
 
 	switch(GetLedBoxPhase(1)) {
@@ -2785,11 +2869,11 @@ void GUI_BASE::ChangeLedBoxPosition(int num)
 	if (!ledbox) return;
 //	emu->change_pos_led(num);
 	if (num == -1) {
-		config.led_pos = (config.led_pos + 1) % 4;
+		pConfig->led_pos = (pConfig->led_pos + 1) % 4;
 	} else {
-		config.led_pos = num;
+		pConfig->led_pos = num;
 	}
-	ledbox->SetPos(config.led_pos | (IsFullScreen() ? 0x10 : 0));
+	ledbox->SetPos(pConfig->led_pos | (IsFullScreen() ? 0x10 : 0));
 #endif
 }
 
@@ -2814,14 +2898,19 @@ bool GUI_BASE::IsShownMessageBoard(void)
 	return (emu->is_shown_message_board() > 0 ? true : false);
 }
 
+bool GUI_BASE::IsShownLoggingDialog(void)
+{
+	return false;
+}
+
 #ifdef USE_PERFORMANCE_METER
 void GUI_BASE::TogglePMeter(void)
 {
-	config.show_pmeter = (config.show_pmeter ? false : true);
+	pConfig->show_pmeter = (pConfig->show_pmeter ? false : true);
 }
 bool GUI_BASE::IsShownPMeter(void)
 {
-	return config.show_pmeter;
+	return pConfig->show_pmeter;
 }
 #endif
 
@@ -2844,11 +2933,23 @@ bool GUI_BASE::IsEnableJoypad(int num)
 {
 	return emu->is_enable_joypad(num);
 }
+
+#ifdef USE_KEY2JOYSTICK
+void GUI_BASE::ToggleEnableKey2Joypad(void)
+{
+	emu->toggle_enable_key2joy();
+}
+bool GUI_BASE::IsEnableKey2Joypad(void)
+{
+	return emu->is_enable_key2joy();
+}
+#endif
+
 #ifdef USE_LIGHTPEN
 /// Change EnableLightpen
 void GUI_BASE::ToggleEnableLightpen(void)
 {
-	config.misc_flags ^= MSK_USELIGHTPEN;
+	pConfig->misc_flags ^= MSK_USELIGHTPEN;
 	if (FLG_USELIGHTPEN) {
 		emu->out_info_x(CMsg::Enable_Lightpen);
 	} else {
@@ -2865,7 +2966,7 @@ bool GUI_BASE::IsEnableLightpen(void)
 void GUI_BASE::ToggleUseMouse(void)
 {
 	emu->toggle_mouse();
-	config.misc_flags = (emu->get_mouse_enabled() ? (config.misc_flags | MSK_USEMOUSE) : (config.misc_flags & ~MSK_USEMOUSE));
+	pConfig->misc_flags = (emu->get_mouse_enabled() ? (pConfig->misc_flags | MSK_USEMOUSE) : (pConfig->misc_flags & ~MSK_USEMOUSE));
 	if (FLG_USEMOUSE) {
 		emu->out_info_x(CMsg::Enable_Mouse);
 	} else {
@@ -2891,8 +2992,8 @@ void GUI_BASE::PostMtEnableMouseTemp(bool val)
 /// Use Direct Input
 void GUI_BASE::ToggleUseDirectInput(void)
 {
-	config.use_direct_input = (config.use_direct_input ^ 1);
-	if (config.use_direct_input & 1) {
+	pConfig->use_direct_input = (pConfig->use_direct_input ^ 1);
+	if (pConfig->use_direct_input & 1) {
 		emu->out_info_x(CMsg::Enable_DirectInput);
 	} else {
 		emu->out_info_x(CMsg::Disable_DirectInput);
@@ -2900,25 +3001,25 @@ void GUI_BASE::ToggleUseDirectInput(void)
 }
 bool GUI_BASE::NowUseDirectInput(void)
 {
-	return ((config.use_direct_input & 1) != 0);
+	return ((pConfig->use_direct_input & 1) != 0);
 }
 bool GUI_BASE::IsEnableDirectInput(void)
 {
-	return ((config.use_direct_input & 4) != 0);
+	return ((pConfig->use_direct_input & 4) != 0);
 }
 #endif
 ///
 void GUI_BASE::ToggleLoosenKeyStroke(void)
 {
 #if defined(_BML3MK5) || defined(_MBS1)
-	config.original = (config.original ^ MSK_ORIG_LIMKEY);
+	pConfig->original = (pConfig->original ^ MSK_ORIG_LIMKEY);
 #endif
 	emu->update_config();
 }
 bool GUI_BASE::IsLoosenKeyStroke(void)
 {
 #if defined(_BML3MK5) || defined(_MBS1)
-	return ((config.original & MSK_ORIG_LIMKEY) != 0);
+	return ((pConfig->original & MSK_ORIG_LIMKEY) != 0);
 #else
 	return false;
 #endif
@@ -2992,32 +3093,36 @@ bool GUI_BASE::OpenFileByExtention(const _TCHAR *file_path)
 {
 	int rc = CheckSupportedFile(file_path);
 	switch(rc) {
-		case 1:
+		case FILE_TYPE_DATAREC:
 #ifdef USE_DATAREC
 			// maybe tape image file
 			PostEtLoadDataRecMessage(file_path);
 #endif
 			break;
-		case 2:
+		case FILE_TYPE_FLOPPY:
 #ifdef USE_FD1
 			// maybe disk image file
 			PostEtOpenFloppyMessage(0, file_path, 0, 0, true);
 #endif
 			break;
-#ifdef USE_EMU_INHERENT_SPEC
-		case 3:
+		case FILE_TYPE_STATE:
 			// maybe state file
 			PostEtLoadStatusMessage(file_path);
 			break;
-		case 4:
+		case FILE_TYPE_AUTO_KEY:
 			// maybe text file (for autokey)
 			PostEtLoadAutoKeyMessage(file_path);
 			break;
-		case 6:
+		case FILE_TYPE_KEY_RECORD:
 			// maybe record key file
 			PostEtLoadRecKeyMessage(file_path);
 			break;
+		case FILE_TYPE_HARD_DISK:
+#ifdef USE_HD1
+			// maybe hard disk image file
+			PostEtOpenHardDiskMessage(0, file_path, 0);
 #endif
+			break;
 		default:
 			return false;
 	}
@@ -3031,47 +3136,53 @@ int GUI_BASE::CheckSupportedFile(const _TCHAR *file_path)
 {
 	bool rc;
 
-	rc = UTILITY::check_file_extensions(file_path
-		, _T(".l3"), _T(".l3b"), _T(".l3c"), _T(".wav"), _T(".t9x"), NULL);
+	rc = UTILITY::check_file_extensions(file_path, LABELS::datarec_exts);
+//		, _T(".l3"), _T(".l3b"), _T(".l3c"), _T(".wav"), _T(".t9x"), NULL);
 	if (rc) {
 		// tape image
-		return 1;
+		return FILE_TYPE_DATAREC;
 	}
 
 #ifdef USE_FD1
-	rc = UTILITY::check_file_extensions(file_path
-		, _T(".d88"), _T(".d77"), _T(".td0"), _T(".imd"), _T(".dsk"), _T(".fdi"), _T(".hdm"), _T(".tfd"), _T(".xdf"), _T(".2d"), _T(".sf7"), NULL);
+	rc = UTILITY::check_file_extensions(file_path, LABELS::floppy_disk_exts);
+//		, _T(".d88"), _T(".d77"), _T(".td0"), _T(".imd"), _T(".img"), _T(".dsk"), _T(".fdi"), _T(".hdm"), _T(".tfd"), _T(".xdf"), _T(".2d"), _T(".2hd"), _T(".sf7"), NULL);
 	if (rc) {
 		// disk image
-		return 2;
+		return FILE_TYPE_FLOPPY;
 	}
 #endif
 
-#ifdef USE_EMU_INHERENT_SPEC
-	rc = UTILITY::check_file_extensions(file_path
-		, _T(".l3r"), NULL);
+	rc = UTILITY::check_file_extensions(file_path, LABELS::state_file_exts);
+//		, _T(".l3r"), NULL);
 	if (rc) {
 		// maybe state file
-		return 3;
+		return FILE_TYPE_STATE;
 	}
 
-	rc = UTILITY::check_file_extensions(file_path
-		, _T(".txt"), _T(".bas"), _T(".lpt"), NULL);
+	rc = UTILITY::check_file_extensions(file_path, LABELS::autokey_file_exts);
+//		, _T(".txt"), _T(".bas"), _T(".lpt"), NULL);
 	if (rc) {
 		// maybe text file (for autokey)
-		return 4;
+		return FILE_TYPE_AUTO_KEY;
 	}
 
 	rc = UTILITY::check_file_extension(file_path, _T(".ini"));
 	if (rc) {
 		// maybe ini file
-		return 5;
+		return FILE_TYPE_INITIALIZE;
 	}
 
-	rc = UTILITY::check_file_extension(file_path, _T(".l3k"));
+	rc = UTILITY::check_file_extensions(file_path, LABELS::key_rec_file_exts);
 	if (rc) {
 		// maybe record key file
-		return 6;
+		return FILE_TYPE_KEY_RECORD;
+	}
+
+#ifdef USE_HD1
+	rc = UTILITY::check_file_extensions(file_path, LABELS::hard_disk_exts);
+	if (rc) {
+		// hard disk image
+		return FILE_TYPE_HARD_DISK;
 	}
 #endif
 
@@ -3097,7 +3208,7 @@ LedBox *GUI_BASE::CreateLedBox()
 			ledbox = NULL;
 		}
 		if (ledbox) {
-			ledbox->SetDistance(config.led_pos, config.led_dist);
+			ledbox->SetDistance(pConfig->led_pos, pConfig->led_dist);
 			ledbox->CreateDialogBox();
 			ledbox->Show(FLG_LEDBOX_ALL);
 		}
@@ -3130,7 +3241,7 @@ LedBox *GUI_BASE::CreateLedBox(const _TCHAR *res_path, CPixelFormat *src_format)
 		}
 	}
 	if (ledbox) {
-		ledbox->SetDistance(config.led_pos, config.led_dist);
+		ledbox->SetDistance(pConfig->led_pos, pConfig->led_dist);
 		ledbox->CreateDialogBox();
 		ledbox->Show(FLG_LEDBOX_ALL);
 	}
@@ -3161,7 +3272,7 @@ LedBox *GUI_BASE::CreateLedBox(const _TCHAR *res_path, CPixelFormat *src_format)
 		}
 	}
 	if (ledbox) {
-		ledbox->SetDistance(config.led_pos, config.led_dist);
+		ledbox->SetDistance(pConfig->led_pos, pConfig->led_dist);
 		ledbox->CreateDialogBox();
 		ledbox->Show(FLG_LEDBOX_ALL);
 	}
@@ -3190,7 +3301,7 @@ LedBox *GUI_BASE::CreateLedBox(const _TCHAR *res_path, CPixelFormat *src_format)
 		}
 	}
 	if (ledbox) {
-		ledbox->SetDistance(config.led_pos, config.led_dist);
+		ledbox->SetDistance(pConfig->led_pos, pConfig->led_dist);
 		ledbox->CreateDialogBox();
 		ledbox->Show(FLG_LEDBOX_ALL);
 	}
@@ -3221,7 +3332,7 @@ void GUI_BASE::ReleaseLedBox()
 {
 #ifdef USE_LEDBOX
 	if (ledbox) {
-		ledbox->GetDistance(config.led_dist);
+		ledbox->GetDistance(pConfig->led_dist);
 	}
 	delete ledbox;
 	ledbox = NULL;
@@ -3234,7 +3345,7 @@ void GUI_BASE::SetLedBoxPosition(bool mode, int left, int top, int width, int he
 	if (ledbox) {
 		ledbox->SetMode(mode ? 0 : 1);
 		ledbox->SetPos(left, top, left + width, top + height, place);
-		ledbox->GetDistance(config.led_dist);
+		ledbox->GetDistance(pConfig->led_dist);
 	}
 #endif
 }

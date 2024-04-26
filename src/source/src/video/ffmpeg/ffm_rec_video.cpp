@@ -20,24 +20,15 @@
 #include "../../fileio.h"
 
 FFM_REC_VIDEO::FFM_REC_VIDEO(EMU *new_emu, REC_VIDEO *new_vid)
+	: FFM_REC_BASE(new_emu)
 {
-	emu = new_emu;
 	vid = new_vid;
 	rec_fps = 0;
 	memset(&rec_rect, 0, sizeof(rec_rect));
 	rec_surface = NULL;
-	rec_path = NULL;
 
-	avio = NULL;
-	fmtcont = NULL;
-
-	codcont = NULL;
-	frame = NULL;
 	srcframe = NULL;
 	sws_cont = NULL;
-
-	write_error_count = 0;
-	packet = NULL;
 }
 
 FFM_REC_VIDEO::~FFM_REC_VIDEO()
@@ -51,16 +42,6 @@ void FFM_REC_VIDEO::Release()
 	if (fmtcont) {
 		// finish and flush
 		if (vid->NowRecording()) f_av_write_trailer(fmtcont);
-		f_avformat_free_context(fmtcont);
-		fmtcont = NULL;
-	}
-	if (avio) {
-		f_avio_close(avio);
-		avio = NULL;
-	}
-	if (packet) {
-		f_av_packet_free(&packet);
-		packet = NULL;
 	}
 	if (sws_cont) {
 		f_sws_freeContext(sws_cont);
@@ -72,30 +53,15 @@ void FFM_REC_VIDEO::Release()
 	}
 	if (frame) {
 		f_av_freep(&frame->data[0]);
-		f_av_frame_free(&frame);
-		frame = NULL;
 	}
-	if (codcont) {
-		codcont = NULL;
-	}
-}
 
-void FFM_REC_VIDEO::RemoveFile()
-{
-	FILEIO::RemoveFile(rec_path);
+	FFM_REC_BASE::Release();
 }
 
 bool FFM_REC_VIDEO::IsEnabled()
 {
 	return FFMPEG_LoadLibrary(USE_REC_VIDEO_FFMPEG);
 }
-
-/// supported codec table of ffmpeg
-struct st_codec_ids {
-	AVCodecID id;
-	const char *name;
-	const _TCHAR *ext;
-};
 
 static const struct st_codec_ids codec_ids[] = {
 //	{ AV_CODEC_ID_FFV1,			"ffm",	_T(".ffm") }, // mac ng
@@ -152,22 +118,16 @@ bool FFM_REC_VIDEO::Start(_TCHAR *path, size_t path_size, int fps, const VmRectW
 	};
 
 	int num = 0;
-	AVCodecID codec_id = AV_CODEC_ID_NONE;
+//	AVCodecID codec_id = AV_CODEC_ID_NONE;
 	AVCodec *codec = NULL;
 	AVStream *stream = NULL;
-	char name[64];
+//	char name[64];
 	int ret;
 
 	if (path == NULL) return false;
 
 	if (!FFMPEG_LoadLibrary(USE_REC_VIDEO_FFMPEG)) return false;
 
-	num = emu->get_parami(VM::ParamRecVideoCodec);
-	codec_id = codec_ids[num].id;
-	strcpy(name, codec_ids[num].name);
-	UTILITY::tcscat(path, path_size, codec_ids[num].ext);
-
-	rec_path = path;
 	rec_fps = fps;
 
 	if (srcrect != NULL) {
@@ -180,58 +140,24 @@ bool FFM_REC_VIDEO::Start(_TCHAR *path, size_t path_size, int fps, const VmRectW
 		return false;
 	}
 
-	logging->out_logf(LOG_DEBUG, _T("FFM_REC_VIDEO::Start: %d %s"), codec_id, name);
+	num = emu->get_parami(VM::ParamRecVideoCodec);
+//	codec_id = codec_ids[num].id;
+//	strcpy(name, codec_ids[num].name);
+	UTILITY::tcscat(path, path_size, codec_ids[num].ext);
 
-	// open file for output
-	CTchar crec_path(rec_path);
-	ret = f_avio_open(&avio, crec_path.GetN(), AVIO_FLAG_WRITE);
+	crec_path.Set(path);
+
+	logging->out_logf(LOG_DEBUG, _T("FFM_REC_VIDEO::Start: %d %s"), codec_ids[num].id, codec_ids[num].name);
+
+	// add stream
+	ret = AddStream(TYPE_VIDEO, codec_ids[num].id, codec_ids[num].name, codec, stream);
 	if (ret < 0) {
-		logging->out_logf(LOG_ERROR, _T("avio_open failed: %d"), ret);
-		goto FIN;
-	}
-	// alloc format context and search output codec
-	ret = f_avformat_alloc_output_context2(&fmtcont, NULL, name, crec_path.GetN());
-	if (ret < 0) {
-		// search output codec using file extension
-		ret = f_avformat_alloc_output_context2(&fmtcont, NULL, NULL, crec_path.GetN());
-		if (ret < 0) {
-			logging->out_logf(LOG_ERROR, _T("avformat_alloc_output_context2 failed: %d"), ret);
-			goto FIN;
-		}
-	}
-	logging->out_logf(LOG_DEBUG, _T("Output context name: \"%s\" [%s]"), fmtcont->oformat->name, fmtcont->oformat->long_name);
-
-	// attach io context with format context
-	fmtcont->pb = avio;
-
-	// whether use this codec on specified file format
-	logging->out_debug(_T("avformat_query_codec -----"));
-	ret = f_avformat_query_codec(fmtcont->oformat, codec_id, FF_COMPLIANCE_NORMAL);
-	if (ret <= 0) {
-		logging->out_logf(LOG_ERROR, _T("avformat_query_codec failed: %d"), ret);
-		goto FIN;
-	}
-//	strncpy(fmtcont->filename, crec_path.GetN(), sizeof(fmtcont->filename));
-	fmtcont->oformat->audio_codec = AV_CODEC_ID_NONE;
-//	fmtcont->oformat->video_codec = codec_id;
-	fmtcont->oformat->subtitle_codec = AV_CODEC_ID_NONE;
-
-	// find the specified video encoder
-	logging->out_debug(_T("avcodec_find_encoder -----"));
-	codec = f_avcodec_find_encoder(codec_id);
-	if (!codec) {
-		logging->out_logf(LOG_ERROR, _T("avcodec_find_encoder: not found codec id: %d"), codec_id);
 		goto FIN;
 	}
 
-	// create a stream in the output file container
-	logging->out_debug(_T("avformat_new_stream -----"));
-	stream = f_avformat_new_stream(fmtcont, codec);
-	if (!stream) {
-		logging->out_log(LOG_ERROR, _T("avformat_new_stream failed."));
-		goto FIN;
+	if (codcont->codec_id == AV_CODEC_ID_NONE) {
+		codcont->codec_id = fmtcont->oformat->video_codec;
 	}
-	codcont = stream->codec;
 
 	codcont->coded_width = rec_rect.w;
 	codcont->coded_height = rec_rect.h;
@@ -253,7 +179,7 @@ bool FFM_REC_VIDEO::Start(_TCHAR *path, size_t path_size, int fps, const VmRectW
 	if (fmtcont->oformat->flags & AVFMT_GLOBALHEADER) {
 		codcont->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 	}
-	switch(codec_id) {
+	switch(fmtcont->oformat->video_codec) {
 	case AV_CODEC_ID_H264:
 //		av_opt_set(codcont->priv_data, "preset", "slow", 0);
 		break;
@@ -351,18 +277,13 @@ bool FFM_REC_VIDEO::Start(_TCHAR *path, size_t path_size, int fps, const VmRectW
 		goto FIN;
 	}
 
+	f_avcodec_parameters_from_context(stream->codecpar, codcont);
+
 	// write the header of the output file container
 	logging->out_debug(_T("avformat_write_header -----"));
     ret = f_avformat_write_header(fmtcont, NULL);
 	if (ret < 0) {
 		logging->out_logf(LOG_ERROR, _T("avformat_write_header failed: %d"), ret);
-		goto FIN;
-	}
-
-	// allocate packet
-	packet = f_av_packet_alloc();
-	if (!packet) {
-		logging->out_log(LOG_ERROR, _T("av_packet_alloc failed."));
 		goto FIN;
 	}
 

@@ -46,8 +46,8 @@ ConfigBox::ConfigBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gu
 {
 	hInstance = hInst;
 
-	fdd_type  = config.fdd_type;
-	io_port = config.io_port;
+	fdd_type  = pConfig->fdd_type;
+	io_port = pConfig->io_port;
 
 	selected_tabctrl = 0;
 }
@@ -118,7 +118,7 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	hbox = box_sysmode_sw->AddBox(CBox::HorizontalBox, 0, 0, _T("modec_sw"));
 	hbox->AddSpace(20, 10);
-	CreateCheckBox(hbox, ID_DIPSWITCH3, CMsg::NEWON7, (config.dipswitch & 4) != 0);
+	CreateCheckBox(hbox, ID_DIPSWITCH3, CMsg::NEWON7, (pConfig->dipswitch & 4) != 0);
 	CheckDlgButton(hDlg, ID_DIPSWITCH1, (sys_mode & 1) != 0);
 	CheckDlgButton(hDlg, ID_DIPSWITCH2, (sys_mode & 1) == 0);
 #else
@@ -126,7 +126,7 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CBox *box_dip_sw = CreateGroup(box_0lv, IDC_STATIC, CMsg::DIP_Switch_ASTERISK, CBox::VerticalBox);
 	hbox = box_dip_sw->AddBox(CBox::HorizontalBox, 0, 0, _T("mode_sw"));
 	CreateStatic(hbox, IDC_STATIC_MODE_SW, _T(">"));
-	CreateCheckBox(hbox, ID_DIPSWITCH3, CMsg::MODE_Switch, (config.dipswitch & 4) != 0);
+	CreateCheckBox(hbox, ID_DIPSWITCH3, CMsg::MODE_Switch, (pConfig->dipswitch & 4) != 0);
 #endif
 
 	// FDD type select
@@ -144,7 +144,7 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CheckDlgButton(hDlg, IDC_RADIO_5_8FDD, fdd_type == FDD_TYPE_58FDD);
 
 	// power off
-	CreateCheckBox(box_0lv, IDC_CHK_POWEROFF, CMsg::Enable_the_state_of_power_off, config.use_power_off);
+	CreateCheckBox(box_0lv, IDC_CHK_POWEROFF, CMsg::Enable_the_state_of_power_off, pConfig->use_power_off);
 
 	// I/O port address
 	CBox *box_0rv = box_0h->AddBox(CBox::VerticalBox, 0, 0, _T("0rv"));
@@ -188,15 +188,15 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	vbox = box_d3d->AddBox(CBox::VerticalBox, 0, 0, _T("d3d_com"));
 #ifdef USE_DIRECT3D
 	// d3d use
-	CreateComboBox(vbox, IDC_COMBO_D3D_USE, LABELS::d3d_use, config.use_direct3d, 6);
+	CreateComboBox(vbox, IDC_COMBO_D3D_USE, LABELS::d3d_use, pConfig->use_direct3d, 6);
 	// d3d filter type
-	CreateComboBox(vbox, IDC_COMBO_D3D_FILTER, LABELS::d3d_filter, config.d3d_filter_type, 6);
+	CreateComboBox(vbox, IDC_COMBO_D3D_FILTER, LABELS::d3d_filter, pConfig->d3d_filter_type, 6);
 #endif
 #ifdef USE_OPENGL
 	// opengl use
-	CreateComboBox(vbox, IDC_COMBO_OPENGL_USE, LABELS::opengl_use, config.use_opengl, 6);
+	CreateComboBox(vbox, IDC_COMBO_OPENGL_USE, LABELS::opengl_use, pConfig->use_opengl, 6);
 	// opengl filter type
-	CreateComboBox(vbox, IDC_COMBO_OPENGL_FILTER, LABELS::opengl_filter, config.gl_filter_type, 6);
+	CreateComboBox(vbox, IDC_COMBO_OPENGL_FILTER, LABELS::opengl_filter, pConfig->gl_filter_type, 6);
 #endif
 
 	// crtc
@@ -215,11 +215,11 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	vbox = box_crtc->AddBox(CBox::VerticalBox, 0, 0, _T("crtc_com"));
 #if defined(_MBS1)
-	CreateComboBox(vbox, IDC_COMBO_DISPTMG, LABELS::disp_skew, config.disptmg_skew + 2, 2);
-	CreateComboBox(vbox, IDC_COMBO_CURDISP, LABELS::disp_skew, config.curdisp_skew + 2, 2);
+	CreateComboBox(vbox, IDC_COMBO_DISPTMG, LABELS::disp_skew, pConfig->disptmg_skew + 2, 2);
+	CreateComboBox(vbox, IDC_COMBO_CURDISP, LABELS::disp_skew, pConfig->curdisp_skew + 2, 2);
 #else
-	CreateComboBox(vbox, IDC_COMBO_DISPTMG, LABELS::disp_skew, config.disptmg_skew, 2);
-	CreateComboBox(vbox, IDC_COMBO_CURDISP, LABELS::disp_skew, config.curdisp_skew, 2);
+	CreateComboBox(vbox, IDC_COMBO_DISPTMG, LABELS::disp_skew, pConfig->disptmg_skew, 2);
+	CreateComboBox(vbox, IDC_COMBO_CURDISP, LABELS::disp_skew, pConfig->curdisp_skew, 2);
 #endif
 
 	// LED
@@ -227,62 +227,56 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	int led_show = gui->GetLedBoxPhase(-1);
 	hbox = box_1all->AddBox(CBox::HorizontalBox, 0, 0, _T("led"));
 	// led show
-	CreateStatic(hbox, IDC_STATIC, CMsg::LED);
-	CreateComboBox(hbox, IDC_COMBO_LED_SHOW, LABELS::led_show, led_show, 8);
+	CreateComboBoxWithLabel(hbox, IDC_COMBO_LED_SHOW, CMsg::LED, LABELS::led_show, led_show, 8);
 	// led pos
-	CreateStatic(hbox, IDC_STATIC, CMsg::Position);
-	CreateComboBox(hbox, IDC_COMBO_LED_POS, LABELS::led_pos, config.led_pos, 8);
+	CreateComboBoxWithLabel(hbox, IDC_COMBO_LED_POS, CMsg::Position, LABELS::led_pos, pConfig->led_pos, 8);
 #endif
 
 	// Capture Type
 	hbox = box_1all->AddBox(CBox::HorizontalBox, 0, 0, _T("capture"));
-	CreateStatic(hbox, IDC_STATIC, CMsg::Capture_Type);
-	CreateComboBox(hbox, IDC_COMBO_CAPTURE_TYPE, LABELS::capture_fmt, config.capture_type, 8);
+	CreateComboBoxWithLabel(hbox, IDC_COMBO_CAPTURE_TYPE, CMsg::Capture_Type, LABELS::capture_fmt, pConfig->capture_type, 8);
 
 	//
 	// snapshot path
 	hbox = box_1all->AddBox(CBox::HorizontalBox, 0, 0, _T("snapshot"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::Snapshot_Path, 100);
-	CreateEditBox(hbox, IDC_SNAP_PATH, config.snapshot_path.GetM(), 30);
+	CreateEditBox(hbox, IDC_SNAP_PATH, pConfig->snapshot_path.GetM(), 30);
 	CreateButton(hbox, IDC_BTN_SNAP_PATH, CMsg::Folder_, 5);
 
 	hbox = box_1all->AddBox(CBox::HorizontalBox, 0, 0, _T("fontfile"));
 #if defined(USE_WIN)
 	// font file
 	CreateStatic(hbox, IDC_STATIC, CMsg::Font_File_ASTERISK, 100);
-	CreateEditBox(hbox, IDC_FONT_FILE, config.font_path.GetM(), 30);
+	CreateEditBox(hbox, IDC_FONT_FILE, pConfig->font_path.GetM(), 30);
 	CreateButton(hbox, IDC_BTN_FONT_FILE, CMsg::File_, 5);
 #endif
 #if defined(USE_SDL) || defined(USE_SDL2)
 	// font path
 	CreateStatic(hbox, IDC_STATIC, CMsg::Font_Path, 100);
-	CreateEditBox(hbox, IDC_FONT_FILE, config.font_path.GetM(), 30);
+	CreateEditBox(hbox, IDC_FONT_FILE, pConfig->font_path.GetM(), 30);
 	CreateButton(hbox, IDC_BTN_FONT_FILE, CMsg::Folder_, 5);
 #endif
 
 	// message font
 	hbox = box_1all->AddBox(CBox::HorizontalBox, 0, 0, _T("fontns"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::Message_Font, 100);
-	CreateEditBox(hbox, IDC_MSG_FONT_NAME_S, config.msgboard_msg_fontname.GetM(), 10);
-	CreateStatic(hbox, IDC_STATIC, CMsg::_Size);
-	CreateEditBox(hbox, IDC_MSG_FONT_SIZE_S, config.msgboard_msg_fontsize, 3);
+	CreateEditBox(hbox, IDC_MSG_FONT_NAME_S, pConfig->msgboard_msg_fontname.GetM(), 10);
+	CreateEditBoxWithLabel(hbox, IDC_MSG_FONT_SIZE_S, CMsg::_Size, pConfig->msgboard_msg_fontsize, 3);
 	CreateButton(hbox, IDC_BTN_FONT_NAME_S, CMsg::Font_, 5);
 
 	// info font
 	hbox = box_1all->AddBox(CBox::HorizontalBox, 0, 0, _T("fontnl"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::Info_Font, 100);
-	CreateEditBox(hbox, IDC_MSG_FONT_NAME_L, config.msgboard_info_fontname.GetM(), 10);
-	CreateStatic(hbox, IDC_STATIC, CMsg::_Size);
-	CreateEditBox(hbox, IDC_MSG_FONT_SIZE_L, config.msgboard_info_fontsize, 3);
+	CreateEditBox(hbox, IDC_MSG_FONT_NAME_L, pConfig->msgboard_info_fontname.GetM(), 10);
+	CreateEditBoxWithLabel(hbox, IDC_MSG_FONT_SIZE_L, CMsg::_Size, pConfig->msgboard_info_fontsize, 3);
 	CreateButton(hbox, IDC_BTN_FONT_NAME_L, CMsg::Font_, 5);
 
 	// language
 	hbox = box_1all->AddBox(CBox::HorizontalBox, 0, 0, _T("lang"));
 	lang_list.Clear();
 	clocale->GetLocaleNamesWithDefault(lang_list);
-	int lang_selidx = clocale->SelectLocaleNameIndex(lang_list, config.language);
-	CreateStatic(hbox, IDC_STATIC, CMsg::Language_ASTERISK);
-	CreateComboBox(hbox, IDC_COMBO_LANGUAGE, lang_list, lang_selidx, 8);
+	int lang_selidx = clocale->SelectLocaleNameIndex(lang_list, pConfig->language);
+	CreateComboBoxWithLabel(hbox, IDC_COMBO_LANGUAGE, CMsg::Language_ASTERISK, lang_list, lang_selidx, 8);
 
 	// text
 	CreateStatic(box_1all, IDC_STATIC, CMsg::Need_restart_program);
@@ -302,8 +296,8 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CBox *box_ldwav = CreateGroup(box_2lv, IDC_STATIC, CMsg::Load_Wav_File_from_Tape, CBox::VerticalBox);
 
 	hbox = box_ldwav->AddBox(CBox::HorizontalBox, 0, 0, _T("ldwav0"));
-	CreateCheckBox(hbox, IDC_CHK_REVERSE, CMsg::Reverse_Wave, config.wav_reverse);
-	CreateCheckBox(hbox, IDC_CHK_HALFWAVE, CMsg::Half_Wave, config.wav_half);
+	CreateCheckBox(hbox, IDC_CHK_REVERSE, CMsg::Reverse_Wave, pConfig->wav_reverse);
+	CreateCheckBox(hbox, IDC_CHK_HALFWAVE, CMsg::Half_Wave, pConfig->wav_half);
 	hbox = box_ldwav->AddBox(CBox::HorizontalBox, 0, 0, _T("ldwav1"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::Correct);
 	for(int i=0; LABELS::correct[i] != CMsg::End; i++) {
@@ -312,11 +306,11 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	hbox = box_ldwav->AddBox(CBox::HorizontalBox, 0, 0, _T("ldwav2"));
 	for(int i=0; i<2; i++) {
 		CreateStatic(hbox, IDC_STATIC_CORRAMP0 + i, LABELS::correct_amp[i]);
-		CreateEditBox(hbox, IDC_TXT_CORRAMP0 + i, config.wav_correct_amp[i], 4, WS_EX_RIGHT);
+		CreateEditBox(hbox, IDC_TXT_CORRAMP0 + i, pConfig->wav_correct_amp[i], 4, WS_EX_RIGHT);
 	}
-	CheckDlgButton(hDlg, IDC_RADIO_NOCORR, !config.wav_correct);
-	CheckDlgButton(hDlg, IDC_RADIO_COSW, config.wav_correct && config.wav_correct_type == 0);
-	CheckDlgButton(hDlg, IDC_RADIO_SINW, config.wav_correct && config.wav_correct_type == 1);
+	CheckDlgButton(hDlg, IDC_RADIO_NOCORR, !pConfig->wav_correct);
+	CheckDlgButton(hDlg, IDC_RADIO_COSW, pConfig->wav_correct && pConfig->wav_correct_type == 0);
+	CheckDlgButton(hDlg, IDC_RADIO_SINW, pConfig->wav_correct && pConfig->wav_correct_type == 1);
 
 	// Save wav file
 	CBox *box_2rv = box_2h->AddBox(CBox::VerticalBox, 0, 0, _T("2rv"));
@@ -328,8 +322,8 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CreateStatic(vbox, IDC_STATIC, CMsg::Sample_Bits);
 
 	vbox = box_svwav->AddBox(CBox::VerticalBox, 0, 0, _T("svwav_c"));
-	CreateComboBox(vbox, IDC_COMBO_SRATE, LABELS::wav_sampling_rate, config.wav_sample_rate, 4);
-	CreateComboBox(vbox, IDC_COMBO_SBITS, LABELS::wav_sampling_bits, config.wav_sample_bits, 4);
+	CreateComboBox(vbox, IDC_COMBO_SRATE, LABELS::wav_sampling_rate, pConfig->wav_sample_rate, 4);
+	CreateComboBox(vbox, IDC_COMBO_SBITS, LABELS::wav_sampling_bits, pConfig->wav_sample_bits, 4);
 #endif
 
 	// FDD
@@ -339,9 +333,9 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	// mount fdd
 	hbox = box_fdd->AddBox(CBox::HorizontalBox, 0, 0, _T("fdd_mount"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::When_start_up_mount_disk_at_);
-	for(int i=0; i<MAX_DRIVE; i++) {
+	for(int i=0; i<USE_FLOPPY_DISKS; i++) {
 		UTILITY::stprintf(str, sizeof(str), _T("%d"), i);
-		CreateCheckBox(hbox, IDC_CHK_FDD_MOUNT0 + i, str, (config.mount_fdd & (1 << i)) != 0);
+		CreateCheckBox(hbox, IDC_CHK_FDD_MOUNT0 + i, str, (pConfig->mount_fdd & (1 << i)) != 0);
 	}
 
 	CreateCheckBox(box_fdd, IDC_CHK_DELAYFD1, CMsg::Ignore_delays_to_find_sector, FLG_DELAY_FDSEARCH != 0);
@@ -349,6 +343,21 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CreateCheckBox(box_fdd, IDC_CHK_FDDENSITY, CMsg::Suppress_checking_for_density, FLG_CHECK_FDDENSITY == 0);
 	CreateCheckBox(box_fdd, IDC_CHK_FDMEDIA, CMsg::Suppress_checking_for_media_type, FLG_CHECK_FDMEDIA == 0);
 	CreateCheckBox(box_fdd, IDC_CHK_SAVE_FDPLAIN, CMsg::Save_a_plain_disk_image_as_it_is, FLG_SAVE_FDPLAIN != 0);
+#endif
+
+	// HDD
+#ifdef USE_HD1
+	CBox *box_hdd = CreateGroup(box_2all, IDC_STATIC, CMsg::Hard_Disk_Drive, CBox::VerticalBox);
+
+	// mount hdd
+	hbox = box_hdd->AddBox(CBox::HorizontalBox, 0, 0, _T("hdd_mount"));
+	CreateStatic(hbox, IDC_STATIC, CMsg::When_start_up_mount_disk_at_);
+	for(int i=0; i<MAX_HARD_DISKS; i++) {
+		UTILITY::stprintf(str, sizeof(str), _T("%d"), i);
+		CreateCheckBox(hbox, IDC_CHK_HDD_MOUNT0 + i, str, (pConfig->mount_hdd & (1 << i)) != 0);
+	}
+
+	CreateCheckBox(box_hdd, IDC_CHK_DELAYHD2, CMsg::Ignore_delays_to_seek_track, FLG_DELAY_HDSEEK != 0);
 #endif
 
 	// ----------------------------------------
@@ -363,12 +372,10 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 		hbox = box_3all->AddBox(CBox::HorizontalBox, 0, 0, _T("3h"));
 		UTILITY::stprintf(str, sizeof(str), CMSGM(LPTVDIGIT_Hostname), i); 
 		CreateStatic(hbox, IDC_STATIC, str, 100);
-		CreateEditBox(hbox, IDC_HOSTNAME_LPT0 + i, config.printer_server_host[i], 12, WS_EX_LEFT);
-		CreateStatic(hbox, IDC_STATIC, CMsg::_Port);
-		CreateEditBox(hbox, IDC_PORT_LPT0 + i, config.printer_server_port[i], 6, WS_EX_RIGHT);
-		CreateStatic(hbox, IDC_STATIC, CMsg::_Print_delay);
-		UTILITY::stprintf(str, sizeof(str), _T("%.1f"), config.printer_delay[i]);
-		CreateEditBox(hbox, IDC_DELAY_LPT0 + i, str, 6, WS_EX_RIGHT);
+		CreateEditBox(hbox, IDC_HOSTNAME_LPT0 + i, pConfig->printer_server_host[i].Get(), 12, WS_EX_LEFT);
+		CreateEditBoxWithLabel(hbox, IDC_PORT_LPT0 + i, CMsg::_Port, pConfig->printer_server_port[i], 6, WS_EX_RIGHT);
+		UTILITY::stprintf(str, sizeof(str), _T("%.1f"), pConfig->printer_delay[i]);
+		CreateEditBoxWithLabel(hbox, IDC_DELAY_LPT0 + i, CMsg::_Print_delay, str, 6, WS_EX_RIGHT);
 		CreateStatic(hbox, IDC_STATIC, CMsg::msec);
 	}
 #endif
@@ -378,20 +385,16 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 		hbox = box_3all->AddBox(CBox::HorizontalBox, 0, 0, _T("3h"));
 		UTILITY::stprintf(str, sizeof(str), CMSGM(COMVDIGIT_Hostname), i); 
 		CreateStatic(hbox, IDC_STATIC, str, 100);
-		CreateEditBox(hbox, IDC_HOSTNAME_COM0 + i, config.comm_server_host[i], 12, WS_EX_LEFT);
-		CreateStatic(hbox, IDC_STATIC, CMsg::_Port);
-		CreateEditBox(hbox, IDC_PORT_COM0 + i, config.comm_server_port[i], 6, WS_EX_RIGHT);
-		CreateComboBox(hbox, IDC_COMBO_COM0 + i, LABELS::comm_baud, config.comm_dipswitch[i] - 1, 8);
+		CreateEditBox(hbox, IDC_HOSTNAME_COM0 + i, pConfig->comm_server_host[i].Get(), 12, WS_EX_LEFT);
+		CreateEditBoxWithLabel(hbox, IDC_PORT_COM0 + i, CMsg::_Port, pConfig->comm_server_port[i], 6, WS_EX_RIGHT);
+		CreateComboBox(hbox, IDC_COMBO_COM0 + i, LABELS::comm_baud, pConfig->comm_dipswitch[i] - 1, 8);
 	}
 #endif
 #ifdef USE_DEBUGGER
 	// Debugger
 	hbox = box_3all->AddBox(CBox::HorizontalBox, 0, 0, _T("3dbg"));
-	CreateStatic(hbox, IDC_STATIC, CMsg::Connectable_host_to_Debugger);
-//	box_3dbg->AddSpace(32, 1);
-	CreateEditBox(hbox, IDC_HOSTNAME_DBGR, config.debugger_server_host, 12, WS_EX_LEFT);
-	CreateStatic(hbox, IDC_STATIC, CMsg::_Port);
-	CreateEditBox(hbox, IDC_PORT_DBGR, config.debugger_server_port, 6, WS_EX_RIGHT);
+	CreateEditBoxWithLabel(hbox, IDC_HOSTNAME_DBGR, CMsg::Connectable_host_to_Debugger, pConfig->debugger_server_host.Get(), 12, WS_EX_LEFT);
+	CreateEditBoxWithLabel(hbox, IDC_PORT_DBGR, CMsg::_Port, pConfig->debugger_server_port, 6, WS_EX_RIGHT);
 #endif
 	// uart
 //	int uart_w = font->GetTextWidth(hDlg, _T("mmmmmmmmmmmm"));
@@ -408,18 +411,18 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	// uart
 	vali = 0;
 	for(int i=0; LABELS::comm_uart_baudrate[i] != NULL; i++) {
-		if (config.comm_uart_baudrate == _tcstol(LABELS::comm_uart_baudrate[i], NULL, 10)) {
+		if (pConfig->comm_uart_baudrate == _tcstol(LABELS::comm_uart_baudrate[i], NULL, 10)) {
 			vali = i;
 			break;
 		}
 	}
 	CreateComboBox(vbox, IDC_COMBO_UART_BAUDRATE, LABELS::comm_uart_baudrate, vali, 6);
-	vali = config.comm_uart_databit - 7; // 7bit: 0 8bit: 1
+	vali = pConfig->comm_uart_databit - 7; // 7bit: 0 8bit: 1
 	if (vali < 0 || 1 < vali) vali = 1;
 	CreateComboBox(vbox, IDC_COMBO_UART_DATABIT, LABELS::comm_uart_databit, vali, 6);
-	CreateComboBox(vbox, IDC_COMBO_UART_PARITY, LABELS::comm_uart_parity, config.comm_uart_parity, 6);
-	CreateComboBox(vbox, IDC_COMBO_UART_STOPBIT, LABELS::comm_uart_stopbit, config.comm_uart_stopbit - 1, 6);
-	CreateComboBox(vbox, IDC_COMBO_UART_FLOWCTRL, LABELS::comm_uart_flowctrl, config.comm_uart_flowctrl, 6);
+	CreateComboBox(vbox, IDC_COMBO_UART_PARITY, LABELS::comm_uart_parity, pConfig->comm_uart_parity, 6);
+	CreateComboBox(vbox, IDC_COMBO_UART_STOPBIT, LABELS::comm_uart_stopbit, pConfig->comm_uart_stopbit - 1, 6);
+	CreateComboBox(vbox, IDC_COMBO_UART_FLOWCTRL, LABELS::comm_uart_flowctrl, pConfig->comm_uart_flowctrl, 6);
 	CreateStatic(box_uart, IDC_STATIC, CMsg::Need_re_connect_to_serial_port_when_modified_this);
 
 	// ----------------------------------------
@@ -430,18 +433,16 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	// rom path
 	hbox = box_4all->AddBox(CBox::HorizontalBox, 0, 0, _T("rompath"));
-	CreateStatic(hbox, IDC_STATIC, CMsg::ROM_Path_ASTERISK);
-	CreateEditBox(hbox, IDC_ROM_PATH, config.rom_path.GetM(), 30);
+	CreateEditBoxWithLabel(hbox, IDC_ROM_PATH, CMsg::ROM_Path_ASTERISK, pConfig->rom_path.GetM(), 30);
 	CreateButton(hbox, IDC_BTN_ROM_PATH, CMsg::Folder_, 5);
 
 #if defined(_MBS1)
 	// exram size
 	hbox = box_4all->AddBox(CBox::HorizontalBox, 0, 0, _T("exram"));
-	CreateStatic(hbox, IDC_STATIC, CMsg::Extended_RAM_ASTERISK);
-	CreateComboBox(hbox, IDC_COMBO_EXMEM,LABELS::exram_size, exram_size_num, 5);
-	if (0 <= config.exram_size_num && config.exram_size_num <= 4) {
+	CreateComboBoxWithLabel(hbox, IDC_COMBO_EXMEM, CMsg::Extended_RAM_ASTERISK ,LABELS::exram_size, exram_size_num, 5);
+	if (0 <= pConfig->exram_size_num && pConfig->exram_size_num <= 4) {
 		UTILITY::tcscpy(str, sizeof(str), CMSGM(LB_Now_SP));
-		UTILITY::tcscat(str, sizeof(str), CMSGVM(LABELS::exram_size[config.exram_size_num]));
+		UTILITY::tcscat(str, sizeof(str), CMSGVM(LABELS::exram_size[pConfig->exram_size_num]));
 		UTILITY::tcscat(str, sizeof(str), _T(")"));
 	} else {
 		str[0] = _T('\0');
@@ -449,10 +450,10 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CreateStatic(hbox, IDC_STATIC, str);
 
 	// no wait
-	CreateCheckBox(box_4all, IDC_CHK_MEMNOWAIT, CMsg::No_wait_to_access_the_main_memory, config.mem_nowait);
+	CreateCheckBox(box_4all, IDC_CHK_MEMNOWAIT, CMsg::No_wait_to_access_the_main_memory, pConfig->mem_nowait);
 #else
 	// ex memory
-	CreateCheckBox(box_4all, IDC_CHK_EXMEM, CMsg::Use_Extended_Memory_64KB, config.exram_size_num == 1);
+	CreateCheckBox(box_4all, IDC_CHK_EXMEM, CMsg::Use_Extended_Memory_64KB, pConfig->exram_size_num == 1);
 #endif
 
 	// undef opcode
@@ -463,7 +464,7 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	// z80b card
 	hbox = box_4all->AddBox(CBox::HorizontalBox, 0, 0, _T("z80int"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::Connect_interrupt_signal_of_Z80B_Card_to_ASTERISK);
-	CreateComboBox(hbox, IDC_COMBO_Z80BCARD_IRQ, LABELS::z80bcard_irq, config.z80b_card_out_irq, 5);
+	CreateComboBox(hbox, IDC_COMBO_Z80BCARD_IRQ, LABELS::z80bcard_irq, pConfig->z80b_card_out_irq, 5);
 # elif defined(USE_MPC_68008)
 	// MPC-68008 card
 	CreateCheckBox(box_4all, IDC_CHK_ADDRERR, CMsg::Show_message_when_the_address_error_occured_in_MC68008, FLG_SHOWMSG_ADDRERR != 0);
@@ -489,16 +490,11 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CreateCheckBox(box_fmopngrp, IDC_CHK_EN_FMOPN, CMsg::Enable, IOPORT_USE_FMOPN != 0);
 	CreateStatic(box_fmopngrp, IDC_STATIC, CMsg::IO_ports_are_FF1E_FF1F_FF16_FF17);
 
-//	CBox *box_fmopnclk = box_fmopngrp->AddBox(CBox::HorizontalBox, 0, 0, _T("opnclk"));
-//	CreateStatic(box_fmopnclk, IDC_STATIC, CMsg::Clock);
-//	CreateComboBox(box_fmopnclk, IDC_COMBO_FMOPN, LABELS::fmopn_clock, config.opn_clock, 5);
-//	CreateStatic(box_fmopnclk, IDC_STATIC, _T("Hz"));
-
 	// chip type
 	int type_of_fmopn = emu->get_parami(VM::ParamChipTypeOnFmOpn);
 	hbox = box_fmopngrp->AddBox(CBox::HorizontalBox, 0, 0, _T("opnchip"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::Sound_chip);
-	CreateComboBox(hbox, IDC_COMBO_CHIP_FMOPN, LABELS::type_of_soundcard, type_of_fmopn, 16, config.type_of_fmopn, CMsg::LB_Now_RB);
+	CreateComboBox(hbox, IDC_COMBO_CHIP_FMOPN, LABELS::type_of_soundcard, type_of_fmopn, 16, pConfig->type_of_fmopn, CMsg::LB_Now_RB);
 
 	// Ex PSG port
 	CBox *box_expsggrp = CreateGroup(box_5all, IDC_STATIC, CMsg::Extended_PSG_Port_ASTERISK, CBox::VerticalBox);
@@ -510,12 +506,11 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	int type_of_expsg = emu->get_parami(VM::ParamChipTypeOnExPsg);
 	hbox = box_expsggrp->AddBox(CBox::HorizontalBox, 0, 0, _T("psgchip"));
 	CreateStatic(hbox, IDC_STATIC, CMsg::Sound_chip);
-	CreateComboBox(hbox, IDC_COMBO_USE_EXPSG, LABELS::type_of_soundcard, type_of_expsg, 16, config.type_of_expsg, CMsg::LB_Now_RB);
+	CreateComboBox(hbox, IDC_COMBO_USE_EXPSG, LABELS::type_of_soundcard, type_of_expsg, 16, pConfig->type_of_expsg, CMsg::LB_Now_RB);
 
 	// interrupt
 	hbox = box_5all->AddBox(CBox::HorizontalBox, 0, 0, _T("fmint"));
-	CreateStatic(hbox, IDC_STATIC, CMsg::Connect_interrupt_signal_of_FM_synthesis_to_ASTERISK_ASTERISK);
-	CreateComboBox(hbox, IDC_COMBO_FMOPN_IRQ, LABELS::fmopn_irq, config.opn_irq, 5);
+	CreateComboBoxWithLabel(hbox, IDC_COMBO_FMOPN_IRQ, CMsg::Connect_interrupt_signal_of_FM_synthesis_to_ASTERISK_ASTERISK,	LABELS::fmopn_irq, pConfig->opn_irq, 5);
 
 	// text
 	CreateStatic(box_5all, IDC_STATIC, CMsg::Need_restart_program_or_PowerOn);
@@ -538,11 +533,11 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	int ax, ay;
 #if defined(_MBS1)
 	hCtrl = GetDlgItem(hDlg, IDC_STATIC_MODE_SW);
-	box_sysmode_sw->GetPositionByItem((1 - (config.sys_mode & 1)), ax, ay);
+	box_sysmode_sw->GetPositionByItem((1 - (pConfig->sys_mode & 1)), ax, ay);
 	SetWindowPos(hCtrl, 0, ax, ay + padding, 1, 1, SWP_NOSIZE | SWP_NOZORDER);
 #endif
 	hCtrl = GetDlgItem(hDlg, IDC_STATIC_ALLOW);
-	box_fdd_type->GetPositionByItem(config.fdd_type, ax, ay);
+	box_fdd_type->GetPositionByItem(pConfig->fdd_type, ax, ay);
 	SetWindowPos(hCtrl, 0, ax, ay + padding, 1, 1, SWP_NOSIZE | SWP_NOZORDER);
 
 	select_tabctrl(selected_tabctrl);
@@ -858,7 +853,7 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 	BOOL rc;
 
 	// power off
-	config.use_power_off = (IsDlgButtonChecked(hDlg, IDC_CHK_POWEROFF) == BST_CHECKED);
+	pConfig->use_power_off = (IsDlgButtonChecked(hDlg, IDC_CHK_POWEROFF) == BST_CHECKED);
 
 	// MODE switch
 #if defined(_MBS1)
@@ -869,9 +864,9 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 #endif
 	if (IsDlgButtonChecked(hDlg, ID_DIPSWITCH3)) {
-		config.dipswitch |= 4;
+		pConfig->dipswitch |= 4;
 	} else {
-		config.dipswitch &= ~4;
+		pConfig->dipswitch &= ~4;
 	}
 
 	// fdd type
@@ -886,33 +881,41 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 #endif
 
 #ifdef USE_FD1
-	config.mount_fdd = 0;
-	for (int i=0; i<MAX_DRIVE; i++) {
-		config.mount_fdd |= (IsDlgButtonChecked(hDlg, IDC_CHK_FDD_MOUNT0 + i) == BST_CHECKED ? 1 << i : 0);
+	pConfig->mount_fdd = 0;
+	for (int i=0; i<USE_FLOPPY_DISKS; i++) {
+		pConfig->mount_fdd |= (IsDlgButtonChecked(hDlg, IDC_CHK_FDD_MOUNT0 + i) == BST_CHECKED ? 1 << i : 0);
 	}
-	config.option_fdd = (IsDlgButtonChecked(hDlg, IDC_CHK_DELAYFD1) == BST_CHECKED ? MSK_DELAY_FDSEARCH : 0)
+	pConfig->option_fdd = (IsDlgButtonChecked(hDlg, IDC_CHK_DELAYFD1) == BST_CHECKED ? MSK_DELAY_FDSEARCH : 0)
 					| (IsDlgButtonChecked(hDlg, IDC_CHK_DELAYFD2) == BST_CHECKED ? MSK_DELAY_FDSEEK : 0)
 					| (IsDlgButtonChecked(hDlg, IDC_CHK_FDDENSITY) == BST_CHECKED ? 0 : MSK_CHECK_FDDENSITY)
 					| (IsDlgButtonChecked(hDlg, IDC_CHK_FDMEDIA) == BST_CHECKED ? 0 : MSK_CHECK_FDMEDIA)
 					| (IsDlgButtonChecked(hDlg, IDC_CHK_SAVE_FDPLAIN) == BST_CHECKED ? MSK_SAVE_FDPLAIN : 0);
 #endif
 
+#ifdef USE_HD1
+	pConfig->mount_hdd = 0;
+	for (int i=0; i<MAX_HARD_DISKS; i++) {
+		pConfig->mount_hdd |= (IsDlgButtonChecked(hDlg, IDC_CHK_HDD_MOUNT0 + i) == BST_CHECKED ? 1 << i : 0);
+	}
+	pConfig->option_hdd = (IsDlgButtonChecked(hDlg, IDC_CHK_DELAYHD2) == BST_CHECKED ? MSK_DELAY_HDSEEK : 0);
+#endif
+
 #ifdef USE_DATAREC
-	config.wav_reverse = (IsDlgButtonChecked(hDlg, IDC_CHK_REVERSE) == BST_CHECKED);
-	config.wav_half = (IsDlgButtonChecked(hDlg, IDC_CHK_HALFWAVE) == BST_CHECKED);
-	config.wav_correct = !(IsDlgButtonChecked(hDlg, IDC_RADIO_NOCORR) == BST_CHECKED);
-	config.wav_correct_type = (IsDlgButtonChecked(hDlg, IDC_RADIO_SINW) == BST_CHECKED ? 1 : 0);
+	pConfig->wav_reverse = (IsDlgButtonChecked(hDlg, IDC_CHK_REVERSE) == BST_CHECKED);
+	pConfig->wav_half = (IsDlgButtonChecked(hDlg, IDC_CHK_HALFWAVE) == BST_CHECKED);
+	pConfig->wav_correct = !(IsDlgButtonChecked(hDlg, IDC_RADIO_NOCORR) == BST_CHECKED);
+	pConfig->wav_correct_type = (IsDlgButtonChecked(hDlg, IDC_RADIO_SINW) == BST_CHECKED ? 1 : 0);
 	valuel = GetDlgItemInt(hDlg, IDC_TXT_CORRAMP0, &rc, false);
 	if (rc == TRUE && 100 <= valuel && valuel <= 5000) {
-		config.wav_correct_amp[0] = valuel;
+		pConfig->wav_correct_amp[0] = valuel;
 	}
 	valuel = GetDlgItemInt(hDlg, IDC_TXT_CORRAMP1, &rc, false);
 	if (rc == TRUE && 100 <= valuel && valuel <= 5000) {
-		config.wav_correct_amp[1] = valuel;
+		pConfig->wav_correct_amp[1] = valuel;
 	}
 
-	config.wav_sample_rate = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_SRATE, CB_GETCURSEL, 0, 0);
-	config.wav_sample_bits = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_SBITS, CB_GETCURSEL, 0, 0);
+	pConfig->wav_sample_rate = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_SRATE, CB_GETCURSEL, 0, 0);
+	pConfig->wav_sample_bits = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_SBITS, CB_GETCURSEL, 0, 0);
 #endif
 
 	// I/O port address
@@ -928,156 +931,156 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	// crtc
 #if defined(_MBS1)
-	config.disptmg_skew = (int8_t)(SendDlgItemMessage(hDlg, IDC_COMBO_DISPTMG, CB_GETCURSEL, 0, 0) - 2);
-	config.curdisp_skew = (int8_t)(SendDlgItemMessage(hDlg, IDC_COMBO_CURDISP, CB_GETCURSEL, 0, 0) - 2);
+	pConfig->disptmg_skew = (int8_t)(SendDlgItemMessage(hDlg, IDC_COMBO_DISPTMG, CB_GETCURSEL, 0, 0) - 2);
+	pConfig->curdisp_skew = (int8_t)(SendDlgItemMessage(hDlg, IDC_COMBO_CURDISP, CB_GETCURSEL, 0, 0) - 2);
 #else
-	config.disptmg_skew = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_DISPTMG, CB_GETCURSEL, 0, 0);
-	config.curdisp_skew = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_CURDISP, CB_GETCURSEL, 0, 0);
+	pConfig->disptmg_skew = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_DISPTMG, CB_GETCURSEL, 0, 0);
+	pConfig->curdisp_skew = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_CURDISP, CB_GETCURSEL, 0, 0);
 #endif
 
 #ifdef USE_DIRECT3D
 	// d3d use
-	config.use_direct3d = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_D3D_USE, CB_GETCURSEL, 0, 0);
+	pConfig->use_direct3d = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_D3D_USE, CB_GETCURSEL, 0, 0);
 
 	// d3d filter type
-	config.d3d_filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_D3D_FILTER, CB_GETCURSEL, 0, 0);
+	pConfig->d3d_filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_D3D_FILTER, CB_GETCURSEL, 0, 0);
 #endif
 #ifdef USE_OPENGL
 	// opengl use
-	config.use_opengl = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_OPENGL_USE, CB_GETCURSEL, 0, 0);
+	pConfig->use_opengl = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_OPENGL_USE, CB_GETCURSEL, 0, 0);
 
 	// opengl filter type
-	config.gl_filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_OPENGL_FILTER, CB_GETCURSEL, 0, 0);
+	pConfig->gl_filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_OPENGL_FILTER, CB_GETCURSEL, 0, 0);
 #endif
 
 #ifdef USE_LEDBOX
 	// led show
 	int led_show = (int)SendDlgItemMessage(hDlg, IDC_COMBO_LED_SHOW, CB_GETCURSEL, 0, 0);
 	// led pos
-	config.led_pos = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_LED_POS, CB_GETCURSEL, 0, 0);
+	pConfig->led_pos = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_LED_POS, CB_GETCURSEL, 0, 0);
 #endif
 
 	// capture type
-	config.capture_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_CAPTURE_TYPE, CB_GETCURSEL, 0, 0);
+	pConfig->capture_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_CAPTURE_TYPE, CB_GETCURSEL, 0, 0);
 
 	// snapshot path
 	GetDlgItemText(hDlg, IDC_SNAP_PATH, buf, _MAX_PATH);
-	config.snapshot_path.SetM(buf);
+	pConfig->snapshot_path.SetM(buf);
 	// font file / path
 	GetDlgItemText(hDlg, IDC_FONT_FILE, buf, _MAX_PATH);
-	config.font_path.SetM(buf);
+	pConfig->font_path.SetM(buf);
 	// message font name
 	GetDlgItemText(hDlg, IDC_MSG_FONT_NAME_S, buf, _MAX_PATH);
-	config.msgboard_msg_fontname.SetM(buf);
+	pConfig->msgboard_msg_fontname.SetM(buf);
 	GetDlgItemText(hDlg, IDC_MSG_FONT_NAME_L, buf, _MAX_PATH);
-	config.msgboard_info_fontname.SetM(buf);
+	pConfig->msgboard_info_fontname.SetM(buf);
 	// message font size
 	valuel = GetDlgItemInt(hDlg, IDC_MSG_FONT_SIZE_L, &rc, TRUE);
 	if (rc == TRUE && 1 <= valuel && valuel <= 60) {
-		config.msgboard_info_fontsize = (uint8_t)valuel;
+		pConfig->msgboard_info_fontsize = (uint8_t)valuel;
 	}
 	valuel = GetDlgItemInt(hDlg, IDC_MSG_FONT_SIZE_S, &rc, TRUE);
 	if (rc == TRUE && 1 <= valuel && valuel <= 60) {
-		config.msgboard_msg_fontsize = (uint8_t)valuel;
+		pConfig->msgboard_msg_fontsize = (uint8_t)valuel;
 	}
 
 	// language
 	valuel = (int)SendDlgItemMessage(hDlg, IDC_COMBO_LANGUAGE, CB_GETCURSEL, 0, 0);
-	clocale->ChooseLocaleName(lang_list, valuel, config.language);
+	clocale->ChooseLocaleName(lang_list, valuel, pConfig->language);
 
 #ifdef MAX_PRINTER
 	// hostname, port
 	for(int i=0; i<MAX_PRINTER; i++) {
 		GetDlgItemText(hDlg, IDC_HOSTNAME_LPT0 + i, buf, _MAX_PATH);
-		config.printer_server_host[i].Set(buf);
+		pConfig->printer_server_host[i].Set(buf);
 		valuel = GetDlgItemInt(hDlg, IDC_PORT_LPT0 + i, &rc, TRUE);
 		if (rc == TRUE && 0 <= valuel && valuel <= 65535) {
-			config.printer_server_port[i] = valuel;
+			pConfig->printer_server_port[i] = valuel;
 		}
 		GetDlgItemText(hDlg, IDC_DELAY_LPT0 + i, buf, _MAX_PATH);
 		double valued = _tcstod(buf, NULL);
 		if (valued < 0.1) valued = 0.1;
 		if (valued > 1000.0) valued = 1000.0;
 		valued = floor(valued * 10.0 + 0.5) / 10.0;
-		config.printer_delay[i] = valued;
+		pConfig->printer_delay[i] = valued;
 	}
 #endif
 #ifdef MAX_COMM
 	for(int i=0; i<MAX_COMM; i++) {
 		GetDlgItemText(hDlg, IDC_HOSTNAME_COM0 + i, buf, _MAX_PATH);
-		config.comm_server_host[i].Set(buf);
+		pConfig->comm_server_host[i].Set(buf);
 		valuel = GetDlgItemInt(hDlg, IDC_PORT_COM0 + i, &rc, TRUE);
 		if (rc == TRUE && 0 <= valuel && valuel <= 65535) {
-			config.comm_server_port[i] = valuel;
+			pConfig->comm_server_port[i] = valuel;
 		}
 		valuel = (int)SendDlgItemMessage(hDlg, IDC_COMBO_COM0 + i, CB_GETCURSEL, 0, 0);
 		if (valuel >= 0 && valuel <= 3) {
-			config.comm_dipswitch[i] = valuel + 1;
+			pConfig->comm_dipswitch[i] = valuel + 1;
 		}
 	}
 #endif
 #ifdef USE_DEBUGGER
 	GetDlgItemText(hDlg, IDC_HOSTNAME_DBGR, buf, _MAX_PATH);
-	config.debugger_server_host.Set(buf);
+	pConfig->debugger_server_host.Set(buf);
 	valuel = GetDlgItemInt(hDlg, IDC_PORT_DBGR, &rc, TRUE);
 	if (rc == TRUE && 0 <= valuel && valuel <= 65535) {
-		config.debugger_server_port = valuel;
+		pConfig->debugger_server_port = valuel;
 	}
 #endif
 	// uart
 	valuel = GetDlgItemInt(hDlg, IDC_COMBO_UART_BAUDRATE, &rc, FALSE);
-	if (rc == TRUE && valuel > 0) config.comm_uart_baudrate = valuel;
+	if (rc == TRUE && valuel > 0) pConfig->comm_uart_baudrate = valuel;
 	valuel = (int)SendDlgItemMessage(hDlg, IDC_COMBO_UART_DATABIT, CB_GETCURSEL, 0, 0);
-	if (valuel >= 0 && valuel <= 1) config.comm_uart_databit = valuel + 7; // 7bit: 0 8bit: 1
+	if (valuel >= 0 && valuel <= 1) pConfig->comm_uart_databit = valuel + 7; // 7bit: 0 8bit: 1
 	valuel = (int)SendDlgItemMessage(hDlg, IDC_COMBO_UART_PARITY, CB_GETCURSEL, 0, 0);
-	if (valuel >= 0 && valuel <= 4) config.comm_uart_parity = valuel;
+	if (valuel >= 0 && valuel <= 4) pConfig->comm_uart_parity = valuel;
 	valuel = (int)SendDlgItemMessage(hDlg, IDC_COMBO_UART_STOPBIT, CB_GETCURSEL, 0, 0);
-	if (valuel >= 0 && valuel <= 1) config.comm_uart_stopbit = valuel + 1;
+	if (valuel >= 0 && valuel <= 1) pConfig->comm_uart_stopbit = valuel + 1;
 	valuel = (int)SendDlgItemMessage(hDlg, IDC_COMBO_UART_FLOWCTRL, CB_GETCURSEL, 0, 0);
-	if (valuel >= 0 && valuel <= 2) config.comm_uart_flowctrl = valuel;
+	if (valuel >= 0 && valuel <= 2) pConfig->comm_uart_flowctrl = valuel;
 
 	// rom path
 	GetDlgItemText(hDlg, IDC_ROM_PATH, buf, _MAX_PATH);
-	config.rom_path.SetM(buf);
+	pConfig->rom_path.SetM(buf);
 #if defined(_MBS1)
 	// exram size
 	exram_size_num = (int)SendDlgItemMessage(hDlg, IDC_COMBO_EXMEM, CB_GETCURSEL, 0, 0);
 	// no wait
-	config.mem_nowait = (IsDlgButtonChecked(hDlg, IDC_CHK_MEMNOWAIT) == BST_CHECKED);
+	pConfig->mem_nowait = (IsDlgButtonChecked(hDlg, IDC_CHK_MEMNOWAIT) == BST_CHECKED);
 #else
 	// extended memory
-	config.exram_size_num = IsDlgButtonChecked(hDlg, IDC_CHK_EXMEM) ? 1 : 0;
+	pConfig->exram_size_num = IsDlgButtonChecked(hDlg, IDC_CHK_EXMEM) ? 1 : 0;
 #endif
 
 	// undef opcode
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, IsDlgButtonChecked(hDlg, IDC_CHK_UNDEFOP) == BST_CHECKED);
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_UNDEFOP, IsDlgButtonChecked(hDlg, IDC_CHK_UNDEFOP) == BST_CHECKED);
 
 #if defined(_MBS1)
 # if defined(USE_Z80B_CARD)
 	// z80bcard irq
-	config.z80b_card_out_irq = (int)SendDlgItemMessage(hDlg, IDC_COMBO_Z80BCARD_IRQ, CB_GETCURSEL, 0, 0);
+	pConfig->z80b_card_out_irq = (int)SendDlgItemMessage(hDlg, IDC_COMBO_Z80BCARD_IRQ, CB_GETCURSEL, 0, 0);
 # elif defined(USE_MPC_68008)
 	// MPC-68008 card
 
 	// address error
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_ADDRERR, IsDlgButtonChecked(hDlg, IDC_CHK_ADDRERR) == BST_CHECKED);
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_ADDRERR, IsDlgButtonChecked(hDlg, IDC_CHK_ADDRERR) == BST_CHECKED);
 # endif
 #endif
 
 	// clear CPU registers
-	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, IsDlgButtonChecked(hDlg, IDC_CHK_CLEAR_CPUREG) == BST_CHECKED);
+	BIT_ONOFF(pConfig->misc_flags, MSK_CLEAR_CPUREG, IsDlgButtonChecked(hDlg, IDC_CHK_CLEAR_CPUREG) == BST_CHECKED);
 
 #if defined(_MBS1)
 	// fmopn clock
-//	config.opn_clock = (int)SendDlgItemMessage(hDlg, IDC_COMBO_FMOPN, CB_GETCURSEL, 0, 0);
+//	pConfig->opn_clock = (int)SendDlgItemMessage(hDlg, IDC_COMBO_FMOPN, CB_GETCURSEL, 0, 0);
 	// fmopn irq
-	config.opn_irq = (int)SendDlgItemMessage(hDlg, IDC_COMBO_FMOPN_IRQ, CB_GETCURSEL, 0, 0);
+	pConfig->opn_irq = (int)SendDlgItemMessage(hDlg, IDC_COMBO_FMOPN_IRQ, CB_GETCURSEL, 0, 0);
 
 	// chip type of FM synth
 	int type_of_fmopn = (int)SendDlgItemMessage(hDlg, IDC_COMBO_CHIP_FMOPN, CB_GETCURSEL, 0, 0);
 
 	// use opn instead of psg
-//	config.use_opn_expsg = (IsDlgButtonChecked(hDlg, IDC_CHK_USE_OPN_EXPSG) == BST_CHECKED);
+//	pConfig->use_opn_expsg = (IsDlgButtonChecked(hDlg, IDC_CHK_USE_OPN_EXPSG) == BST_CHECKED);
 	int type_of_expsg = (int)SendDlgItemMessage(hDlg, IDC_COMBO_USE_EXPSG, CB_GETCURSEL, 0, 0);
 
 	emu->set_parami(VM::ParamSysMode, sys_mode);
@@ -1100,10 +1103,10 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 
 #ifdef USE_LEDBOX
 	gui->ChangeLedBox(led_show);
-	gui->ChangeLedBoxPosition(config.led_pos);
+	gui->ChangeLedBoxPosition(pConfig->led_pos);
 #endif
 
-	config.save();
+	pConfig->save();
 #ifdef USE_OPENGL
 	emu->change_opengl_attr();
 #endif
@@ -1127,7 +1130,7 @@ void ConfigBox::select_tabctrl(int tab_num)
 	int cmdShow;
 
 	selected_tabctrl = tab_num;
-	for(int i=0; i<CONFIG_TABS; i++) {
+	for(int i=0; i<tab_items.Count(); i++) {
 		cmdShow = (selected_tabctrl == i ? SW_SHOW : SW_HIDE);
 
 		CTabItemIds *ids = tab_items.Item(i);
@@ -1145,14 +1148,14 @@ void ConfigBox::select_tabctrl(int tab_num)
 #if defined(_BML3MK5)
 		// Mode switch
 		hCtrl = GetDlgItem(hDlg, IDC_STATIC_MODE_SW);
-		ShowWindow(hCtrl, (config.dipswitch & 4) != 0 ? SW_SHOWNORMAL : SW_HIDE);
+		ShowWindow(hCtrl, (pConfig->dipswitch & 4) != 0 ? SW_SHOWNORMAL : SW_HIDE);
 #endif
 		// I/O port address
 		for(int i=0; LABELS::io_port[i] != CMsg::End; i++) {
 			int pos = LABELS::io_port_pos[i];
 //			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + pos, (io_port & (1 << pos)) != 0);
 			hCtrl = GetDlgItem(hDlg, IDC_STATIC_IOPORT1 + pos);
-			ShowWindow(hCtrl, (config.io_port & (1 << pos)) != 0 ? SW_SHOWNORMAL : SW_HIDE);
+			ShowWindow(hCtrl, (pConfig->io_port & (1 << pos)) != 0 ? SW_SHOWNORMAL : SW_HIDE);
 		}
 #ifdef USE_IOPORT_FDD
 		if (fdd_type == FDD_TYPE_3FDD) {

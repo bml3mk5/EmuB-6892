@@ -31,9 +31,10 @@ endif
 
 #ARCH:=-arch i386
 #ARCH:=-arch x86_64
-ARCH:=-arch i386 -arch x86_64
+#ARCH:=-arch i386 -arch x86_64
+ARCH:=-arch arm64 -arch x86_64
 
-WXDIR:=$(HOME)/Devel/wxWidgets-3.1.0
+WXDIR:=$(HOME)/Devel/wxWidgets-3.2.4
 WXCONFIG_SH:=$(WXDIR)/build_release_shared_unicode/wx-config
 WXCONFIG_ST:=$(WXDIR)/build_release_static_unicode/wx-config
 WXCONFIG_DBG:=$(WXDIR)/build_debug_static_unicode/wx-config

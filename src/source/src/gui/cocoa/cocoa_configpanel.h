@@ -32,7 +32,6 @@
 #endif
 	CocoaCheckBox *chkDipswitch;
 	CocoaRadioButton *radFddType[4];
-	CocoaCheckBox *chkFddMount[MAX_DRIVE];
 	CocoaCheckBox *chkIOPort[IOPORT_NUMS];
 
 	CocoaPopUpButton *popUseOpenGL;
@@ -61,11 +60,18 @@
 #endif
 
 #ifdef USE_FD1
+	CocoaCheckBox *chkFddMount[USE_FLOPPY_DISKS];
 	CocoaCheckBox *chkDelayFd1;
 	CocoaCheckBox *chkDelayFd2;
 	CocoaCheckBox *chkFdDensity;
 	CocoaCheckBox *chkFdMedia;
 	CocoaCheckBox *chkFdSavePlain;
+#endif
+
+#ifdef USE_HD1
+	CocoaCheckBox *chkHddMount[USE_HARD_DISKS];
+
+	CocoaCheckBox *chkDelayHd2;
 #endif
 
 #ifdef MAX_PRINTER

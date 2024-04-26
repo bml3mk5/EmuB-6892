@@ -50,6 +50,13 @@
 			}
 			break;
 		case 0xff20:
+		case 0xff21:
+		case 0xff22:
+		case 0xff23:
+		case 0xff24:
+		case 0xff25:
+		case 0xff26:
+		case 0xff27:
 			// fdd drive select
 			if (IOPORT_USE_3FDD) {
 				d_fdd->WRITE_IO8(0, data);
@@ -222,7 +229,7 @@
 		case 0xffdf:
 			// color register
 #ifdef _DEBUG_CRAM
-			logging->out_debugf("cw c%02x->%02x",color_reg,data);
+			logging->out_debugf("cw creg:%02x -> %02x",color_reg,data);
 #endif
 			color_reg = data & 0xbf;
 			break;

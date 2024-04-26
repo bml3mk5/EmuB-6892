@@ -37,6 +37,8 @@ public:
 		SEEKCUR	= 1,
 		SEEKEND	= 2,
 	};
+	/// @brief fopen mode table
+	static const char *c_fopen_mode[];
 
 private:
 	FILE* fp;
@@ -54,7 +56,7 @@ public:
 
 	bool Fopen(const _TCHAR *filename, FILEIO_MODES mode);
 	void Fclose();
-	bool IsOpened() { return (fp != NULL); }
+	bool IsOpened() const { return (fp != NULL); }
 	uint32_t FileLength();
 
 	bool FgetBool();
@@ -79,10 +81,10 @@ public:
 	int64_t FgetInt64();
 	void FputInt64(int64_t val);
 #endif
-	float FgetFloat();
-	size_t FputFloat(float val);
-	double FgetDouble();
-	size_t FputDouble(double val);
+	float FgetFloat_LE();
+	size_t FputFloat_LE(float val);
+	double FgetDouble_LE();
+	size_t FputDouble_LE(double val);
 
 	uint16_t FgetUint16_LE();
 	size_t FputUint16_LE(uint16_t val);

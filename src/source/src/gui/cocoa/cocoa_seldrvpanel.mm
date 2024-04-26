@@ -1,6 +1,5 @@
 /** @file cocoa_seldrvpanel.mm
 
- HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
  Skelton for retropc emulator
  SDL edition + Cocoa GUI
 
@@ -15,6 +14,7 @@
 #import "../../config.h"
 #import "../../emu.h"
 #import "../../clocale.h"
+#import "../../utility.h"
 
 extern EMU *emu;
 
@@ -31,22 +31,20 @@ extern EMU *emu;
 
 	CocoaView *view = [self contentView];
 
-	CocoaLayout *box_all = [CocoaLayout create:HorizontalBox :0 :COCOA_DEFAULT_MARGIN];
+	CocoaLayout *box_all = [CocoaLayout create:view :HorizontalBox :0 :COCOA_DEFAULT_MARGIN];
 
-	for(int drv=0; drv<MAX_DRIVE; drv++) {
+	for(int drv=0; drv<USE_FLOPPY_DISKS; drv++) {
 		char label[64];
 		if (prefix) {
-			sprintf(label, "%s%d", prefix, drv);
+			UTILITY::sprintf(label, sizeof(label), "%s%d", prefix, drv);
 		} else {
-			sprintf(label, "%s%d", CMSG(Drive), drv);
+			UTILITY::sprintf(label, sizeof(label), "%s%d", CMSG(Drive), drv);
 		}
-		CocoaButton *btn = [CocoaButton createT:label action:@selector(dialogOk:)];
+		CocoaButton *btn = [CocoaButton createT:box_all title:label action:@selector(dialogOk:) width:80];
 		[btn setRelatedObject:(id)(intptr_t)drv];
-		[box_all addControl:btn width:80];
 //		if (selectedDrive == drv) {
 //			[btn setHighlighted:YES];
 //		}
-		[view addSubview:btn];
 	}
 
 	[box_all realize:self];
@@ -61,7 +59,7 @@ extern EMU *emu;
 
 - (void)close
 {
-	[NSApp stopModalWithCode:NSOKButton];
+	[NSApp stopModalWithCode:NSModalResponseOK];
 	[super close];
 }
 

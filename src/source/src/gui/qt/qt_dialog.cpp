@@ -11,10 +11,13 @@
 #include "qt_dialog.h"
 #include "../../version.h"
 #include "../../emu.h"
-#include "../../parseopt.h"
+#include "../../osd/parseopt.h"
 #include "../../utils.h"
 #include <QtCore>
 
+//
+//
+//
 MyTabWidget::MyTabWidget(QWidget *parent)
 	: QTabWidget(parent)
 {
@@ -24,6 +27,10 @@ int MyTabWidget::addTab(QWidget *page, CMsg::Id labelid)
 	const char *label = CMSGV(labelid);
 	return QTabWidget::addTab(page, label);
 }
+
+//
+//
+//
 MyGroupBox::MyGroupBox(CMsg::Id titleid, QWidget *parent)
 	: QGroupBox(parent)
 {
@@ -34,6 +41,10 @@ void MyGroupBox::setTitleById(CMsg::Id titleid)
 	const char *title = CMSGV(titleid);
 	QGroupBox::setTitle(title);
 }
+
+//
+//
+//
 MyCheckBox::MyCheckBox(CMsg::Id textid, QWidget *parent)
 	: QCheckBox(parent)
 {
@@ -44,6 +55,10 @@ void MyCheckBox::setTextById(CMsg::Id textid)
 	const char *text = CMSGV(textid);
 	QCheckBox::setText(text);
 }
+
+//
+//
+//
 MyRadioButton::MyRadioButton(CMsg::Id textid, QWidget *parent)
 	: QRadioButton(parent)
 {
@@ -54,10 +69,31 @@ void MyRadioButton::setTextById(CMsg::Id textid)
 	const char *text = CMSGV(textid);
 	QRadioButton::setText(text);
 }
+
+//
+//
+//
+MyLabel::MyLabel(const _TCHAR *text, QWidget *parent, Qt::WindowFlags f)
+	: QLabel(text, parent, f)
+{
+}
+MyLabel::MyLabel(const _TCHAR *text, int min_w, int min_h, int align)
+	: QLabel(text)
+{
+	setMinimumSize(min_w, min_h);
+	setAlignment(static_cast<Qt::Alignment>(align));
+}
 MyLabel::MyLabel(CMsg::Id textid, QWidget *parent, Qt::WindowFlags f)
 	: QLabel(parent, f)
 {
 	setTextById(textid);
+}
+MyLabel::MyLabel(CMsg::Id textid, int min_w, int min_h, int align)
+	: QLabel()
+{
+	setTextById(textid);
+	setMinimumSize(min_w, min_h);
+	setAlignment(static_cast<Qt::Alignment>(align));
 }
 void MyLabel::setTextById(CMsg::Id textid)
 {
@@ -65,10 +101,9 @@ void MyLabel::setTextById(CMsg::Id textid)
 	QLabel::setText(text);
 }
 
-///
-/// \brief MyComboBox::MyComboBox
-/// \param nullable parent
-///
+//
+//
+//
 MyComboBox::MyComboBox(QWidget *parent)
 	: QComboBox(parent)
 {
@@ -115,6 +150,10 @@ void MyComboBox::addItemById(CMsg::Id textid, const QVariant &userData)
 	const char *text = CMSGV(textid);
 	QComboBox::addItem(text, userData);
 }
+
+//
+//
+//
 MyPushButton::MyPushButton(CMsg::Id textid, QWidget *parent)
 	: QPushButton(parent)
 {
@@ -125,6 +164,21 @@ void MyPushButton::setTextById(CMsg::Id textid)
 	const char *text = CMSGV(textid);
 	QPushButton::setText(text);
 }
+
+//
+//
+//
+MySlider::MySlider(Qt::Orientation orient, int min_val, int max_val, int val, int min_w, int min_h)
+	: QSlider(orient)
+{
+	setRange(min_val, max_val);
+	setValue(val);
+	if (min_w > 0 || min_h > 0) setMinimumSize(min_w, min_h);
+}
+
+//
+//
+//
 MyFileDialog::MyFileDialog(QWidget *parent, CMsg::Id captionid, const QString &directory, const QString &filter)
 	: QFileDialog(parent, QString(), directory, filter)
 {

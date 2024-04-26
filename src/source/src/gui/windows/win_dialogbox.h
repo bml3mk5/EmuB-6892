@@ -68,6 +68,7 @@ protected:
 	virtual INT_PTR onHScroll(UINT, WPARAM, LPARAM);
 	virtual INT_PTR onVScroll(UINT, WPARAM, LPARAM);
 	virtual INT_PTR onSize(UINT, WPARAM, LPARAM);
+	virtual INT_PTR onMinMaxInfo(UINT, WPARAM, LPARAM);
 	virtual INT_PTR onOK(UINT, WPARAM, LPARAM);
 	virtual INT_PTR onClose(UINT, WPARAM, LPARAM);
 	virtual INT_PTR onHelp(UINT, WPARAM, LPARAM);
@@ -133,6 +134,9 @@ public:
 	virtual HWND CreateComboBox(CBox *box, int nItemId, const _TCHAR **list, int selnum, int nMinSize, bool translate = false);
 	virtual HWND CreateComboBox(CBox *box, int nItemId, const CMsg::Id *list, int selnum, int nMinSize, int appendnum = -1, CMsg::Id appendstr = CMsg::End);
 	virtual HWND CreateComboBox(CBox *box, int nItemId, const CPtrList<CTchar> &list, int selnum, int nMinSize);
+	virtual HWND CreateComboBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const _TCHAR **list, int selnum, int nMinSize);
+	virtual HWND CreateComboBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const CMsg::Id *list, int selnum, int nMinSize);
+	virtual HWND CreateComboBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const CPtrList<CTchar> &list, int selnum, int nMinSize);
 	virtual HWND CreateComboTextBox(CBox *box, int nItemId, const _TCHAR **list, int defnum, int nMinSize, bool translate = false);
 	virtual HWND CreateComboTextBox(CBox *box, int nItemId, const _TCHAR **list, const _TCHAR *deftext, int nMinSize, bool translate = false);
 	virtual HWND CreateButton(CBox *box, int nItemId, const _TCHAR *caption, int nSize, bool default_button = false);
@@ -143,7 +147,11 @@ public:
 	virtual HWND CreateRadioButton(CBox *box, int nItemId, CMsg::Id caption, bool first = false, int min_w = 0, int min_h = 0);
 	virtual HWND CreateEditBox(CBox *box, int nItemId, const _TCHAR *text, int nMaxSize, int align = 0, const _TCHAR ch = _T('m'));
 	virtual HWND CreateEditBox(CBox *box, int nItemId, int digit, int nMaxSize, int align = 0, const _TCHAR ch = _T('m'));
+	virtual HWND CreateEditBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const _TCHAR *text, int nMaxSize, int align = 0, const _TCHAR ch = _T('m'));
+	virtual HWND CreateEditBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, int digit, int nMaxSize, int align = 0, const _TCHAR ch = _T('m'));
+	virtual HWND CreateTextControl(CBox *box, int nItemId, bool multi_line = false, bool read_only = false, int min_w = 0, int min_h = 0);
 	virtual HWND CreateSlider(CBox *box, int nItemId, int min_w, int min_h, int range_min, int range_max, int ticks, int value, bool vertical = true);
+	virtual HWND CreateUpDown(CBox *box, int nItemId, HWND hEdit, int range_min, int range_max, int value);
 
 	virtual void AdjustButton(CBox *box, int nItemId, int nSize);
 	virtual void AdjustStatic(CBox *box, int nItemId, int min_w = 0, int min_h = 0);

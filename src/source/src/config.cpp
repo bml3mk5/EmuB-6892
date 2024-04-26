@@ -16,7 +16,7 @@
 #include <ctype.h>
 #include "config.h"
 #include "fileio.h"
-#include "emu.h"
+//#include "emu.h"
 #include "clocale.h"
 #include "msgs.h"
 #include "utility.h"
@@ -24,7 +24,7 @@
 
 extern EMU *emu;
 
-Config *pconfig = NULL;
+Config *pConfig = NULL;
 
 //
 // definition for ini file
@@ -33,6 +33,7 @@ Config *pconfig = NULL;
 #define SECTION_CONTROL	_T("control")
 #define SECTION_TAPE	_T("tape")
 #define SECTION_FDD		_T("fdd")
+#define SECTION_HDD		_T("hdd")
 #define SECTION_SCREEN	_T("screen")
 #define SECTION_SOUND	_T("sound")
 #define SECTION_PRINTER	_T("printer")
@@ -80,6 +81,19 @@ void CDirPath::Set(const _TCHAR *dir_path)
 	}
 	CTchar::Set(path);
 }
+#if 0
+CDirPath &CDirPath::operator=(const CTchar &src)
+{
+	CTchar::operator=(src);
+	return *this;
+}
+
+CDirPath &CDirPath::operator=(const _TCHAR *src_str)
+{
+	CTchar::operator=(src_str);
+	return *this;
+}
+#endif
 
 //
 //
@@ -222,13 +236,7 @@ void Config::initialize()
 	version2 = CONFIG_VERSION;
 
 #ifdef USE_FD1
-#if defined(USE_FD8) || defined(USE_FD7)
-	for (int i=0; i<8; i++) {
-#elif defined(USE_FD6) || defined(USE_FD5)
-	for (int i=0; i<6; i++) {
-#else
-	for (int i=0; i<4; i++) {
-#endif
+	for (int i=0; i<USE_FLOPPY_DISKS; i++) {
 		recent_disk_path[i].updated = true;
 	}
 #endif
@@ -280,6 +288,13 @@ void Config::initialize()
 	curdisp_skew = 0;
 
 	fdd_type = 0;
+
+	rloss[0] = 48;
+	rloss[1] = 48;
+	gloss[0] = 32;
+	gloss[1] = 24;
+	bloss[0] = 96;
+	bloss[1] = 96;
 #endif
 
 #ifdef USE_DIRECT3D
@@ -295,6 +310,11 @@ void Config::initialize()
 	ignore_crc = true;
 	mount_fdd = 0x3;
 	option_fdd = 0;
+#endif
+
+#ifdef USE_HD1
+	mount_hdd = 0x1;
+	option_hdd = 0;
 #endif
 
 #if defined(_MBS1)
@@ -344,6 +364,10 @@ void Config::initialize()
 #ifdef USE_FD1
 	fdd_volume = 80;
 	fdd_mute = false;
+#endif
+#ifdef USE_HD1
+	hdd_volume = 50;
+	hdd_mute = false;
 #endif
 #if defined(_BML3MK5) || defined(_MBS1)
 	beep_volume = 80;
@@ -439,14 +463,28 @@ void Config::initialize()
 	boot_mode = 2;	// V2 mode, 4MHz
 	cpu_clock_low = true;
 #endif
+
 #ifdef USE_DIRECTINPUT
 	use_direct_input = 0;
 #endif
+
 #ifdef USE_DEBUGGER
 	debugger_imm_start = 0;
 	debugger_server_host.Set(_T("localhost"));
 	debugger_server_port = 54321;
 #endif
+
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		for(int k=0; k<KEYBIND_JOY_BUTTONS; k++) {
+			joy_mashing[i][k] = 0;
+		}
+		for(int k=0; k<6; k++) {
+			joy_axis_threshold[i][k] = 5;
+		}
+	}
+#endif
+
 #ifdef USE_PERFORMANCE_METER
 	show_pmeter = false;
 #endif
@@ -463,13 +501,13 @@ void Config::load(const _TCHAR *file)
 	ini_file.Set(file);
 
 	//
-	load_ini_file(ini_file);
+	load_ini_file(ini_file.Get());
 }
 
 void Config::save()
 {
 	//
-	save_ini_file(ini_file);
+	save_ini_file(ini_file.Get());
 }
 
 void Config::release()
@@ -541,23 +579,8 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 	option_fdd = (int)valuel;
 	ignore_crc = ini->GetBoolValue(SECTION_FDD, _T("IgnoreCRC"), ignore_crc);
 
-#if defined(USE_FD8) || defined(USE_FD7)
-	for (int i=0; i<8; i++) {
-#elif defined(USE_FD6) || defined(USE_FD5)
-	for (int i=0; i<6; i++) {
-#else
-	for (int i=0; i<4; i++) {
-#endif
-#if defined(_BML3MK5)
-		if (version2 < 8) {
-			// old version is start base 1
-			UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_FDD, i+1);
-		} else {
-			UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_FDD, i);
-		}
-#else
+	for (int i=0; i<USE_FLOPPY_DISKS; i++) {
 		UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_FDD, i);
-#endif
 		for (int j=0; j<MAX_HISTORY; j++) {
 			UTILITY::stprintf(key, 100, _T("File%d"), j+1);
 			get_recentpath_value(section, key, recent_disk_path[i]);
@@ -565,7 +588,26 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 		recent_disk_path[i].updated = true;
 
 		valueb = ini->GetBoolValue(section, _T("MountWhenStartUp"), (mount_fdd & (1 << i)) != 0);
-		mount_fdd = (valueb ? mount_fdd | (1 << i) : mount_fdd & ~(1 << i));
+		BIT_ONOFF(mount_fdd, (1 << i), valueb);
+	}
+#endif
+
+#ifdef USE_HD1
+	get_dirpath_value(SECTION_HDD, _T("Path"), initial_hard_disk_path);
+	valuel = 0;
+	valuel |= ((ini->GetLongValue(SECTION_HDD, _T("IgnoreDelay"), (option_fdd & MSK_DELAY_HD_MASK) >> MSK_DELAY_HD_SFT) << MSK_DELAY_HD_SFT) & MSK_DELAY_HD_MASK);
+	option_hdd = (int)valuel;
+
+	for (int i=0; i<USE_HARD_DISKS; i++) {
+		UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_HDD, i);
+		for (int j=0; j<MAX_HISTORY; j++) {
+			UTILITY::stprintf(key, 100, _T("File%d"), j+1);
+			get_recentpath_value(section, key, recent_hard_disk_path[i]);
+		}
+		recent_hard_disk_path[i].updated = true;
+
+		valueb = ini->GetBoolValue(section, _T("MountWhenStartUp"), (mount_hdd & (1 << i)) != 0);
+		BIT_ONOFF(mount_hdd, (1 << i), valueb);
 	}
 #endif
 
@@ -750,6 +792,18 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 	if (0 <= valuel && valuel <= 3) {
 		fdd_type = (int)valuel;
 	}
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("RedLoss0"), rloss[0]);
+	if (0 <= valuel && valuel <= 255) rloss[0] = (uint8_t)valuel;
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("RedLoss1"), rloss[1]);
+	if (0 <= valuel && valuel <= 255) rloss[1] = (uint8_t)valuel;
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("GreenLoss0"), gloss[0]);
+	if (0 <= valuel && valuel <= 255) gloss[0] = (uint8_t)valuel;
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("GreenLoss1"), gloss[1]);
+	if (0 <= valuel && valuel <= 255) gloss[1] = (uint8_t)valuel;
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("BlueLoss0"), bloss[0]);
+	if (0 <= valuel && valuel <= 255) bloss[0] = (uint8_t)valuel;
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("BlueLoss1"), bloss[1]);
+	if (0 <= valuel && valuel <= 255) bloss[1] = (uint8_t)valuel;
 #endif
 #if defined(_MBS1)
 	valuel = ini->GetLongValue(SECTION_CONTROL, _T("IoPort"), io_port);
@@ -780,6 +834,31 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 		valuel = ini->GetLongValue(SECTION_CONTROL, _T("UseJoystick"), FLG_USEJOYSTICK ? 1 : (FLG_USEPIAJOYSTICK ? 2 : 0));
 		misc_flags = (valuel == 1 ? misc_flags | MSK_USEJOYSTICK : (valuel == 2 ? misc_flags | MSK_USEPIAJOYSTICK : misc_flags));
 	}
+
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		for(int k=0; k<KEYBIND_JOY_BUTTONS; k++) {
+			UTILITY::stprintf(key, 100, _T("Joystick%dButton%dMashing"), i+1, k+1);
+			valuel = ini->GetLongValue(SECTION_CONTROL, key, joy_mashing[i][k]);
+			if (0 <= valuel && valuel <= 3) {
+				joy_mashing[i][k] = (int)valuel;
+			}
+		}
+		for(int k=0; k<6; k++) {
+			UTILITY::stprintf(key, 100, _T("Joystick%dAxis%dThreshold"), i+1, k+1);
+			valuel = ini->GetLongValue(SECTION_CONTROL, key, joy_axis_threshold[i][k]);
+			if (0 <= valuel && valuel <= 10) {
+				joy_axis_threshold[i][k] = (int)valuel;
+			}
+		}
+	}
+#endif
+
+#ifdef USE_KEY2JOYSTICK
+	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("EnableKey2Joystick"), FLG_USEKEY2JOYSTICK ? true : false);
+	BIT_ONOFF(misc_flags, MSK_USEKEY2JOYSTICK, valueb);
+#endif
+
 #if defined(_MBS1)
 	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("EnableMouse"), FLG_USEMOUSE ? true : false);
 	BIT_ONOFF(misc_flags, MSK_USEMOUSE, valueb);
@@ -847,6 +926,13 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 		fdd_volume = (int)valuel;
 	}
 	fdd_mute = ini->GetBoolValue(SECTION_SOUND, _T("FddMute"), fdd_mute);
+#endif
+#ifdef USE_HD1
+	valuel = ini->GetLongValue(SECTION_SOUND, _T("HddVolume"), hdd_volume);
+	if (0 <= valuel && valuel <= 100) {
+		hdd_volume = (int)valuel;
+	}
+	fdd_mute = ini->GetBoolValue(SECTION_SOUND, _T("HddMute"), hdd_mute);
 #endif
 
 #if defined(_BML3MK5) || defined(_MBS1)
@@ -1146,34 +1232,45 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 #endif
 
 #ifdef USE_FD1
-	ini->SetValue(SECTION_FDD, _T("Path"), conv_from_npath(initial_disk_path));
+	ini->SetValue(SECTION_FDD, _T("Path"), conv_from_npath(initial_disk_path.Get()));
 	ini->SetLongValue(SECTION_FDD, _T("IgnoreDelay"), (option_fdd & MSK_DELAY_FD_MASK) >> MSK_DELAY_FD_SFT);
 	ini->SetLongValue(SECTION_FDD, _T("CheckMedia"), (option_fdd & MSK_CHECK_FD_MASK) >> MSK_CHECK_FD_SFT);
 	ini->SetLongValue(SECTION_FDD, _T("SaveImage"), (option_fdd & MSK_SAVE_FD_MASK) >> MSK_SAVE_FD_SFT);
 	ini->SetBoolValue(SECTION_FDD, _T("IgnoreCRC"), ignore_crc);
 
-#if defined(USE_FD8) || defined(USE_FD7)
-	for (int i=0; i<8; i++) {
-#elif defined(USE_FD6) || defined(USE_FD5)
-	for (int i=0; i<6; i++) {
-#else
-	for (int i=0; i<4; i++) {
-#endif
+	for (int i=0; i<USE_FLOPPY_DISKS; i++) {
 		UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_FDD, i);
 		for (int j=0; j<MAX_HISTORY && j<recent_disk_path[i].Count(); j++) {
 			UTILITY::stprintf(key, 100, _T("File%d"), j+1);
-			UTILITY::tcscpy(buf, _MAX_PATH, recent_disk_path[i][j]->path);
+			UTILITY::tcscpy(buf, _MAX_PATH, recent_disk_path[i][j]->path.Get());
 			set_number_in_path(buf, _MAX_PATH, recent_disk_path[i][j]->num);
 			ini->SetValue(section, key, conv_from_npath(buf));
 		}
 		ini->SetBoolValue(section, _T("MountWhenStartUp"), (mount_fdd & (1 << i)) != 0);
 	}
 #endif
+	
+#ifdef USE_HD1
+	ini->SetValue(SECTION_HDD, _T("Path"), conv_from_npath(initial_hard_disk_path.Get()));
+	ini->SetLongValue(SECTION_HDD, _T("IgnoreDelay"), (option_hdd & MSK_DELAY_HD_MASK) >> MSK_DELAY_HD_SFT);
+
+	for (int i=0; i<USE_HARD_DISKS; i++) {
+		UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_HDD, i);
+		for (int j=0; j<MAX_HISTORY && j<recent_hard_disk_path[i].Count(); j++) {
+			UTILITY::stprintf(key, 100, _T("File%d"), j+1);
+			UTILITY::tcscpy(buf, _MAX_PATH, recent_hard_disk_path[i][j]->path.Get());
+			set_number_in_path(buf, _MAX_PATH, recent_hard_disk_path[i][j]->num);
+			ini->SetValue(section, key, conv_from_npath(buf));
+		}
+		ini->SetBoolValue(section, _T("MountWhenStartUp"), (mount_hdd & (1 << i)) != 0);
+	}
+#endif
+
 #ifdef USE_DATAREC
-	ini->SetValue(SECTION_TAPE, _T("Path"), conv_from_npath(initial_datarec_path));
+	ini->SetValue(SECTION_TAPE, _T("Path"), conv_from_npath(initial_datarec_path.Get()));
 	for (int j=0; j<MAX_HISTORY && j<recent_datarec_path.Count(); j++) {
 		UTILITY::stprintf(key, 100, _T("File%d"), j+1);
-		ini->SetValue(SECTION_TAPE, key, conv_from_npath(recent_datarec_path[j]->path));
+		ini->SetValue(SECTION_TAPE, key, conv_from_npath(recent_datarec_path[j]->path.Get()));
 	}
 	ini->SetBoolValue(SECTION_TAPE, _T("RealMode"), realmode_datarec);
 
@@ -1222,6 +1319,13 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	ini->SetLongValue(SECTION_CONTROL, _T("ExtendedRamSize"), exram_size_num);
 	ini->SetLongValue(SECTION_SCREEN, _T("DisptmgSkew"), disptmg_skew);
 	ini->SetLongValue(SECTION_SCREEN, _T("CurdispSkew"), curdisp_skew);
+
+	ini->SetLongValue(SECTION_SCREEN, _T("RedLoss0"), rloss[0]);
+	ini->SetLongValue(SECTION_SCREEN, _T("RedLoss1"), rloss[1]);
+	ini->SetLongValue(SECTION_SCREEN, _T("GreenLoss0"), gloss[0]);
+	ini->SetLongValue(SECTION_SCREEN, _T("GreenLoss1"), gloss[1]);
+	ini->SetLongValue(SECTION_SCREEN, _T("BlueLoss0"), bloss[0]);
+	ini->SetLongValue(SECTION_SCREEN, _T("BlueLoss1"), bloss[1]);
 #endif
 
 #ifdef USE_AFTERIMAGE
@@ -1241,13 +1345,31 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 
 	ini->SetLongValue(SECTION_SCREEN, _T("VideoSize"), screen_video_size);
 
-	ini->SetValue(SECTION_SCREEN, _T("Language"), language);
+	ini->SetValue(SECTION_SCREEN, _T("Language"), language.Get());
 
 	ini->SetLongValue(SECTION_CONTROL, _T("IoPort"), io_port, NULL, true);
 	ini->SetLongValue(SECTION_CONTROL, _T("OriginalSettings"), original, NULL, true);
 
 	ini->SetBoolValue(SECTION_CONTROL, _T("ShowMessage"), FLG_SHOWMSGBOARD ? true : false);
 	ini->SetLongValue(SECTION_CONTROL, _T("UseJoystick"), FLG_USEJOYSTICK ? 1 : (FLG_USEPIAJOYSTICK ? 2 : 0));
+
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		for(int k=0; k<KEYBIND_JOY_BUTTONS; k++) {
+			UTILITY::stprintf(key, 100, _T("Joystick%dButton%dMashing"), i+1, k+1);
+			ini->SetLongValue(SECTION_CONTROL, key, joy_mashing[i][k]);
+		}
+		for(int k=0; k<6; k++) {
+			UTILITY::stprintf(key, 100, _T("Joystick%dAxis%dThreshold"), i+1, k+1);
+			ini->SetLongValue(SECTION_CONTROL, key, joy_axis_threshold[i][k]);
+		}
+	}
+#endif
+
+#ifdef USE_KEY2JOYSTICK
+	ini->SetBoolValue(SECTION_CONTROL, _T("EnableKey2Joystick"), FLG_USEKEY2JOYSTICK ? true : false);
+#endif
+
 #if defined(_MBS1)
 	ini->SetBoolValue(SECTION_CONTROL, _T("EnableMouse"), FLG_USEMOUSE ? true : false);
 #else
@@ -1260,36 +1382,40 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	ini->SetBoolValue(SECTION_CONTROL, _T("ClearCPURegistersAtPowerOn"), FLG_CLEAR_CPUREG ? true : false);
 
 #ifdef USE_STATE
-	ini->SetValue(SECTION_STATE, _T("Path"), conv_from_npath(initial_state_path));
+	ini->SetValue(SECTION_STATE, _T("Path"), conv_from_npath(initial_state_path.Get()));
 	for (int j=0; j<MAX_HISTORY && j<recent_state_path.Count(); j++) {
 		UTILITY::stprintf(key, 100, _T("File%d"), j+1);
-		ini->SetValue(SECTION_STATE, key, conv_from_npath(recent_state_path[j]->path));
+		ini->SetValue(SECTION_STATE, key, conv_from_npath(recent_state_path[j]->path.Get()));
 	}
 #endif
 #ifdef USE_AUTO_KEY
-	ini->SetValue(SECTION_AUTOKEY, _T("Path"), conv_from_npath(initial_autokey_path));
+	ini->SetValue(SECTION_AUTOKEY, _T("Path"), conv_from_npath(initial_autokey_path.Get()));
 #endif
 
 #ifdef USE_PRINTER
-	ini->SetValue(SECTION_PRINTER, _T("Path"), conv_from_npath(initial_printer_path));
+	ini->SetValue(SECTION_PRINTER, _T("Path"), conv_from_npath(initial_printer_path.Get()));
 #endif
 #ifdef USE_MESSAGE_BOARD
-	ini->SetValue(SECTION_MSGBOARD, _T("InfoFontName"), conv_from_npath(msgboard_info_fontname));
-	ini->SetValue(SECTION_MSGBOARD, _T("MessageFontName"), conv_from_npath(msgboard_msg_fontname));
+	ini->SetValue(SECTION_MSGBOARD, _T("InfoFontName"), conv_from_npath(msgboard_info_fontname.Get()));
+	ini->SetValue(SECTION_MSGBOARD, _T("MessageFontName"), conv_from_npath(msgboard_msg_fontname.Get()));
 	ini->SetLongValue(SECTION_MSGBOARD, _T("InfoFontSize"), msgboard_info_fontsize);
 	ini->SetLongValue(SECTION_MSGBOARD, _T("MessageFontSize"), msgboard_msg_fontsize);
 #endif
 #if defined(GUI_TYPE_AGAR)
-	ini->SetValue(SECTION_MENU, _T("FontName"), conv_from_npath(menu_fontname));
+	ini->SetValue(SECTION_MENU, _T("FontName"), conv_from_npath(menu_fontname.Get()));
 	ini->SetLongValue(SECTION_MENU, _T("FontSize"), menu_fontsize);
 #endif
-	ini->SetValue(SECTION_ROM, _T("Path"), conv_from_npath(rom_path));
+	ini->SetValue(SECTION_ROM, _T("Path"), conv_from_npath(rom_path.Get()));
 
 	ini->SetLongValue(SECTION_SOUND,  _T("Volume"), volume);
 	ini->SetBoolValue(SECTION_SOUND, _T("Mute"), mute);
 #ifdef USE_FD1
 	ini->SetLongValue(SECTION_SOUND, _T("FddVolume"), fdd_volume);
 	ini->SetBoolValue(SECTION_SOUND, _T("FddMute"), fdd_mute);
+#endif
+#ifdef USE_HD1
+	ini->SetLongValue(SECTION_SOUND, _T("HddVolume"), hdd_volume);
+	ini->SetBoolValue(SECTION_SOUND, _T("HddMute"), hdd_mute);
 #endif
 
 #if defined(_BML3MK5) || defined(_MBS1)
@@ -1335,7 +1461,7 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 #ifdef MAX_PRINTER
 	for(int i=0; i<MAX_PRINTER; i++) {
 		UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_PRINTER, i);
-		ini->SetValue(section, _T("ServerHost"), printer_server_host[i]);
+		ini->SetValue(section, _T("ServerHost"), printer_server_host[i].Get());
 		ini->SetLongValue(section, _T("ServerPort"), printer_server_port[i]);
 		ini->SetDoubleValue(section, _T("DelayMsec"), printer_delay[i]);
 		ini->SetBoolValue(section, _T("Online"), printer_online[i]);
@@ -1354,13 +1480,13 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	for(int i=0; i<MAX_COMM; i++) {
 		UTILITY::stprintf(section, 100, _T("%s%d"), SECTION_COMM, i);
 		ini->SetLongValue(section, _T("DipSwitch"), comm_dipswitch[i]);
-		ini->SetValue(section, _T("ServerHost"), comm_server_host[i]);
+		ini->SetValue(section, _T("ServerHost"), comm_server_host[i].Get());
 		ini->SetLongValue(section, _T("ServerPort"), comm_server_port[i]);
 		ini->SetBoolValue(section, _T("ThroughMode"), comm_through[i]);
 	}
 #endif
 
-	ini->SetValue(SECTION_SNAPSHOT, _T("Path"), conv_from_npath(snapshot_path));
+	ini->SetValue(SECTION_SNAPSHOT, _T("Path"), conv_from_npath(snapshot_path.Get()));
 
 #ifdef USE_LEDBOX
 	ini->SetBoolValue(SECTION_LEDBOX, _T("Show"), FLG_SHOWLEDBOX ? true : false);
@@ -1378,17 +1504,17 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	ini->Delete(SECTION_CONTROL, _T("LEDPosition"));
 
 #if defined(USE_WIN)
-	ini->SetValue(SECTION_FONT, _T("File"), conv_from_npath(font_path));
+	ini->SetValue(SECTION_FONT, _T("File"), conv_from_npath(font_path.Get()));
 #endif
 #if defined(USE_SDL) || defined(USE_SDL2)
-	ini->SetValue(SECTION_FONT, _T("Path"), conv_from_npath(font_path));
+	ini->SetValue(SECTION_FONT, _T("Path"), conv_from_npath(font_path.Get()));
 #endif
 #ifdef USE_DIRECTINPUT
 	ini->SetBoolValue(SECTION_CONTROL, _T("UseDirectInput"), (use_direct_input & 1) != 0);
 #endif
 #ifdef USE_DEBUGGER
 	ini->SetLongValue(SECTION_DEBUGGER, _T("ImmediateStart"), debugger_imm_start);
-	ini->SetValue(SECTION_DEBUGGER, _T("ServerHost"), debugger_server_host);
+	ini->SetValue(SECTION_DEBUGGER, _T("ServerHost"), debugger_server_host.Get());
 	ini->SetLongValue(SECTION_DEBUGGER, _T("ServerPort"), debugger_server_port);
 #endif
 #ifdef USE_PERFORMANCE_METER
@@ -1487,7 +1613,7 @@ void Config::get_str_value(const _TCHAR *section, const _TCHAR *key, CTchar &str
 	_TCHAR buf[_MAX_PATH];
 
 	*buf = _T('\0');
-	const _TCHAR *p = ini->GetValue(section, key, str);
+	const _TCHAR *p = ini->GetValue(section, key, str.Get());
 	if (p) {
 		UTILITY::tcscpy(buf, _MAX_PATH, conv_to_npath(p));
 	}
@@ -1499,7 +1625,7 @@ void Config::get_dirpath_value(const _TCHAR *section, const _TCHAR *key, CDirPat
 	_TCHAR buf[_MAX_PATH];
 
 	*buf = _T('\0');
-	const _TCHAR *p = ini->GetValue(section, key, path);
+	const _TCHAR *p = ini->GetValue(section, key, path.Get());
 	if (p) {
 		UTILITY::tcscpy(buf, _MAX_PATH, conv_to_npath(p));
 	}
@@ -1511,7 +1637,7 @@ void Config::get_filepath_value(const _TCHAR *section, const _TCHAR *key, CFileP
 	_TCHAR buf[_MAX_PATH];
 
 	*buf = _T('\0');
-	const _TCHAR *p = ini->GetValue(section, key, path);
+	const _TCHAR *p = ini->GetValue(section, key, path.Get());
 	if (p) {
 		UTILITY::tcscpy(buf, _MAX_PATH, conv_to_npath(p));
 	}
@@ -1534,3 +1660,357 @@ void Config::get_recentpath_value(const _TCHAR *section, const _TCHAR *key, CRec
 		}
 	}
 }
+
+#ifdef USE_DATAREC
+const _TCHAR *Config::GetInitialDataRecPath() const
+{
+	return initial_datarec_path.Get();
+}
+const _TCHAR *Config::GetInitialDataRecPathForWinGUI()
+{
+	return initial_datarec_path.GetM();
+}
+void Config::SetInitialDataRecPathFrom(const _TCHAR *path)
+{
+	initial_datarec_path.SetFromPath(path);
+}
+CRecentPathList &Config::GetRecentDataRecPathList()
+{
+	return recent_datarec_path;
+}
+int Config::GetRecentDataRecPathCount() const
+{
+	return recent_datarec_path.Count();
+}
+int Config::GetRecentDataRecPathLength(int pos) const
+{
+	return recent_datarec_path[pos]->path.Length();
+}
+const _TCHAR *Config::GetRecentDataRecPathString(int pos) const
+{
+	return recent_datarec_path[pos]->path.Get();
+}
+int Config::GetRecentDataRecPathNumber(int pos) const
+{
+	return recent_datarec_path[pos]->num;
+}
+void Config::UpdateRecentDataRecPath(const _TCHAR *path, int num)
+{
+	return recent_datarec_path.Update(path, num);
+}
+bool Config::UpdatedRecentDataRecPath() const
+{
+	return recent_datarec_path.updated;
+}
+void Config::RecentDataRecPathUpdated(bool val)
+{
+	recent_datarec_path.updated = val;
+}
+CRecentPath &Config::GetOpenedDataRecPath()
+{
+	return opened_datarec_path;
+}
+const _TCHAR *Config::GetOpenedDataRecPathString() const
+{
+	return opened_datarec_path.path.Get();
+}
+int Config::GetOpenedDataRecPathNumber() const
+{
+	return opened_datarec_path.num;
+}
+void Config::SetOpenedDataRecPath(const _TCHAR *path, int num)
+{
+	opened_datarec_path.Set(path, num);
+}
+void Config::SetNewOpenedDataRecPath(const _TCHAR *path, int num)
+{
+	opened_datarec_path.Clear();
+	opened_datarec_path.Set(path, num);
+}
+void Config::ClearOpenedDataRecPath()
+{
+	opened_datarec_path.Clear();
+}
+bool Config::NowRealModeDataRec() const
+{
+	return realmode_datarec;
+}
+void Config::SetRealModeDataRec(bool val)
+{
+	realmode_datarec = val;
+}
+#endif
+
+#ifdef USE_FD1
+const _TCHAR *Config::GetInitialFloppyDiskPath() const
+{
+	return initial_disk_path.Get();
+}
+const _TCHAR *Config::GetInitialFloppyDiskPathForWinGUI()
+{
+	return initial_disk_path.GetM();
+}
+void Config::SetInitialFloppyDiskPathFrom(const _TCHAR *path)
+{
+	initial_disk_path.SetFromPath(path);
+}
+CRecentPathList &Config::GetRecentFloppyDiskPathList(int drv)
+{
+	return recent_disk_path[drv];
+}
+int Config::GetRecentFloppyDiskPathCount(int drv) const
+{
+	return recent_disk_path[drv].Count();
+}
+int Config::GetRecentFloppyDiskPathLength(int drv, int pos) const
+{
+	return recent_disk_path[drv][pos]->path.Length();
+}
+const _TCHAR *Config::GetRecentFloppyDiskPathString(int drv, int pos) const
+{
+	return recent_disk_path[drv][pos]->path.Get();
+}
+int Config::GetRecentFloppyDiskPathNumber(int drv, int pos) const
+{
+	return recent_disk_path[drv][pos]->num;
+}
+void Config::UpdateRecentFloppyDiskPath(int drv, const _TCHAR *path, int num)
+{
+	recent_disk_path[drv].Update(path, num);
+}
+bool Config::UpdatedRecentFloppyDiskPath(int drv) const
+{
+	return recent_disk_path[drv].updated;
+}
+void Config::RecentFloppyDiskPathUpdated(int drv, bool val)
+{
+	recent_disk_path[drv].updated = val;
+}
+CRecentPath &Config::GetOpenedFloppyDiskPath(int drv)
+{
+	return opened_disk_path[drv];
+}
+const _TCHAR *Config::GetOpenedFloppyDiskPathString(int drv) const
+{
+	return opened_disk_path[drv].path.Get();
+}
+int Config::GetOpenedFloppyDiskPathNumber(int drv) const
+{
+	return opened_disk_path[drv].num;
+}
+void Config::SetOpenedFloppyDiskPath(int drv, const _TCHAR *path, int num)
+{
+	opened_disk_path[drv].Set(path, num);
+}
+void Config::SetNewOpenedFloppyDiskPath(int drv, const _TCHAR *path, int num)
+{
+	opened_disk_path[drv].Clear();
+	opened_disk_path[drv].Set(path, num);
+}
+void Config::ClearOpenedFloppyDiskPath(int drv)
+{
+	opened_disk_path[drv].Clear();
+}
+#endif
+
+#ifdef USE_HD1
+const _TCHAR *Config::GetInitialHardDiskPath() const
+{
+	return initial_hard_disk_path.Get();
+}
+const _TCHAR *Config::GetInitialHardDiskPathForWinGUI()
+{
+	return initial_hard_disk_path.GetM();
+}
+void Config::SetInitialHardDiskPathFrom(const _TCHAR *path)
+{
+	initial_hard_disk_path.SetFromPath(path);
+}
+CRecentPathList &Config::GetRecentHardDiskPathList(int drv)
+{
+	return recent_hard_disk_path[drv];
+}
+int Config::GetRecentHardDiskPathCount(int drv) const
+{
+	return recent_hard_disk_path[drv].Count();
+}
+int Config::GetRecentHardDiskPathLength(int drv, int pos) const
+{
+	return recent_hard_disk_path[drv][pos]->path.Length();
+}
+const _TCHAR *Config::GetRecentHardDiskPathString(int drv, int pos) const
+{
+	return recent_hard_disk_path[drv][pos]->path.Get();
+}
+int Config::GetRecentHardDiskPathNumber(int drv, int pos) const
+{
+	return recent_hard_disk_path[drv][pos]->num;
+}
+void Config::UpdateRecentHardDiskPath(int drv, const _TCHAR *path, int num)
+{
+	recent_hard_disk_path[drv].Update(path, num);
+}
+CRecentPath &Config::GetOpenedHardDiskPath(int drv)
+{
+	return opened_hard_disk_path[drv];
+}
+const _TCHAR *Config::GetOpenedHardDiskPathString(int drv) const
+{
+	return opened_hard_disk_path[drv].path.Get();
+}
+int Config::GetOpenedHardDiskPathNumber(int drv) const
+{
+	return opened_hard_disk_path[drv].num;
+}
+void Config::SetOpenedHardDiskPath(int drv, const _TCHAR *path, int num)
+{
+	opened_hard_disk_path[drv].Set(path, num);
+}
+void Config::SetNewOpenedHardDiskPath(int drv, const _TCHAR *path, int num)
+{
+	opened_hard_disk_path[drv].Clear();
+	opened_hard_disk_path[drv].Set(path, num);
+}
+void Config::ClearOpenedHardDiskPath(int drv)
+{
+	opened_hard_disk_path[drv].Clear();
+}
+int Config::GetHardDiskDeviceType(int drv) const
+{
+	return 0;
+}
+void Config::SetHardDiskDeviceType(int drv, int num)
+{
+}
+int Config::GetHardDiskIndex(int drv) const
+{
+	return drv;
+}
+#endif
+
+#ifdef USE_STATE
+const _TCHAR *Config::GetInitialStatePath() const
+{
+	return initial_state_path.Get();
+}
+const _TCHAR *Config::GetInitialStatePathForWinGUI()
+{
+	return initial_state_path.GetM();
+}
+void Config::SetInitialStatePathFrom(const _TCHAR *path)
+{
+	initial_state_path.SetFromPath(path);
+}
+CRecentPathList &Config::GetRecentStatePathList()
+{
+	return recent_state_path;
+}
+int Config::GetRecentStatePathCount() const
+{
+	return recent_state_path.Count();
+}
+int Config::GetRecentStatePathLength(int pos) const
+{
+	return recent_state_path[pos]->path.Length();
+}
+const _TCHAR *Config::GetRecentStatePathString(int pos) const
+{
+	return recent_state_path[pos]->path.Get();
+}
+int Config::GetRecentStatePathNumber(int pos) const
+{
+	return recent_state_path[pos]->num;
+}
+void Config::UpdateRecentStatePath(const _TCHAR *path, int num)
+{
+	recent_state_path.Update(path, num);
+}
+bool Config::UpdatedRecentStatePath() const
+{
+	return recent_state_path.updated;
+}
+void Config::RecentStatePathUpdated(bool val)
+{
+	recent_state_path.updated = val;
+}
+CRecentPath &Config::GetSavedStatePath()
+{
+	return saved_state_path;
+}
+const _TCHAR *Config::GetSavedStatePathString() const
+{
+	return saved_state_path.path.Get();
+}
+int Config::GetSavedStatePathNumber() const
+{
+	return saved_state_path.num;
+}
+void Config::SetSavedStatePath(const _TCHAR *path, int num)
+{
+	saved_state_path.Set(path, num);
+}
+void Config::SetNewSavedStatePath(const _TCHAR *path, int num)
+{
+	saved_state_path.Clear();
+	saved_state_path.Set(path, num);
+}
+void Config::ClearSavedStatePath()
+{
+	saved_state_path.Clear();
+}
+#endif
+
+#ifdef USE_AUTO_KEY
+const _TCHAR *Config::GetInitialAutoKeyPath() const
+{
+	return initial_autokey_path.Get();
+}
+const _TCHAR *Config::GetInitialAutoKeyPathForWinGUI()
+{
+	return initial_autokey_path.GetM();
+}
+void Config::SetInitialAutoKeyPathFrom(const _TCHAR *path)
+{
+	initial_autokey_path.SetFromPath(path);
+}
+CRecentPath &Config::GetOpenedAutoKeyPath()
+{
+	return opened_autokey_path;
+}
+const _TCHAR *Config::GetOpenedAutoKeyPathString() const
+{
+	return opened_autokey_path.path.Get();
+}
+int Config::GetOpenedAutoKeyPathNumber() const
+{
+	return opened_autokey_path.num;
+}
+void Config::SetOpenedAutoKeyPath(const _TCHAR *path, int num)
+{
+	opened_autokey_path.Set(path, num);
+}
+void Config::SetNewOpenedAutoKeyPath(const _TCHAR *path, int num)
+{
+	opened_autokey_path.Clear();
+	opened_autokey_path.Set(path, num);
+}
+void Config::ClearOpenedAutoKeyPath()
+{
+	opened_autokey_path.Clear();
+}
+#endif
+
+#ifdef USE_PRINTER
+const _TCHAR *Config::GetInitialPrinterPath() const
+{
+	return initial_printer_path.Get();
+}
+const _TCHAR *Config::GetInitialPrinterPathForWinGUI()
+{
+	return initial_printer_path.GetM();
+}
+void Config::SetInitialPrinterPathFrom(const _TCHAR *path)
+{
+	initial_printer_path.SetFromPath(path);
+}
+#endif

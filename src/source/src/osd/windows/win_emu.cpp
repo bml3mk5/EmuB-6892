@@ -60,28 +60,28 @@ void EMU_OSD::change_screen_use_direct3d(int num)
 	};
 
 	if(enable_direct3d) {
-		uint8_t pre_num = config.use_direct3d;
+		uint8_t pre_num = pConfig->use_direct3d;
 
 		if (num >= 0) {
-			config.use_direct3d = (pre_num == num) ? 0 : num;
+			pConfig->use_direct3d = (pre_num == num) ? 0 : num;
 		} else {
-			config.use_direct3d = (pre_num + 1) % 3;
+			pConfig->use_direct3d = (pre_num + 1) % 3;
 		}
 
 		lock_screen();
 
-		if (config.use_direct3d != 0) {
+		if (pConfig->use_direct3d != 0) {
 			set_d3dpresent_interval();
 			reset_d3device(hMainWindow);
 		}
 
-		if (pD3Device != NULL && pre_num == 0 && config.use_direct3d != 0) {
+		if (pD3Device != NULL && pre_num == 0 && pConfig->use_direct3d != 0) {
 #ifdef USE_SCREEN_D3D_TEXTURE
 			copy_d3dtex_dib(pD3Dorigin->GetD3DTexture(), sufOrigin->GetBuffer(), false);
 #else
 			copy_d3dsuf_dib(pD3Dorigin->GetD3DSurface(), sufOrigin->GetBuffer(), false);
 #endif
-		} else if (pre_num != 0 && config.use_direct3d == 0) {
+		} else if (pre_num != 0 && pConfig->use_direct3d == 0) {
 #ifdef USE_SCREEN_D3D_TEXTURE
 			copy_d3dtex_dib(pD3Dorigin->GetD3DTexture(), sufOrigin->GetBuffer(), true);
 #else
@@ -91,7 +91,7 @@ void EMU_OSD::change_screen_use_direct3d(int num)
 
 		unlock_screen();
 
-		out_infof_x(list[config.use_direct3d]);
+		out_infof_x(list[pConfig->use_direct3d]);
 //		update_config();
 	}
 }

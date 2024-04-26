@@ -67,10 +67,10 @@ EMUOBJS:=$(SRCDIR)/config.o \
 	$(SRCDIR)/labels.o \
 	$(SRCDIR)/msgs.o \
 	$(SRCDIR)/simple_ini.o \
-	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/debugger_bpoint.o \
 	$(SRCDIR)/debugger_socket.o \
 	$(SRCDIR)/debugger_symbol.o \
+	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/utility.o
 
 EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
@@ -98,7 +98,9 @@ EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
 	$(SRCOSD)/emu_input_keysym.o \
 	$(SRCOSD)/emu_screen.o \
 	$(SRCOSD)/emu_sound.o \
+	$(SRCOSD)/keybind.o \
 	$(SRCOSD)/logging.o \
+	$(SRCOSD)/parseopt.o \
 	$(SRCOSD)/screenmode.o \
 	$(SRCOSD)/simple_clocale.o \
 	$(SRCOSD)/vkeyboardbase.o \
@@ -192,11 +194,13 @@ GUIOBJSWIN:=$(SRCGUIWIN)/win_dialogbox.o \
 	$(SRCGUIWIN)/winfont.o \
 	$(SRCGUIWIN)/win_ledbox.o \
 	$(SRCGUIWIN)/win_vkeyboard.o \
+	$(SRCGUIWIN)/win_joysetbox.o \
+	$(SRCGUIWIN)/win_loggingbox.o \
 	$(SRCGUIWIN)/win_gui.o
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
 VIDOBJSVFW:=$(SRCVIDVFW)/vfw_rec_video.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
 VIDOBJSWIN:=$(SRCVIDWIN)/win_rec_video.o $(SRCVIDWIN)/win_bitmap.o
 
 VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSVFW) $(VIDOBJSFFM) $(VIDOBJSWIN) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o

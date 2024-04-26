@@ -59,6 +59,7 @@ public:
 	void set_class_name(const char *name);
 	const char *get_class_name() const;
 	const char *get_identifier() const;
+	void set_identifier(const char *identifier);
 	void set_vm_state_class_name(const char *name);
 
 	virtual void get_edition_string(char *buffer, size_t buffer_len) const;
@@ -223,12 +224,16 @@ public:
 	/// @name floppy disk controller
 	///@{
 	virtual bool search_track(int channel);
+	virtual uint8_t verify_track();
 	virtual bool verify_track(int channel, int track);
 	virtual int  get_current_track_number(int channel);
+	virtual uint8_t search_sector(int side, bool compare);
 	virtual int  search_sector(int channel);
 //	virtual int  search_sector(int channel, int sect);
 	virtual int  search_sector(int channel, int track, int sect, bool compare_side, int side);
+	virtual bool make_track();
 	virtual bool make_track(int channel);
+	virtual bool parse_track();
 	virtual bool parse_track(int channel);
 	///@}
 
@@ -381,9 +386,10 @@ public:
 	virtual bool get_debug_exception_name_index(uint32_t num, uint32_t *mask, int *idx, const _TCHAR **name);
 	virtual void get_debug_exception_names_str(_TCHAR *buffer, size_t buffer_len);
 
-	virtual int  get_debug_graphic_memory_size(int type, int *width, int *height);
+	virtual int  get_debug_graphic_memory_size(int num, int type, int *width, int *height);
 	virtual bool debug_graphic_type_name(int type, _TCHAR *buffer, size_t buffer_len);
 	virtual bool debug_draw_graphic(int type, int width, int height, scrntype *buffer);
+	virtual bool debug_dump_graphic(int type, int width, int height, uint16_t *buffer);
 
 	virtual uint32_t debug_basic_get_line_number_ptr();
 	virtual uint32_t debug_basic_get_line_number();

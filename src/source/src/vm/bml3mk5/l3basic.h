@@ -68,15 +68,15 @@ private:
 	void GetMappingTables();
 	uint32_t MapAddr(uint32_t addr, int map_num);
 
-	int SetUint8(const uint8_t *val, uint8_t *buf, int pos);
+	int SetUint8(const uint8_t *val, uint8_t *buf, size_t bufsiz, int pos);
 	int CalcInt16(const uint8_t *val);
-	int SetInt16(const uint8_t *val, uint8_t *buf, int pos);
+	int SetInt16(const uint8_t *val, uint8_t *buf, size_t bufsiz, int pos);
 	void PrintInt16(const uint8_t *val);
 	void SetChr(uint8_t &val);
 	void PrintString(uint8_t *val);
 	double CalcFloat(uint8_t *val, int siz);
-	void FormatFloat(double value, int siz, char *buf);
-	int SetFloat(uint8_t *val, int siz, uint8_t *buf, int pos);
+	void FormatFloat(double value, int siz, char *buf, size_t bufsiz);
+	int SetFloat(uint8_t *val, int siz, uint8_t *buf, size_t bufsiz, int pos);
 	void PrintFloat(uint8_t *val, int siz);
 
 	bool IsSameLength(int src_len, const uint8_t *dst_str);

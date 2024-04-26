@@ -48,13 +48,15 @@
 
 ## コンパイル方法
 
+
+----------------------------------------
 ### MacOSX版 ###
 
 * 以下のバージョンがあります。
 
- + wxWidgets3 + SDL1版 -> Makefile.mac_wx
- + wxWidgets3 + SDL2版 -> Makefile.mac_wx2
+ + wxWidgets3 + SDL2版 -> Makefile.mac_wx2, kefile.mac_wx2_dbgr
 
+  * 上記以外のMakefileは現在メンテナンスしていません。
   * SDLはサウンド処理で使用します。
 
 
@@ -68,62 +70,41 @@
 
   + wxWidgets-3.1.0
 
-    ソースからインストールする場合
-
-    * staticライブラリにする場合
+   * staticライブラリにする場合
 
           mkdir build_release_static_unicode
           cd build_release_static_unicode
           ../configure --with-osx_cocoa --disable-debug --disable-shared --enable-unicode
           make
 
-    * sharedライブラリにする場合
+   * sharedライブラリにする場合
 
           mkdir build_release_shared_unicode
           cd build_release_shared_unicode
           ../configure --with-osx_cocoa --disable-debug --enable-shared --enable-unicode
           make
 
-  + SDL1の場合
-
-   - SDL-1.2.15
-
-    ソースからインストール
+  + SDL2-2.0.8
 
         ./configure
         make
         make install
 
-  + SDL2の場合
+  + FFmpeg-4.x (https://ffmpeg.org/)
 
-   - SDL2-2.0.8
-
-    ソースからインストール
-
-        ./configure
-        make
-        make install
-
-
-  + 共通
-
-   - FFmpeg-3.x (libavcodec57, libavutil55, libavformat57, libswscale4)
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
+
     * ヘッダファイルが必要です。
     includeフォルダにヘッダファイルを入れてください。
+
     * ビルド方法は以下を参考：
-     [CompilationGuide/MacOSX ? FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
+     [CompilationGuide/MacOSX - FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
 
 
 #### 2. コンパイル（コマンドラインを使用する場合）
 
  ターミナル上で行います。
-
- * Makefileの種類
-
-  + wxWidgets3 + SDL1版 -> Makefile.mac_wx
-  + wxWidgets3 + SDL2版 -> Makefile.mac_wx2
 
  * sharedなバイナリを作成する場合
 
@@ -147,7 +128,7 @@
 
 #### 3. コンパイル（Xcodeを使用する場合）
 
- Xcodeフォルダにあるプロジェクトを開く。
+ * Xcodeフォルダにあるプロジェクトを開く。
 
  * ヘッダファイルやライブラリが/usr/local以外にあるときは
    BuildSettings -> Search Paths にある
@@ -159,9 +140,9 @@
 
 * 以下のバージョンがあります。
 
- + wxWidgets3 + SDL1版 -> Makefile.linux_wx
- + wxWidgets3 + SDL2版 -> Makefile.linux_wx2
+ + wxWidgets3 + SDL2版 -> Makefile.linux_wx2, Makefile.linux_wx2_dbgr
 
+  * 上記以外のMakefileは現在メンテナンスしていません。
   * SDLはサウンド処理で使用します。
 
 
@@ -174,61 +155,45 @@
 
   + 必要なライブラリ
    - コンパイラ: gcc, g++, make
-   - 画面系: libwxbase3.1-dev, libwxgtk3.1-gtk3-dev, libsdl-dev
-   - 録画用: libavcodec57-dev, libavutil55-dev, libavformat57-dev, libswscale4-dev
+   - 画面系: libwxbase3.1-dev, libwxgtk3.1-gtk3-dev, libsdl2-dev
+   - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
 
  * コンパイルに必要なライブラリをインストールします。
 
-  + wxWidgets-3.0.x or later
+  + wxWidgets-3.0.x or -3.1.x
   
-   パッケージから：libwxgtk3-dev
+   - パッケージから：libwxgtk3-dev
 
-    ソースからインストールする場合
+   - ソースからインストールする場合
 
     * staticライブラリにする場合
 
-          mkdir build_release_static_unicode
-          cd build_release_static_unicode
-          ../configure --with-gtk --disable-debug --disable-shared --enable-unicode
-          make
+           mkdir build_release_static_unicode
+           cd build_release_static_unicode
+           ../configure --with-gtk --disable-debug --disable-shared --enable-unicode
+           make
 
     * sharedライブラリにする場合
 
-          mkdir build_release_shared_unicode
-          cd build_release_shared_unicode
-          ../configure --with-gtk --disable-debug --enable-shared --enable-unicode
+           mkdir build_release_shared_unicode
+           cd build_release_shared_unicode
+           ../configure --with-gtk --disable-debug --enable-shared --enable-unicode
+           make
+
+  + SDL2-2.0.8
+   - 付属のパッケージからインストール。
+
+   - ソースからインストールする場合
+
+          ./configure
           make
+          make install
 
+  + FFmpeg-4.x (https://ffmpeg.org/)
 
-  + SDL1の場合
-
-   - SDL-1.2.15
-    付属のパッケージからインストール。
-
-    ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-
-  + SDL2の場合
-
-   - SDL2-2.0.8
-    付属のパッケージからインストール。
-
-    ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-
-  + 共通
-
-   * FFmpeg-3.x (libavcodec57, libavutil55, libavformat57, libswscale4)
     (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
+
     * ヘッダファイルが必要です。
     * 付属のパッケージからインストール。ただし、バージョンが古いと使用できない。
 
@@ -243,15 +208,11 @@
 
  ターミナル(端末)上で行います。
 
- * Makefileの種類
-
-  + wxWidgets3 + SDL1版 -> Makefile.linux_wx
-  + wxWidgets3 + SDL2版 -> Makefile.linux_wx2
-
  * sharedなバイナリを作成する場合
+  - ライブラリをパッケージからインストールしている場合はこちらでビルド。
 
-       make -f Makefile.xxx clean
-       make -f Makefile.xxx install
+         make -f Makefile.xxx clean
+         make -f Makefile.xxx install
 
   * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
     そこに必要なファイルをコピーします。
@@ -261,10 +222,10 @@
 
  * staticなバイナリを作成する場合
 
-   Makefile内のWXDIRをwxWidgets3.1をビルドしたディレクトリにして下さい。
+  - Makefile内のWXDIRをwxWidgets3.1をビルドしたディレクトリにして下さい。
 
-       make -f Makefile.xxx st_clean
-       make -f Makefile.xxx st_install
+         make -f Makefile.xxx st_clean
+         make -f Makefile.xxx st_install
 
   * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
     してください。
@@ -275,16 +236,16 @@
 
 * 以下のバージョンがあります。
 
- + wxWidgets3 + SDL1版 -> Makefile.win_wx
- + wxWidgets3 + SDL2版 -> Makefile.win_wx2
+ + wxWidgets3 + SDL2版 -> Makefile.win_wx2, Makefile.win_wx2_dbgr
 
+  * 上記以外のMakefileは現在メンテナンスしていません。
   * SDLはサウンド処理で使用します。
 
 #### 1. 開発環境の構築
 
  * MinGWをインストール
 
-  インストーラに従ってインストールします。
+  + インストーラに従ってインストールします。
 
   + C Compiler, C++ Compiler, MSYS Basic SYSTEM, MSYS Developer Toolkit
   をチェックしてインストール。
@@ -292,9 +253,9 @@
 
  * MinGW Shellを起動してコンパイルに必要なライブラリをインストールします。
 
- + wxWidgets-3.1.0
+  + wxWidgets-3.1.0
 
-    ソースからインストールする場合
+   - ソースからインストールする場合
 
     * staticライブラリにする場合
 
@@ -310,51 +271,28 @@
           ../configure --with-msw --disable-debug --enable-shared --enable-unicode
           make 
 
- + SDL1の場合
+  + SDL2-2.0.x
 
-  - SDL-1.2.15
+   - Development Librariesかソースからインストール
 
-    Development Librariesかソースからインストール
+   - ソースからインストールする場合
 
-    ソースからインストールする場合
+          ./configure
+          make
+          make install
 
-        ./configure
-        make
-        make install
-
-
- + SDL2の場合
-
-  - SDL-2.0.x
-
-    Development Librariesかソースからインストール
-    ソースからインストール
-
-        ./configure
-        make
-        make install
-
-
- + 共通
-
-  * FFmpeg-3.x
+  + FFmpeg-4.x (https://ffmpeg.org/)
 
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
 
-    * ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
-    * 以下のページから、FFmpeg xxxx 32/64-bit dev をダウンロードすれば、
-    ヘッダファイルを入手できます。
-    [Zeranoe's FFmpeg Builds Home Page](http://ffmpeg.zeranoe.com/builds/)
+   * ヘッダファイルが必要です。
+     includeフォルダにヘッダファイルを入れてください。
 
 
 #### 2. コンパイル
 
  MinGW Shell上で行います。
-
- + wxWidgets3 + SDL1版 -> Makefile.win_wx
- + wxWidgets3 + SDL2版 -> Makefile.win_wx2
 
  * 必要に応じてMakefile.xxxを変更します。
 
@@ -387,10 +325,6 @@
 ----------------------------------------
 ### VC++(Windows)版 ###
 
- * 以下のバージョンがあります。
-
-  + wxWidgets3 + SDL版 -> xxxx_wx.vcxproj
-
 #### 1. 開発環境の構築
 
 * 必要なライブラリをVC++でビルドします。
@@ -402,44 +336,36 @@
   - Debug/Releaseでソリューションをビルドすると、lib\vc_lib\に
     ライブラリが生成される。
 
-  + SDL1の場合
-
-   - SDL-1.2.15
-
-    バイナリかソースからインストール
-    ソースからインストールする場合
-      VisualCフォルダにあるSDL.slnを使用してビルド。
-      出来たdll,libはlib/Release/x86にコピーしておく。
-
-  + SDL2の場合
-
-  - SDL2-2.0.x
+ + SDL2-2.0.x
 
     ソースからインストール
       VisualCフォルダにあるSDL.slnを使用してビルド。
       出来たdll,libはlib/Release/x86にコピーしておく。
 
- + 共通
+ + FFmpeg-4.x (https://ffmpeg.org/)
 
-  - FFmpeg-3.x
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
+
     * ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
-    * 以下のページから、FFmpeg xxxx 32/64-bit dev をダウンロードすれば、
-    ヘッダファイルを入手できます。
-    [Zeranoe's FFmpeg Builds Home Page](http://ffmpeg.zeranoe.com/builds/)
+      includeフォルダにヘッダファイルを入れてください。
+    * 64ビット版のsharedライブラリとincludeファイルは以下のサイトから入手できます。
+      [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/)
+      にある ffmpeg-4.4.1-full_build-shared.7z をダウンロードします。
+    * ヘッダファイルがあれば、32ビット版のビルドもできます。
+    * バージョン3のヘッダファイルでもビルドできます。
+    * バージョン5のヘッダファイルでもビルドできますが動作するかは未確認。
 
 
 #### 2. コンパイル
 
- * wxWidgets3 + SDL版 -> xxxx_wx.vcxproj
-
-  bml3mk5_wx.vcprojを使用してビルド。
-    表示→プロパティマネージャを開き、Release下にあるbml3mk5を開く。
-    ユーザーマクロに設定しているパスを変更する。
+ * プロジェクトファイル(*_wx.vcxproj)を使用してビルド。
+  + 表示→プロパティマネージャを開き、Release下を開く。
+  + ユーザーマクロに設定しているパスを変更する。
 
 
+
+----------------------------------------
 ## 免責事項
 
 * このソフトはフリーウェアです。ただし、著作権は放棄しておりません。

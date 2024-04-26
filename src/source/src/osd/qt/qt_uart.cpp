@@ -182,11 +182,11 @@ int CommPort::Open()
 		return 0;
 	}
 
-	SetBaudRate(config.comm_uart_baudrate);
-	SetDataBit(config.comm_uart_databit);
-	SetParity(config.comm_uart_parity);
-	SetStopBit(config.comm_uart_stopbit);
-	SetFlowControl(config.comm_uart_flowctrl);
+	SetBaudRate(pConfig->comm_uart_baudrate);
+	SetDataBit(pConfig->comm_uart_databit);
+	SetParity(pConfig->comm_uart_parity);
+	SetStopBit(pConfig->comm_uart_stopbit);
+	SetFlowControl(pConfig->comm_uart_flowctrl);
 
 	Clear();
 

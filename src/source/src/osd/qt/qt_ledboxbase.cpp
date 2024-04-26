@@ -172,7 +172,7 @@ bool LedBoxBase::create_surface(CPixelFormat &format)
 	w = led[LED_TYPE_BASE]->Width();
 	h = led[LED_TYPE_BASE]->Height();
 #ifdef USE_PERFORMANCE_METER
-	if (config.show_pmeter) {
+	if (pConfig->show_pmeter) {
 		w += 108;
 	}
 #endif
@@ -318,7 +318,7 @@ void LedBoxBase::Update(uint64_t flag)
 
 #ifdef USE_PERFORMANCE_METER
 		// for debug
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			int x, y;
 			QPainter painter(suf);
 			painter.setPen(QColor::fromRgb(0x40, 0x40, 0x40));

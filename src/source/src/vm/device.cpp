@@ -46,16 +46,8 @@ DEVICE::DEVICE(VM* parent_vm, EMU* parent_emu, const char *identifier) : vm(pare
 #endif
 	//
 	memset(this_class_name, 0, sizeof(this_class_name));
-	memset(this_identifier, 0, sizeof(this_identifier));
-	if (identifier != NULL) {
-		strncpy(this_identifier, identifier, 4);
-	}
-
-	//
 	memset(&vm_state_ident, 0, sizeof(vm_state_ident));
-	if (identifier != NULL) {
-		strncpy(vm_state_ident.identifier, identifier, 4);
-	}
+	set_identifier(identifier);
 	vm_state_ident.device_id = this_device_id;
 }
 
@@ -77,16 +69,8 @@ DEVICE::DEVICE(EMU* parent_emu, const char *identifier) : vm(NULL), emu(parent_e
 #endif
 	//
 	memset(this_class_name, 0, sizeof(this_class_name));
-	memset(this_identifier, 0, sizeof(this_identifier));
-	if (identifier != NULL) {
-		strncpy(this_identifier, identifier, 4);
-	}
-
-	//
 	memset(&vm_state_ident, 0, sizeof(vm_state_ident));
-	if (identifier != NULL) {
-		strncpy(vm_state_ident.identifier, identifier, 4);
-	}
+	set_identifier(identifier);
 	vm_state_ident.device_id = this_device_id;
 }
 
@@ -105,8 +89,10 @@ bool DEVICE::load_state(FILEIO* fio)
 void DEVICE::set_class_name(const char *name)
 {
 	if (name != NULL) {
-		strncpy(this_class_name, name, 12);
-		strncpy(vm_state_ident.class_name, name, 12);
+		for(int i=0; i<12 && name[i]; i++) {
+			this_class_name[i] = name[i];
+			vm_state_ident.class_name[i] = name[i];
+		}
 	}
 }
 const char *DEVICE::get_class_name() const
@@ -117,11 +103,24 @@ const char *DEVICE::get_identifier() const
 {
 	return this_identifier;
 }
+void DEVICE::set_identifier(const char *identifier)
+{
+	memset(this_identifier, 0, sizeof(this_identifier));
+	memset(&vm_state_ident.identifier, 0, sizeof(vm_state_ident.identifier));
+	if (identifier != NULL) {
+		for(int i=0; i<4 && identifier[i]; i++) {
+			this_identifier[i] = identifier[i];
+			vm_state_ident.identifier[i] = identifier[i];
+		}
+	}
+}
 void DEVICE::set_vm_state_class_name(const char *name)
 {
 	if (name != NULL) {
 		memset(vm_state_ident.class_name, 0, 12);
-		strncpy(vm_state_ident.class_name, name, 12);
+		for(int i=0; i<12 && name[i]; i++) {
+			vm_state_ident.class_name[i] = name[i];
+		}
 	}
 }
 DEVICE *DEVICE::get_prev_device()
@@ -770,12 +769,22 @@ bool DEVICE::search_track(int channel)
 	return false;
 }
 
+uint8_t DEVICE::verify_track()
+{
+	return 0;
+}
+
 bool DEVICE::verify_track(int channel, int track)
 {
 	return false;
 }
 
 int  DEVICE::get_current_track_number(int channel)
+{
+	return 0;
+}
+
+uint8_t DEVICE::search_sector(int side, bool compare)
 {
 	return 0;
 }
@@ -790,7 +799,17 @@ int  DEVICE::search_sector(int channel, int track, int sect, bool compare_side, 
 	return 0;
 }
 
+bool DEVICE::make_track()
+{
+	return false;
+}
+
 bool DEVICE::make_track(int channel)
+{
+	return false;
+}
+
+bool DEVICE::parse_track()
 {
 	return false;
 }
@@ -1174,7 +1193,7 @@ bool DEVICE::get_debug_exception_name_index(uint32_t num, uint32_t *mask, int *i
 
 void DEVICE::get_debug_exception_names_str(_TCHAR *buffer, size_t buffer_len) {}
 
-int DEVICE::get_debug_graphic_memory_size(int type, int *width, int *height)
+int DEVICE::get_debug_graphic_memory_size(int num, int type, int *width, int *height)
 {
 	return -2;
 }
@@ -1185,6 +1204,11 @@ bool DEVICE::debug_graphic_type_name(int type, _TCHAR *buffer, size_t buffer_len
 }
 
 bool DEVICE::debug_draw_graphic(int type, int width, int height, scrntype *buffer)
+{
+	return false;
+}
+
+bool DEVICE::debug_dump_graphic(int type, int width, int height, uint16_t *buffer)
 {
 	return false;
 }

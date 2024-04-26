@@ -15,6 +15,7 @@
 #include "emu.h"
 #include "gui/gui.h"
 #include "main.h"
+#include "utility.h"
 
 extern EMU *emu;
 extern GUI *gui;
@@ -75,7 +76,8 @@ void EmuMsgItem::SetFile(const _TCHAR *new_file)
 {
 	size_t len = _tcslen(new_file);
 	file1 = new _TCHAR[len + 1];
-	_tcscpy(file1, new_file);
+	memcpy(file1, new_file, len * sizeof(_TCHAR));
+	file1[len] = _T('\0');
 }
 void EmuMsgItem::Set(en_emumsg_msg new_msg, en_emumsg_id new_id, const _TCHAR *new_file)
 {
@@ -303,7 +305,7 @@ int EmuMsg::Process()
 #ifdef USE_FD1
 		case EMUMSG_ID_OPEN_FD:
 			if (emu) {
-				emu->open_disk_by_bank_num(item->GetDrv(), item->GetFile(), item->GetBankNum(), item->GetFlags(), item->GetMulti());
+				emu->open_floppy_disk_by_bank_num(item->GetDrv(), item->GetFile(), item->GetBankNum(), item->GetFlags(), item->GetMulti());
 				gui->SystemPause(item->GetSysPause());
 			}
 			break;
@@ -312,23 +314,42 @@ int EmuMsg::Process()
 			break;
 		case EMUMSG_ID_CHANGE_FD:
 			if (emu) {
-				emu->change_disk(item->GetDrv());
+				emu->change_floppy_disk(item->GetDrv());
 			}
 			break;
 		case EMUMSG_ID_WRITEPROTECT_FD:
 			if (emu) {
-				emu->toggle_disk_write_protect(item->GetDrv());
+				emu->toggle_floppy_disk_write_protect(item->GetDrv());
 			}
 			break;
 		case EMUMSG_ID_RECENT_FD:
 			if (emu) {
-				emu->open_disk_by_bank_num(item->GetDrv(), item->GetFile(), item->GetBankNum(), item->GetFlags(), item->GetMulti());
+				emu->open_floppy_disk_by_bank_num(item->GetDrv(), item->GetFile(), item->GetBankNum(), item->GetFlags(), item->GetMulti());
 				gui->SystemPause(item->GetSysPause());
 			}
 			break;
 		case EMUMSG_ID_SELECT_D88_BANK:
 			{
-				emu->open_disk_with_sel_bank(item->GetDrv(), item->GetNum());
+				emu->open_floppy_disk_with_sel_bank(item->GetDrv(), item->GetNum());
+			}
+			break;
+#endif
+#ifdef USE_HD1
+		case EMUMSG_ID_OPEN_HD:
+			if (emu) {
+				emu->open_hard_disk(item->GetDrv(), item->GetFile(), item->GetFlags());
+				gui->SystemPause(item->GetSysPause());
+			}
+			break;
+		case EMUMSG_ID_CLOSE_HD:
+			if (emu) {
+				emu->close_hard_disk(item->GetDrv());
+			}
+			break;
+		case EMUMSG_ID_RECENT_HD:
+			if (emu) {
+				emu->open_hard_disk(item->GetDrv(), item->GetFile(), item->GetFlags());
+				gui->SystemPause(item->GetSysPause());
 			}
 			break;
 #endif

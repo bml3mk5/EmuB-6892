@@ -63,7 +63,7 @@ void EMU_OSD::initialize_screen()
 	EMU::initialize_screen();
 
 #ifdef USE_OPENGL
-	next_use_opengl = config.use_opengl;
+	next_use_opengl = pConfig->use_opengl;
 
 	initialize_opengl();
 #endif
@@ -134,7 +134,6 @@ bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, ui
 		//
 		// change window
 		//
-		GdkWindow *dwindow = gtk_widget_get_window(window);
 		GdkGeometry geo;
 		if ((flags & SDL_WINDOW_FULLSCREEN) == 0) {
 			// go window mode. So, set window size.
@@ -146,14 +145,15 @@ bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, ui
 			gtk_window_unfullscreen(GTK_WINDOW(window));
 //			gtk_window_set_default_size(GTK_WINDOW(window), geo.min_width, geo.min_height);
 			gtk_window_resize(GTK_WINDOW(window), geo.min_width, geo.min_height);
-			gtk_window_move(GTK_WINDOW(window), config.window_position_x, config.window_position_y);
+			gtk_window_move(GTK_WINDOW(window), pConfig->window_position_x, pConfig->window_position_y);
 #else
+			GdkWindow *dwindow = gtk_widget_get_window(window);
 			gtk_window_unfullscreen(GTK_WINDOW(window));
 			GdkWindowHints ghint = (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
 			gdk_window_set_geometry_hints(dwindow, &geo, ghint);
 			gdk_window_get_geometry(dwindow, NULL, NULL, &geo.base_width, &geo.base_height);
 			gtk_widget_set_size_request(window, geo.min_width, geo.min_height);
-			gdk_window_move(dwindow, config.window_position_x, config.window_position_y);
+			gdk_window_move(dwindow, pConfig->window_position_x, pConfig->window_position_y);
 #endif
 #if 0
 			GdkWindowHints ghint = (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
@@ -164,8 +164,7 @@ bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, ui
 #endif
 		} else {
 			// go fullscreen mode. So, set screen mode
-			gtk_window_get_position(GTK_WINDOW(window), &config.window_position_x, &config.window_position_y);
-			const CDisplayDevice *dd = screen_mode.GetDisp(config.disp_device_no);
+			gtk_window_get_position(GTK_WINDOW(window), &pConfig->window_position_x, &pConfig->window_position_y);
 			geo.min_width = width;
 			geo.min_height = height;
 			geo.max_width = width + 1;
@@ -174,8 +173,10 @@ bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, ui
 			GdkDisplay *ddisplay = gdk_display_get_default();
 			GdkScreen *dscreen = gdk_display_get_default_screen(ddisplay);
 //			gtk_window_set_default_size(GTK_WINDOW(window), geo.min_width, geo.min_height);
-			gtk_window_fullscreen_on_monitor(GTK_WINDOW(window), dscreen, config.disp_device_no);
+			gtk_window_fullscreen_on_monitor(GTK_WINDOW(window), dscreen, pConfig->disp_device_no);
 #else
+			const CDisplayDevice *dd = screen_mode.GetDisp(pConfig->disp_device_no);
+			GdkWindow *dwindow = gtk_widget_get_window(window);
 			gdk_window_move(dwindow, dd->re.x, dd->re.y);
 			GdkWindowHints ghint = (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
 			gdk_window_set_geometry_hints(dwindow, &geo, ghint);
@@ -366,7 +367,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 #ifdef USE_SCREEN_ROTATE
 	VmRectWH prev_source_size = source_size;
 
-	if(config.monitor_type & 1) {
+	if(pConfig->monitor_type & 1) {
 		stretch_changed |= (source_size.w != screen_size.h);
 		stretch_changed |= (source_size.h != screen_size.w);
 		stretch_changed |= (source_aspect_size.w != screen_aspect_size.h);
@@ -391,8 +392,8 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	}
 
 	// fullscreen and stretch screen
-	if(config.stretch_screen && !now_window && display_size.w >= source_size.w && display_size.h >= source_size.h) {
-		if (config.stretch_screen == 1) {
+	if(pConfig->stretch_screen && !now_window && display_size.w >= source_size.w && display_size.h >= source_size.h) {
+		if (pConfig->stretch_screen == 1) {
 			// fit to full screen
 			mixed_size = source_size;
 			if (mixed_ratio.w < mixed_ratio.h) {
@@ -438,7 +439,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 			VmSize min_size;
 			SIZE_IN(min_size, LIMIT_MIN_WINDOW_WIDTH, LIMIT_MIN_WINDOW_HEIGHT);
 #ifdef USE_SCREEN_ROTATE
-			if(config.monitor_type & 1) {
+			if(pConfig->monitor_type & 1) {
 				SWAP(int, min_size.w, min_size.h);
 			}
 #endif
@@ -631,7 +632,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	rePyl.bottom = stretched_size.y + stretched_size.h;
 #endif
 
-	change_rec_video_size(config.screen_video_size);
+	change_rec_video_size(pConfig->screen_video_size);
 
 	first_invalidate = true;
 	screen_size_changed = false;
@@ -679,7 +680,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	lock_screen();
 
 #ifdef USE_SCREEN_ROTATE
-	if(config.monitor_type) {
+	if(pConfig->monitor_type) {
 		sufSource = sufRotate;
 	} else
 #endif
@@ -698,7 +699,7 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 
 #ifdef USE_LEDBOX
 	if (gui) {
-		gui->SetLedBoxPosition(now_window, mixed_size.x, mixed_size.y, mixed_size.w, mixed_size.h, config.led_pos | (is_fullscreen() ? 0x10 : 0));
+		gui->SetLedBoxPosition(now_window, mixed_size.x, mixed_size.y, mixed_size.w, mixed_size.h, pConfig->led_pos | (is_fullscreen() ? 0x10 : 0));
 	}
 #endif
 #ifdef USE_MESSAGE_BOARD
@@ -725,7 +726,7 @@ void EMU_OSD::draw_screen()
 	lock_screen();
 
 	if (sufOrigin->Lock()) {
-		if (!config.now_power_off) {
+		if (!pConfig->now_power_off) {
 			vm->draw_screen();
 		} else {
 			fill_gray();
@@ -743,8 +744,8 @@ void EMU_OSD::draw_screen()
 	// rotate screen
 	// right turn
 	// src and dst should be the same size
-	if(config.monitor_type) {
-		int rtype = (config.monitor_type & 3);
+	if(pConfig->monitor_type) {
+		int rtype = (pConfig->monitor_type & 3);
 		VmSize ss, ds;
 		SIZE_IN(ss, screen_size.w, screen_size.h);
 		SIZE_IN(ds, source_size.w, source_size.h);
@@ -891,7 +892,7 @@ bool EMU_OSD::mix_screen_pa(cairo_t *cr)
 			}
 
 //			cairo_antialias_t ar = CAIRO_ANTIALIAS_DEFAULT;
-//			if (config.gl_filter_type == 0) ar = CAIRO_ANTIALIAS_NONE;
+//			if (pConfig->gl_filter_type == 0) ar = CAIRO_ANTIALIAS_NONE;
 //			cairo_set_antialias(cr, ar);
 
 			cairo_get_matrix(cr, &m2);
@@ -1080,7 +1081,7 @@ void EMU_OSD::update_screen_gl(GdkGLContext *context)
 ///
 void EMU_OSD::capture_screen()
 {
-	int size = config.screen_video_size;
+	int size = pConfig->screen_video_size;
 	rec_video->Capture(CAPTURE_SCREEN_TYPE, rec_video_stretched_size, sufSource, rec_video_size[size]);
 }
 
@@ -1090,7 +1091,7 @@ void EMU_OSD::capture_screen()
 bool EMU_OSD::start_rec_video(int type, int fps_no, bool show_dialog)
 {
 #ifdef USE_REC_VIDEO
-	int size = config.screen_video_size;
+	int size = pConfig->screen_video_size;
 	return rec_video->Start(type, fps_no, rec_video_size[size], sufSource, show_dialog);
 #else
 	return false;
@@ -1104,7 +1105,7 @@ void EMU_OSD::record_rec_video()
 {
 #ifdef USE_REC_VIDEO
 	if (rec_video->IsRecordFrame()) {
-		int size = config.screen_video_size;
+		int size = pConfig->screen_video_size;
 		rec_video->Record(rec_video_stretched_size, sufSource, rec_video_size[size]);
 	}
 #endif
@@ -1114,14 +1115,14 @@ void EMU_OSD::record_rec_video()
 void EMU_OSD::resume_window_placement()
 {
 	if (now_screenmode == NOW_FULLSCREEN) {
-		config.window_position_x = window_dest.x;
-		config.window_position_y = window_dest.y;
+		pConfig->window_position_x = window_dest.x;
+		pConfig->window_position_y = window_dest.y;
 	} else {
 		int x = 0;
 		int y = 0;
 		gtk_window_get_position(GTK_WINDOW(window), &x, &y);
-		config.window_position_x = x;
-		config.window_position_y = y;
+		pConfig->window_position_x = x;
+		pConfig->window_position_y = y;
 	}
 }
 
@@ -1129,8 +1130,8 @@ void EMU_OSD::resume_window_placement()
 /// @param[in] mode 0 - 7: window size  8 -:  fullscreen size  -1: switch over  -2: shift window mode
 void EMU_OSD::change_screen_mode(int mode)
 {
-//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,config.window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
-//	if (mode == config.window_mode) return;
+//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,pConfig->window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
+//	if (mode == pConfig->window_mode) return;
 	if (now_resizing) {
 		// ignore events
 		return;
@@ -1148,15 +1149,15 @@ void EMU_OSD::change_screen_mode(int mode)
 			// no change
 			return;
 		} else {
-			mode = ((config.window_mode + 1) % window_mode.Count());
+			mode = ((pConfig->window_mode + 1) % window_mode.Count());
 		}
 	}
 	if (now_screenmode != NOW_FULLSCREEN) {
-		prev_window_mode = config.window_mode;
+		prev_window_mode = pConfig->window_mode;
 	}
-//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,config.window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
+//	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,pConfig->window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
 	set_window(mode, desktop_size.w, desktop_size.h);
-	if (!create_screen(config.disp_device_no, 0, 0, config.screen_width, config.screen_height, screen_flags)) {
+	if (!create_screen(pConfig->disp_device_no, 0, 0, pConfig->screen_width, pConfig->screen_height, screen_flags)) {
 		exit(1);
 	}
 	first_change_screen = false;
@@ -1179,17 +1180,17 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 		int width = wm->width;
 		int height = wm->height;
 #ifdef USE_SCREEN_ROTATE
-		if (config.monitor_type & 1) {
+		if (pConfig->monitor_type & 1) {
 			int v = width;
 			width = height;
 			height = v;
 		}
 #endif
 
-		config.window_mode = mode;
-		config.disp_device_no = 0;
-		config.screen_width = width;
-		config.screen_height = height;
+		pConfig->window_mode = mode;
+		pConfig->disp_device_no = 0;
+		pConfig->screen_width = width;
+		pConfig->screen_height = height;
 		window_mode_power = wm->power;
 
 		now_screenmode = NOW_WINDOW;
@@ -1252,10 +1253,10 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 			height = sm ? sm->height : dd->re.h;
 		}
 
-		config.window_mode = mode;
-		config.disp_device_no = disp_no;
-		config.screen_width = width;
-		config.screen_height = height;
+		pConfig->window_mode = mode;
+		pConfig->disp_device_no = disp_no;
+		pConfig->screen_width = width;
+		pConfig->screen_height = height;
 
 		now_screenmode = NOW_FULLSCREEN;
 
@@ -1323,7 +1324,7 @@ void EMU_OSD::realize_opengl(GtkGLArea *area)
 
 	GdkWindow *gwin = gtk_widget_get_window(window);
 	GdkDisplay *gdisp = gdk_window_get_display(gwin);
-	config.use_opengl = opengl->SetInterval(config.use_opengl, GDK_DISPLAY_XDISPLAY(gdisp));
+	pConfig->use_opengl = opengl->SetInterval(pConfig->use_opengl, GDK_DISPLAY_XDISPLAY(gdisp));
 
 //	opengl->CreateBuffer(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
 }
@@ -1348,8 +1349,8 @@ void EMU_OSD::create_opengl_texture()
 	if (!texGLMixed) return;
 
 	// create
-//	mix_texture_name = opengl->CreateTexture(config.gl_filter_type);
-	texGLMixed->Create(config.gl_filter_type);
+//	mix_texture_name = opengl->CreateTexture(pConfig->gl_filter_type);
+	texGLMixed->Create(pConfig->gl_filter_type);
 	texGLMixed->CreateBuffer(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
 }
 
@@ -1357,7 +1358,7 @@ void EMU_OSD::change_opengl_attr()
 {
 	if (!use_opengl) return;
 
-	texGLMixed->SetFilter(config.gl_filter_type);
+	texGLMixed->SetFilter(pConfig->gl_filter_type);
 }
 
 void EMU_OSD::release_opengl()

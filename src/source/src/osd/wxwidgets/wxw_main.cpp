@@ -177,11 +177,11 @@ bool MyApp::OnInit() {
 	logging->set_receiver(emu);
 
 	// load config
-	pconfig = new Config;
-	config.load(ini_file);
+	pConfig = new Config;
+	pConfig->load(ini_file);
 
 	// change language if need
-	clocale->ChangeLocaleIfNeed(config.language);
+	clocale->ChangeLocaleIfNeed(pConfig->language);
 	logging->out_logc(LOG_INFO, _T("Locale:["), clocale->GetLocaleName(), _T("] Lang:["), clocale->GetLanguageName(), _T("]"), NULL);
 
 	// create a instance of GUI component
@@ -207,7 +207,7 @@ bool MyApp::OnInit() {
 	emu->init_screen_mode();
 
 	// set pixel format
-	if (!emu->create_screen(0, config.window_position_x, config.window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, 0)) {
+	if (!emu->create_screen(0, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, 0)) {
 		logging->out_log(LOG_ERROR, _T("create_screen."));
 		return false;
 	}
@@ -220,12 +220,12 @@ int MyApp::OnRun() {
 	// initialize emulation core
 	emu->initialize();
 	// restore screen mode
-	if(config.window_mode >= 0 && config.window_mode < 8) {
-		emu->change_screen_mode(config.window_mode);
+	if(pConfig->window_mode >= 0 && pConfig->window_mode < 8) {
+		emu->change_screen_mode(pConfig->window_mode);
 	}
-	else if(config.window_mode >= 8) {
-		int prev_mode = config.window_mode;
-		config.window_mode = 0;	// initialize window mode
+	else if(pConfig->window_mode >= 8) {
+		int prev_mode = pConfig->window_mode;
+		pConfig->window_mode = 0;	// initialize window mode
 		emu->change_screen_mode(prev_mode);
 	}
 	// use offscreen surface
@@ -233,7 +233,7 @@ int MyApp::OnRun() {
 		return 1;
 	}
 //	// set again
-//	emu->set_window(config.window_mode, desktop_width, desktop_height);
+//	emu->set_window(pConfig->window_mode, desktop_width, desktop_height);
 
     // generate an initial idle event to start things
 	MyFrame *frame = gui->GetMyFrame();
@@ -318,10 +318,10 @@ int MyApp::OnExit() {
 	}
 
 	// save config
-	config.save();
-	config.release();
+	pConfig->save();
+	pConfig->release();
 
-	delete pconfig;
+	delete pConfig;
 
 	delete mThread;
 
@@ -932,7 +932,7 @@ wxThread::ExitCode MyThread::Entry()
 
 			frames.total++;
 
-			if(config.fps_no >= 0) {
+			if(pConfig->fps_no >= 0) {
 				if (fskip_remain <= 0) {
 					// constant frames per 1 second
 					if (gui->NeedUpdateScreen()) {
@@ -941,7 +941,7 @@ wxThread::ExitCode MyThread::Entry()
 					} else {
 						frames.skip++;
 					}
-					fskip_remain = fskip[config.fps_no];
+					fskip_remain = fskip[pConfig->fps_no];
 #ifdef LOG_MEASURE
 					skip_reason |= 0x11;
 #endif
@@ -1000,7 +1000,7 @@ wxThread::ExitCode MyThread::Entry()
 		}
 		current_time = wxGetLocalTimeMillis();
 #ifdef USE_PERFORMANCE_METER
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			lpCount2 = current_time;
 		}
 #endif
@@ -1039,7 +1039,7 @@ wxThread::ExitCode MyThread::Entry()
 			frames.total = frames.draw = 0;
 		}
 #ifdef USE_PERFORMANCE_METER
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			lpCount3 =  current_time;
 			if (lpCount3 > lpCount1) {
 				gdPMvalue = ((lpCount2 - lpCount1) * 100 / (lpCount3 - lpCount1)) & 0xfff;

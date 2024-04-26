@@ -16,6 +16,8 @@
 
 #if defined(USE_CAPTURE_SCREEN_PNG) && defined(USE_CAP_SCREEN_WIN)
 
+#include <windows.h>
+
 class EMU;
 class REC_VIDEO;
 class CSurface;

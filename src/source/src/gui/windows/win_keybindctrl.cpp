@@ -123,12 +123,8 @@ KeybindControl::~KeybindControl()
 void KeybindControl::Init(EMU *emu, int new_tabnum, HFONT new_font)
 {
 	font = new_font;
-#ifdef USE_PIAJOYSTICKBIT
-	KeybindData::Init(emu, new_tabnum, new_tabnum != 0 ? 1 : 0, new_tabnum == 2 ? 2 : 0);
-#else
-	KeybindData::Init(emu, new_tabnum, new_tabnum != 0 ? 1 : 0, new_tabnum == 2 ? 1 : 0);
-#endif
-	if (devtype == 1) {
+	KeybindData::Init(emu, new_tabnum);
+	if (m_devtype == DEVTYPE_JOYPAD) {
 		// use joypad
 		init_joypad(hMainCtrl);
 	}
@@ -137,36 +133,8 @@ void KeybindControl::Init(EMU *emu, int new_tabnum, HFONT new_font)
 void KeybindControl::init_joypad(HWND hWnd)
 {
 	// joypad
-	JOYINFO joyinfo;
-	JOYCAPS joycaps;
-	MMRESULT re;
-	bool enable = false;
-
-	memset(joyid_map, 0xff, sizeof(joyid_map));
-
-	int i = 0;
-	int joy_num = joyGetNumDevs();
-	for (int joyid=0; joyid < joy_num && joyid < 16 && i < 2; joyid++) {
-//		re = joySetCapture(hWnd, i, 0, TRUE);	//
-		re = joyGetPos(joyid, &joyinfo);
-		if (re == JOYERR_NOERROR) {
-			joyid_map[i] = joyid;
-			joyGetDevCaps(joyid, &joycaps, sizeof(JOYCAPS));
-			UINT32 x = (joycaps.wXmin + joycaps.wXmax) / 2;
-			joy_xmin[i] = (joycaps.wXmin + x) / 2;
-			joy_xmax[i] = (joycaps.wXmax + x) / 2;
-			UINT32 y = (joycaps.wYmin + joycaps.wYmax) / 2;
-			joy_ymin[i] = (joycaps.wYmin + y) / 2;
-			joy_ymax[i] = (joycaps.wYmax + y) / 2;
-
-			enable = true;
-			i++;
-		}
-	}
-	if (enable) {
-		use_timer = true;
-		SetTimer(hWnd, TIMER_JOYPAD, 32, NULL);
-	}
+	use_timer = true;
+	SetTimer(hWnd, TIMER_JOYPAD, 100, NULL);
 }
 
 void KeybindControl::term_joypad(HWND hWnd)
@@ -174,12 +142,19 @@ void KeybindControl::term_joypad(HWND hWnd)
 	if (use_timer) {
 		KillTimer(hWnd, TIMER_JOYPAD);
 	}
-//	if (usekey_type & 2) {
-//		joyReleaseCapture(JOYSTICKID1);
-//	}
 }
 
-LRESULT KeybindControl::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+void KeybindControl::update_joypad(ctrlcols_t *obj)
+{
+	emu->update_joystick();
+	uint32_t *joy_stat = emu->joy_real_buffer(obj->col);
+	if ((joy_stat[0] & *p_joy_mask) | joy_stat[1]) {
+		SetJoyCell(obj, joy_stat[0] & *p_joy_mask, joy_stat[1]);
+	}
+}
+
+LRESULT KeybindControl::Proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
 	PAINTSTRUCT ps;
 //	HDC hdc;
 //	_TCHAR str[1000];
@@ -297,7 +272,7 @@ LRESULT KeybindControl::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	WNDPROC origProc = (WNDPROC)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
 	switch(message) {
-		case WM_CTLCOLORSTATIC:
+	case WM_CTLCOLORSTATIC:
 		{
 			HWND hCtrl = (HWND)lParam;
 			HWND hF = GetFocus();
@@ -346,7 +321,7 @@ LRESULT KeybindControl::EditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			break;
 		case WM_LBUTTONDBLCLK:
 			{
-				SetVkCode(obj, 0);
+				ClearCell(obj);
 			}
 			break;
 		case WM_SYSCHAR:
@@ -355,9 +330,10 @@ LRESULT KeybindControl::EditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			break;
 		case WM_SYSKEYDOWN:
 		case WM_KEYDOWN:
-			if (devtype != 1 && (wParam < 0x88 || wParam > 0x8f)) {
+			if (m_devtype != DEVTYPE_JOYPAD && (wParam < 0x88 || wParam > 0x8f)) {
 				wParam = translate_keycode(wParam, lParam);
-				SetVkCode(obj, (uint32_t)wParam);
+				ClearCellByVkCode((uint32_t)wParam);
+				SetKeyCell(obj, (uint32_t)wParam);
 			}
 			return 0;
 			break;
@@ -368,22 +344,8 @@ LRESULT KeybindControl::EditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 //		case MM_JOY1MOVE:
 //		case MM_JOY1BUTTONDOWN:
 		case WM_TIMER:
-			if (devtype == 1 && use_timer) {
-				JOYINFOEX joyinfoex;
-				joyinfoex.dwSize = sizeof(JOYINFOEX);
-				joyinfoex.dwFlags = JOY_RETURNALL;
-				int i = obj->col;
-				UINT32 joy_status = 0;
-				if(joyid_map[i] != -1 && joyGetPosEx(joyid_map[i], &joyinfoex) == JOYERR_NOERROR) {
-					if(joyinfoex.dwYpos < joy_ymin[i]) joy_status |= 0x01;
-					if(joyinfoex.dwYpos > joy_ymax[i]) joy_status |= 0x02;
-					if(joyinfoex.dwXpos < joy_xmin[i]) joy_status |= 0x04;
-					if(joyinfoex.dwXpos > joy_xmax[i]) joy_status |= 0x08;
-					if (joy_status == 0) {
-						joy_status |= ((joyinfoex.dwButtons & 0x0fffffff) << 4);
-					}
-					if (joy_status) SetVkCode(obj, joy_status);
-				}
+			if (m_devtype == DEVTYPE_JOYPAD) {
+				update_joypad(obj);
 			}
 			return 0;
 			break;
@@ -417,7 +379,7 @@ void KeybindControl::create_children(HWND hWnd)
 				 x, y, cell_width, cell_height, hStaticMain, NULL, hInstance, NULL);
 	x += cell_width + padding;
 	for(int j=1; j<=KBCTRL_MAX_COLS; j++) {
-		_stprintf(label, _T("bind%d"), j);
+		UTILITY::stprintf(label, KBLABEL_MAXLEN, _T("bind%d"), j);
 		hTitles[j] = CreateWindow(_T("STATIC"), label, WS_CHILD | WS_VISIBLE | SS_CENTER | SS_CENTERIMAGE,
 				 x, y, cell_width, cell_height, hStaticMain, NULL, hInstance, NULL);
 		x += cell_width + padding;
@@ -495,9 +457,9 @@ void KeybindControl::dispose_children(HWND hWnd)
 	for(int row=0; row<rows; row++) {
 		x = margin;
 
-		if (vm_type == 2) {
+		if (m_vm_type == VM_TYPE_PIOBITASSIGN) {
 			KeybindData::GetVmJoyBitLabel(row2idx_map[row], label, true);
-		} else if (vm_type == 1) {
+		} else if (m_vm_type == VM_TYPE_PIOJOYASSIGN) {
 			KeybindData::GetVmJoyLabel(row2idx_map[row], label, true);
 		} else {
 			KeybindData::GetVmKeyLabel(row2idx_map[row], label, true);
@@ -666,20 +628,62 @@ bool KeybindControl::SetVkLabel(int row, int col)
 	return true;
 }
 
-bool KeybindControl::SetVkCode(ctrlcols_t *obj, uint32_t code)
+bool KeybindControl::SetKeyCell(ctrlcols_t *obj, uint32_t code)
 {
 	_TCHAR label[KBLABEL_MAXLEN];
 	int row = obj->row;
 	int col = obj->col;
 
-	if (devtype == 1) {
-		SetVkJoyCode(row, col, code, label);
+	if (m_devtype != DEVTYPE_KEYBOARD) return false;
+
+	SetVkKeyCode(row, col, code, label);
+
+	UTILITY::conv_to_api_string(label, KBLABEL_MAXLEN, label, KBLABEL_MAXLEN);
+	SetWindowText(obj->hEdt, label);
+	return true;
+}
+
+bool KeybindControl::SetJoyCell(ctrlcols_t *obj, uint32_t code0, uint32_t code1)
+{
+	_TCHAR label[KBLABEL_MAXLEN];
+	int row = obj->row;
+	int col = obj->col;
+
+	if (m_devtype != DEVTYPE_JOYPAD) return false;
+
+	SetVkJoyCode(row, col, code0, code1, label);
+
+	UTILITY::conv_to_api_string(label, KBLABEL_MAXLEN, label, KBLABEL_MAXLEN);
+	SetWindowText(obj->hEdt, label);
+	return true;
+}
+
+bool KeybindControl::ClearCell(ctrlcols_t *obj)
+{
+	_TCHAR label[KBLABEL_MAXLEN];
+	int row = obj->row;
+	int col = obj->col;
+
+	if (m_devtype == DEVTYPE_JOYPAD) {
+		ClearVkJoyCode(row, col, label);
 	} else {
-		SetVkKeyCode(row, col, code, label);
+		ClearVkKeyCode(row, col, label);
 	}
 	UTILITY::conv_to_api_string(label, KBLABEL_MAXLEN, label, KBLABEL_MAXLEN);
 	SetWindowText(obj->hEdt, label);
 	return true;
+}
+
+bool KeybindControl::ClearCellByVkCode(uint32_t code)
+{
+	if (m_flags & FLAG_DENY_DUPLICATE) {
+		int row = vkkey2rowcol_map[code].row;
+		int col = vkkey2rowcol_map[code].col;
+		if (row >= 0 && col >= 0) {
+			return ClearCell(&table[row].cols[col]);
+		}
+	}
+	return false;
 }
 
 bool KeybindControl::MapDefaultVmKey()

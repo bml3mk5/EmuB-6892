@@ -101,7 +101,7 @@ void PRINTER::set_data(uint32_t data)
 	}
 
 #ifdef USE_SOCKET
-	if (config.printer_direct[cfg_num]) {
+	if (pConfig->printer_direct[cfg_num]) {
 		if (!connect_socket()) {
 			return;
 		}
@@ -133,8 +133,8 @@ void PRINTER::write_signal(int id, uint32_t data, uint32_t mask)
 			if ((data & mask) == 0) {
 				// receive strobe
 				strobe = true;
-				if (config.printer_online[cfg_num]) {
-					register_my_event(config.printer_delay[cfg_num] * 1000.0, register_id);
+				if (pConfig->printer_online[cfg_num]) {
+					register_my_event(pConfig->printer_delay[cfg_num] * 1000.0, register_id);
 //					logging->out_debugf("printer reg_id:%d i:%02d d:%02d m:%02d send:%s",register_id,id,data,mask,send ? "true" : "false");
 				}
 			}
@@ -188,19 +188,19 @@ uint8_t* PRINTER::get_buffer() const
 
 bool PRINTER::set_direct_mode()
 {
-	if (!config.printer_direct[cfg_num]) {
+	if (!pConfig->printer_direct[cfg_num]) {
 		send_size = 0;
 		send_buff = get_buffer();
 
 		if (!connect_socket()) {
 			return false;
 		}
-		config.printer_direct[cfg_num] = true;
+		pConfig->printer_direct[cfg_num] = true;
 
 	} else {
 		disconnect_socket();
 		send_type = 0;
-		config.printer_direct[cfg_num] = false;
+		pConfig->printer_direct[cfg_num] = false;
 
 	}
 	return true;
@@ -234,10 +234,10 @@ bool PRINTER::print_printer()
 /// toggle on/offline to printer
 void PRINTER::toggle_printer_online()
 {
-	config.printer_online[cfg_num] = !config.printer_online[cfg_num];
+	pConfig->printer_online[cfg_num] = !pConfig->printer_online[cfg_num];
 
-	if (strobe && config.printer_online[cfg_num]) {
-		register_my_event(config.printer_delay[cfg_num] * 1000.0, register_id);
+	if (strobe && pConfig->printer_online[cfg_num]) {
+		register_my_event(pConfig->printer_delay[cfg_num] * 1000.0, register_id);
 	}
 }
 
@@ -332,7 +332,7 @@ bool PRINTER::connect_socket()
 			logging->out_log(LOG_ERROR, _T("Network socket initialize failed."));
 			return false;
 		}
-		if (!emu->connect_socket(client_ch, config.printer_server_host[cfg_num], config.printer_server_port[cfg_num])) {
+		if (!emu->connect_socket(client_ch, pConfig->printer_server_host[cfg_num].Get(), pConfig->printer_server_port[cfg_num])) {
 			logging->out_log(LOG_ERROR, _T("Cannot connect to printer server."));
 			return false;
 		}
@@ -346,7 +346,7 @@ bool PRINTER::connect_socket()
 void PRINTER::disconnect_socket()
 {
 #ifdef USE_SOCKET
-	if (!config.printer_direct[cfg_num]) {
+	if (!pConfig->printer_direct[cfg_num]) {
 		// disconnect
 		emu->disconnect_socket(client_ch);
 	}
@@ -395,8 +395,8 @@ void PRINTER::event_callback(int event_id, int err)
 #ifdef USE_SOCKET
 					emu->send_data_tcp(client_ch);
 #endif
-					if (config.printer_online[cfg_num]) {
-						register_my_event(config.printer_delay[cfg_num] * 1000.0, register_id);
+					if (pConfig->printer_online[cfg_num]) {
+						register_my_event(pConfig->printer_delay[cfg_num] * 1000.0, register_id);
 					}
 				} else {
 #ifdef USE_PRINTER_PENDSIZE

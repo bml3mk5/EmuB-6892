@@ -108,87 +108,87 @@ void MyVolumeDlg::ModifyParam()
 void MyVolumeDlg::get_volume()
 {
 	int i=0;
-	volume[i++] = volmax - config.volume;
-	volume[i++] = volmax - config.beep_volume;
+	volume[i++] = volmax - pConfig->volume;
+	volume[i++] = volmax - pConfig->beep_volume;
 #if defined(_MBS1)
-	volume[i++] = volmax - config.psg_volume;
-	volume[i++] = volmax - config.psgexfm_volume;
-	volume[i++] = volmax - config.psgexssg_volume;
-	volume[i++] = volmax - config.psgexpcm_volume;
-	volume[i++] = volmax - config.psgexrhy_volume;
-	volume[i++] = volmax - config.opnfm_volume;
-	volume[i++] = volmax - config.opnssg_volume;
-	volume[i++] = volmax - config.opnpcm_volume;
-	volume[i++] = volmax - config.opnrhy_volume;
+	volume[i++] = volmax - pConfig->psg_volume;
+	volume[i++] = volmax - pConfig->psgexfm_volume;
+	volume[i++] = volmax - pConfig->psgexssg_volume;
+	volume[i++] = volmax - pConfig->psgexpcm_volume;
+	volume[i++] = volmax - pConfig->psgexrhy_volume;
+	volume[i++] = volmax - pConfig->opnfm_volume;
+	volume[i++] = volmax - pConfig->opnssg_volume;
+	volume[i++] = volmax - pConfig->opnpcm_volume;
+	volume[i++] = volmax - pConfig->opnrhy_volume;
 #endif
-	volume[i++] = volmax - config.psg6_volume;
-	volume[i++] = volmax - config.psg9_volume;
-	volume[i++] = volmax - config.relay_volume;
-	volume[i++] = volmax - config.cmt_volume;
-	volume[i++] = volmax - config.fdd_volume;
+	volume[i++] = volmax - pConfig->psg6_volume;
+	volume[i++] = volmax - pConfig->psg9_volume;
+	volume[i++] = volmax - pConfig->relay_volume;
+	volume[i++] = volmax - pConfig->cmt_volume;
+	volume[i++] = volmax - pConfig->fdd_volume;
 
 	i = 0;
-	mute[i++] = config.mute;
-	mute[i++] = config.beep_mute;
+	mute[i++] = pConfig->mute;
+	mute[i++] = pConfig->beep_mute;
 #if defined(_MBS1)
-	mute[i++] = config.psg_mute;
-	mute[i++] = config.psgexfm_mute;
-	mute[i++] = config.psgexssg_mute;
-	mute[i++] = config.psgexpcm_mute;
-	mute[i++] = config.psgexrhy_mute;
-	mute[i++] = config.opnfm_mute;
-	mute[i++] = config.opnssg_mute;
-	mute[i++] = config.opnpcm_mute;
-	mute[i++] = config.opnrhy_mute;
+	mute[i++] = pConfig->psg_mute;
+	mute[i++] = pConfig->psgexfm_mute;
+	mute[i++] = pConfig->psgexssg_mute;
+	mute[i++] = pConfig->psgexpcm_mute;
+	mute[i++] = pConfig->psgexrhy_mute;
+	mute[i++] = pConfig->opnfm_mute;
+	mute[i++] = pConfig->opnssg_mute;
+	mute[i++] = pConfig->opnpcm_mute;
+	mute[i++] = pConfig->opnrhy_mute;
 #endif
-	mute[i++] = config.psg6_mute;
-	mute[i++] = config.psg9_mute;
-	mute[i++] = config.relay_mute;
-	mute[i++] = config.cmt_mute;
-	mute[i++] = config.fdd_mute;
+	mute[i++] = pConfig->psg6_mute;
+	mute[i++] = pConfig->psg9_mute;
+	mute[i++] = pConfig->relay_mute;
+	mute[i++] = pConfig->cmt_mute;
+	mute[i++] = pConfig->fdd_mute;
 }
 
 void MyVolumeDlg::set_volume()
 {
 	int i = 0;
-	config.volume = volmax - volume[i++];
-	config.beep_volume = volmax - volume[i++];
+	pConfig->volume = volmax - volume[i++];
+	pConfig->beep_volume = volmax - volume[i++];
 #if defined(_MBS1)
-	config.psg_volume = volmax - volume[i++];
-	config.psgexfm_volume = volmax - volume[i++];
-	config.psgexssg_volume = volmax - volume[i++];
-	config.psgexpcm_volume = volmax - volume[i++];
-	config.psgexrhy_volume = volmax - volume[i++];
-	config.opnfm_volume = volmax - volume[i++];
-	config.opnssg_volume = volmax - volume[i++];
-	config.opnpcm_volume = volmax - volume[i++];
-	config.opnrhy_volume = volmax - volume[i++];
+	pConfig->psg_volume = volmax - volume[i++];
+	pConfig->psgexfm_volume = volmax - volume[i++];
+	pConfig->psgexssg_volume = volmax - volume[i++];
+	pConfig->psgexpcm_volume = volmax - volume[i++];
+	pConfig->psgexrhy_volume = volmax - volume[i++];
+	pConfig->opnfm_volume = volmax - volume[i++];
+	pConfig->opnssg_volume = volmax - volume[i++];
+	pConfig->opnpcm_volume = volmax - volume[i++];
+	pConfig->opnrhy_volume = volmax - volume[i++];
 #endif
-	config.psg6_volume = volmax - volume[i++];
-	config.psg9_volume = volmax - volume[i++];
-	config.relay_volume = volmax - volume[i++];
-	config.cmt_volume = volmax - volume[i++];
-	config.fdd_volume = volmax - volume[i++];
+	pConfig->psg6_volume = volmax - volume[i++];
+	pConfig->psg9_volume = volmax - volume[i++];
+	pConfig->relay_volume = volmax - volume[i++];
+	pConfig->cmt_volume = volmax - volume[i++];
+	pConfig->fdd_volume = volmax - volume[i++];
 
 	i = 0;
-	config.mute = mute[i++];
-	config.beep_mute = mute[i++];
+	pConfig->mute = mute[i++];
+	pConfig->beep_mute = mute[i++];
 #if defined(_MBS1)
-	config.psg_mute = mute[i++];
-	config.psgexfm_mute = mute[i++];
-	config.psgexssg_mute = mute[i++];
-	config.psgexpcm_mute = mute[i++];
-	config.psgexrhy_mute = mute[i++];
-	config.opnfm_mute = mute[i++];
-	config.opnssg_mute = mute[i++];
-	config.opnpcm_mute = mute[i++];
-	config.opnrhy_mute = mute[i++];
+	pConfig->psg_mute = mute[i++];
+	pConfig->psgexfm_mute = mute[i++];
+	pConfig->psgexssg_mute = mute[i++];
+	pConfig->psgexpcm_mute = mute[i++];
+	pConfig->psgexrhy_mute = mute[i++];
+	pConfig->opnfm_mute = mute[i++];
+	pConfig->opnssg_mute = mute[i++];
+	pConfig->opnpcm_mute = mute[i++];
+	pConfig->opnrhy_mute = mute[i++];
 #endif
-	config.psg6_mute = mute[i++];
-	config.psg9_mute = mute[i++];
-	config.relay_mute = mute[i++];
-	config.cmt_mute = mute[i++];
-	config.fdd_mute = mute[i++];
+	pConfig->psg6_mute = mute[i++];
+	pConfig->psg9_mute = mute[i++];
+	pConfig->relay_mute = mute[i++];
+	pConfig->cmt_mute = mute[i++];
+	pConfig->fdd_mute = mute[i++];
 
 	emu->set_volume(0);
 }

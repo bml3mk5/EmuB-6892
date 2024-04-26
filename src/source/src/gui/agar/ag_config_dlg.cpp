@@ -39,10 +39,10 @@ namespace GUI_AGAR
 AG_CONFIG_DLG::AG_CONFIG_DLG(EMU *parent_emu, AG_GUI_BASE *parent_gui) : AG_DLG(parent_emu, parent_gui)
 {
 	memset(&param, 0, sizeof(param));
-	param.fdd_type  = config.fdd_type;
-	param.io_port = config.io_port;
+	param.fdd_type  = pConfig->fdd_type;
+	param.io_port = pConfig->io_port;
 #if defined(_MBS1)
-	param.sys_mode_rev = (1 - (config.sys_mode & 1));
+	param.sys_mode_rev = (1 - (pConfig->sys_mode & 1));
 #endif
 	param.wav_reverse = 0;
 	param.wav_half = 1;
@@ -51,18 +51,18 @@ AG_CONFIG_DLG::AG_CONFIG_DLG(EMU *parent_emu, AG_GUI_BASE *parent_gui) : AG_DLG(
 	param.wav_sample_rate = 3;
 	param.wav_sample_bits = 0;
 #if defined(_MBS1)
-	param.disptmg_skew = config.disptmg_skew + 2;
-	param.curdisp_skew = config.curdisp_skew + 2;
+	param.disptmg_skew = pConfig->disptmg_skew + 2;
+	param.curdisp_skew = pConfig->curdisp_skew + 2;
 #else
-	param.disptmg_skew = config.disptmg_skew;
-	param.curdisp_skew = config.curdisp_skew;
+	param.disptmg_skew = pConfig->disptmg_skew;
+	param.curdisp_skew = pConfig->curdisp_skew;
 #endif
-	param.gl_filter_type = config.gl_filter_type;
+	param.gl_filter_type = pConfig->gl_filter_type;
 	param.led_show = 0;
-	param.led_pos = config.led_pos;
-	param.capture_type = config.capture_type;
+	param.led_pos = pConfig->led_pos;
+	param.capture_type = pConfig->capture_type;
 #if defined(_MBS1)
-	param.exram_num = config.exram_size_num;
+	param.exram_num = pConfig->exram_size_num;
 #endif
 
 	paramtmp = NULL;
@@ -82,89 +82,89 @@ AG_CONFIG_DLG::~AG_CONFIG_DLG()
 void AG_CONFIG_DLG::Create()
 {
 #if defined(_MBS1)
-	param.disptmg_skew = config.disptmg_skew + 2;
-	param.curdisp_skew = config.curdisp_skew + 2;
+	param.disptmg_skew = pConfig->disptmg_skew + 2;
+	param.curdisp_skew = pConfig->curdisp_skew + 2;
 #else
-	param.disptmg_skew = config.disptmg_skew;
-	param.curdisp_skew = config.curdisp_skew;
+	param.disptmg_skew = pConfig->disptmg_skew;
+	param.curdisp_skew = pConfig->curdisp_skew;
 #endif
-	param.use_opengl = config.use_opengl;
-	param.gl_filter_type = config.gl_filter_type;
+	param.use_opengl = pConfig->use_opengl;
+	param.gl_filter_type = pConfig->gl_filter_type;
 	param.led_show = gui->GetLedBoxPhase(-1);
-	param.led_pos = config.led_pos;
-	param.capture_type = config.capture_type;
+	param.led_pos = pConfig->led_pos;
+	param.capture_type = pConfig->capture_type;
 #if defined(_MBS1)
 	param.sys_mode_rev = (1 - (emu->get_parami(VM::ParamSysMode) & 1));
 #else
-	param.exram_size_num = config.exram_size_num;
+	param.exram_size_num = pConfig->exram_size_num;
 #endif
 
-	param.use_power_off = (config.use_power_off ? 1 : 0);
-	param.dipswitch = config.dipswitch;
+	param.use_power_off = (pConfig->use_power_off ? 1 : 0);
+	param.dipswitch = pConfig->dipswitch;
 	param.fdd_type = emu->get_parami(VM::ParamFddType);
-	param.mount_fdd = config.mount_fdd;
+	param.mount_fdd = pConfig->mount_fdd;
 	param.delayfd1 = FLG_DELAY_FDSEARCH ? 1 : 0;
 	param.delayfd2 = FLG_DELAY_FDSEEK ? 1 : 0;
 	param.chk_fddensity = FLG_CHECK_FDDENSITY ? 0 : 1;
 	param.chk_fdmedia = FLG_CHECK_FDMEDIA ? 0 : 1;
 	param.save_fdplain = FLG_SAVE_FDPLAIN ? 1 : 0;
 	param.io_port = emu->get_parami(VM::ParamIOPort);
-	param.wav_reverse = config.wav_reverse ? 1 : 0;
-	param.wav_half = config.wav_half ? 1 : 0;
-	param.wav_correct = config.wav_correct ? config.wav_correct_type + 1 : 0;
-	sprintf(param.wav_correct_amp[0], "%d", config.wav_correct_amp[0]);
-	sprintf(param.wav_correct_amp[1], "%d", config.wav_correct_amp[1]);
-	param.wav_sample_rate = config.wav_sample_rate;
-	param.wav_sample_bits = config.wav_sample_bits;
+	param.wav_reverse = pConfig->wav_reverse ? 1 : 0;
+	param.wav_half = pConfig->wav_half ? 1 : 0;
+	param.wav_correct = pConfig->wav_correct ? pConfig->wav_correct_type + 1 : 0;
+	sprintf(param.wav_correct_amp[0], "%d", pConfig->wav_correct_amp[0]);
+	sprintf(param.wav_correct_amp[1], "%d", pConfig->wav_correct_amp[1]);
+	param.wav_sample_rate = pConfig->wav_sample_rate;
+	param.wav_sample_bits = pConfig->wav_sample_bits;
 
-	memcpy(param.snap_path, config.snapshot_path.Get(), _MAX_PATH);
-	memcpy(param.rom_path, config.rom_path.Get(), _MAX_PATH);
-	memcpy(param.font_path, config.font_path.Get(), _MAX_PATH);
-	memcpy(param.msg_font_name, config.msgboard_msg_fontname.Get(), _MAX_PATH);
-	sprintf(param.msg_font_size, "%d", config.msgboard_msg_fontsize);
-	memcpy(param.info_font_name, config.msgboard_info_fontname.Get(), _MAX_PATH);
-	sprintf(param.info_font_size, "%d", config.msgboard_info_fontsize);
-	memcpy(param.menu_font_name, config.menu_fontname.Get(), _MAX_PATH);
-	sprintf(param.menu_font_size, "%d", config.menu_fontsize);
+	memcpy(param.snap_path, pConfig->snapshot_path.Get(), _MAX_PATH);
+	memcpy(param.rom_path, pConfig->rom_path.Get(), _MAX_PATH);
+	memcpy(param.font_path, pConfig->font_path.Get(), _MAX_PATH);
+	memcpy(param.msg_font_name, pConfig->msgboard_msg_fontname.Get(), _MAX_PATH);
+	sprintf(param.msg_font_size, "%d", pConfig->msgboard_msg_fontsize);
+	memcpy(param.info_font_name, pConfig->msgboard_info_fontname.Get(), _MAX_PATH);
+	sprintf(param.info_font_size, "%d", pConfig->msgboard_info_fontsize);
+	memcpy(param.menu_font_name, pConfig->menu_fontname.Get(), _MAX_PATH);
+	sprintf(param.menu_font_size, "%d", pConfig->menu_fontsize);
 
 	for(int i=0; i<MAX_PRINTER; i++) {
-		memcpy(param.prn_host[i], config.printer_server_host[i].Get(), _MAX_PATH);
-		sprintf(param.prn_port[i], "%d", config.printer_server_port[i]);
-		sprintf(param.prn_delay[i], "%.1f", config.printer_delay[i]);
+		memcpy(param.prn_host[i], pConfig->printer_server_host[i].Get(), _MAX_PATH);
+		sprintf(param.prn_port[i], "%d", pConfig->printer_server_port[i]);
+		sprintf(param.prn_delay[i], "%.1f", pConfig->printer_delay[i]);
 	}
 	for(int i=0; i<MAX_COMM; i++) {
-		memcpy(param.com_host[i], config.comm_server_host[i].Get(), _MAX_PATH);
-		sprintf(param.com_port[i], "%d", config.comm_server_port[i]);
-		param.com_dipsw[i] = config.comm_dipswitch[i];
+		memcpy(param.com_host[i], pConfig->comm_server_host[i].Get(), _MAX_PATH);
+		sprintf(param.com_port[i], "%d", pConfig->comm_server_port[i]);
+		param.com_dipsw[i] = pConfig->comm_dipswitch[i];
 	}
 #ifdef USE_DEBUGGER
-	memcpy(param.dbgr_host, config.debugger_server_host.Get(), _MAX_PATH);
-	sprintf(param.dbgr_port, "%d", config.debugger_server_port);
+	memcpy(param.dbgr_host, pConfig->debugger_server_host.Get(), _MAX_PATH);
+	sprintf(param.dbgr_port, "%d", pConfig->debugger_server_port);
 #endif
 	param.uart_baud_index = 0;
 	for(int i=0; LABELS::comm_uart_baudrate[i] != NULL; i++) {
 		int val = (int)strtol(LABELS::comm_uart_baudrate[i], NULL, 10);
-		if (config.comm_uart_baudrate == val) {
+		if (pConfig->comm_uart_baudrate == val) {
 			param.uart_baud_index = i;
 			break;
 		}
 	}
-	param.uart_databit = config.comm_uart_databit - 7;
+	param.uart_databit = pConfig->comm_uart_databit - 7;
 	if (param.uart_databit < 0) param.uart_databit = 0;
-	param.uart_parity = config.comm_uart_parity;
-	param.uart_stopbit = config.comm_uart_stopbit - 1;
-	param.uart_flowctrl = config.comm_uart_flowctrl;
+	param.uart_parity = pConfig->comm_uart_parity;
+	param.uart_stopbit = pConfig->comm_uart_stopbit - 1;
+	param.uart_flowctrl = pConfig->comm_uart_flowctrl;
 
 #if defined(_MBS1)
 	param.exram_num = emu->get_parami(VM::ParamExMemNum);
-	param.mem_nowait = config.mem_nowait ? 1 : 0;
+	param.mem_nowait = pConfig->mem_nowait ? 1 : 0;
 
-//	param.fmopn_clock_num = config.opn_clock;
-	param.fmopn_irq = config.opn_irq;
+//	param.fmopn_clock_num = pConfig->opn_clock;
+	param.fmopn_irq = pConfig->opn_irq;
 	param.type_of_fmopn = emu->get_parami(VM::ParamChipTypeOnFmOpn);
 	param.type_of_expsg = emu->get_parami(VM::ParamChipTypeOnExPsg);
 # if defined(USE_Z80B_CARD)
-	param.z80b_card_out_irq = config.z80b_card_out_irq;
+	param.z80b_card_out_irq = pConfig->z80b_card_out_irq;
 # elif defined(USE_MPC_68008)
 	param.showmsg_addrerr = FLG_SHOWMSG_ADDRERR ? 1 : 0;
 # endif
@@ -215,7 +215,7 @@ void AG_CONFIG_DLG::Create()
 	set_label(radSysModeBase[1],CMSG(B_Mode_L3));
 	for(i=0; i<2; i++) {
 		radSysMode[i] = radSysModeBase[i];
-		if (i == (1 - (config.sys_mode & 1))) {
+		if (i == (1 - (pConfig->sys_mode & 1))) {
 			radSysModeBase[i][0] = '>';
 		}
 	}
@@ -232,7 +232,7 @@ void AG_CONFIG_DLG::Create()
 	AG_LabelNewS(vbox, AG_LABEL_HFILL, CMSG(DIP_Switch_ASTERISK));
 
 	set_label(chkDipSwitchBase[0],CMSG(MODE_Switch));
-	if (config.dipswitch & 0x04) {
+	if (pConfig->dipswitch & 0x04) {
 		chkDipSwitchBase[0][0] = '>';
 	}
 	cbox = AG_CheckboxNewFlag(vbox, 0, chkDipSwitchBase[0], (Uint *)&paramtmp->dipswitch, 0x04);
@@ -247,7 +247,7 @@ void AG_CONFIG_DLG::Create()
 	}
 	for(i=0; i<4; i++) {
 		radFddType[i] = radFddTypeBase[i];
-		if (i == config.fdd_type) {
+		if (i == pConfig->fdd_type) {
 			radFddTypeBase[i][0] = '>';
 		}
 	}
@@ -278,7 +278,7 @@ void AG_CONFIG_DLG::Create()
 	for(i=0; LABELS::io_port[i] != CMsg::End; i++) {
 		int pos = LABELS::io_port_pos[i];
 		if ((1 << pos) & IOPORT_MSK_ALL) {
-			if (config.io_port & (1 << pos)) {
+			if (pConfig->io_port & (1 << pos)) {
 				chkIOPortBase[pos][0] = '>';
 			}
 			cbox = AG_CheckboxNewFlag(vbox, 0, chkIOPortBase[pos], (Uint *)&paramtmp->io_port, (1 << pos));
@@ -307,11 +307,11 @@ void AG_CONFIG_DLG::Create()
 
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Method_ASTERISK));
-	UComboNew(hbox, LABELS::opengl_use, config.use_opengl, OnChangeUseOpenGL);
+	UComboNew(hbox, LABELS::opengl_use, pConfig->use_opengl, OnChangeUseOpenGL);
 
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Filter_Type));
-	UComboNew(hbox, LABELS::opengl_filter, config.gl_filter_type, OnChangeGLFilterType);
+	UComboNew(hbox, LABELS::opengl_filter, pConfig->gl_filter_type, OnChangeGLFilterType);
 #endif
 
 	// CRTC
@@ -321,18 +321,18 @@ void AG_CONFIG_DLG::Create()
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Disptmg_Skew));
 #if defined(_MBS1)
-	UComboNew(hbox, LABELS::disp_skew, config.disptmg_skew + 2, OnChangeDisptmgSkew);
+	UComboNew(hbox, LABELS::disp_skew, pConfig->disptmg_skew + 2, OnChangeDisptmgSkew);
 #else
-	UComboNew(hbox, LABELS::disp_skew, config.disptmg_skew, OnChangeDisptmgSkew);
+	UComboNew(hbox, LABELS::disp_skew, pConfig->disptmg_skew, OnChangeDisptmgSkew);
 #endif
 
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 #if defined(_MBS1)
 	AG_LabelNewS(hbox, 0, CMSG(Curdisp_Skew_L3));
-	UComboNew(hbox, LABELS::disp_skew, config.curdisp_skew + 2, OnChangeCurdispSkew);
+	UComboNew(hbox, LABELS::disp_skew, pConfig->curdisp_skew + 2, OnChangeCurdispSkew);
 #else
 	AG_LabelNewS(hbox, 0, CMSG(Curdisp_Skew));
-	UComboNew(hbox, LABELS::disp_skew, config.curdisp_skew, OnChangeCurdispSkew);
+	UComboNew(hbox, LABELS::disp_skew, pConfig->curdisp_skew, OnChangeCurdispSkew);
 #endif
 
 	// LED
@@ -346,12 +346,12 @@ void AG_CONFIG_DLG::Create()
 	vbox = AG_BoxNewVert(hbox_base, 0);
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Position));
-	UComboNew(hbox, LABELS::led_pos, config.led_pos, OnChangeLedPos);
+	UComboNew(hbox, LABELS::led_pos, pConfig->led_pos, OnChangeLedPos);
 
 	// capture type
 	hbox = AG_BoxNewHoriz(vbox_base, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Capture_Type));
-	UComboNew(hbox, LABELS::capture_fmt, config.capture_type, OnChangeCaptureType);
+	UComboNew(hbox, LABELS::capture_fmt, pConfig->capture_type, OnChangeCaptureType);
 
 	// snapshot path
 	hbox = AG_BoxNewHoriz(vbox_base, AG_BOX_HFILL);
@@ -381,7 +381,7 @@ void AG_CONFIG_DLG::Create()
 	lang_list.Clear();
 	clocale->GetLocaleNamesWithDefault(lang_list);
 
-	paramtmp->lang_selidx = clocale->SelectLocaleNameIndex(lang_list, config.language);
+	paramtmp->lang_selidx = clocale->SelectLocaleNameIndex(lang_list, pConfig->language);
 
 	hbox = AG_BoxNewHoriz(vbox_base, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Language_ASTERISK));
@@ -438,7 +438,7 @@ void AG_CONFIG_DLG::Create()
 	// fdd mount
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(When_start_up_mount_disk_at_));
-	for(i=0; i<MAX_DRIVE; i++) {
+	for(i=0; i<USE_FLOPPY_DISKS; i++) {
 		sprintf(name, "%d  ", i);
 		AG_CheckboxNewFlag(hbox, 0, name, (Uint *)&paramtmp->mount_fdd, (1 << i));
 	}
@@ -516,10 +516,10 @@ void AG_CONFIG_DLG::Create()
 	hbox = AG_BoxNewHoriz(vbox_base, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Extended_RAM_ASTERISK));
 	UComboNew(hbox, LABELS::exram_size, paramtmp->exram_num, OnChangeExtRam);
-	if (0 <= config.exram_size_num && config.exram_size_num <= 4) {
+	if (0 <= pConfig->exram_size_num && pConfig->exram_size_num <= 4) {
 		_TCHAR str[100];
 		UTILITY::tcscpy(str, sizeof(str), CMSG(LB_Now_SP));
-		UTILITY::tcscat(str, sizeof(str), CMSGV(LABELS::exram_size[config.exram_size_num]));
+		UTILITY::tcscat(str, sizeof(str), CMSGV(LABELS::exram_size[pConfig->exram_size_num]));
 		UTILITY::tcscat(str, sizeof(str), _T(")"));
 		AG_LabelNewS(hbox, 0, str);
 	}
@@ -570,7 +570,7 @@ void AG_CONFIG_DLG::Create()
 
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Sound_chip));
-	UComboNew(hbox, LABELS::type_of_soundcard, paramtmp->type_of_fmopn, OnChangeFmOpnChip, -1, config.type_of_fmopn, CMsg::LB_Now_RB);
+	UComboNew(hbox, LABELS::type_of_soundcard, paramtmp->type_of_fmopn, OnChangeFmOpnChip, -1, pConfig->type_of_fmopn, CMsg::LB_Now_RB);
 
 	//
 	vbox = AG_BoxNewVert(vbox_base, AG_BOX_FRAME);
@@ -580,7 +580,7 @@ void AG_CONFIG_DLG::Create()
 
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Sound_chip));
-	UComboNew(hbox, LABELS::type_of_soundcard, paramtmp->type_of_expsg, OnChangeExpsgChip, -1, config.type_of_expsg, CMsg::LB_Now_RB);
+	UComboNew(hbox, LABELS::type_of_soundcard, paramtmp->type_of_expsg, OnChangeExpsgChip, -1, pConfig->type_of_expsg, CMsg::LB_Now_RB);
 
 	//
 	hbox = AG_BoxNewHoriz(vbox_base, AG_BOX_HFILL);
@@ -678,20 +678,20 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	param = *paramtmp;
 
 #if defined(_MBS1)
-	config.disptmg_skew = param.disptmg_skew - 2;
-	config.curdisp_skew = param.curdisp_skew - 2;
+	pConfig->disptmg_skew = param.disptmg_skew - 2;
+	pConfig->curdisp_skew = param.curdisp_skew - 2;
 #else
-	config.disptmg_skew = param.disptmg_skew;
-	config.curdisp_skew = param.curdisp_skew;
-	config.exram_size_num = param.exram_size_num;
+	pConfig->disptmg_skew = param.disptmg_skew;
+	pConfig->curdisp_skew = param.curdisp_skew;
+	pConfig->exram_size_num = param.exram_size_num;
 #endif
-	config.use_opengl = (uint8_t)param.use_opengl;
-	config.gl_filter_type = (uint8_t)param.gl_filter_type;
-	config.led_pos = param.led_pos;
-	config.capture_type = param.capture_type;
+	pConfig->use_opengl = (uint8_t)param.use_opengl;
+	pConfig->gl_filter_type = (uint8_t)param.gl_filter_type;
+	pConfig->led_pos = param.led_pos;
+	pConfig->capture_type = param.capture_type;
 
-	config.use_power_off = (param.use_power_off != 0);
-	config.dipswitch = (param.dipswitch & 0xff);
+	pConfig->use_power_off = (param.use_power_off != 0);
+	pConfig->dipswitch = (param.dipswitch & 0xff);
 
 	emu->set_parami(VM::ParamFddType, param.fdd_type);
 #ifndef USE_IOPORT_FDD
@@ -700,8 +700,8 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 		: (param.fdd_type == FDD_TYPE_5FDD
 		|| param.fdd_type == FDD_TYPE_58FDD ? IOPORT_MSK_5FDD : 0));
 #endif
-	config.mount_fdd = param.mount_fdd;
-	config.option_fdd = (param.delayfd1 ? MSK_DELAY_FDSEARCH : 0)
+	pConfig->mount_fdd = param.mount_fdd;
+	pConfig->option_fdd = (param.delayfd1 ? MSK_DELAY_FDSEARCH : 0)
 		| (param.delayfd2 ? MSK_DELAY_FDSEEK : 0)
 		| (param.chk_fddensity ? 0 : MSK_CHECK_FDDENSITY)
 		| (param.chk_fdmedia ? 0 : MSK_CHECK_FDMEDIA)
@@ -709,96 +709,96 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 
 	emu->set_parami(VM::ParamIOPort, param.io_port);
 #if defined(_MBS1)
-	emu->set_parami(VM::ParamSysMode, (1 - param.sys_mode_rev) | (config.sys_mode & ~1));
+	emu->set_parami(VM::ParamSysMode, (1 - param.sys_mode_rev) | (pConfig->sys_mode & ~1));
 #endif
 	int val = 0;
 
-	config.wav_reverse = (param.wav_reverse == 1);
-	config.wav_half = (param.wav_half == 1);
-	config.wav_correct = (param.wav_correct != 0);
-	config.wav_correct_type = (param.wav_correct > 0 ? (uint8_t)(param.wav_correct - 1) : 0);
+	pConfig->wav_reverse = (param.wav_reverse == 1);
+	pConfig->wav_half = (param.wav_half == 1);
+	pConfig->wav_correct = (param.wav_correct != 0);
+	pConfig->wav_correct_type = (param.wav_correct > 0 ? (uint8_t)(param.wav_correct - 1) : 0);
 	if (sscanf(param.wav_correct_amp[0], "%d", &val) && val >= 100 && val <= 5000) {
-		config.wav_correct_amp[0] = val;
+		pConfig->wav_correct_amp[0] = val;
 	}
 	if (sscanf(param.wav_correct_amp[1], "%d", &val) && val >= 100 && val <= 5000) {
-		config.wav_correct_amp[1] = val;
+		pConfig->wav_correct_amp[1] = val;
 	}
 
-	config.wav_sample_rate = (uint8_t)param.wav_sample_rate;
-	config.wav_sample_bits = (uint8_t)param.wav_sample_bits;
+	pConfig->wav_sample_rate = (uint8_t)param.wav_sample_rate;
+	pConfig->wav_sample_bits = (uint8_t)param.wav_sample_bits;
 
 	for(int i=0; i<MAX_PRINTER; i++) {
-		config.printer_server_host[i].Set(param.prn_host[i]);
+		pConfig->printer_server_host[i].Set(param.prn_host[i]);
 		val = 0;
 		if (sscanf(param.prn_port[i], "%d", &val) == 1 && val > 0 && val < 65535) {
-			config.printer_server_port[i] = val;
+			pConfig->printer_server_port[i] = val;
 		}
 		double valued = 0.0;
 		valued = strtod(param.prn_delay[i], NULL);
 		if (valued < 0.1) valued = 0.1;
 		if (valued > 1000.0) valued = 1000.0;
 		valued = floor(valued * 10.0 + 0.5) / 10.0;
-		config.printer_delay[i] = valued;
+		pConfig->printer_delay[i] = valued;
 	}
 	for(int i=0; i<MAX_COMM; i++) {
-		config.comm_server_host[i].Set(param.com_host[i]);
+		pConfig->comm_server_host[i].Set(param.com_host[i]);
 		val = 0;
 		if (sscanf(param.com_port[i], "%d", &val) == 1 && val > 0 && val < 65535) {
-			config.comm_server_port[i] = val;
+			pConfig->comm_server_port[i] = val;
 		}
-		config.comm_dipswitch[i] = param.com_dipsw[i];
+		pConfig->comm_dipswitch[i] = param.com_dipsw[i];
 	}
 #ifdef USE_DEBUGGER
-	config.debugger_server_host.Set(param.dbgr_host);
+	pConfig->debugger_server_host.Set(param.dbgr_host);
 	val = 0;
 	if (sscanf(param.dbgr_port, "%d", &val) == 1 && val > 0 && val < 65535) {
-		config.debugger_server_port = val;
+		pConfig->debugger_server_port = val;
 	}
 #endif
-	config.comm_uart_baudrate = strtol(LABELS::comm_uart_baudrate[param.uart_baud_index], NULL, 10);
-	config.comm_uart_databit = param.uart_databit + 7;
-	config.comm_uart_parity = param.uart_parity;
-	config.comm_uart_stopbit = param.uart_stopbit + 1;
-	config.comm_uart_flowctrl = param.uart_flowctrl;
+	pConfig->comm_uart_baudrate = strtol(LABELS::comm_uart_baudrate[param.uart_baud_index], NULL, 10);
+	pConfig->comm_uart_databit = param.uart_databit + 7;
+	pConfig->comm_uart_parity = param.uart_parity;
+	pConfig->comm_uart_stopbit = param.uart_stopbit + 1;
+	pConfig->comm_uart_flowctrl = param.uart_flowctrl;
 
-	config.snapshot_path.Set(param.snap_path);
-	config.font_path.Set(param.font_path);
-	config.msgboard_msg_fontname.Set(param.msg_font_name);
-	config.msgboard_info_fontname.Set(param.info_font_name);
+	pConfig->snapshot_path.Set(param.snap_path);
+	pConfig->font_path.Set(param.font_path);
+	pConfig->msgboard_msg_fontname.Set(param.msg_font_name);
+	pConfig->msgboard_info_fontname.Set(param.info_font_name);
 	val = 0;
 	if (sscanf(param.msg_font_size, "%d", &val) == 1 && val >= 6 && val <= 60) {
-		config.msgboard_msg_fontsize = val;
+		pConfig->msgboard_msg_fontsize = val;
 	}
 	val = 0;
 	if (sscanf(param.info_font_size, "%d", &val) == 1 && val >= 6 && val <= 60) {
-		config.msgboard_info_fontsize = val;
+		pConfig->msgboard_info_fontsize = val;
 	}
-	config.menu_fontname.Set(param.menu_font_name);
+	pConfig->menu_fontname.Set(param.menu_font_name);
 	val = 0;
 	if (sscanf(param.menu_font_size, "%d", &val) == 1 && val >= 6 && val <= 60) {
-		config.menu_fontsize = val;
+		pConfig->menu_fontsize = val;
 	}
 
 	// language
-	clocale->ChooseLocaleName(lang_list, param.lang_selidx, config.language);
+	clocale->ChooseLocaleName(lang_list, param.lang_selidx, pConfig->language);
 
-	config.rom_path.Set(param.rom_path);
+	pConfig->rom_path.Set(param.rom_path);
 
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_UNDEFOP, param.showmsg_undefop);
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_UNDEFOP, param.showmsg_undefop);
 
-	BIT_ONOFF(config.misc_flags, MSK_CLEAR_CPUREG, param.clear_cpureg);
+	BIT_ONOFF(pConfig->misc_flags, MSK_CLEAR_CPUREG, param.clear_cpureg);
 
 #if defined(_MBS1)
 	emu->set_parami(VM::ParamExMemNum, param.exram_num);
-	config.mem_nowait = (param.mem_nowait == 1);
-//	config.opn_clock = param.fmopn_clock_num;
-	config.opn_irq = param.fmopn_irq;
+	pConfig->mem_nowait = (param.mem_nowait == 1);
+//	pConfig->opn_clock = param.fmopn_clock_num;
+	pConfig->opn_irq = param.fmopn_irq;
 	emu->set_parami(VM::ParamChipTypeOnFmOpn, param.type_of_fmopn);
 	emu->set_parami(VM::ParamChipTypeOnExPsg, param.type_of_expsg);
 # if defined(USE_Z80B_CARD)
-	config.z80b_card_out_irq = param.z80b_card_out_irq;
+	pConfig->z80b_card_out_irq = param.z80b_card_out_irq;
 # elif defined(USE_MPC_68008)
-	BIT_ONOFF(config.misc_flags, MSK_SHOWMSG_ADDRERR, param.showmsg_addrerr);
+	BIT_ONOFF(pConfig->misc_flags, MSK_SHOWMSG_ADDRERR, param.showmsg_addrerr);
 # endif
 #endif
 
@@ -812,8 +812,8 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	// set menu font
 //	gui->ConfigLoad();
 	gui->ChangeLedBox(param.led_show);
-	gui->ChangeLedBoxPosition(config.led_pos);
-	config.save();
+	gui->ChangeLedBoxPosition(pConfig->led_pos);
+	pConfig->save();
 #ifdef USE_OPENGL
 	emu->change_opengl_attr();
 #endif

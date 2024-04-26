@@ -13,10 +13,11 @@
 #define KEYBOARD_H
 
 #include "../vm_defs.h"
-//#include "../../emu.h"
+#include "../../emu.h"
 #include "../device.h"
 //#include "../../config.h"
 //#include "keyrecord.h"
+#include "../../osd/keybind.h"
 
 #ifdef _DEBUG
 /* #define _DEBUG_KEYBOARD */
@@ -29,6 +30,7 @@
 
 class EMU;
 class KEYRECORD;
+class CSimpleIni;
 
 /**
 	@brief keyboard
@@ -50,38 +52,39 @@ private:
 #endif
 	DEVICE *d_pia;
 
-	uint8_t* key_stat;
-	uint8_t  scan_code;
-	uint8_t  key_scan_code;
-//	uint8_t  key_native_code;
-	uint8_t  key_pressed;
+	uint8_t* p_key_stat;
+	uint8_t  m_scan_code;
+	uint8_t  m_key_scan_code;
+//	uint8_t  m_key_native_code;
+	uint8_t  m_key_pressed;
 
 	uint8_t kb_mode;
 	uint8_t kb_nmi;	// break key
 
 	// light pen
-	int*	mouse_stat;
+	int*	p_mouse_stat;
 	uint8_t	lpen_flg;
 	uint8_t	lpen_flg_prev;
 	bool	lpen_bl;
 
 #ifdef USE_JOYSTICK
-	uint32_t *joy_stat;
+	uint32_t *p_joy_stat[MAX_JOYSTICKS];
+	uint32_t *p_joy_real_stat[MAX_JOYSTICKS];
 #ifdef USE_PIAJOYSTICK
 	int		joy_pia_sel;
-	uint8_t   joy_pia[2];
+	uint8_t joy_pia[MAX_JOYSTICKS];
 #endif
 #endif
 
-	int	counter;	// keyboard counter
+	int	m_counter;	// keyboard counter
 	int remain_count;
 	int remain_count_max;
 
-	int  *key_mod;
-	bool pause_pressed;
-	bool altkey_pressed;
-	bool modesw_pressed;
-	bool powersw_pressed;
+	int  *p_key_mod;
+	bool m_pause_pressed;
+	bool m_altkey_pressed;
+	bool m_modesw_pressed;
+	bool m_powersw_pressed;
 
 	uint8_t vm_key_stat[KEYBIND_KEYS];
 
@@ -90,13 +93,16 @@ private:
 	int event_counter;
 #endif
 
-	uint32_t scan2key_map[KEYBIND_KEYS][KEYBIND_ASSIGN];
-	uint32_t scan2key_preset_map[KEYBIND_PRESETS][KEYBIND_KEYS][KEYBIND_ASSIGN];
-	uint32_t scan2joy_map[KEYBIND_KEYS][KEYBIND_ASSIGN];
-	uint32_t scan2joy_preset_map[KEYBIND_PRESETS][KEYBIND_KEYS][KEYBIND_ASSIGN];
-	uint32_t sjoy2joy_map[KEYBIND_JOYS][KEYBIND_ASSIGN];
-	uint32_t sjoy2joy_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS][KEYBIND_ASSIGN];
-//	bool now_autokey;
+	uint32_key_assign_t scan2key_map[KEYBIND_KEYS];
+	uint32_key_assign_t scan2key_preset_map[KEYBIND_PRESETS][KEYBIND_KEYS];
+	uint32_key_assign_t joy2key_map[KEYBIND_KEYS];
+	uint32_key_assign_t joy2key_preset_map[KEYBIND_PRESETS][KEYBIND_KEYS];
+	uint32_key_assign_t sjoy2joy_map[KEYBIND_JOYS];
+	uint32_key_assign_t sjoy2joy_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
+#ifdef USE_KEY2JOYSTICK
+	uint32_key_assign_t scan2joy_map[KEYBIND_JOYS];
+	uint32_key_assign_t scan2joy_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
+#endif
 
 	//for resume
 #pragma pack(1)
@@ -132,6 +138,9 @@ private:
 	bool load_ini_file();
 	void save_ini_file();
 	void convert_map();
+	static void load_ini_file_one(CSimpleIni *ini, const _TCHAR *section_name, int rows, uint32_t *map, uint32_t *preset);
+	static void save_ini_file_one(CSimpleIni *ini, const _TCHAR *section_name, int rows, const uint32_t *map, const uint32_t *preset);
+
 public:
 	KEYBOARD(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier)
 	{
@@ -175,6 +184,8 @@ public:
 	void event_callback(int event_id, int err);
 
 	void save_keybind();
+	void clear_joy2joyk_map();
+	void set_joy2joyk_map(int num, int idx, uint32_t joy_code);
 
 	void update_config();
 

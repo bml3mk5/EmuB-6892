@@ -17,6 +17,7 @@
 extern EMU *emu;
 
 #include "../../loadlibrary.h"
+#include "../../utility.h"
 
 #ifndef _WIN32
 #include <dlfcn.h>
@@ -58,7 +59,9 @@ static int reffer = 0;
 //
 // entry point of avcodec-57.dll
 //
+#if LIBAVCODEC_VERSION_MAJOR < 59
 void (*f_avcodec_register_all)(void) = NULL;
+#endif
 AVCodec *(*f_avcodec_find_encoder)(enum AVCodecID id) = NULL;
 int (*f_avcodec_open2)(AVCodecContext *avctx, const AVCodec *codec, AVDictionary **options) = NULL;
 //int (*f_avcodec_encode_video2)(AVCodecContext *avctx, AVPacket *avpkt,
@@ -74,6 +77,7 @@ int (*f_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels,
 AVCodecContext *(*f_avcodec_alloc_context3)(const AVCodec *codec) = NULL;
 void (*f_avcodec_free_context)(AVCodecContext **avctx) = NULL;
 int (*f_avcodec_parameters_to_context)(AVCodecContext *codec, const AVCodecParameters *par) = NULL;
+int (*f_avcodec_parameters_from_context)(AVCodecParameters *par, const AVCodecContext *codec) = NULL;
 int (*f_avcodec_receive_packet)(AVCodecContext *avctx, AVPacket *avpkt) = NULL;
 int (*f_avcodec_send_frame)(AVCodecContext *avctx, const AVFrame *frame) = NULL;
 AVPacket *(*f_av_packet_alloc)(void) = NULL;
@@ -84,14 +88,24 @@ unsigned (*f_avcodec_version)(void) = NULL;
 //
 // entry point of avformat-57.dll
 //
+#if LIBAVFORMAT_VERSION_MAJOR < 59
 void (*f_av_register_all)(void) = NULL;
+#endif
 //AVFormatContext *(*f_avformat_alloc_context)(void) = NULL;
 void (*f_avformat_free_context)(AVFormatContext *s) = NULL;
-//AVOutputFormat *(*f_av_guess_format)(const char *short_name,
-//				const char *filename,
-//				const char *mime_type) = NULL;
+#if LIBAVFORMAT_VERSION_MAJOR < 59
+AVOutputFormat *(*f_av_guess_format)(const char *short_name,
+				const char *filename,
+				const char *mime_type) = NULL;
 int (*f_avformat_alloc_output_context2)(AVFormatContext **ctx, AVOutputFormat *oformat,
 			    const char *format_name, const char *filename) = NULL;
+#else
+const AVOutputFormat *(*f_av_guess_format)(const char *short_name,
+				const char *filename,
+				const char *mime_type) = NULL;
+int (*f_avformat_alloc_output_context2)(AVFormatContext **ctx, const AVOutputFormat *oformat,
+			    const char *format_name, const char *filename) = NULL;
+#endif
 int (*f_avformat_query_codec)(const AVOutputFormat *ofmt, enum AVCodecID codec_id,
 				int std_compliance) = NULL;
 AVStream *(*f_avformat_new_stream)(AVFormatContext *s, const AVCodec *c) = NULL;
@@ -114,6 +128,7 @@ int (*f_sws_scale)(struct SwsContext *c, const uint8_t *const srcSlice[],
 				const int srcStride[], int srcSliceY, int srcSliceH,
 				uint8_t *const dst[], const int dstStride[]) = NULL;
 void (*f_sws_freeContext)(struct SwsContext *swsContext) = NULL;
+unsigned (*f_swscale_version)(void) = NULL;
 
 //
 // entry point of avutil-55.dll
@@ -122,7 +137,7 @@ AVFrame *(*f_av_frame_alloc)(void) = NULL;
 void (*f_av_frame_free)(AVFrame **frame) = NULL;
 int (*f_av_image_alloc)(uint8_t *pointers[4], int linesizes[4],
                    int w, int h, enum AVPixelFormat pix_fmt, int align) = NULL;
-//void *(*f_av_malloc)(size_t size) = NULL;
+void *(*f_av_malloc)(size_t size) = NULL;
 //void (*f_av_free)(void *ptr) = NULL;
 void (*f_av_freep)(void *ptr) = NULL;
 void (*f_av_log_set_callback)(void (*callback)(void*, int, const char*, va_list)) = NULL;
@@ -139,7 +154,9 @@ unsigned (*f_avutil_version)(void) = NULL;
 //
 // entry point of avcodec-57.dll
 //
+#if LIBAVCODEC_VERSION_MAJOR < 59
 void (*f_avcodec_register_all)(void) = avcodec_register_all;
+#endif
 AVCodec *(*f_avcodec_find_encoder)(enum AVCodecID id) = avcodec_find_encoder;
 int (*f_avcodec_open2)(AVCodecContext *avctx, const AVCodec *codec, AVDictionary **options) = avcodec_open2;
 //int (*f_avcodec_encode_video2)(AVCodecContext *avctx, AVPacket *avpkt,
@@ -155,6 +172,7 @@ int (*f_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels,
 AVCodecContext *(*f_avcodec_alloc_context3)(const AVCodec *codec) = avcodec_alloc_context3;
 void (*f_avcodec_free_context)(AVCodecContext **avctx) = avcodec_free_context;
 int (*f_avcodec_parameters_to_context)(AVCodecContext *codec, const AVCodecParameters *par) = avcodec_parameters_to_context;
+int (*f_avcodec_parameters_from_context)(AVCodecParameters *par, const AVCodecContext *codec) = avcodec_parameters_from_context;
 int (*f_avcodec_receive_packet)(AVCodecContext *avctx, AVPacket *avpkt) = avcodec_receive_packet;
 int (*f_avcodec_send_frame)(AVCodecContext *avctx, const AVFrame *frame) = avcodec_send_frame;
 AVPacket *(*f_av_packet_alloc)(void) = av_packet_alloc;
@@ -165,14 +183,24 @@ unsigned (*f_avcodec_version)(void) = avcodec_version;
 //
 // entry point of avformat-57.dll
 //
+#if LIBAVFORMAT_VERSION_MAJOR < 59
 void (*f_av_register_all)(void) = av_register_all;
+#endif
 //AVFormatContext *(*f_avformat_alloc_context)(void) = avformat_alloc_context;
 void (*f_avformat_free_context)(AVFormatContext *s) = avformat_free_context;
-//AVOutputFormat *(*f_av_guess_format)(const char *short_name,
-//				const char *filename,
-//				const char *mime_type) = av_guess_format;
+#if LIBAVFORMAT_VERSION_MAJOR < 59
+AVOutputFormat *(*f_av_guess_format)(const char *short_name,
+				const char *filename,
+				const char *mime_type) = av_guess_format;
 int (*f_avformat_alloc_output_context2)(AVFormatContext **ctx, AVOutputFormat *oformat,
 			    const char *format_name, const char *filename) = avformat_alloc_output_context2;
+#else
+const AVOutputFormat *(*f_av_guess_format)(const char *short_name,
+				const char *filename,
+				const char *mime_type) = av_guess_format;
+int (*f_avformat_alloc_output_context2)(AVFormatContext **ctx, const AVOutputFormat *oformat,
+			    const char *format_name, const char *filename) = avformat_alloc_output_context2;
+#endif
 int (*f_avformat_query_codec)(const AVOutputFormat *ofmt, enum AVCodecID codec_id,
 				int std_compliance) = avformat_query_codec;
 AVStream *(*f_avformat_new_stream)(AVFormatContext *s, const AVCodec *c) = avformat_new_stream;
@@ -195,6 +223,7 @@ int (*f_sws_scale)(struct SwsContext *c, const uint8_t *const srcSlice[],
 				const int srcStride[], int srcSliceY, int srcSliceH,
 				uint8_t *const dst[], const int dstStride[]) = sws_scale;
 void (*f_sws_freeContext)(struct SwsContext *swsContext) = sws_freeContext;
+unsigned (*f_swscale_version)(void) = swscale_version;
 
 //
 // entry point of avutil-55.dll
@@ -203,7 +232,7 @@ AVFrame *(*f_av_frame_alloc)(void) = av_frame_alloc;
 void (*f_av_frame_free)(AVFrame **frame) = av_frame_free;
 int (*f_av_image_alloc)(uint8_t *pointers[4], int linesizes[4],
                    int w, int h, enum AVPixelFormat pix_fmt, int align) = av_image_alloc;
-//void *(*f_av_malloc)(size_t size) = av_malloc;
+void *(*f_av_malloc)(size_t size) = av_malloc;
 //void (*f_av_free)(void *ptr) = av_free;
 void (*f_av_freep)(void *ptr) = av_freep;
 void (*f_av_log_set_callback)(void (*callback)(void*, int, const char*, va_list)) = av_log_set_callback;
@@ -226,25 +255,25 @@ void cb_log(void *avcl, int level, const char *fmt, va_list vl)
 			char slevel[8];
 			switch(level) {
 			case AV_LOG_FATAL:
-				strcpy(slevel,"FATAL");
+				UTILITY::strcpy(slevel,sizeof(slevel),"FATAL");
 				break;
 			case AV_LOG_ERROR:
-				strcpy(slevel,"ERROR");
+				UTILITY::strcpy(slevel,sizeof(slevel),"ERROR");
 				break;
 			case AV_LOG_WARNING:
-				strcpy(slevel,"WARNING");
+				UTILITY::strcpy(slevel,sizeof(slevel),"WARNING");
 				break;
 			case AV_LOG_INFO:
-				strcpy(slevel,"INFO");
+				UTILITY::strcpy(slevel,sizeof(slevel),"INFO");
 				break;
 			case AV_LOG_VERBOSE:
-				strcpy(slevel,"VERBOSE");
+				UTILITY::strcpy(slevel,sizeof(slevel),"VERBOSE");
 				break;
 			case AV_LOG_DEBUG:
-				strcpy(slevel,"DEBUG");
+				UTILITY::strcpy(slevel,sizeof(slevel),"DEBUG");
 				break;
 			default:
-				sprintf(slevel,"%d",level);
+				UTILITY::sprintf(slevel,sizeof(slevel),"%d",level);
 				break;
 			}
 			logging->out_logf(LOG_DEBUG, _T("ffmpeg: %s level: %s"), name, slevel);
@@ -262,9 +291,19 @@ static const struct {
 	int		avformat;
 	int		swscale;
 } dllvers[] = {
+//	{ false, 57, 4, 59, 59, 6 },	// Ver. 5.0.1
+//	{ false, 56, 3, 58, 58, 5 },	// Ver. 4.4.1
+//	{ false, 55, 2, 57, 57, 4 },	// Ver. 3.4.1
 	{ false, LIBAVUTIL_VERSION_MAJOR, LIBSWRESAMPLE_VERSION_MAJOR, LIBAVCODEC_VERSION_MAJOR, LIBAVFORMAT_VERSION_MAJOR, LIBSWSCALE_VERSION_MAJOR },
 	{ false, 0, 0, 0, 0, 0 },
 	{ true,  0, 0, 0, 0, 0 },
+};
+
+enum en_ffmpeg_version_min {
+	LIBAVUTIL_VERSION_MAJOR_MIN = LIBAVUTIL_VERSION_MAJOR,
+	LIBAVCODEC_VERSION_MAJOR_MIN = LIBAVCODEC_VERSION_MAJOR,
+	LIBAVFORMAT_VERSION_MAJOR_MIN = LIBAVFORMAT_VERSION_MAJOR,
+	LIBSWSCALE_VERSION_MAJOR_MIN = LIBSWSCALE_VERSION_MAJOR,
 };
 
 bool FFMPEG_LoadLibrary(int reffer_num)
@@ -277,7 +316,7 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		GET_ADDR(f_av_frame_alloc, AVFrame *(*)(void), hAVUtil, "av_frame_alloc");
 		GET_ADDR(f_av_frame_free, void (*)(AVFrame **), hAVUtil, "av_frame_free");
 		GET_ADDR(f_av_image_alloc, int (*)(uint8_t *[4], int [4], int, int, enum AVPixelFormat, int), hAVUtil, "av_image_alloc");
-//		GET_ADDR(f_av_malloc, void *(*)(size_t), hAVUtil, "av_malloc");
+		GET_ADDR(f_av_malloc, void *(*)(size_t), hAVUtil, "av_malloc");
 //		GET_ADDR(f_av_free, void (*)(void *), hAVUtil, "av_free");
 		GET_ADDR(f_av_freep, void (*)(void *), hAVUtil, "av_freep");
 		GET_ADDR(f_av_log_set_callback, void (*)(void (*callback)(void*, int, const char*, va_list)), hAVUtil, "av_log_set_callback");
@@ -288,14 +327,16 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		GET_ADDR(f_av_frame_get_buffer, int (*)(AVFrame *, int), hAVUtil, "av_frame_get_buffer");
 		GET_ADDR(f_avutil_version, unsigned (*)(void), hAVUtil, "avutil_version");
 
-		CHECK_VERSION(AV_VERSION_MAJOR(f_avutil_version()), LIBAVUTIL_VERSION_MAJOR, "avutil");
+		CHECK_VERSION(AV_VERSION_MAJOR(f_avutil_version()), LIBAVUTIL_VERSION_MAJOR_MIN, "avutil");
 
 		// Set entry points of SWResample function (reference from avcodec)
 		LOAD_LIB(hSWScale, "swresample", dllvers[i].swresample);
 
 		// Set entry points of AVCodec function
 		LOAD_LIB(hAVCodec, "avcodec", dllvers[i].avcodec);
+#if LIBAVCODEC_VERSION_MAJOR < 59
 		GET_ADDR(f_avcodec_register_all, void (*)(void), hAVCodec, "avcodec_register_all");
+#endif
 		GET_ADDR(f_avcodec_find_encoder, AVCodec *(*)(enum AVCodecID id), hAVCodec, "avcodec_find_encoder");
 		GET_ADDR(f_avcodec_open2, int (*)(AVCodecContext *avctx, const AVCodec *codec, AVDictionary **options), hAVCodec, "avcodec_open2");
 //		GET_ADDR(f_avcodec_encode_video2, int (*)(AVCodecContext *, AVPacket *, const AVFrame *, int *), hAVCodec, "avcodec_encode_video2");
@@ -307,6 +348,7 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		GET_ADDR(f_avcodec_alloc_context3, AVCodecContext *(*)(const AVCodec *codec), hAVCodec, "avcodec_alloc_context3");
 		GET_ADDR(f_avcodec_free_context, void (*)(AVCodecContext **avctx), hAVCodec, "avcodec_free_context");
 		GET_ADDR(f_avcodec_parameters_to_context, int (*)(AVCodecContext *codec, const AVCodecParameters *par), hAVCodec, "avcodec_parameters_to_context");
+		GET_ADDR(f_avcodec_parameters_from_context, int (*)(AVCodecParameters *par, const AVCodecContext *codec), hAVCodec, "avcodec_parameters_from_context");
 		GET_ADDR(f_avcodec_receive_packet, int (*)(AVCodecContext *avctx, AVPacket *avpkt), hAVCodec, "avcodec_receive_packet");
 		GET_ADDR(f_avcodec_send_frame, int (*)(AVCodecContext *avctx, const AVFrame *frame), hAVCodec, "avcodec_send_frame");
 		GET_ADDR(f_av_packet_alloc, AVPacket *(*)(void), hAVCodec, "av_packet_alloc");
@@ -314,15 +356,22 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		GET_ADDR(f_av_packet_free, void (*)(AVPacket **pkt), hAVCodec, "av_packet_free");
 		GET_ADDR(f_avcodec_version, unsigned (*)(void), hAVCodec, "avcodec_version");
 
-		CHECK_VERSION(AV_VERSION_MAJOR(f_avcodec_version()), LIBAVCODEC_VERSION_MAJOR, "avcodec");
+		CHECK_VERSION(AV_VERSION_MAJOR(f_avcodec_version()), LIBAVCODEC_VERSION_MAJOR_MIN, "avcodec");
 
 		// Set entry points of AVFormat function
 		LOAD_LIB(hAVFormat, "avformat", dllvers[i].avformat);
+#if LIBAVFORMAT_VERSION_MAJOR < 59
 		GET_ADDR(f_av_register_all, void (*)(void), hAVFormat, "av_register_all");
+#endif
 //		GET_ADDR(f_avformat_alloc_context, AVFormatContext *(*)(void), hAVFormat, "avformat_alloc_context");
 		GET_ADDR(f_avformat_free_context, void (*)(AVFormatContext *s), hAVFormat, "avformat_free_context");
-//		GET_ADDR(f_av_guess_format, AVOutputFormat *(*)(const char *, const char *, const char *), hAVFormat, "av_guess_format");
+#if LIBAVFORMAT_VERSION_MAJOR < 59
+		GET_ADDR(f_av_guess_format, AVOutputFormat *(*)(const char *, const char *, const char *), hAVFormat, "av_guess_format");
 		GET_ADDR(f_avformat_alloc_output_context2, int(*)(AVFormatContext **, AVOutputFormat *, const char *, const char *), hAVFormat, "avformat_alloc_output_context2");
+#else
+		GET_ADDR(f_av_guess_format, const AVOutputFormat *(*)(const char *, const char *, const char *), hAVFormat, "av_guess_format");
+		GET_ADDR(f_avformat_alloc_output_context2, int(*)(AVFormatContext **, const AVOutputFormat *, const char *, const char *), hAVFormat, "avformat_alloc_output_context2");
+#endif
 		GET_ADDR(f_avformat_query_codec, int (*)(const AVOutputFormat *, enum AVCodecID, int), hAVFormat, "avformat_query_codec");
 		GET_ADDR(f_avformat_new_stream, AVStream *(*)(AVFormatContext *s, const AVCodec *c), hAVFormat, "avformat_new_stream");
 		GET_ADDR(f_avformat_write_header, int (*)(AVFormatContext *s, AVDictionary **options), hAVFormat, "avformat_write_header");
@@ -333,7 +382,7 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		GET_ADDR(f_avio_close, int (*)(AVIOContext *s), hAVFormat, "avio_close");
 		GET_ADDR(f_avformat_version, unsigned (*)(void), hAVFormat, "avformat_version");
 
-		CHECK_VERSION(AV_VERSION_MAJOR(f_avformat_version()), LIBAVFORMAT_VERSION_MAJOR, "avformat");
+		CHECK_VERSION(AV_VERSION_MAJOR(f_avformat_version()), LIBAVFORMAT_VERSION_MAJOR_MIN, "avformat");
 
 		// Set entry points of SWScale function
 		LOAD_LIB(hSWScale, "swscale", dllvers[i].swscale);
@@ -345,6 +394,11 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 							   const int srcStride[], int srcSliceY, int srcSliceH,
 							   uint8_t *const dst[], const int dstStride[]), hSWScale, "sws_scale");
 		GET_ADDR(f_sws_freeContext, void (*)(struct SwsContext *swsContext), hSWScale, "sws_freeContext");
+		GET_ADDR(f_swscale_version, unsigned (*)(void), hSWScale, "swscale_version");
+
+		CHECK_VERSION(AV_VERSION_MAJOR(f_swscale_version()), LIBSWSCALE_VERSION_MAJOR_MIN, "swscale");
+
+		//
 
 		library_selnum = i;
 		break;
@@ -352,8 +406,12 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 	if (library_selnum < 0) goto FAILED;
 
 	// register all the codecs
+#if LIBAVFORMAT_VERSION_MAJOR < 59
 	f_av_register_all();
+#endif
+#if LIBAVCODEC_VERSION_MAJOR < 59
     f_avcodec_register_all();
+#endif
 
 #ifdef _DEBUG
 	f_av_log_set_callback(cb_log);

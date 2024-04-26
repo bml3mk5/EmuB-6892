@@ -88,7 +88,7 @@ GdkPixbuf *AboutBox::SetIcon()
 {
 	char buf[_MAX_PATH];
 
-	sprintf(buf, "%s%s.bmp", emu->resource_path(), CONFIG_NAME);
+	sprintf(buf, "%s%s.png", emu->resource_path(), CONFIG_NAME);
 	GError *error = NULL;
 	GdkPixbuf *icon = gdk_pixbuf_new_from_file(buf, &error);
 	if (error) {

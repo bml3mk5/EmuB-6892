@@ -27,14 +27,14 @@
 	[self setAllowsOtherFileTypes:YES];
 	[self setExtensionHidden:NO];
 	// set current folder
-	[self setDirectoryURL:[NSURL fileURLWithPath:[NSString stringWithUTF8String:config.initial_datarec_path]]];
+	[self setDirectoryURL:[NSURL fileURLWithPath:[NSString stringWithUTF8String:pConfig->GetInitialDataRecPath()]]];
 
 	//
 	NSRect re = NSMakeRect(0, 0, 380, 26);
 	NSView *view = [[NSView alloc] initWithFrame:re];
 
 	re = NSMakeRect(0, -4, 80, 26);
-	CocoaLabel *lbl = [CocoaLabel createWithoutFit:re titleid:CMsg::File_Type_COLON align:NSLeftTextAlignment];
+	CocoaLabel *lbl = [CocoaLabel createWithoutFit:re titleid:CMsg::File_Type_COLON align:NSTextAlignmentLeft];
 	[view addSubview:lbl];
 
 	const char *lst[] = {

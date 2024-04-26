@@ -29,6 +29,7 @@
 #endif
 
 #if defined(_MSC_VER)
+#define WIN32_LEAN_AND_MEAN
 #include <stdlib.h>
 
 // disable warnings C4189, C4995 and C4996 for microsoft visual c++ 2005

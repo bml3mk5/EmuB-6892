@@ -10,7 +10,7 @@
 
 #import "cocoa_rec_video.h"
 
-#if defined(USE_REC_VIDEO) && defined(USE_CAP_SCREEN_COCOA)
+#if defined(USE_CAPTURE_SCREEN_PNG) && defined(USE_CAP_SCREEN_COCOA)
 
 #import "../../emu.h"
 #import "../rec_video.h"
@@ -66,5 +66,5 @@ bool COCOA_REC_VIDEO::Capture(int type, CSurface *surface, const char *file_name
 	return rc;
 }
 
-#endif /* USE_REC_VIDEO && USE_CAP_SCREEN_COCOA */
+#endif /* USE_CAPTURE_SCREEN_PNG && USE_CAP_SCREEN_COCOA */
 

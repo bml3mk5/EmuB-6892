@@ -25,7 +25,7 @@
 #define OUT_DEBUG dummyf
 #endif
 
-#define DRIVE_MASK	(MAX_DRIVE - 1)
+#define DRIVE_MASK	(USE_FLOPPY_DISKS - 1)
 
 #define SEEK_TIMEOUT	600000	
 

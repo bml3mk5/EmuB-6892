@@ -49,11 +49,6 @@ private:
 	HWND       hTitles[KBCTRL_MAX_COLS + 1];
 	ctrltable_t table[KBCTRL_MAX_LINES];
 
-//	UINT8 joy_status[2];	// joystick #1, #2 (b0 = up, b1 = down, b2 = left, b3 = right, b4-b7 = trigger #1-#4
-	int joyid_map[2];
-	UINT32 joy_xmin[2], joy_xmax[2];
-	UINT32 joy_ymin[2], joy_ymax[2];
-
 	int cell_height;
 	int cell_width;
 	int padding;
@@ -73,6 +68,7 @@ private:
 
 	void init_joypad(HWND hWnd);
 	void term_joypad(HWND hWnd);
+	void update_joypad(ctrlcols_t *obj);
 
 	UINT32 translate_keycode(WPARAM wParam, LPARAM lParam);
 
@@ -105,7 +101,10 @@ public:
 	void   Update();
 	bool   SetVkLabel(int row, int col);
 
-	bool   SetVkCode(ctrlcols_t *obj, uint32_t code);
+	bool   SetKeyCell(ctrlcols_t *obj, uint32_t code);
+	bool   SetJoyCell(ctrlcols_t *obj, uint32_t code0, uint32_t code1);
+	bool   ClearCell(ctrlcols_t *obj);
+	bool   ClearCellByVkCode(uint32_t code);
 
 	bool   MapDefaultVmKey();
 

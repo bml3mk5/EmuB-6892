@@ -83,6 +83,9 @@ public:
 	void write_io32w(uint32_t addr, uint32_t data, int* wait);
 	uint32_t read_io32w(uint32_t addr, int* wait);
 
+	void write_dma_data8(uint32_t addr, uint32_t data);
+	uint32_t read_dma_data8(uint32_t addr);
+
 	void write_signal(int id, uint32_t data, uint32_t mask);
 	uint32_t read_signal(int id);
 
@@ -146,6 +149,9 @@ public:
 	uint32_t read_data32w(uint32_t addr, int* wait);
 	uint32_t fetch_op(uint32_t addr, int *wait);
 	void latch_address(uint32_t addr, int *wait);
+
+	void write_dma_data8(uint32_t addr, uint32_t data);
+	uint32_t read_dma_data8(uint32_t addr);
 
 	void write_io8(uint32_t addr, uint32_t data);
 	uint32_t read_io8(uint32_t addr);

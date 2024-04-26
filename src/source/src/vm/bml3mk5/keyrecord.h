@@ -116,8 +116,8 @@ private:
 	bool set_relative_path(const char *key, const _TCHAR *base_path, CRecentPath &path);
 	void get_file_path(const _TCHAR *base_path, _TCHAR **file_path, int *bank_num);
 
-	inline bool playing_keys(int code, bool pressed);
-	inline void recording_keys(int code, bool pressed);
+//	inline bool playing_keys(int code, bool pressed);
+//	inline void recording_keys(int code, bool pressed);
 	inline void playing_mouse_status(int *mstat);
 	inline void recording_mouse_status(const int *mstat);
 	inline void playing_joypia_status(uint8_t *joy);
@@ -135,7 +135,9 @@ public:
 
 //	void reading_keys(int num);
 
-	bool processing_keys(int code, bool pressed);
+//	bool processing_keys(int code, bool pressed);
+	void playing_key();
+	void recording_key(int code, bool pressed);
 	void playing_system_keys();
 	void recording_system_keys(int code, bool pressed);
 	void processing_mouse_status(int *mstat);

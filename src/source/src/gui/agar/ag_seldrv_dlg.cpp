@@ -48,7 +48,7 @@ void AG_SELDRV_DLG::Create(int sel_drv, int sel_num)
 
 	//
 	hbox = AG_BoxNewHoriz(win, AG_BOX_HFILL);
-	for(int drv=0; drv<MAX_DRIVE; drv++) {
+	for(int drv=0; drv<USE_FLOPPY_DISKS; drv++) {
 		UTILITY::sprintf_utf8(label, 64, _T("%s%d"), prefix, drv);
 		btn[drv] = AG_ButtonNewFn(hbox, 0, label, OnOk, "%Cp %Cp %i", this, win, drv);
 	}

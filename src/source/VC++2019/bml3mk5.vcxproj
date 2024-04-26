@@ -89,27 +89,35 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dbgr|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dbgr|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dbgr|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dbgr|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="library_win.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -139,7 +147,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -160,7 +168,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -168,7 +176,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dbgr|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -189,7 +197,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -197,7 +205,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -215,7 +223,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -223,7 +231,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Dbgr|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -240,7 +248,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_DEBUG_LOG;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -248,7 +256,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -266,7 +274,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -274,7 +282,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dbgr|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <Optimization>MaxSpeed</Optimization>
@@ -291,7 +299,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -299,7 +307,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <Optimization>MaxSpeed</Optimization>
@@ -315,7 +323,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -323,7 +331,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Dbgr|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;\Devel\include\ffmpeg341;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FFMpegIncludeDir);..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <Optimization>MaxSpeed</Optimization>
@@ -339,7 +347,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_BML3MK5;USE_WIN;GUI_TYPE_WINDOWS;USE_DIRECT3D;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -368,9 +376,11 @@
     <ClCompile Include="..\src\gui\windows\win_folderbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_fontbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_gui.cpp" />
+    <ClCompile Include="..\src\gui\windows\win_joysetbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_keybindbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_keybindctrl.cpp" />
     <ClCompile Include="..\src\gui\windows\win_ledbox.cpp" />
+    <ClCompile Include="..\src\gui\windows\win_loggingbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_recaudbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_recvidbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_seldrvbox.cpp" />
@@ -387,7 +397,9 @@
     <ClCompile Include="..\src\osd\emu_input_keysym.cpp" />
     <ClCompile Include="..\src\osd\emu_screen.cpp" />
     <ClCompile Include="..\src\osd\emu_sound.cpp" />
+    <ClCompile Include="..\src\osd\keybind.cpp" />
     <ClCompile Include="..\src\osd\logging.cpp" />
+    <ClCompile Include="..\src\osd\parseopt.cpp" />
     <ClCompile Include="..\src\osd\screenmode.cpp" />
     <ClCompile Include="..\src\osd\simple_clocale.cpp" />
     <ClCompile Include="..\src\osd\vkeyboardbase.cpp" />
@@ -415,6 +427,7 @@
     <ClCompile Include="..\src\utility.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_loadlib.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_audio.cpp" />
+    <ClCompile Include="..\src\video\ffmpeg\ffm_rec_base.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_video.cpp" />
     <ClCompile Include="..\src\video\mmf\mmf_loadlib.cpp" />
     <ClCompile Include="..\src\video\mmf\mmf_rec_audio.cpp" />
@@ -512,9 +525,11 @@
     <ClInclude Include="..\src\gui\windows\win_folderbox.h" />
     <ClInclude Include="..\src\gui\windows\win_fontbox.h" />
     <ClInclude Include="..\src\gui\windows\win_gui.h" />
+    <ClInclude Include="..\src\gui\windows\win_joysetbox.h" />
     <ClInclude Include="..\src\gui\windows\win_keybindbox.h" />
     <ClInclude Include="..\src\gui\windows\win_keybindctrl.h" />
     <ClInclude Include="..\src\gui\windows\win_ledbox.h" />
+    <ClInclude Include="..\src\gui\windows\win_loggingbox.h" />
     <ClInclude Include="..\src\gui\windows\win_recaudbox.h" />
     <ClInclude Include="..\src\gui\windows\win_recvidbox.h" />
     <ClInclude Include="..\src\gui\windows\win_seldrvbox.h" />
@@ -532,6 +547,8 @@
     <ClInclude Include="..\src\osd\d88_files.h" />
     <ClInclude Include="..\src\osd\debugger_console.h" />
     <ClInclude Include="..\src\osd\emu_input.h" />
+    <ClInclude Include="..\src\osd\keybind.h" />
+    <ClInclude Include="..\src\osd\parseopt.h" />
     <ClInclude Include="..\src\osd\screenmode.h" />
     <ClInclude Include="..\src\osd\simple_clocale.h" />
     <ClInclude Include="..\src\osd\vkeyboardbase.h" />
@@ -552,7 +569,6 @@
     <ClInclude Include="..\src\osd\windows\win_socket.h" />
     <ClInclude Include="..\src\osd\windows\win_uart.h" />
     <ClInclude Include="..\src\osd\windows\win_vkeyboardbase.h" />
-    <ClInclude Include="..\src\parseopt.h" />
     <ClInclude Include="..\src\rec_video_defs.h" />
     <ClInclude Include="..\src\res\resource.h" />
     <ClInclude Include="..\src\simple_ini.h" />
@@ -560,6 +576,7 @@
     <ClInclude Include="..\src\version.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_loadlib.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_audio.h" />
+    <ClInclude Include="..\src\video\ffmpeg\ffm_rec_base.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_video.h" />
     <ClInclude Include="..\src\video\mmf\mmf_loadlib.h" />
     <ClInclude Include="..\src\video\mmf\mmf_rec_audio.h" />

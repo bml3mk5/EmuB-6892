@@ -193,7 +193,7 @@ private:
 	};
 #pragma pack()
 
-	bool font_rom_loaded;
+	int  font_rom_loaded;
 	bool font_rom_loaded_at_first;
 
 	// for draw_screen and update_vram
@@ -310,9 +310,10 @@ public:
 	bool load_state(FILEIO *fio);
 
 #ifdef USE_DEBUGGER
-	int  get_debug_graphic_memory_size(int type, int *width, int *height);
+	int  get_debug_graphic_memory_size(int num, int type, int *width, int *height);
 	bool debug_graphic_type_name(int type, _TCHAR *buffer, size_t buffer_len);
 	bool debug_draw_graphic(int type, int width, int height, scrntype *buffer);
+	bool debug_dump_graphic(int type, int width, int height, uint16_t *buffer);
 #endif
 };
 

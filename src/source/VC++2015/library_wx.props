@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
-    <DevelopDir>\Devel\vc\</DevelopDir>
+    <DevelopBase>\Devel\</DevelopBase>
+    <DevelopDir>$(DevelopBase)vc\</DevelopDir>
     <SDLDir>$(DevelopDir)SDL-1.2.15-static\</SDLDir>
+    <SDLIncludeDir>$(SDLDir)include</SDLIncludeDir>
     <SDLDebugLibDir>$(SDLDir)lib\$(Platform)\Debug</SDLDebugLibDir>
     <SDLReleaseLibDir>$(SDLDir)lib\$(Platform)\Release</SDLReleaseLibDir>
     <SDLTtfDir>$(DevelopDir)SDL_ttf-2.0.10-static\</SDLTtfDir>
@@ -11,38 +13,46 @@
     <FreeTypeDir>$(DevelopDir)freetype-2.4.8-static\</FreeTypeDir>
     <FreeTypeDebugLibDir>$(FreeTypeDir)objs\$(Platform)\vc2010\</FreeTypeDebugLibDir>
     <FreeTypeReleaseLibDir>$(FreeTypeDir)objs\$(Platform)\vc2010\</FreeTypeReleaseLibDir>
-    <SDL2Dir>$(DevelopDir)SDL2-2.0.10-static\</SDL2Dir>
+    <FFMpegIncludeDir>$(DevelopBase)include\ffmpeg441\</FFMpegIncludeDir>
+    <LocalDebugLibs>SDL.lib; SDLmain.lib; wxbase31ud.lib; wxpngd.lib</LocalDebugLibs>
+    <LocalReleaseLibs>SDL.lib; SDLmain.lib; wxbase31u.lib; wxpng.lib</LocalReleaseLibs>
+    <SDL2Dir>$(DevelopDir)SDL2-2.28.5-static\</SDL2Dir>
+    <SDL2IncludeDir>$(SDL2Dir)include</SDL2IncludeDir>
     <SDL2DebugLibDir>$(SDL2Dir)lib14\$(Platform)\Debug</SDL2DebugLibDir>
     <SDL2ReleaseLibDir>$(SDL2Dir)lib14\$(Platform)\Release</SDL2ReleaseLibDir>
-    <SDL2TtfDir>$(DevelopDir)SDL2_ttf-2.0.12-static\</SDL2TtfDir>
+    <SDL2TtfDir>$(DevelopDir)SDL2_ttf-2.20.2-static\</SDL2TtfDir>
     <SDL2TtfDebugLibDir>$(SDL2TtfDir)lib14\$(Platform)\Debug</SDL2TtfDebugLibDir>
     <SDL2TtfReleaseLibDir>$(SDL2TtfDir)lib14\$(Platform)\Release</SDL2TtfReleaseLibDir>
     <FreeType25Dir>$(DevelopDir)freetype-2.5.5-static\</FreeType25Dir>
-    <FreeType25DebugLibDir>$(FreeType25Dir)objs\vc14\$(Platform)\</FreeType25DebugLibDir>
-    <FreeType25ReleaseLibDir>$(FreeType25Dir)objs\vc14\$(Platform)\</FreeType25ReleaseLibDir>
-    <Local2DebugLibs>SDL2.lib; SDL2main.lib; wxbase31ud.lib; wxpngd.lib</Local2DebugLibs>
-    <Local2ReleaseLibs>SDL2.lib; SDL2main.lib; wxbase31u.lib; wxpng.lib</Local2ReleaseLibs>
-    <FFMpegDir>$(DevelopDir)ffmpeg-3.4.1-win64-dev\</FFMpegDir>
-    <LocalDebugLibs>SDL.lib; SDLmain.lib; wxbase31ud.lib; wxpngd.lib</LocalDebugLibs>
-    <LocalReleaseLibs>SDL.lib; SDLmain.lib; wxbase31u.lib; wxpng.lib</LocalReleaseLibs>
-    <WxWidgetsDir>$(DevelopDir)wxWidgets-3.1.3\</WxWidgetsDir>
+    <FreeType25DebugLibDir>$(FreeType25Dir)objs\vc2010\$(Platform)\</FreeType25DebugLibDir>
+    <FreeType25ReleaseLibDir>$(FreeType25Dir)objs\vc2010\$(Platform)\</FreeType25ReleaseLibDir>
+    <Local2DebugLibs>SDL2.lib; SDL2main.lib; wxbase32ud.lib; wxpngd.lib</Local2DebugLibs>
+    <Local2ReleaseLibs>SDL2.lib; SDL2main.lib; wxbase32u.lib; wxpng.lib</Local2ReleaseLibs>
+    <WxWidgetsDir>$(DevelopDir)wxWidgets-3.2.4\</WxWidgetsDir>
+    <WxWidgetsIncludeDir>$(WxWidgetsDir)include\msvc;$(WxWidgetsDir)include</WxWidgetsIncludeDir>
     <WxWidgetsDebugLibDir>$(WxWidgetsDir)lib\vc14\vc_lib\</WxWidgetsDebugLibDir>
     <WxWidgetsReleaseLibDir>$(WxWidgetsDir)lib\vc14\vc_lib\</WxWidgetsReleaseLibDir>
     <WxWidgetsDebug64LibDir>$(WxWidgetsDir)lib\vc14\vc_x64_lib\</WxWidgetsDebug64LibDir>
     <WxWidgetsRelease64LibDir>$(WxWidgetsDir)lib\vc14\vc_x64_lib\</WxWidgetsRelease64LibDir>
     <GLEWDir>$(DevelopDir)glew-2.1.0\</GLEWDir>
-    <GLEWDebugLibDir>$(GLEWDir)lib\Debug\$(Platform)</GLEWDebugLibDir>
-    <GLEWReleaseLibDir>$(GLEWDir)lib\Release\$(Platform)</GLEWReleaseLibDir>
+    <GLEWDebugLibDir>$(GLEWDir)lib\Debug\$(Platform)\</GLEWDebugLibDir>
+    <GLEWReleaseLibDir>$(GLEWDir)lib\Release\$(Platform)\</GLEWReleaseLibDir>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
   </PropertyGroup>
   <ItemGroup>
+    <BuildMacro Include="DevelopBase">
+      <Value>$(DevelopBase)</Value>
+    </BuildMacro>
     <BuildMacro Include="DevelopDir">
       <Value>$(DevelopDir)</Value>
     </BuildMacro>
     <BuildMacro Include="SDLDir">
       <Value>$(SDLDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SDLIncludeDir">
+      <Value>$(SDLIncludeDir)</Value>
     </BuildMacro>
     <BuildMacro Include="SDLDebugLibDir">
       <Value>$(SDLDebugLibDir)</Value>
@@ -68,8 +78,8 @@
     <BuildMacro Include="FreeTypeReleaseLibDir">
       <Value>$(FreeTypeReleaseLibDir)</Value>
     </BuildMacro>
-    <BuildMacro Include="FFMpegDir">
-      <Value>$(FFMpegDir)</Value>
+    <BuildMacro Include="FFMpegIncludeDir">
+      <Value>$(FFMpegIncludeDir)</Value>
     </BuildMacro>
     <BuildMacro Include="LocalDebugLibs">
       <Value>$(LocalDebugLibs)</Value>
@@ -79,6 +89,9 @@
     </BuildMacro>
     <BuildMacro Include="SDL2Dir">
       <Value>$(SDL2Dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SDL2IncludeDir">
+      <Value>$(SDL2IncludeDir)</Value>
     </BuildMacro>
     <BuildMacro Include="SDL2DebugLibDir">
       <Value>$(SDL2DebugLibDir)</Value>
@@ -112,6 +125,9 @@
     </BuildMacro>
     <BuildMacro Include="WxWidgetsDir">
       <Value>$(WxWidgetsDir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="WxWidgetsIncludeDir">
+      <Value>$(WxWidgetsIncludeDir)</Value>
     </BuildMacro>
     <BuildMacro Include="WxWidgetsDebugLibDir">
       <Value>$(WxWidgetsDebugLibDir)</Value>

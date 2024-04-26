@@ -17,7 +17,7 @@ LD:=g++
 
 FFMPEGDIR:=$(HOME)/Devel/ffmpeg
 
-MACMINVER:=-mmacosx-version-min=10.7
+MACMINVER:=-mmacosx-version-min=10.13
 
 COMMONCFLAGS:=-I/usr/local/include -I/usr/X11/include -I$(FFMPEGDIR) -I./include
 
@@ -100,6 +100,7 @@ EMUOSDOBJS:=$(SRCOSDWX)/wxw_emu.o \
 	$(SRCOSD)/emu_input_keysym.o \
 	$(SRCOSD)/emu_screen.o \
 	$(SRCOSD)/emu_sound.o \
+	$(SRCOSD)/keybind.o \
 	$(SRCOSD)/logging.o \
 	$(SRCOSD)/screenmode.o \
 	$(SRCOSD)/vkeyboardbase.o \
@@ -165,20 +166,23 @@ GUIOBJSWX:=$(SRCGUIWX)/wx_dlg.o \
 	$(SRCGUIWX)/wx_file_dlg.o \
 	$(SRCGUIWX)/wx_volume_dlg.o \
 	$(SRCGUIWX)/wx_config_dlg.o \
+	$(SRCGUIWX)/wx_keybind_ctrl.o \
 	$(SRCGUIWX)/wx_keybind_dlg.o \
 	$(SRCGUIWX)/wx_recvid_dlg.o \
 	$(SRCGUIWX)/wx_recaud_dlg.o \
 	$(SRCGUIWX)/wx_seldrv_dlg.o \
 	$(SRCGUIWX)/wx_ledbox.o \
 	$(SRCGUIWX)/wx_vkeyboard.o \
+	$(SRCGUIWX)/wx_joyset_dlg.o \
 	$(SRCGUIWX)/wx_about_dlg.o \
+	$(SRCGUIWX)/wx_logging_dlg.o \
 	$(SRCGUIWX)/wx_gui.o
 
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
 VIDOBJSQTKIT:=$(SRCVIDQTKIT)/qt_rec_video.o
 VIDOBJSAVKIT:=$(SRCVIDAVKIT)/avk_rec_common.o $(SRCVIDAVKIT)/avk_rec_audio.o $(SRCVIDAVKIT)/avk_rec_video.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
 # VIDOBJSWX:=$(SRCVIDWX)/wx_bitmap.o
 
 VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSQTKIT) $(VIDOBJSAVKIT) $(VIDOBJSFFM) $(VIDOBJSWX) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o

@@ -1,6 +1,5 @@
 /** @file win_key_trans.h
 
-	HITACHI BASIC MASTER LEVEL3 Mark5 / MB-S1 Emulator 'EmuB-6892/EmuB-S1'
 	Skelton for retropc emulator
 
 	@author Sasaji

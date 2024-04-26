@@ -29,14 +29,17 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <cairo/cairo.h>
-#ifdef USE_OPENGL
-#if GTK_CHECK_VERSION(3,16,0)
+# if GTK_CHECK_VERSION(3,22,0)
+#define USE_MOUSE_FLEXIBLE
+# endif
+# ifdef USE_OPENGL
+#  if GTK_CHECK_VERSION(3,16,0)
 #define USE_GTK_GLAREA
-#else
+#  else
 #define GtkGLArea void
 #define GdkGLContext void
-#endif
-#endif
+#  endif
+# endif
 #endif
 
 // OpenGL
@@ -67,11 +70,11 @@ class CommPorts;
 class FIFO;
 class FILEIO;
 class GUI;
-#ifdef USE_LEDBOX
-class LedBox;
-#endif
 #ifdef USE_MESSAGE_BOARD
 class MsgBoard;
+#endif
+#ifdef USE_LEDBOX
+class LedBox;
 #endif
 class CSurface;
 class CPixelFormat;
@@ -129,10 +132,15 @@ private:
 	bool pressed_global_key;
 
 #ifdef USE_JOYSTICK
-	int joy_xmin[2], joy_xmax[2];
-	int joy_ymin[2], joy_ymax[2];
-	SDL_Joystick *joy[2];
+	SDL_Joystick *joy[MAX_JOYSTICKS];
 #endif
+
+	enum en_mouse_logic_type {
+		MOUSE_LOGIC_DEFAULT = 0,
+		MOUSE_LOGIC_FLEXIBLE,
+		MOUSE_LOGIC_PREPARE
+	} mouse_logic_type;
+	VmPoint mouse_position;
 	//@}
 
 private:
@@ -147,6 +155,7 @@ private:
 #if defined(USE_SDL2)
 	bool create_sdl_texture();
 #endif
+	void set_screen_filter_type();
 
 #ifdef USE_OPENGL
 	void initialize_opengl();
@@ -348,6 +357,9 @@ public:
 //#ifdef USE_GTK
 //	void update_mouse_event(GdkEventMotion *event);
 //#endif
+	void mouse_enter();
+	void mouse_move(int x, int y);
+	void mouse_leave();
 	//@}
 	/// @name screen device procedures for host machine
 	//@{

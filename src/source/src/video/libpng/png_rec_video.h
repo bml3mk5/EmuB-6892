@@ -13,7 +13,7 @@
 
 #include "../../rec_video_defs.h"
 
-#if defined(USE_REC_VIDEO) && defined(USE_CAP_SCREEN_LIBPNG)
+#if defined(USE_CAPTURE_SCREEN_PNG) && defined(USE_CAP_SCREEN_LIBPNG)
 
 #include "../../common.h"
 
@@ -38,6 +38,6 @@ public:
 
 };
 
-#endif /* USE_REC_VIDEO && USE_CAP_SCREEN_LIBPNG */
+#endif /* USE_CAPTURE_SCREEN_PNG && USE_CAP_SCREEN_LIBPNG */
 
 #endif /* PNG_RECORD_VIDEO_H */

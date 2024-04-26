@@ -17,6 +17,9 @@ namespace FM
 	class Timer
 	{
 	public:
+		Timer();
+		virtual ~Timer() {}
+
 		void	Reset();
 		bool	Count(int32_t clock);
 		int32_t	GetNextEvent();

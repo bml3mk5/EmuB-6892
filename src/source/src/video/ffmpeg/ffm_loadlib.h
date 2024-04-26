@@ -9,10 +9,6 @@
 
 	@note
 	If use this, get ffmpeg library from http://www.ffmpeg.org/.
-
-	To use on Windows:
-	Get FFmpeg "shared" package from http://ffmpeg.zeranoe.com/builds/
-	and put dll files on this application folder.
 */
 
 #ifndef _FFM_LOAD_LIBRARY_H_
@@ -42,7 +38,9 @@ extern "C" {
 //
 // entry point of avcodec-57.dll
 //
+#if LIBAVCODEC_VERSION_MAJOR < 59
 extern void (*f_avcodec_register_all)(void);
+#endif
 extern AVCodec *(*f_avcodec_find_encoder)(enum AVCodecID id);
 extern int (*f_avcodec_open2)(AVCodecContext *avctx, const AVCodec *codec, AVDictionary **options);
 //extern attribute_deprecated int (*f_avcodec_encode_video2)(AVCodecContext *avctx, AVPacket *avpkt,
@@ -58,7 +56,7 @@ extern int (*f_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels,
 extern AVCodecContext *(*f_avcodec_alloc_context3)(const AVCodec *codec);
 extern void (*f_avcodec_free_context)(AVCodecContext **avctx);
 extern int (*f_avcodec_parameters_to_context)(AVCodecContext *codec, const AVCodecParameters *par);
-
+extern int (*f_avcodec_parameters_from_context)(AVCodecParameters *par, const AVCodecContext *codec);
 extern int (*f_avcodec_receive_packet)(AVCodecContext *avctx, AVPacket *avpkt);
 extern int (*f_avcodec_send_frame)(AVCodecContext *avctx, const AVFrame *frame);
 extern AVPacket *(*f_av_packet_alloc)(void);
@@ -68,14 +66,24 @@ extern void (*f_av_packet_free)(AVPacket **pkt);
 //
 // entry point of avformat-57.dll
 //
+#if LIBAVFORMAT_VERSION_MAJOR < 59
 extern void (*f_av_register_all)(void);
+#endif
 //extern AVFormatContext *(*f_avformat_alloc_context)(void);
 extern void (*f_avformat_free_context)(AVFormatContext *s);
-//extern AVOutputFormat *(*f_av_guess_format)(const char *short_name,
-//				const char *filename,
-//				const char *mime_type);
+#if LIBAVFORMAT_VERSION_MAJOR < 59
+extern AVOutputFormat *(*f_av_guess_format)(const char *short_name,
+				const char *filename,
+				const char *mime_type);
 extern int (*f_avformat_alloc_output_context2)(AVFormatContext **ctx, AVOutputFormat *oformat,
 			    const char *format_name, const char *filename);
+#else
+extern const AVOutputFormat *(*f_av_guess_format)(const char *short_name,
+				const char *filename,
+				const char *mime_type);
+extern int (*f_avformat_alloc_output_context2)(AVFormatContext **ctx, const AVOutputFormat *oformat,
+			    const char *format_name, const char *filename);
+#endif
 extern int (*f_avformat_query_codec)(const AVOutputFormat *ofmt, enum AVCodecID codec_id,
 				int std_compliance);
 extern AVStream *(*f_avformat_new_stream)(AVFormatContext *s, const AVCodec *c);
@@ -105,7 +113,7 @@ extern AVFrame *(*f_av_frame_alloc)(void);
 extern void (*f_av_frame_free)(AVFrame **frame);
 extern int (*f_av_image_alloc)(uint8_t *pointers[4], int linesizes[4],
 				int w, int h, enum AVPixelFormat pix_fmt, int align);
-//extern void *(*f_av_malloc)(size_t size);
+extern void *(*f_av_malloc)(size_t size);
 //extern void (*f_av_free)(void *ptr);
 extern void (*f_av_freep)(void *ptr);
 extern void (*f_av_log_set_callback)(void (*callback)(void*, int, const char*, va_list));

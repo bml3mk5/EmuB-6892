@@ -12,6 +12,18 @@
 
 using namespace FM;
 
+Timer::Timer()
+{
+	status = 0;
+	regtc = 0;
+	regta[0] = 0;
+	regta[1] = 0;
+
+	timera = timera_count = 0;
+	timerb = timerb_count = 0;
+	prescaler = 1;
+}
+
 // ---------------------------------------------------------------------------
 ///	タイマー制御
 ///

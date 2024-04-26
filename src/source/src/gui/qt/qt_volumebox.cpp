@@ -12,7 +12,7 @@
 //#include "ui_qt_volumebox.h"
 #include "qt_dialog.h"
 #include "../../emu.h"
-#include "../../utils.h"
+//#include "../../utils.h"
 #include "../../labels.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -30,8 +30,8 @@ MyVolumeBox::MyVolumeBox(QWidget *parent) :
 	setPtr();
 
 //	ui->verticalSlider1->setRange(0, 100);
-//	ui->verticalSlider1->setValue(config.volume);
-//	ui->checkMute1->setChecked(config.mute);
+//	ui->verticalSlider1->setValue(pConfig->volume);
+//	ui->checkMute1->setChecked(pConfig->mute);
 //	connect(ui->verticalSlider1, SIGNAL(sliderMoved(int)), this, SLOT(moveSlider1(int)));
 //	connect(ui->checkMute1, SIGNAL(stateChanged(int)), this, SLOT(changeMute1(int)));
 
@@ -52,14 +52,11 @@ MyVolumeBox::MyVolumeBox(QWidget *parent) :
 		QVBoxLayout *vbox = new QVBoxLayout();
 		hbox->addLayout(vbox);
 
-		MyLabel *lblTxt = new MyLabel(LABELS::volume[n]);
-		lblTxt->setMinimumSize(64, 32);
-		lblTxt->setAlignment(Qt::AlignHCenter);
+		MyLabel *lblTxt = new MyLabel(LABELS::volume[n], 64, 32, Qt::AlignHCenter);
 		vbox->addWidget(lblTxt);
 		vbox->setAlignment(lblTxt, Qt::AlignHCenter);
 
-		QSlider *sliVol = new QSlider(Qt::Orientation::Vertical);
-		sliVol->setRange(0, 100);
+		MySlider *sliVol = new MySlider(Qt::Orientation::Vertical, 0, 100, *p_volume[i]);
 		sliVol->setProperty("index", i);
 		vbox->addWidget(sliVol);
 		vbox->setAlignment(sliVol, Qt::AlignHCenter);
@@ -73,7 +70,6 @@ MyVolumeBox::MyVolumeBox(QWidget *parent) :
 		vbox->addWidget(chkMut);
 		vbox->setAlignment(chkMut, Qt::AlignHCenter);
 
-		sliVol->setValue(*p_volume[i]);
 		lblVol[i]->setText(QString::asprintf("%02d", *p_volume[i]));
 		chkMut->setChecked(*p_mute[i]);
 
@@ -106,44 +102,44 @@ MyVolumeBox::~MyVolumeBox()
 void MyVolumeBox::setPtr()
 {
 	int i = 0;
-	p_volume[i++] = &config.volume;
-	p_volume[i++] = &config.beep_volume;
+	p_volume[i++] = &pConfig->volume;
+	p_volume[i++] = &pConfig->beep_volume;
 #if defined(_MBS1)
-	p_volume[i++] = &config.psg_volume;
-	p_volume[i++] = &config.psgexfm_volume;
-	p_volume[i++] = &config.psgexssg_volume;
-	p_volume[i++] = &config.psgexpcm_volume;
-	p_volume[i++] = &config.psgexrhy_volume;
-	p_volume[i++] = &config.opnfm_volume;
-	p_volume[i++] = &config.opnssg_volume;
-	p_volume[i++] = &config.opnpcm_volume;
-	p_volume[i++] = &config.opnrhy_volume;
+	p_volume[i++] = &pConfig->psg_volume;
+	p_volume[i++] = &pConfig->psgexfm_volume;
+	p_volume[i++] = &pConfig->psgexssg_volume;
+	p_volume[i++] = &pConfig->psgexpcm_volume;
+	p_volume[i++] = &pConfig->psgexrhy_volume;
+	p_volume[i++] = &pConfig->opnfm_volume;
+	p_volume[i++] = &pConfig->opnssg_volume;
+	p_volume[i++] = &pConfig->opnpcm_volume;
+	p_volume[i++] = &pConfig->opnrhy_volume;
 #endif
-	p_volume[i++] = &config.psg6_volume;
-	p_volume[i++] = &config.psg9_volume;
-	p_volume[i++] = &config.relay_volume;
-	p_volume[i++] = &config.cmt_volume;
-	p_volume[i++] = &config.fdd_volume;
+	p_volume[i++] = &pConfig->psg6_volume;
+	p_volume[i++] = &pConfig->psg9_volume;
+	p_volume[i++] = &pConfig->relay_volume;
+	p_volume[i++] = &pConfig->cmt_volume;
+	p_volume[i++] = &pConfig->fdd_volume;
 
 	i = 0;
-	p_mute[i++] = &config.mute;
-	p_mute[i++] = &config.beep_mute;
+	p_mute[i++] = &pConfig->mute;
+	p_mute[i++] = &pConfig->beep_mute;
 #if defined(_MBS1)
-	p_mute[i++] = &config.psg_mute;
-	p_mute[i++] = &config.psgexfm_mute;
-	p_mute[i++] = &config.psgexssg_mute;
-	p_mute[i++] = &config.psgexpcm_mute;
-	p_mute[i++] = &config.psgexrhy_mute;
-	p_mute[i++] = &config.opnfm_mute;
-	p_mute[i++] = &config.opnssg_mute;
-	p_mute[i++] = &config.opnpcm_mute;
-	p_mute[i++] = &config.opnrhy_mute;
+	p_mute[i++] = &pConfig->psg_mute;
+	p_mute[i++] = &pConfig->psgexfm_mute;
+	p_mute[i++] = &pConfig->psgexssg_mute;
+	p_mute[i++] = &pConfig->psgexpcm_mute;
+	p_mute[i++] = &pConfig->psgexrhy_mute;
+	p_mute[i++] = &pConfig->opnfm_mute;
+	p_mute[i++] = &pConfig->opnssg_mute;
+	p_mute[i++] = &pConfig->opnpcm_mute;
+	p_mute[i++] = &pConfig->opnrhy_mute;
 #endif
-	p_mute[i++] = &config.psg6_mute;
-	p_mute[i++] = &config.psg9_mute;
-	p_mute[i++] = &config.relay_mute;
-	p_mute[i++] = &config.cmt_mute;
-	p_mute[i++] = &config.fdd_mute;
+	p_mute[i++] = &pConfig->psg6_mute;
+	p_mute[i++] = &pConfig->psg9_mute;
+	p_mute[i++] = &pConfig->relay_mute;
+	p_mute[i++] = &pConfig->cmt_mute;
+	p_mute[i++] = &pConfig->fdd_mute;
 }
 
 void MyVolumeBox::moveSlider1(int num)

@@ -1,5 +1,5 @@
 #
-# for Windows + MinGW + MSYS
+# for Windows + MSYS2 + MinGW64
 #
 CC=gcc
 
@@ -9,17 +9,17 @@ DBG_CDEFS=-D_DEBUG
 #ARCH=-m32
 #ARCH=-m64
 
-CFLAGS=$(ARCH) -Wall -O2 $(shell sdl-config --cflags)
-DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(shell sdl-config --cflags)
+CFLAGS=$(ARCH) -Wall -O2 $(shell sdl2-config --cflags)
+DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(shell sdl2-config --cflags)
 
 LD=gcc
 
 LIBDIR=/usr/lib
-LOCALLIBDIR=/usr/local/lib
-LOCALLIBS=$(LOCALLIBDIR)/libSDLmain.a $(LOCALLIBDIR)/libSDL.a $(LOCALLIBDIR)/libSDL_ttf.a $(LOCALLIBDIR)/libfreetype.a /MinGW/lib/libiconv.a
+SDLLIBDIR=/usr/local/lib
+SDLLIBS=$(SDLLIBDIR)/libSDL2main.a $(SDLLIBDIR)/libSDL2.a $(SDLLIBDIR)/libSDL2_ttf.a $(SDLLIBDIR)/libfreetype.a /MinGW/lib/libiconv.a
 
-SH_LDFLAGS=-s $(shell sdl-config --libs) -lSDL_ttf -liconv
-ST_LDFLAGS=-s $(shell sdl-config --libs) -lwinmm -ldxguid
+SH_LDFLAGS=-s $(shell sdl2-config --libs) -lSDL2_ttf -liconv
+ST_LDFLAGS=-s $(shell sdl2-config --libs) -lwinmm -ldxguid
 DBG_LDFLAGS=$(ST_LDFLAGS)
 
 EXEFILE=mkkanji.exe
@@ -43,7 +43,7 @@ SH_OBJS=$(OBJS:%=$(SH_BUILDDIR)/%)
 ST_OBJS=$(OBJS:%=$(ST_BUILDDIR)/%)
 DBG_OBJS=$(OBJS:%=$(DBG_BUILDDIR)/%)
 
-LIBS=$(LOCALLIBS)
+LIBS=$(SDLLIBS)
 SH_LIBS=
 ST_LIBS=$(LIBS)
 DBG_LIBS=$(LIBS)

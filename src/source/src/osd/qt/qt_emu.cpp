@@ -73,20 +73,20 @@ void EMU_OSD::change_screen_use_opengl(int num)
 	};
 
 	if (num >= 0) {
-		config.use_opengl = static_cast<uint8_t>(config.use_opengl == num ? 0 : num);
+		pConfig->use_opengl = static_cast<uint8_t>(pConfig->use_opengl == num ? 0 : num);
 	} else {
-		config.use_opengl = (config.use_opengl + 1) % 3;
+		pConfig->use_opengl = (pConfig->use_opengl + 1) % 3;
 	}
 
-	if (config.use_opengl != next_use_opengl) {
+	if (pConfig->use_opengl != next_use_opengl) {
 		need_restart = CMsg::LB_Need_restart_program_RB;
 	}
-	out_infoc_x(list[config.use_opengl], need_restart, 0);
+	out_infoc_x(list[pConfig->use_opengl], need_restart, 0);
 
 #ifdef OPENGL_IMMCHANGE
 // warning: cannot change immediate under agar gui
-	use_opengl = config.use_opengl;
-	if (!create_screen(config.disp_device_no, 0, 0, config.screen_width, config.screen_height, screen_flags)) {
+	use_opengl = pConfig->use_opengl;
+	if (!create_screen(pConfig->disp_device_no, 0, 0, pConfig->screen_width, pConfig->screen_height, screen_flags)) {
 		exit(1);
 	}
 	lock_screen();

@@ -80,7 +80,7 @@ public:
 	bool *GetNowRecordingPtr() {
 		return &now_recording;
 	}
-	void CreateFileName(_TCHAR *file_path);
+	void CreateFileName(_TCHAR *file_path, const char *extension);
 
 	bool IsEnabled(int type);
 	const _TCHAR **GetCodecList(int type);

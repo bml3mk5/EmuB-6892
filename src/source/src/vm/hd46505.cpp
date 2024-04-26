@@ -274,7 +274,7 @@ void HD46505::event_vline(int v, int clock)
 	) {
 		v_count = 0;
 
-		memory_address = (((regs[12] << 8) | regs[13]) + (disptmg_skew & 3) - config.disptmg_skew) & 0x3fff;
+		memory_address = (((regs[12] << 8) | regs[13]) + (disptmg_skew & 3) - pConfig->disptmg_skew) & 0x3fff;
 		raster_address = (videomode & video_odd_line);
 
 		set_display_cursor();

@@ -18,12 +18,16 @@
 extern EMU *emu;
 #endif
 
+
+/**
+	Text size on control
+*/
 @implementation CocoaTextSize
 + (NSSize)size:(NSControl *)ctrl constTo:(NSSize)constraint
 {
 	NSFont *font = [ctrl font];
 
-	NSTextStorage *textStorage = [[NSTextStorage alloc] initWithString:self];
+	NSTextStorage *textStorage = [[NSTextStorage alloc] initWithString:@""];
 	NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize:constraint];
 
 	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
@@ -39,14 +43,18 @@ extern EMU *emu;
 }
 @end
 
+
+/**
+	Static label
+*/
 @implementation CocoaLabel
 + (CocoaLabel *)create:(NSRect)re title:(const char *)title
 {
-	return [CocoaLabel createWithFit:&re title:title align:NSLeftTextAlignment];
+	return [CocoaLabel createWithFit:&re title:title align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)create:(NSRect)re titleid:(CMsg::Id)titleid
 {
-	return [CocoaLabel createWithFit:&re titleid:titleid align:NSLeftTextAlignment];
+	return [CocoaLabel createWithFit:&re titleid:titleid align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)create:(NSRect)re title:(const char *)title align:(NSTextAlignment)align
 {
@@ -58,11 +66,11 @@ extern EMU *emu;
 }
 + (CocoaLabel *)createT:(const char *)title
 {
-	return [CocoaLabel createT:title align:NSLeftTextAlignment];
+	return [CocoaLabel createT:title align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)createI:(CMsg::Id)titleid
 {
-	return [CocoaLabel createT:CMSGV(titleid) align:NSLeftTextAlignment];
+	return [CocoaLabel createT:CMSGV(titleid) align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)createT:(const char *)title align:(NSTextAlignment)align
 {
@@ -83,13 +91,73 @@ extern EMU *emu;
 {
 	return [CocoaLabel createT:CMSGV(titleid) align:align];
 }
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title
+{
+	CocoaLabel *me = [CocoaLabel createT:title];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid
+{
+	CocoaLabel *me = [CocoaLabel createI:titleid];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title width:(int)width
+{
+	CocoaLabel *me = [CocoaLabel createT:title];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid width:(int)width
+{
+	CocoaLabel *me = [CocoaLabel createI:titleid];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title width:(int)width height:(int)height
+{
+	CocoaLabel *me = [CocoaLabel createT:title];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid width:(int)width height:(int)height
+{
+	CocoaLabel *me = [CocoaLabel createI:titleid];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title align:(NSTextAlignment)align
+{
+	CocoaLabel *me = [CocoaLabel createT:title align:align];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid align:(NSTextAlignment)align
+{
+	CocoaLabel *me = [CocoaLabel createI:titleid align:align];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title align:(NSTextAlignment)align width:(int)width height:(int)height
+{
+	CocoaLabel *me = [CocoaLabel createT:title align:align];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid align:(NSTextAlignment)align width:(int)width height:(int)height
+{
+	CocoaLabel *me = [CocoaLabel createI:titleid align:align];
+	[layout addControl:me width:width height:height];
+	return me;
+}
 + (CocoaLabel *)createWithFitW:(NSRect *)re title:(const char *)title
 {
-	return [CocoaLabel createWithFitW:re title:title align:NSLeftTextAlignment];
+	return [CocoaLabel createWithFitW:re title:title align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)createWithFitW:(NSRect *)re titleid:(CMsg::Id)titleid
 {
-	return [CocoaLabel createWithFitW:re titleid:titleid align:NSLeftTextAlignment];
+	return [CocoaLabel createWithFitW:re titleid:titleid align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)createWithFitW:(NSRect *)re title:(const char *)title align:(NSTextAlignment)align
 {
@@ -105,7 +173,7 @@ extern EMU *emu;
 }
 + (CocoaLabel *)createWithFitH:(NSRect *)re title:(const char *)title
 {
-	return [CocoaLabel createWithFitH:re title:title align:NSLeftTextAlignment];
+	return [CocoaLabel createWithFitH:re title:title align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)createWithFitH:(NSRect *)re title:(const char *)title align:(NSTextAlignment)align
 {
@@ -117,11 +185,11 @@ extern EMU *emu;
 }
 + (CocoaLabel *)createWithFit:(NSRect *)re title:(const char *)title
 {
-	return [CocoaLabel createWithFit:re title:title align:NSLeftTextAlignment];
+	return [CocoaLabel createWithFit:re title:title align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)createWithFit:(NSRect *)re titleid:(CMsg::Id)titleid
 {
-	return [CocoaLabel createWithFit:re titleid:titleid align:NSLeftTextAlignment];
+	return [CocoaLabel createWithFit:re titleid:titleid align:NSTextAlignmentLeft];
 }
 + (CocoaLabel *)createWithFit:(NSRect *)re title:(const char *)title align:(NSTextAlignment)align
 {
@@ -163,6 +231,10 @@ extern EMU *emu;
 }
 @end
 
+
+/**
+	Text field
+*/
 @implementation CocoaTextField
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
 + (CocoaTextField *)create:(NSRect)re num:(int)num action:(SEL)action
@@ -217,7 +289,7 @@ extern EMU *emu;
 
 + (CocoaTextField *)createN:(int)num action:(SEL)action
 {
-	return [CocoaTextField createN:num action:action align:NSLeftTextAlignment];
+	return [CocoaTextField createN:num action:action align:NSTextAlignmentLeft];
 }
 + (CocoaTextField *)createN:(int)num action:(SEL)action align:(NSTextAlignment)align
 {
@@ -237,7 +309,7 @@ extern EMU *emu;
 }
 + (CocoaTextField *)createT:(const char *)text action:(SEL)action
 {
-	return [CocoaTextField createT:text action:action align:NSLeftTextAlignment];
+	return [CocoaTextField createT:text action:action align:NSTextAlignmentLeft];
 }
 + (CocoaTextField *)createT:(const char *)text action:(SEL)action align:(NSTextAlignment)align
 {
@@ -263,8 +335,87 @@ extern EMU *emu;
 {
 	return [CocoaTextField createT:CMSGV(textid) action:action align:align];
 }
++ (CocoaTextField *)createN:(CocoaLayout *)layout num:(int)num action:(SEL)action width:(int)width
+{
+	CocoaTextField *me = [CocoaTextField createN:num action:action];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaTextField *)createN:(CocoaLayout *)layout num:(int)num action:(SEL)action align:(NSTextAlignment)align width:(int)width
+{
+	CocoaTextField *me = [CocoaTextField createN:num action:action align:align];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaTextField *)createT:(CocoaLayout *)layout text:(const char *)text action:(SEL)action width:(int)width
+{
+	CocoaTextField *me = [CocoaTextField createT:text action:action];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaTextField *)createT:(CocoaLayout *)layout text:(const char *)text action:(SEL)action align:(NSTextAlignment)align width:(int)width
+{
+	CocoaTextField *me = [CocoaTextField createT:text action:action align:align];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaTextField *)createI:(CocoaLayout *)layout text:(CMsg::Id)textid action:(SEL)action width:(int)width
+{
+	CocoaTextField *me = [CocoaTextField createI:textid action:action];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaTextField *)createI:(CocoaLayout *)layout text:(CMsg::Id)textid action:(SEL)action align:(NSTextAlignment)align width:(int)width
+{
+	CocoaTextField *me = [CocoaTextField createI:textid action:action align:align];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaTextField *)create:(CocoaLayout *)layout action:(SEL)action width:(int)width height:(int)height
+{
+	CocoaTextField *me = [CocoaTextField alloc];
+
+	[me init];
+//	[me setStringValue:[NSString stringWithUTF8String:text]];
+	[me setEditable:NO];
+	[me setBezeled:YES];
+	[me setDrawsBackground:YES];
+	[me setSelectable:YES];
+	[me setAction:action];
+//	[me setAlignment:align];
+	/*	[[me cell] setUsesSingleLineMode:YES]; */
+	[layout addControl:me width:width height:height];
+
+	return me;
+}
 @end
 
+
+/**
+	Text view
+*/
+@implementation CocoaTextView : NSTextView
+@synthesize parent;
++ (CocoaTextView *)create:(CocoaLayout *)layout edit:(bool)edit hasvs:(bool)hasvs hashs:(bool)hashs width:(int)width height:(int)height
+{
+	CocoaScrollView *sview = [CocoaScrollView create:layout hasvs:hasvs hashs:hashs width:width height:height];
+
+	NSRect re = NSMakeRect(0,0,width,height);
+	CocoaTextView *me = [[CocoaTextView alloc] initWithFrame:re];
+	[me setEditable:edit];
+	[me setDrawsBackground:YES];
+	[me setSelectable:YES];
+
+	[sview setDocumentView:me];
+	[me setParent:sview];
+	return me;
+}
+@end
+
+
+/**
+	for button control
+*/
 @implementation CocoaObjectStructure
 @synthesize obj1;
 @synthesize obj2;
@@ -279,6 +430,10 @@ extern EMU *emu;
 }
 @end
 
+
+/**
+	Button control
+*/
 @implementation CocoaButton
 @synthesize relatedObject;
 + (CocoaButton *)create:(NSRect)re title:(const char *)title action:(SEL)action
@@ -313,8 +468,36 @@ extern EMU *emu;
 {
 	return [CocoaButton createT:CMSGV(titleid) action:action];
 }
++ (CocoaButton *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action
+{
+	CocoaButton *me = [CocoaButton createT:title action:action];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action
+{
+	CocoaButton *me = [CocoaButton createI:titleid action:action];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaButton *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action width:(int)width
+{
+	CocoaButton *me = [CocoaButton createT:title action:action];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action width:(int)width
+{
+	CocoaButton *me = [CocoaButton createI:titleid action:action];
+	[layout addControl:me width:width];
+	return me;
+}
 @end
 
+
+/**
+	Popup button
+*/
 @implementation CocoaPopUpButton
 + (CocoaPopUpButton *)create:(NSRect)re items:(const char **)items action:(SEL)action selidx:(int)selidx
 {
@@ -365,6 +548,42 @@ extern EMU *emu;
 	[me setAction:action];
 	return me;
 }
++ (CocoaPopUpButton *)createT:(CocoaLayout *)layout items:(const char **)items action:(SEL)action selidx:(int)selidx
+{
+	CocoaPopUpButton *me = [CocoaPopUpButton createT:items action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaPopUpButton *)createT:(CocoaLayout *)layout items:(const char **)items action:(SEL)action selidx:(int)selidx width:(int)width
+{
+	CocoaPopUpButton *me = [CocoaPopUpButton createT:items action:action selidx:selidx];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaPopUpButton *)createI:(CocoaLayout *)layout items:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx
+{
+	CocoaPopUpButton *me = [CocoaPopUpButton createI:itemids action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaPopUpButton *)createI:(CocoaLayout *)layout items:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx width:(int)width
+{
+	CocoaPopUpButton *me = [CocoaPopUpButton createI:itemids action:action selidx:selidx];
+	[layout addControl:me width:width];
+	return me;
+}
++ (CocoaPopUpButton *)createI:(CocoaLayout *)layout items:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx appendnum:(int)appendnum appendstr:(CMsg::Id)appendstr
+{
+	CocoaPopUpButton *me = [CocoaPopUpButton createI:itemids action:action selidx:selidx appendnum:appendnum appendstr:appendstr];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaPopUpButton *)createL:(CocoaLayout *)layout items:(const CPtrList<CTchar> *)items action:(SEL)action selidx:(int)selidx
+{
+	CocoaPopUpButton *me = [CocoaPopUpButton createL:items action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
 - (void)addItemsT:(const char **)items selidx:(int)selidx
 {
 	int i;
@@ -408,6 +627,10 @@ extern EMU *emu;
 }
 @end
 
+
+/**
+	Check button
+*/
 @implementation CocoaCheckBox
 @synthesize index;
 + (CocoaCheckBox *)create:(NSRect)re title:(const char *)title action:(SEL)action value:(bool)value
@@ -425,7 +648,7 @@ extern EMU *emu;
 	[me setTitle:[NSString stringWithUTF8String:title]];
 	[me setButtonType:NSSwitchButton];
 	[me setAction:action];
-	[me setState:value ? NSOnState : NSOffState];
+	[me setState:value ? NSControlStateValueOn : NSControlStateValueOff];
 	me.index = index;
 
 	return me;
@@ -449,7 +672,7 @@ extern EMU *emu;
 	[me setTitle:[NSString stringWithUTF8String:title]];
 	[me setButtonType:NSSwitchButton];
 	[me setAction:action];
-	[me setState:value ? NSOnState : NSOffState];
+	[me setState:value ? NSControlStateValueOn : NSControlStateValueOff];
 	me.index = index;
 
 	return me;
@@ -458,8 +681,48 @@ extern EMU *emu;
 {
 	return [CocoaCheckBox createT:CMSGV(titleid) index:index action:action value:value];
 }
++ (CocoaCheckBox *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action value:(bool)value
+{
+	CocoaCheckBox *me = [CocoaCheckBox createT:title action:action value:value];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaCheckBox *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action value:(bool)value
+{
+	CocoaCheckBox *me = [CocoaCheckBox createI:titleid action:action value:value];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaCheckBox *)createT:(CocoaLayout *)layout title:(const char *)title index:(int)index action:(SEL)action value:(bool)value
+{
+	CocoaCheckBox *me = [CocoaCheckBox createT:title index:index action:action value:value];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaCheckBox *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value
+{
+	CocoaCheckBox *me = [CocoaCheckBox createI:titleid index:index action:action value:value];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaCheckBox *)createT:(CocoaLayout *)layout title:(const char *)title index:(int)index action:(SEL)action value:(bool)value width:(int)width height:(int)height
+{
+	CocoaCheckBox *me = [CocoaCheckBox createT:title index:index action:action value:value];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaCheckBox *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value width:(int)width height:(int)height
+{
+	CocoaCheckBox *me = [CocoaCheckBox createI:titleid index:index action:action value:value];
+	[layout addControl:me width:width height:height];
+	return me;
+}
 @end
 
+
+/**
+	Radio button
+*/
 @implementation CocoaRadioButton
 @synthesize index;
 + (CocoaRadioButton *)createT:(const char *)title action:(SEL)action value:(bool)value
@@ -477,7 +740,7 @@ extern EMU *emu;
 	[me setTitle:[NSString stringWithUTF8String:title]];
 	[me setButtonType:NSRadioButton];
 	[me setAction:action];
-	[me setState:value ? NSOnState : NSOffState];
+	[me setState:value ? NSControlStateValueOn : NSControlStateValueOff];
 	me.index = index;
 
 	return me;
@@ -486,8 +749,36 @@ extern EMU *emu;
 {
 	return [CocoaRadioButton createT:CMSGV(titleid) index:index action:action value:value];
 }
++ (CocoaRadioButton *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action value:(bool)value
+{
+	CocoaRadioButton *me = [CocoaRadioButton createT:title action:action value:value];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action value:(bool)value
+{
+	CocoaRadioButton *me = [CocoaRadioButton createI:titleid action:action value:value];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioButton *)createT:(CocoaLayout *)layout title:(const char *)title index:(int)index action:(SEL)action value:(bool)value
+{
+	CocoaRadioButton *me = [CocoaRadioButton createT:title index:index action:action value:value];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value
+{
+	CocoaRadioButton *me = [CocoaRadioButton createI:titleid index:index action:action value:value];
+	[layout addControl:me];
+	return me;
+}
 @end
 
+
+/**
+	Radio button group
+*/
 @implementation CocoaRadioGroup
 + (CocoaRadioGroup *)create:(NSRect)re rows:(int)rows cols:(int)cols titles:(const char **)titles action:(SEL)action selidx:(int)selidx
 {
@@ -534,6 +825,42 @@ extern EMU *emu;
 	NSRect re = NSMakeRect(0, 0, width, 1);
 	return [CocoaRadioGroup create:re rows:1 cols:cols titleids:titleids action:action selidx:selidx];
 }
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout rect:(NSRect)re rows:(int)rows cols:(int)cols titles:(const char **)titles action:(SEL)action selidx:(int)selidx
+{
+	CocoaRadioGroup *me = [CocoaRadioGroup create:re rows:rows cols:cols titles:titles action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout rect:(NSRect)re rows:(int)rows cols:(int)cols titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx
+{
+	CocoaRadioGroup *me = [CocoaRadioGroup create:re rows:rows cols:cols titleids:titleids action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout height:(int)height rows:(int)rows titles:(const char **)titles action:(SEL)action selidx:(int)selidx
+{
+	CocoaRadioGroup *me = [CocoaRadioGroup create:height rows:rows titles:titles action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout height:(int)height rows:(int)rows titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx
+{
+	CocoaRadioGroup *me = [CocoaRadioGroup create:height rows:rows titleids:titleids action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout width:(int)width cols:(int)cols titles:(const char **)titles action:(SEL)action selidx:(int)selidx
+{
+	CocoaRadioGroup *me = [CocoaRadioGroup create:width cols:cols titles:titles action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout width:(int)width cols:(int)cols titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx
+{
+	CocoaRadioGroup *me = [CocoaRadioGroup create:width cols:cols titleids:titleids action:action selidx:selidx];
+	[layout addControl:me];
+	return me;
+}
 - (void)addItemsT:(const char **)titles rows:(int)rows cols:(int)cols selidx:(int)selidx width:(int)width height:(int)height
 {
 	int i = 0;
@@ -570,6 +897,10 @@ extern EMU *emu;
 }
 @end
 
+
+/**
+	Slider control
+*/
 @implementation CocoaSlider
 @synthesize index;
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
@@ -596,21 +927,112 @@ extern EMU *emu;
 {
 	return [CocoaSlider createN:0 action:action value:value];
 }
++ (CocoaSlider *)createN:(SEL)action min:(int)min_val max:(int)max_val value:(int)value
+{
+	return [CocoaSlider createN:0 action:action min:min_val max:max_val value:value];
+}
 + (CocoaSlider *)createN:(int)index action:(SEL)action value:(int)value
 {
+	return [CocoaSlider createN:index action:action min:0 max:100 value:value];
+}
++ (CocoaSlider *)createN:(int)index action:(SEL)action min:(int)min_val max:(int)max_val value:(int)value
+{
 	CocoaSlider *me = [CocoaSlider alloc];
-
+	
 	[me init];
 	[me setAction:action];
-	[me setMaxValue:100.0];
-	[me setMinValue:0.0];
+	[me setMaxValue:max_val];
+	[me setMinValue:min_val];
 	[me setIntValue:value];
 	me.index = index;
-
+	
+	return me;
+}
++ (CocoaSlider *)createN:(CocoaLayout *)layout action:(SEL)action value:(int)value width:(int)width height:(int)height
+{
+	CocoaSlider *me = [CocoaSlider createN:action value:value];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaSlider *)createN:(CocoaLayout *)layout action:(SEL)action min:(int)min_val max:(int)max_val value:(int)value width:(int)width height:(int)height
+{
+	CocoaSlider *me = [CocoaSlider createN:action min:min_val max:max_val value:value];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaSlider *)createN:(CocoaLayout *)layout index:(int)index action:(SEL)action value:(int)value width:(int)width height:(int)height
+{
+	CocoaSlider *me = [CocoaSlider createN:index action:action value:value];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaSlider *)createN:(CocoaLayout *)layout index:(int)index action:(SEL)action min:(int)min_val max:(int)max_val value:(int)value width:(int)width height:(int)height
+{
+	CocoaSlider *me = [CocoaSlider createN:index action:action min:min_val max:max_val value:value];
+	[layout addControl:me width:width height:height];
 	return me;
 }
 @end
 
+
+/**
+	Stepper control
+*/
+@implementation CocoaStepper
+@synthesize text;
+- (void)changeStepperValue:(CocoaStepper *)sender
+{
+	[text setIntValue:[self intValue]];
+}
+- (void)changeTextFieldValue:(CocoaTextField *)sender
+{
+	[self setIntValue:[text intValue]];
+}
++ (CocoaStepper *)createMin:(int)min_val max:(int)max_val value:(int)value
+{
+	CocoaStepper *stepper = [CocoaStepper alloc];
+
+	[stepper init];
+	[stepper setMaxValue:max_val];
+	[stepper setMinValue:min_val];
+	[stepper setIntValue:value];
+	[stepper setValueWraps:FALSE];
+	[stepper setTarget:stepper];
+	[stepper setAction:@selector(changeStepperValue:)];
+
+	CocoaTextField *text = [CocoaTextField createN:value action:@selector(changeTextFieldValue:)];
+	[text setTarget:stepper];
+	[stepper setText:text];
+	
+	return stepper;
+}
++ (CocoaStepper *)createN:(CocoaLayout *)layout min:(int)min_val max:(int)max_val value:(int)value
+{
+	CocoaStepper *step = [CocoaStepper createMin:min_val max:max_val value:value];
+	[layout addControl:step.text];
+	[layout addControl:step];
+	return step;
+}
++ (CocoaStepper *)createN:(CocoaLayout *)layout min:(int)min_val max:(int)max_val value:(int)value width:(int)width
+{
+	CocoaStepper *step = [CocoaStepper createMin:min_val max:max_val value:value];
+	[layout addControl:step.text width:width];
+	[layout addControl:step];
+	return step;
+}
++ (CocoaStepper *)createN:(CocoaLayout *)layout min:(int)min_val max:(int)max_val value:(int)value width:(int)width height:(int)height
+{
+	CocoaStepper *step = [CocoaStepper createMin:min_val max:max_val value:value];
+	[layout addControl:step.text width:width height:height];
+	[layout addControl:step height:height];
+	return step;
+}
+@end
+
+
+/**
+	Tab view
+*/
 @implementation CocoaTabView
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
 + (CocoaTabView *)create:(NSRect)re
@@ -659,21 +1081,39 @@ extern EMU *emu;
 
 	return me;
 }
++ (CocoaTabView *)create:(CocoaLayout *)layout width:(int)width height:(int)height
+{
+	CocoaTabView *me = [CocoaTabView create];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaTabView *)createT:(CocoaLayout *)layout tabs:(const char **)tabs width:(int)width height:(int)height
+{
+	CocoaTabView *me = [CocoaTabView createT:tabs];
+	[layout addControl:me width:width height:height];
+	return me;
+}
++ (CocoaTabView *)createI:(CocoaLayout *)layout tabs:(const CMsg::Id *)tabids width:(int)width height:(int)height
+{
+	CocoaTabView *me = [CocoaTabView createI:tabids];
+	[layout addControl:me width:width height:height];
+	return me;
+}
 - (void)addTabItemsT:(const char **)tabs
 {
 	int i;
 	for(i=0; tabs[i] != NULL; i++) {
-		[self addTabItem:tabs[i]];
+		[self addTabItemT:tabs[i]];
 	}
 }
 - (void)addTabItemsI:(const CMsg::Id *)tabids
 {
 	int i;
 	for(i=0; tabids[i] != 0 && tabids[i] != CMsg::End; i++) {
-		[self addTabItem:CMSGV(tabids[i])];
+		[self addTabItemT:CMSGV(tabids[i])];
 	}
 }
-- (NSTabViewItem *)addTabItem:(const char *)label
+- (NSTabViewItem *)addTabItemT:(const char *)label
 {
 	NSString *str = [NSString stringWithUTF8String:label];
 	NSTabViewItem *item = [[NSTabViewItem alloc] init];
@@ -682,6 +1122,10 @@ extern EMU *emu;
 	[item setView:view];
 	[self addTabViewItem:item];
 	return item;
+}
+- (NSTabViewItem *)addTabItemI:(CMsg::Id)label_id
+{
+	return [self addTabItemT:CMSGV(label_id)];
 }
 
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
@@ -711,6 +1155,10 @@ extern EMU *emu;
 #endif
 @end
 
+
+/**
+	Static surrounding box
+*/
 @implementation CocoaBox
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
 + (CocoaBox *)create:(NSRect)re title:(const char *)title
@@ -745,6 +1193,20 @@ extern EMU *emu;
 {
 	return [CocoaBox createT:CMSGV(titleid)];
 }
++ (CocoaBox *)createT:(CocoaLayout *)layout :(const char *)title :(int)width :(int)height
+{
+	CocoaBox *me = [CocoaBox createT:title];
+	[layout addControl:me width:width height:height];
+	[layout setContentView:[me contentView]];
+	return me;
+}
++ (CocoaBox *)createI:(CocoaLayout *)layout :(CMsg::Id)titleid :(int)width :(int)height
+{
+	CocoaBox *me = [CocoaBox createI:titleid];
+	[layout addControl:me width:width height:height];
+	[layout setContentView:[me contentView]];
+	return me;
+}
 
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
 - (NSRect)adjustFrameSize:(NSRect)re
@@ -768,7 +1230,36 @@ extern EMU *emu;
 @end
 
 
+/**
+	Scroll view
+*/
+@implementation CocoaScrollView
++ (CocoaScrollView *)create:(CocoaLayout *)layout hasvs:(bool)hasvs hashs:(bool)hashs width:(int)width height:(int)height
+{
+	CocoaScrollView *me = [[CocoaScrollView alloc] init];
 
+	if (hasvs) {
+		NSRect re = NSMakeRect(0,0,24,height);
+		NSScroller *vs = [[NSScroller alloc] initWithFrame:re];
+		[me setVerticalScroller:vs];
+		[me setHasVerticalScroller:YES];
+	}
+	if (hashs) {
+		NSRect re = NSMakeRect(0,0,width,24);
+		NSScroller *hs = [[NSScroller alloc] initWithFrame:re];
+		[me setHorizontalScroller:hs];
+		[me setHasHorizontalScroller:YES];
+	}
+
+	[layout addControl:me width:width height:height];
+	return me;
+}
+@end
+
+
+/**
+	Base view
+*/
 @implementation CocoaView
 @synthesize max_bottom;
 @synthesize max_right;
@@ -865,7 +1356,9 @@ extern EMU *emu;
 @end
 
 
-
+/**
+	Base panel
+*/
 @implementation CocoaBasePanel
 - (id)init
 {
@@ -899,7 +1392,9 @@ extern EMU *emu;
 @end
 
 
-
+/**
+	Layout widget controls
+*/
 @implementation CocoaLayoutControls
 @synthesize box;
 @synthesize ctrl;
@@ -910,6 +1405,7 @@ extern EMU *emu;
 @synthesize w;
 @synthesize h;
 @synthesize next;
+@synthesize prev;
 + (CocoaLayoutControls *)create:(CocoaLayout *)box_ :(NSView *)ctrl_ :(int)x_ :(int)y_ :(int)px_ :(int)py_ :(int)w_ :(int)h_
 {
 	CocoaLayoutControls *me = [[CocoaLayoutControls alloc] init];
@@ -923,15 +1419,18 @@ extern EMU *emu;
 	me.w = w_;
 	me.h = h_;
 	me.next = nil;
+	me.prev = nil;
 
 	return me;
 }
 @end
 
 
-
+/**
+	Manage layouting widget controls
+*/
 @implementation CocoaLayout
-//@synthesize view;
+@synthesize contentView;
 @synthesize orient;
 @synthesize align;
 @synthesize re;
@@ -940,42 +1439,43 @@ extern EMU *emu;
 @synthesize margin;
 @synthesize controls;
 @synthesize control_nums;
-+ (CocoaLayout *)create:(int)orient_
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_
 {
 	CocoaLayout *me = [CocoaLayout alloc];
 
-	[me initWith:orient_ :(LeftPos | TopPos) :0 :nil];
+	[me initWith:view_ :orient_ :(LeftPos | TopPos) :0 :nil];
 
 	return me;
 }
-+ (CocoaLayout *)create:(int)orient_ :(int)align_
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_ :(int)align_
 {
 	CocoaLayout *me = [CocoaLayout alloc];
 
-	[me initWith:orient_ :align_ :0 :nil];
+	[me initWith:view_ :orient_ :align_ :0 :nil];
 
 	return me;
 }
-+ (CocoaLayout *)create:(int)orient_ :(int)align_ :(int)margin_
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_ :(int)align_ :(int)margin_
 {
 	CocoaLayout *me = [CocoaLayout alloc];
 
-	[me initWith:orient_ :align_ :margin_ :nil];
+	[me initWith:view_ :orient_ :align_ :margin_ :nil];
 
 	return me;
 }
-+ (CocoaLayout *)create:(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_
 {
 	CocoaLayout *me = [CocoaLayout alloc];
 
-	[me initWith:orient_ :align_ :margin_ :name_];
+	[me initWith:view_ :orient_ :align_ :margin_ :name_];
 
 	return me;
 }
-- (id)initWith:(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_
+- (id)initWith:(CocoaView *)view_ :(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_
 {
 	[super init];
 
+	contentView = view_;
 	orient = (enOrient)orient_;
 	align = align_;
 	margin.left = margin_;
@@ -1023,25 +1523,25 @@ extern EMU *emu;
 }
 - (CocoaLayout *)addBox:(int)orient_
 {
-	CocoaLayout *box = [CocoaLayout create:orient_];
+	CocoaLayout *box = [CocoaLayout create:nil :orient_];
 	[self addItem:box];
 	return box;
 }
 - (CocoaLayout *)addBox:(int)orient_ :(int)align_
 {
-	CocoaLayout *box = [CocoaLayout create:orient_ :align_];
+	CocoaLayout *box = [CocoaLayout create:nil :orient_ :align_];
 	[self addItem:box];
 	return box;
 }
 - (CocoaLayout *)addBox:(int)orient_ :(int)align_ :(int)margin_
 {
-	CocoaLayout *box = [CocoaLayout create:orient_ :align_ :margin_];
+	CocoaLayout *box = [CocoaLayout create:nil :orient_ :align_ :margin_];
 	[self addItem:box];
 	return box;
 }
 - (CocoaLayout *)addBox:(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_
 {
-	CocoaLayout *box = [CocoaLayout create:orient_ :align_ :margin_ :name_];
+	CocoaLayout *box = [CocoaLayout create:nil :orient_ :align_ :margin_ :name_];
 	[self addItem:box];
 	return box;
 }
@@ -1069,11 +1569,11 @@ extern EMU *emu;
 	}
 	[self addItem:nil :ctrl_ :now_re.size.width :now_re.size.height :0 :0];
 }
-- (void)addControl:(NSView *)ctrl_ :(int)width_ :(int)height_
+- (void)addControl:(NSView *)ctrl_ width:(int)width_ height:(int)height_
 {
 	[self addItem:nil :ctrl_ :width_ :height_ :0 :0];
 }
-- (void)addControl:(NSView *)ctrl_ :(int)width_ :(int)height_ :(int)px_ :(int)py_
+- (void)addControl:(NSView *)ctrl_ width:(int)width_ height:(int)height_ x:(int)px_ y:(int)py_
 {
 	[self addItem:nil :ctrl_ :width_ :height_ :px_ :py_];
 }
@@ -1097,20 +1597,40 @@ extern EMU *emu;
 {
 	CocoaLayoutControls *newitem = [CocoaLayoutControls create:box_ :ctrl_ :-1 :-1 :px_ :py_ :width_ :height_];
 
+	CocoaLayoutControls *item = controls;
 	if (controls != nil) {
 		// next item
-		CocoaLayoutControls *item = controls;
 		while (item.next != nil) {
 			item = item.next;
 		}
 		item.next = newitem;
+		newitem.prev = item;
 	} else {
 		// first item
 		controls = newitem;
 	}
 	control_nums++;
-}
+	
+	item = newitem;
 
+	if (box_ != nil) {
+		[box_ setContentView: [self contentView]];
+	}
+	if (ctrl_ != nil) {
+		[[self contentView] addSubview:ctrl_];
+	}
+}
+- (int)maxHeight:(CocoaLayoutControls *)item_
+{
+	int maxh = 0;
+	while(item_ != nil) {
+		if (item_.ctrl && maxh < item_.h) {
+			maxh = item_.h;
+		}
+		item_ = item_.next;
+	}
+	return maxh;
+}
 - (void)realize:(NSPanel *)dlg_
 {
 	if (realized) return;
@@ -1143,7 +1663,7 @@ extern EMU *emu;
 					, re.x, re.y, re.w, re.h
 					, margin.left, margin.right, margin.top, margin.bottom);
 #endif
-
+	int maxh = [self maxHeight:controls];
 	int mw,mh;
 	int nums = 0;
 	CocoaLayoutControls *item = controls;
@@ -1247,7 +1767,7 @@ extern EMU *emu;
 					re.w += padding;
 				}
 				item.x = re.w;
-				item.y = margin.top;
+				item.y = margin.top + (maxh - item.h) / 2;
 				re.w += item.w;
 				mh = margin.top + item.h;
 				if (re.h < mh) {
@@ -1400,7 +1920,9 @@ extern EMU *emu;
 		}
 	}
 
+#ifdef _DEBUG_CBOX
 	int nums = 0;
+#endif
 	CocoaLayoutControls *item = controls;
 	while(item != nil) {
 		if (item.box != nil) {
@@ -1439,7 +1961,10 @@ extern EMU *emu;
 #endif
 		}
 		item = item.next;
+
+#ifdef _DEBUG_CBOX
 		nums++;
+#endif
 	}
 #ifdef _DEBUG_CBOX
 	logging->out_debugf(_T("MoveItems: %-8s re re:x:%d y:%d w:%d h:%d item:x:%d y:%d w:%d h:%d"), name

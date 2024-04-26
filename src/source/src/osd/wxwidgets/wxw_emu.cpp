@@ -64,28 +64,28 @@ void EMU_OSD::change_screen_use_opengl(int num)
 
 #ifdef OPENGLONLY_ON_SDL2
 	if (num >= 0) {
-		config.use_opengl = num;
+		pConfig->use_opengl = num;
 	} else {
-		config.use_opengl = (config.use_opengl + 1) % 3;
-		if (config.use_opengl == 0) config.use_opengl++;
+		pConfig->use_opengl = (pConfig->use_opengl + 1) % 3;
+		if (pConfig->use_opengl == 0) pConfig->use_opengl++;
 	}
 #else
 	if (num >= 0) {
-		config.use_opengl = (config.use_opengl == num) ? 0 : num;
+		pConfig->use_opengl = (pConfig->use_opengl == num) ? 0 : num;
 	} else {
-		config.use_opengl = (config.use_opengl + 1) % 3;
+		pConfig->use_opengl = (pConfig->use_opengl + 1) % 3;
 	}
 #endif
 
 #ifndef OPENGL_IMMCHANGE
-	if (config.use_opengl != next_use_opengl) {
+	if (pConfig->use_opengl != next_use_opengl) {
 		need_restart = CMsg::LB_Need_restart_program_RB;
 	}
 #endif
-	out_infoc_x(list[config.use_opengl], need_restart, 0);
+	out_infoc_x(list[pConfig->use_opengl], need_restart, 0);
 
 #ifdef OPENGL_IMMCHANGE
-	use_opengl = config.use_opengl;
+	use_opengl = pConfig->use_opengl;
 	gui->GetMyFrame()->ChangePanel(use_opengl);
 #endif
 }

@@ -81,44 +81,44 @@ bool VolumeBox::Show(GtkWidget *parent_window)
 void VolumeBox::SetPtr()
 {
 	int i = 0;
-	p_volume[i++] = &config.volume;
-	p_volume[i++] = &config.beep_volume;
+	p_volume[i++] = &pConfig->volume;
+	p_volume[i++] = &pConfig->beep_volume;
 #if defined(_MBS1)
-	p_volume[i++] = &config.psg_volume;
-	p_volume[i++] = &config.psgexfm_volume;
-	p_volume[i++] = &config.psgexssg_volume;
-	p_volume[i++] = &config.psgexpcm_volume;
-	p_volume[i++] = &config.psgexrhy_volume;
-	p_volume[i++] = &config.opnfm_volume;
-	p_volume[i++] = &config.opnssg_volume;
-	p_volume[i++] = &config.opnpcm_volume;
-	p_volume[i++] = &config.opnrhy_volume;
+	p_volume[i++] = &pConfig->psg_volume;
+	p_volume[i++] = &pConfig->psgexfm_volume;
+	p_volume[i++] = &pConfig->psgexssg_volume;
+	p_volume[i++] = &pConfig->psgexpcm_volume;
+	p_volume[i++] = &pConfig->psgexrhy_volume;
+	p_volume[i++] = &pConfig->opnfm_volume;
+	p_volume[i++] = &pConfig->opnssg_volume;
+	p_volume[i++] = &pConfig->opnpcm_volume;
+	p_volume[i++] = &pConfig->opnrhy_volume;
 #endif
-	p_volume[i++] = &config.psg6_volume;
-	p_volume[i++] = &config.psg9_volume;
-	p_volume[i++] = &config.relay_volume;
-	p_volume[i++] = &config.cmt_volume;
-	p_volume[i++] = &config.fdd_volume;
+	p_volume[i++] = &pConfig->psg6_volume;
+	p_volume[i++] = &pConfig->psg9_volume;
+	p_volume[i++] = &pConfig->relay_volume;
+	p_volume[i++] = &pConfig->cmt_volume;
+	p_volume[i++] = &pConfig->fdd_volume;
 
 	i = 0;
-	p_mute[i++] = &config.mute;
-	p_mute[i++] = &config.beep_mute;
+	p_mute[i++] = &pConfig->mute;
+	p_mute[i++] = &pConfig->beep_mute;
 #if defined(_MBS1)
-	p_mute[i++] = &config.psg_mute;
-	p_mute[i++] = &config.psgexfm_mute;
-	p_mute[i++] = &config.psgexssg_mute;
-	p_mute[i++] = &config.psgexpcm_mute;
-	p_mute[i++] = &config.psgexrhy_mute;
-	p_mute[i++] = &config.opnfm_mute;
-	p_mute[i++] = &config.opnssg_mute;
-	p_mute[i++] = &config.opnpcm_mute;
-	p_mute[i++] = &config.opnrhy_mute;
+	p_mute[i++] = &pConfig->psg_mute;
+	p_mute[i++] = &pConfig->psgexfm_mute;
+	p_mute[i++] = &pConfig->psgexssg_mute;
+	p_mute[i++] = &pConfig->psgexpcm_mute;
+	p_mute[i++] = &pConfig->psgexrhy_mute;
+	p_mute[i++] = &pConfig->opnfm_mute;
+	p_mute[i++] = &pConfig->opnssg_mute;
+	p_mute[i++] = &pConfig->opnpcm_mute;
+	p_mute[i++] = &pConfig->opnrhy_mute;
 #endif
-	p_mute[i++] = &config.psg6_mute;
-	p_mute[i++] = &config.psg9_mute;
-	p_mute[i++] = &config.relay_mute;
-	p_mute[i++] = &config.cmt_mute;
-	p_mute[i++] = &config.fdd_mute;
+	p_mute[i++] = &pConfig->psg6_mute;
+	p_mute[i++] = &pConfig->psg9_mute;
+	p_mute[i++] = &pConfig->relay_mute;
+	p_mute[i++] = &pConfig->cmt_mute;
+	p_mute[i++] = &pConfig->fdd_mute;
 }
 
 void VolumeBox::SetVolume(int index, int value)

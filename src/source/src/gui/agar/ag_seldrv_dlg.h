@@ -29,7 +29,7 @@ private:
 	int def_num;
 	_TCHAR prefix[32];
 
-	AG_Button *btn[MAX_DRIVE];
+	AG_Button *btn[USE_FLOPPY_DISKS];
 
 	void SelectDrive(AG_Window *win, int sel_drv);
 

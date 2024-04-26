@@ -17,7 +17,7 @@
 #include "../../rec_video_defs.h"
 #include "../../common.h"
 
-#if defined(USE_REC_VIDEO) && defined(USE_CAP_SCREEN_COCOA)
+#if defined(USE_CAPTURE_SCREEN_PNG) && defined(USE_CAP_SCREEN_COCOA)
 
 class EMU;
 class REC_VIDEO;
@@ -40,6 +40,6 @@ public:
 
 };
 
-#endif /* USE_REC_VIDEO && USE_CAP_SCREEN_COCOA */
+#endif /* USE_CAPTURE_SCREEN_PNG && USE_CAP_SCREEN_COCOA */
 
 #endif /* _COCOA_RECORD_VIDEO_H_ */

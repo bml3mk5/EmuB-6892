@@ -17,6 +17,7 @@
 #include "../../depend.h"
 #include <stdio.h>
 #include <math.h>
+#include "../../utility.h"
 
 L3Basic::L3Basic(MEMORY *mem)
 {
@@ -245,16 +246,16 @@ bool L3Basic::SetVariableName(int &var_type, int name_cnt, const _TCHAR **names)
 	match = MatchString(match, variable_name.Get(), name_cnt, names);
 	switch(var_type & 0xf) {
 	case 3:	// string
-		strcat((char *)&buffer[pos], sign[1]);
+		UTILITY::strcat((char *)&buffer[pos], sizeof(buffer) - (size_t)pos, sign[1]);
 		break;
 	case 4:	// single float
-		strcat((char *)&buffer[pos], sign[2]);
+		UTILITY::strcat((char *)&buffer[pos], sizeof(buffer) - (size_t)pos, sign[2]);
 		break;
 	case 8:	// double float
-		strcat((char *)&buffer[pos], sign[3]);
+		UTILITY::strcat((char *)&buffer[pos], sizeof(buffer) - (size_t)pos, sign[3]);
 		break;
 	default: // case 2: // integer
-		strcat((char *)&buffer[pos], sign[0]);
+		UTILITY::strcat((char *)&buffer[pos], sizeof(buffer) - (size_t)pos, sign[0]);
 		break;
 	}
 	variable_name.SetN((const char *)&buffer[pos]);
@@ -268,11 +269,11 @@ void L3Basic::PrintVariableName()
 	dc->Print(variable_name.Get(), false);
 }
 
-int L3Basic::SetUint8(const uint8_t *val, uint8_t *buf, int pos)
+int L3Basic::SetUint8(const uint8_t *val, uint8_t *buf, size_t bufsiz, int pos)
 {
 	uint8_t svalue[64];
-	sprintf((char *)svalue, "%d", (int)(uint32_t)val[0]);
-	strcpy((char *)buf, (const char *)svalue);
+	UTILITY::sprintf((char *)svalue, 64, "%d", (int)(uint32_t)val[0]);
+	UTILITY::strcpy((char *)buf, bufsiz, (const char *)svalue);
 	return (int)strlen((char *)svalue)+pos;
 }
 
@@ -283,12 +284,12 @@ int L3Basic::CalcInt16(const uint8_t *val)
 	return value;
 }
 
-int L3Basic::SetInt16(const uint8_t *val, uint8_t *buf, int pos)
+int L3Basic::SetInt16(const uint8_t *val, uint8_t *buf, size_t bufsiz, int pos)
 {
 	uint8_t svalue[64];
 	int value = CalcInt16(val);
-	sprintf((char *)svalue, "%d", value);
-	strcpy((char *)buf, (const char *)svalue);
+	UTILITY::sprintf((char *)svalue, 64, "%d", value);
+	UTILITY::strcpy((char *)buf, bufsiz, (const char *)svalue);
 	return (int)strlen((char *)svalue)+pos;
 }
 
@@ -364,7 +365,7 @@ double L3Basic::CalcFloat(uint8_t *val, int siz)
 	return value;
 }
 
-void L3Basic::FormatFloat(double value, int siz, char *buf)
+void L3Basic::FormatFloat(double value, int siz, char *buf, size_t bufsiz)
 {
 	char tmp[128];
 	int exp = 0;
@@ -378,10 +379,10 @@ void L3Basic::FormatFloat(double value, int siz, char *buf)
 	memset(tmp, '0', 64);
 	if (siz == 4) {
 		wid = 6;
-		sprintf(base, "%+.6E", value);
+		UTILITY::sprintf(base, 64, "%+.6E", value);
 	} else {
 		wid = 16;
-		sprintf(base, "%+.16E", value);
+		UTILITY::sprintf(base, 64, "%+.16E", value);
 	}
 	p = strchr(base, 'E');
 	sscanf(p, "E%d", &exp);
@@ -421,7 +422,7 @@ void L3Basic::FormatFloat(double value, int siz, char *buf)
 			base--;
 			*base = '-';
 		}
-		sprintf(buf, "%s%c%+03d", base, siz == 4 ? 'E' : 'D', exp);
+		UTILITY::sprintf(buf, bufsiz, "%s%c%+03d", base, siz == 4 ? 'E' : 'D', exp);
 	} else {
 		if (len > (exp + 1)) {
 			p = base + len;
@@ -443,14 +444,14 @@ void L3Basic::FormatFloat(double value, int siz, char *buf)
 			base--;
 			*base = '-';
 		}
-		sprintf(buf, "%s", base);
+		UTILITY::sprintf(buf, bufsiz, "%s", base);
 	}
 }
 
-int L3Basic::SetFloat(uint8_t *val, int siz, uint8_t *buf, int pos)
+int L3Basic::SetFloat(uint8_t *val, int siz, uint8_t *buf, size_t bufsiz, int pos)
 {
 	double value = CalcFloat(val, siz);
-	FormatFloat(value, siz, (char *)buf);
+	FormatFloat(value, siz, (char *)buf, bufsiz);
 	return (int)strlen((char *)buf)+pos;
 }
 
@@ -458,7 +459,7 @@ void L3Basic::PrintFloat(uint8_t *val, int siz)
 {
 	char buf[64];
 	double value = CalcFloat(val, siz);
-	FormatFloat(value, siz, buf);
+	FormatFloat(value, siz, buf, sizeof(buf));
 	CTchar nbuf(buf);
 	dc->Printf(_T(" = %s (&H%X)"), nbuf.Get(), ((int)value & 0xffff));
 }
@@ -855,7 +856,7 @@ void L3Basic::PrintList(int start_num, int end_num, uint32_t cur_addr)
 		}
 		lnum = (int)ReadData16m(addr, 3);
 		addr += 2;
-		sprintf((char *)line, "%d ", lnum);
+		UTILITY::sprintf((char *)line, sizeof(line), "%d ", lnum);
 		if (cur_addr > 0) {
 			if (MapAddr(addr, 3) == MapAddr(cur_addr + 4, 1)) {
 				cur_addr += 4;
@@ -900,7 +901,7 @@ void L3Basic::PrintList(int start_num, int end_num, uint32_t cur_addr)
 					}
 					if ((data & 0x7f) < basic_sentences->Count()) {
 						p = basic_sentences->Item(data & 0x7f);
-						strcpy((char *)&line[pos], p->Get());
+						UTILITY::strcpy((char *)&line[pos], sizeof(line) - (size_t)pos, p->Get());
 						pos += p->Length();
 					}
 					phase = 0;
@@ -916,7 +917,7 @@ void L3Basic::PrintList(int start_num, int end_num, uint32_t cur_addr)
 					CNchar *p;
 					if ((data & 0x7f) < basic_functions->Count()) {
 						p = basic_functions->Item(data & 0x7f);
-						strcpy((char *)&line[pos], p->Get());
+						UTILITY::strcpy((char *)&line[pos], sizeof(line) - (size_t)pos, p->Get());
 						pos += p->Length();
 					}
 					phase = 0;
@@ -926,19 +927,19 @@ void L3Basic::PrintList(int start_num, int end_num, uint32_t cur_addr)
 					if (data == 1) {
 						// 1byte integer
 						val[0] = ReadLine8(addr++, pos, cur_addr, cur_pos);
-						pos = SetUint8(val, &line[pos], pos);
+						pos = SetUint8(val, &line[pos], sizeof(line) - (size_t)pos, pos);
 					} else if (data == 0xf2 || data == 2) {
 						// 2bytes integer
 						for(int i=0; i<2; i++) val[i] = ReadLine8(addr++, pos, cur_addr, cur_pos);
-						pos = SetInt16(val, &line[pos], pos);
+						pos = SetInt16(val, &line[pos], sizeof(line) - (size_t)pos, pos);
 					} else if (data == 4) {
 						// 4bytes single float
 						for(int i=0; i<4; i++) val[i] = ReadLine8(addr++, pos, cur_addr, cur_pos);
-						pos = SetFloat(val, 4, &line[pos], pos);
+						pos = SetFloat(val, 4, &line[pos], sizeof(line) - (size_t)pos, pos);
 					} else if (data == 8) {
 						// 8bytes double float
 						for(int i=0; i<8; i++) val[i] = ReadLine8(addr++, pos, cur_addr, cur_pos);
-						pos = SetFloat(val, 8, &line[pos], pos);
+						pos = SetFloat(val, 8, &line[pos], sizeof(line) - (size_t)pos, pos);
 					}
 					phase = 0;
 				} else {

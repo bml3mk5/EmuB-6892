@@ -280,7 +280,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SDL|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>false</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -307,8 +307,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -316,7 +316,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SDL_Dbgr|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>false</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -343,8 +343,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -352,7 +352,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SDL2|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>false</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -379,8 +379,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -388,7 +388,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_SDL2_Dbgr|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>false</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -415,8 +415,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -427,7 +427,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -453,8 +453,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -465,7 +465,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -491,8 +491,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -503,7 +503,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -530,8 +530,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -542,7 +542,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BrowseInformation>true</BrowseInformation>
       <CompileAsManaged>false</CompileAsManaged>
@@ -569,8 +569,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_DEBUG_LOG;_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -578,7 +578,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_SDL|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -601,8 +601,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -610,7 +610,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_SDL_Dbgr|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -633,8 +633,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -642,7 +642,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_SDL2|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -665,8 +665,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -674,7 +674,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_SDL2_Dbgr|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -697,8 +697,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -709,7 +709,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -732,8 +732,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -744,7 +744,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -767,8 +767,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDLIncludeDir);$(SDLTtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -779,7 +779,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -802,8 +802,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -814,7 +814,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2Dir)include;$(SDL2TtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -837,8 +837,8 @@
       <Command>post_build.bat $(SolutionDir) $(Configuration)\$(Platform)</Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(IncludePath);$(SDLDir)include;$(SDLTtfDir);$(LibIntlDir)include;$(GLEWDir)include;$(FFMpegDir)include;..\include;\Devel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IncludePath);$(SDL2IncludeDir);$(SDL2TtfDir);$(FFMpegIncludeDir);$(GLEWDir)include;..\include;$(DevelopBase)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BML3MK5;USE_SDL2;GUI_TYPE_WINDOWS;USE_OPENGL;USE_GETTEXT;USE_DEBUGGER;$(Platform);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Manifest>
       <AdditionalManifestFiles>$(SolutionDir)\..\src\res\windows\style_x86.manifest</AdditionalManifestFiles>
@@ -868,10 +868,12 @@
     <ClCompile Include="..\src\gui\windows\win_folderbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_fontbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_gui.cpp" />
+    <ClCompile Include="..\src\gui\windows\win_joysetbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_key_trans.cpp" />
     <ClCompile Include="..\src\gui\windows\win_keybindbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_keybindctrl.cpp" />
     <ClCompile Include="..\src\gui\windows\win_ledbox.cpp" />
+    <ClCompile Include="..\src\gui\windows\win_loggingbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_recaudbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_recvidbox.cpp" />
     <ClCompile Include="..\src\gui\windows\win_seldrvbox.cpp" />
@@ -904,8 +906,10 @@
     <ClCompile Include="..\src\osd\emu_input_keysym.cpp" />
     <ClCompile Include="..\src\osd\emu_screen.cpp" />
     <ClCompile Include="..\src\osd\emu_sound.cpp" />
+    <ClCompile Include="..\src\osd\keybind.cpp" />
     <ClCompile Include="..\src\osd\logging.cpp" />
     <ClCompile Include="..\src\osd\opengl.cpp" />
+    <ClCompile Include="..\src\osd\parseopt.cpp" />
     <ClCompile Include="..\src\osd\screenmode.cpp" />
     <ClCompile Include="..\src\osd\simple_clocale.cpp" />
     <ClCompile Include="..\src\osd\vkeyboardbase.cpp" />
@@ -915,6 +919,7 @@
     <ClCompile Include="..\src\utility.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_loadlib.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_audio.cpp" />
+    <ClCompile Include="..\src\video\ffmpeg\ffm_rec_base.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_video.cpp" />
     <ClCompile Include="..\src\video\rec_audio.cpp" />
     <ClCompile Include="..\src\video\rec_video.cpp" />
@@ -1012,10 +1017,12 @@
     <ClInclude Include="..\src\gui\windows\win_folderbox.h" />
     <ClInclude Include="..\src\gui\windows\win_fontbox.h" />
     <ClInclude Include="..\src\gui\windows\win_gui.h" />
+    <ClInclude Include="..\src\gui\windows\win_joysetbox.h" />
     <ClInclude Include="..\src\gui\windows\win_key_trans.h" />
     <ClInclude Include="..\src\gui\windows\win_keybindbox.h" />
     <ClInclude Include="..\src\gui\windows\win_keybindctrl.h" />
     <ClInclude Include="..\src\gui\windows\win_ledbox.h" />
+    <ClInclude Include="..\src\gui\windows\win_loggingbox.h" />
     <ClInclude Include="..\src\gui\windows\win_recaudbox.h" />
     <ClInclude Include="..\src\gui\windows\win_recvidbox.h" />
     <ClInclude Include="..\src\gui\windows\win_seldrvbox.h" />
@@ -1046,13 +1053,14 @@
     <ClInclude Include="..\src\osd\d88_files.h" />
     <ClInclude Include="..\src\osd\debugger_console.h" />
     <ClInclude Include="..\src\osd\emu_input.h" />
+    <ClInclude Include="..\src\osd\keybind.h" />
     <ClInclude Include="..\src\osd\opengl.h" />
+    <ClInclude Include="..\src\osd\parseopt.h" />
     <ClInclude Include="..\src\osd\screenmode.h" />
     <ClInclude Include="..\src\osd\simple_clocale.h" />
     <ClInclude Include="..\src\osd\vkeyboardbase.h" />
     <ClInclude Include="..\src\osd\windowmode.h" />
     <ClInclude Include="..\src\osd\windows\win_uart.h" />
-    <ClInclude Include="..\src\parseopt.h" />
     <ClInclude Include="..\src\rec_video_defs.h" />
     <ClInclude Include="..\src\res\resource.h" />
     <ClInclude Include="..\src\simple_ini.h" />
@@ -1061,6 +1069,7 @@
     <ClInclude Include="..\src\version.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_loadlib.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_audio.h" />
+    <ClInclude Include="..\src\video\ffmpeg\ffm_rec_base.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_video.h" />
     <ClInclude Include="..\src\video\rec_audio.h" />
     <ClInclude Include="..\src\video\rec_video.h" />

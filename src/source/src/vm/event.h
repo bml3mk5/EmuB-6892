@@ -101,9 +101,12 @@ private:
 	int sound_buffer_overflow;
 	int sound_rate;
 	int sound_samples;
+	int sound_samples_25;
 	int sound_tmp_samples;
 	int accum_samples;
+	double update_samples_real;
 	int update_samples;
+	int update_samples_adjust;
 //	int update_sound_rate_f;
 //	int sound_rate_f;
 	int master_volume;

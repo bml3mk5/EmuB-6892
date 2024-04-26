@@ -44,6 +44,10 @@
         SDL-1.2.15-mac-keyboard.patch ...
                              SDL macでfnキーを使えるようにするパッチファイル
         SDL_net-1.2.8.patch ... SDL_net-1.2.8用パッチファイル
+        SDL-2.0.8-mac-keyboard.patch ...
+                             SDL2 macでfnキーを使えるようにするパッチファイル
+        SDL-2.26.5-mac-keyboard.patch ...
+                             SDL2 macでfnキーを使えるようにするパッチファイル
         SDL2_net-2.0.0.patch .. SDL_net-2.0.0用パッチファイル
       Eclipse/ ............. Eclipseプロジェクトファイル
         sdl_linux/ ......... SDL linux用
@@ -63,10 +67,9 @@
 
 * 以下のバージョンがあります。
 
- + SDL1 + Cocoa版 -> Makefile.mac_cocoa, Makefile.mac_cocoa_dbgr
  + SDL2 + Cocoa版 -> Makefile.mac_cocoa2, Makefile.mac_cocoa2_dbgr
- + SDL1 + Agar版  -> Makefile.mac_agar, Makefile.mac_agar_dbgr
 
+  * 上記以外のMakefileは現在メンテナンスしていません。
 
 #### 1. 開発環境の構築
 
@@ -76,14 +79,13 @@
  * コンパイルに必要なライブラリをインストールします。
    ターミナル上で行います。(Xcodeは使用しません。)
 
-  + SDL1の場合
+  + ソースコードからビルドする場合
 
-   - SDL-1.2.15
+   - SDL2-2.26.5
 
-    ソースからインストール
     1. パッチを適用します。
 
-           patch -p 1 < SDL-1.2.15-mac-keyboard.patch
+           patch -p 1 < SDL2-2.26.5-mac-keyboard.patch
 
     2. ビルド＆インストール
 
@@ -91,90 +93,39 @@
            make
            make install
 
-   - SDL_ttf-1.0.20
-
-    ソースからインストール
+   - SDL2_ttf-2.20.2
 
         ./configure
         make
         make install
 
-   - Agar-1.4.1 (Agar版のみ必要。Cocoa版は不要)
+   - FFmpeg-4.x (https://ffmpeg.org/)
 
-    ソースからインストール
-
-    1. パッチを適用します。
-
-           patch -p 1 < agar-1.4.1.patch
-
-    2. ビルド
-
-           ./configure
-           make depend
-           make
-           make install
-
-
-    * beta版を使用する場合は、--disable-audio, --without-jpeg, 
-      --without-png も入れます。
-    * config/have_libpng14.hがないといわれたら自分で作る。
-      内容は#undef HAVE_LIBPNG14としておく。
-
-
-  + SDL2の場合
-
-   - SDL2-2.0.8
-
-    ソースからインストール
-
-    1. パッチを適用します。
-
-           patch -p 1 < SDL2-2.0.8-mac-keyboard.patch
-
-    2. ビルド＆インストール
-
-           ./configure
-           make
-           make install
-
-   - SDL2_ttf-2.0.12
-
-    ソースからインストール
-
-        ./configure
-        make
-        make install
-
-
-  + 共通
-
-   - FFmpeg-3.x (libavcodec57, libavutil55, libavformat57, libswscale4)
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
+
     * ヘッダファイルが必要です。
     includeフォルダにヘッダファイルを入れてください。
+
     * ビルド方法は以下を参考：
-     [CompilationGuide/MacOSX – FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
+     [CompilationGuide/MacOSX - FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
 
 
-  + 以下は任意。通常は不要
-   * gettext-0.19.4(libintl)(現バージョンでは使用しません。)
-     ソースからインストール(http://www.gnu.org/software/gettext/)
+  + Homebrewを使用する場合
 
-         ./configure
-         make
-         make install
+   - sdl2, sdl2_ttf, ffmpeg@4 をインストールしてください。
 
 
 #### 2. コンパイル（コマンドラインを使用する場合）
 
  ターミナル上で行います。
 
- * Makefileの種類
+ * Homebrewからインストールした場合、Makefile中にある変数を変更してください。
 
-  + SDL1 + Cocoa版 -> Makefile.mac_cocoa, Makefile.mac_cocoa_dbgr
-  + SDL2 + Cocoa版 -> Makefile.mac_cocoa2, Makefile.mac_cocoa2_dbgr
-  + SDL1 + Agar版  -> Makefile.mac_agar, Makefile.mac_agar_dbgr
+  + SDLPATH を /opt/homebrew に変更
+
+  + SDL_CFLAGS に -I/opt/homebrew/opt/ffmpeg@4/include を追加
+
 
  * sharedなバイナリを作成する場合
 
@@ -196,9 +147,10 @@
     してください。
 
 
+
 #### 3. コンパイル（Xcodeを使用する場合）
 
- Xcodeフォルダにあるプロジェクトを開く。
+ * Xcodeフォルダにあるプロジェクトを開く。
 
  * ヘッダファイルやライブラリが/usr/local以外にあるときは
    BuildSettings -> Search Paths にある
@@ -210,16 +162,9 @@
 
 * 以下のバージョンがあります。
 
- + GTK+3 + SDL1版 -> Makefile.linux_gtk_sdl, Makefile.linux_gtk_sdl_dbgr
- + GTK+3 + SDL2版 -> Makefile.linux_gtk_sdl2
- + SDL1 + GTK+版 -> Makefile.linux_sdl_gtk, Makefile.linux_sdl_gtk_dbgr (不安定)
- + SDL1 + Agar版 -> Makefile.linux_agar
+ + GTK+3 + SDL2版 -> Makefile.linux_gtk_sdl2, Makefile.linux_gtk_sdl2_dbgr
 
-  **SDL1 + GTK+版 と GTK+3 + SDL1版 との違い**
-
-  * 前者はメインウィンドウやイベント処理をSDLで行い、メニュー表示をGTK+で行います。
-  * 後者はメインウィンドウやイベント処理をGTK+で行い、画面描画の一部処理をSDLで行います。
-
+  * 上記以外のMakefileは現在メンテナンスしていません。
 
 #### 1. 開発環境の構築
 
@@ -230,111 +175,19 @@
 
   + 必要なライブラリ
    - コンパイラ: gcc, g++, make
-   - 画面系: libX11-dev, gtk+, libext-dev, libfreetype-dev, libGL-mesa-dev,
-          libsdl-dev, libsdl-ttf-dev
-   - サウンド系: libasound2-dev, libpulseaudio-dev などなど
-   - 録画用: libavcodec57-dev, libavutil55-dev, libavformat57-dev, libswscale4-dev
-
- * コンパイルに必要なライブラリをインストールします。
-
-  + SDL1の場合
-
-   - SDL-1.2.15
-
-    付属のパッケージからインストール: libsdl1.2-dev
-    or ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-   - SDL_ttf-1.0.20
-
-    付属のパッケージからインストール: libsdl-ttf2.0-dev
-    or ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-   - Agar-1.4.1 (Agar版のみ必要。GTK+版は不要)
-
-    ソースからインストール
-
-    1. パッチを適用します。
-
-           patch -p 1 < agar-1.4.1.patch
-
-    2. pthreadがないとエラーになる可能性があるのでスレッドを無効に
-     してビルドします。
-
-           ./configure --disable-threads --without-xinerama
-           make depend
-           make
-           make install
-
-    * beta版を使用する場合は、--disable-audio, --without-jpeg, 
-      --without-png も入れます。
-    * include/agar/config/have_libpng14.hがないといわれたら自分で作る。
-      内容は#undef HAVE_LIBPNG14としておく。
-    * makeで--tag=CCが不正なオプションとしてエラーになる時は、mk/build.lib.mkを
-      編集してLIBTOOLOPTS?=を空にする。
-
-
-  + SDL2の場合
-
-   - SDL2-2.0.x
-
-    付属のパッケージからインストール。
-
-    ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-   - SDL2_ttf-2.0.x
-
-    付属のパッケージからインストール。
-
-    ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-
-  + 共通
-
-   * FFmpeg-3.x (libavcodec57, libavutil55, libavformat57, libswscale4)
-    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
-    コメントアウトする。)
-    * ヘッダファイルが必要です。
-    * 付属のパッケージからインストール。ただし、バージョンが古いと使用できない。
-
-    * ソースからインストールする場合
-
-          ./configure --disable-static --enable-shared --disable-programs
-             --disable-doc
-          make
-          make install
-
+   - 画面系: gtk-3.0-dev, libsdl2-dev, libsdl2-ttf-dev
+   - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
+     (これらはffmpeg4のライブラリ)
 
 #### 2. コンパイル
 
  ターミナル(端末)上で行います。
 
- * Makefileの種類
-
-  + GTK+3 + SDL1版 -> Makefile.linux_gtk_sdl, Makefile.linux_gtk_sdl_dbgr
-  + GTK+3 + SDL2版 -> Makefile.linux_gtk_sdl2
-  + SDL1 + GTK+版 -> Makefile.linux_sdl_gtk, Makefile.linux_sdl_gtk_dbgr (不安定)
-  + SDL1 + Agar版 -> Makefile.linux_agar
-
  * sharedなバイナリを作成する場合
+  - ライブラリをパッケージからインストールしている場合はこちらでビルド。
 
-       make -f Makefile.xxx clean
-       make -f Makefile.xxx install
+         make -f Makefile.xxx clean
+         make -f Makefile.xxx install
 
   * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
     そこに必要なファイルをコピーします。
@@ -344,161 +197,54 @@
 
  * staticなバイナリを作成する場合
 
-       make -f Makefile.xxx st_clean
-       make -f Makefile.xxx st_install
+         make -f Makefile.xxx st_clean
+         make -f Makefile.xxx st_install
 
   * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
     してください。
 
 
 ----------------------------------------
-### MinGW + MSYS (Windows)版 ###
+### MSYS2 + MinGW64 (Windows)版 ###
 
 * 以下のバージョンがあります。
 
- + SDL1 + Win GUI版 -> Makefile.win_gui
- + SDL2 + Win GUI版 -> Makefile.win_gui2
- + SDL1 + Agar版  -> Makefile.win_agar
+ + SDL2 + Win GUI版 -> Makefile.win_gui2, Makefile.win_gui2_dbgr
+
+  * 上記以外のMakefileは現在メンテナンスしていません。
 
 #### 1. 開発環境の構築
 
- * MinGWをインストール
+ * MSYS2をインストール
 
-  インストーラに従ってインストールします。
+  + インストーラに従ってインストールします。
 
-  + C Compiler, C++ Compiler, MSYS Basic SYSTEM, MSYS Developer Toolkit
-  をチェックしてインストール。
-    インターネットから必要なモジュールがダウンロードされる。
+ * MinGW64シェルを起動してコンパイルに必要なライブラリをインストールします。
 
- * MinGW Shellを起動してコンパイルに必要なライブラリをインストールします。
-
- + SDL1の場合
-
-  - SDL-1.2.15
-
-    Development Librariesかソースからインストール
-
-    ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-  - freetype-2.4.8
-
-    ソースからインストール
-
-        ./configure
-        make
-        make install
-
-  - SDL_ttf-1.0.20
-
-    Development Librariesかソースからインストール
-
-    ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-  - Agar-1.4.1 (Agar版のみ必要。Win GUI版は不要)
-
-    ソースからインストール
-
-    1. パッチを適用します。
-
-           patch -p 1 < agar-1.4.1.patch
-
-    2. pthreadがないとエラーになる可能性があるのでスレッドを無効に
-       してビルドします。
-
-           ./configure --disable-threads
-           make depend
-           make
-           make install
-
-    * beta版を使用する場合は、--disable-audio, --without-jpeg, 
-    --without-png も入れます。
-    * config/have_libpng14.hがないといわれたら自分で作る。
-      内容は#undef HAVE_LIBPNG14としておく。
-
-
- + SDL2の場合
-
-  - SDL2-2.0.x
-
-    Development Librariesかソースからインストール
-
-    ソースからインストールする場合
-
-        ./configure
-        make
-        make install
-
-  - freetype-2.5.x
-
-    ソースからインストール
-
-        ./configure
-        make
-        make install
-
-  - SDL2_ttf-2.0.x
-
-    ソースからインストール
-
-        ./configure
-        make
-        make install
-
-
- + 共通
-
-  * FFmpeg-3.x
-
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
-    コメントアウトする。)
-
-    * ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
-    * 以下のページから、FFmpeg xxxx 32/64-bit dev をダウンロードすれば、
-    ヘッダファイルを入手できます。
-    [Zeranoe's FFmpeg Builds Home Page](http://ffmpeg.zeranoe.com/builds/)
-
-
-  * 以下は任意。通常は不要
-
-   * gettext-0.19.4(libintl)(現バージョンでは使用しません)
-
-    ソースからインストール(http://www.gnu.org/software/gettext/)
-
-        ./configure
-        make
-        make install
-
+  + pacmanを使用して以下をインストール
+   - mingw-w64-x86_64-gcc
+   - mingw-w64-x86_64-make
+   - mingw-w64-x86_64-SDL2
+   - mingw-w64-x86_64-SDL2_ttf
+   - mingw-w64-x86_64-ffmpeg4.4
 
 #### 2. コンパイル
 
  MinGW Shell上で行います。
 
- + SDL1 + Win GUI版 -> Makefile.win_gui
- + SDL2 + Win GUI版 -> Makefile.win_gui2
- + SDL1 + Agar版  -> Makefile.win_agar
-
  * 必要に応じてMakefile.xxxを変更します。
 
   * MinGWのバージョンが異なる場合、GCCLIBDIRを修正。
-  * SDLLIBSのパスを修正。
+  * SH_LOCALDIR、ST_LOCALDIRのパスを修正。
     SDL, SDL_ttfなどをバイナリパッケージでインストールした場合、
-    インストール先が/usr/local/cross-tools/i386-mingw32/配下になるため
+    インストール先が/mingw64/lib/配下になるため
 
  * sharedなバイナリを作成する場合
 
        make -f Makefile.xxx clean
        make -f Makefile.xxx install
 
-  * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
+  * installは、makeを実行したディレクトリの上にReleaseSHディレクトリを作成し、
   そこに必要なファイルをコピーします。
   (/usr/localにコピーはしません。)
   * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
@@ -506,9 +252,14 @@
 
  * staticなバイナリを作成する場合
 
+  * LOCALLIBSに必要なライブラリをすべて記述してください。
+
        make -f Makefile.xxx st_clean
        make -f Makefile.xxx st_install
 
+  * installは、makeを実行したディレクトリの上にReleaseSTディレクトリを作成し、
+  そこに必要なファイルをコピーします。
+  (/usr/localにコピーはしません。)
   * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
      してください。
 
@@ -516,131 +267,41 @@
 ----------------------------------------
 ### VC++(Windows)版 ###
 
- * 以下のバージョンがあります。
-
-  + SDL1 + Win GUI版 -> xxxx_sdl.vcxproj
-  + SDL2 + Win GUI版 -> xxxx_sdl.vcxproj
-  + SDL1 + Agar版  ->xxxx_agar.vcxproj
-
 #### 1. 開発環境の構築
 
- * MinGW + MSYS (Windows)版に従いAgarまでインストール。
+* 必要なライブラリをVC++でビルドします。
 
-   AgarのビルドでBSDBuildが必要なのでこれをmsysにインストール。
-   premakeも入手しておく。
-
- * 必要なライブラリをVC++でビルドします。
-
-  + SDL1の場合
-
-   - SDL-1.2.15
-
-    バイナリかソースからインストール
-    ソースからインストールする場合
-      VisualCフォルダにあるSDL.slnを使用してビルド。
-      出来たdll,libはlib/Release/x86にコピーしておく。
-
-   - freetype-2.4.8
-
-    ソースからインストール
-      builds/win32フォルダにある中から適当に選んでビルド。
-      objs/win32にdll,libが出来る。
-
-   - SDL_ttf-1.0.20
-
-    バイナリかソースからインストール
-    ソースからインストールする場合
-      VisualCフォルダにあるSDL_ttf.slnを使用してビルド。
-
-   - Agar-1.4.1(Agar版のみ必要。)
-
-    ソースからインストール
-
-    1. パッチを適用します。(MinGW上で行う)
-
-           patch -p 1 < agar-1.4.1.patch
-
-    2. vcprojファイルを作成する。(MinGW上で行う)
-
-     * Makefile.projファイルを編集して以下の行を追加。
-
-        PROJFILES=windows:vs2005:-nothreads:--disable-threads
-        元の行は#でコメントアウト。
-        * beta版を使用する場合は、--disable-audio, --without-jpeg, 
-        --without-png も入れます。
-
-     * make projを実行。(premake.exe, zip.exeなどが必要。)
-
-        成功するとProjectFilesフォルダにvs2005-windows-notreads.zipが出来る。
-
-     * zipファイルを展開する。
-
-        カレントフォルダに展開する。各フォルダにvcprojファイルが展開される。
-
-    3. ビルド
-
-     * Agar.slnを使用してビルド。
-
-      + プロジェクト→プロパティを開き、C++の追加のインクルードディレクトリに
-        上記SDLなどのincludeへのパスを追加する。
-       - 最初に$(VCInstallDir)includeを追加したほうがいいかも。
-      + 同様にリンカの追加のライブラリディレクトリにパスを追加する。
-      + 同様にリンカの追加の依存ファイルにSDL.libなどのファイル名を追加する。
-       - core, gui だけでok.
-
-
- + SDL2の場合
-
-  - SDL2-2.0.x
+ + SDL2-2.26.5
 
     ソースからインストール
       VisualCフォルダにあるSDL.slnを使用してビルド。
       出来たdll,libはlib/Release/x86にコピーしておく。
 
-  - freetype-2.5.x
-
-    ソースからインストール
-      builds/win32フォルダにある中から適当に選んでビルド。
-      objs/win32にdll,libが出来る。
-
-  - SDL2_ttf-2.0.x
+ + SDL2_ttf-2.20.2
 
     ソースからインストール
       VisualCフォルダにあるSDL_ttf.slnを使用してビルド。
 
+ + FFmpeg-4.x (https://ffmpeg.org/)
 
- + 共通
-
-  - FFmpeg-3.x
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
+
     * ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
-    * 以下のページから、FFmpeg xxxx 32/64-bit dev をダウンロードすれば、
-    ヘッダファイルを入手できます。
-    [Zeranoe's FFmpeg Builds Home Page](http://ffmpeg.zeranoe.com/builds/)
+      includeフォルダにヘッダファイルを入れてください。
+    * 64ビット版のsharedライブラリとincludeファイルは以下のサイトから入手できます。
+      [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/)
+      にある ffmpeg-4.4.1-full_build-shared.7z をダウンロードします。
+    * ヘッダファイルがあれば、32ビット版のビルドもできます。
+    * バージョン3のヘッダファイルでもビルドできます。
+    * バージョン5のヘッダファイルでもビルドできますが動作するかは未確認。
 
-
- + 以下は任意。通常は不要
-
-  * gettext-0.19.4(libintl)(現バージョンでは使用しません)
-   + ソースを入手
-     http://www.gnu.org/software/gettext/
-   + 以下からプロジェクトファイルを入手してビルドしてください。
-     http://osdn.jp/projects/libintl-msvc10/
-   + libフォルダに作成したlibファイルを入れてください。
 
 #### 2. コンパイル
 
- * プロジェクトの種類
-
-  + SDL1 + Win GUI版 -> xxxx_sdl.vcxproj
-  + SDL2 + Win GUI版 -> xxxx_sdl.vcxproj
-  + SDL1 + Agar版  ->xxxx_agar.vcxproj
-
- * プロジェクトファイルを使用してビルド。
-   表示→プロパティマネージャを開き、Release下を開く。
-   ユーザーマクロに設定しているパスを変更する。
+ * プロジェクトファイル(*_sdl.vcxproj)を使用してビルド。
+  + 表示→プロパティマネージャを開き、Release下を開く。
+  + ユーザーマクロに設定しているパスを変更する。
 
 
 ----------------------------------------
@@ -660,7 +321,7 @@
 
 
 
-
+----------------------------------------
 ## 免責事項
 
 * このソフトはフリーウェアです。ただし、著作権は放棄しておりません。

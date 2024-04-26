@@ -111,6 +111,10 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 
 #endif /* !USE_SDL2 */
 
+	if (n_code == KEYCODE_LSHIFT || n_code == KEYCODE_RSHIFT) {
+		BIT_ONOFF(key_mod, KEY_MOD_SHIFT_KEY, (type & 1) == 0);
+	}
+
 	if (new_code) *new_code = n_code;
 	if (new_keep_frames) *new_keep_frames = n_keep_frames;
 
@@ -316,6 +320,11 @@ void EMU::translate_sdl_keysym(Uint32 e_type, Uint16 e_scancode, SDL_Keycode e_s
 
 #endif
 #endif /* USE_SDL2 */
+
+	if (n_code == KEYCODE_LSHIFT || n_code == KEYCODE_RSHIFT) {
+		BIT_ONOFF(key_mod, KEY_MOD_SHIFT_KEY, (type & 1) == 0);
+	}
+
 	if (new_type != NULL) *new_type = n_type;
 	if (new_scancode != NULL) *new_scancode = n_scancode;
 	if (new_sym  != NULL) *new_sym  = n_sym;

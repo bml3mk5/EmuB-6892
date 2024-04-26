@@ -119,11 +119,11 @@ int main(int argc, char *argv[])
 //	EMU_OSD *emu_osd = dynamic_cast<EMU_OSD *>(emu);
 
 	// load config
-	pconfig = new Config;
-	config.load(options->get_ini_file());
+	pConfig = new Config;
+	pConfig->load(options->get_ini_file());
 
 	// change locale if need
-	clocale->ChangeLocaleIfNeed(config.language);
+	clocale->ChangeLocaleIfNeed(pConfig->language);
 	logging->out_logc(LOG_INFO, _T("Locale:["), clocale->GetLocaleName(), _T("] Lang:["), clocale->GetLanguageName(), _T("]"), nullptr);
 
 	gui = new GUI(argc, argv, emu);
@@ -140,12 +140,12 @@ int main(int argc, char *argv[])
 		emu->set_gui(gui);
 
 #ifdef USE_OPENGL
-		emu->set_use_opengl(config.use_opengl);
+		emu->set_use_opengl(pConfig->use_opengl);
 #endif
 
 		// create window
 		emu->init_screen_mode();
-		if (!emu->create_screen(0, config.window_position_x, config.window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, 0)) {
+		if (!emu->create_screen(0, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, 0)) {
 			break;
 		}
 
@@ -157,12 +157,12 @@ int main(int argc, char *argv[])
 		// initialize emulation core
 		emu->initialize();
 		// restore screen mode
-		if(config.window_mode >= 0 && config.window_mode < 8) {
-			emu->change_screen_mode(config.window_mode);
+		if(pConfig->window_mode >= 0 && pConfig->window_mode < 8) {
+			emu->change_screen_mode(pConfig->window_mode);
 		}
-		else if(config.window_mode >= 8) {
-			int prev_mode = config.window_mode;
-			config.window_mode = 0;	// initialize window mode
+		else if(pConfig->window_mode >= 8) {
+			int prev_mode = pConfig->window_mode;
+			pConfig->window_mode = 0;	// initialize window mode
 			emu->change_screen_mode(prev_mode);
 		}
 		// use offscreen surface
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 			break;
 		}
 //		// set again
-//		emu->set_window(config.window_mode, desktop_width, desktop_height);
+//		emu->set_window(pConfig->window_mode, desktop_width, desktop_height);
 
 //		key_mod = emu->get_key_mod_ptr();
 
@@ -187,14 +187,14 @@ int main(int argc, char *argv[])
 	//	cond_allow_update_screen =SDL_CreateCond();
 
 		if (mainwindow->isValid()) {
-			if (config.use_opengl) {
+			if (pConfig->use_opengl) {
 				scgl = new MyGLWidget(mainwindow);
 				mainwindow->setCentralWidget(scgl);
-				scgl->resize(config.screen_width, config.screen_height);
+				scgl->resize(pConfig->screen_width, pConfig->screen_height);
 			} else {
 				sc = new MyWidget(mainwindow);
 				mainwindow->setCentralWidget(sc);
-				sc->resize(config.screen_width, config.screen_height);
+				sc->resize(pConfig->screen_width, pConfig->screen_height);
 			}
 			app.setFont(QApplication::font("QMenu"));
 
@@ -238,10 +238,10 @@ int main(int argc, char *argv[])
 	}
 
 	// save config
-	config.save();
-	config.release();
+	pConfig->save();
+	pConfig->release();
 
-	delete pconfig;
+	delete pConfig;
 	delete gui;
 	logging->set_receiver(nullptr);
 	delete emu;
@@ -442,7 +442,7 @@ void EmuThread::run()
 
 			frames.total++;
 
-			if(config.fps_no >= 0) {
+			if(pConfig->fps_no >= 0) {
 				if (fskip_remain <= 0) {
 					// constant frames per 1 second
 					if (gui->NeedUpdateScreen()) {
@@ -454,7 +454,7 @@ void EmuThread::run()
 					} else {
 						frames.skip++;
 					}
-					fskip_remain = fskip[config.fps_no];
+					fskip_remain = fskip[pConfig->fps_no];
 #ifdef LOG_MEASURE
 					skip_reason |= 0x11;
 #endif
@@ -519,7 +519,7 @@ void EmuThread::run()
 		}
 		current_time = static_cast<uint32_t>(timer->elapsed());
 #ifdef USE_PERFORMANCE_METER
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			lpCount2 = current_time;
 		}
 #endif
@@ -550,7 +550,7 @@ void EmuThread::run()
 			frames.total = frames.draw = 0;
 		}
 #ifdef USE_PERFORMANCE_METER
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			lpCount3 =  current_time;
 			if (lpCount3 > lpCount1) {
 				gdPMvalue = ((lpCount2 - lpCount1) * 100 / (lpCount3 - lpCount1)) & 0xfff;

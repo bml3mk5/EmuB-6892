@@ -19,6 +19,37 @@
 
 #define COCOA_DEFAULT_MARGIN 5
 
+#ifndef MAC_OS_X_VERSION_10_11
+#define NSModalResponseOK NSOKButton
+#define NSModalResponseCancel NSCancelButton
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_12
+#define NSTextAlignmentLeft NSLeftTextAlignment
+#define NSTextAlignmentCenter NSCenterTextAlignment
+#define NSTextAlignmentRight NSRightTextAlignment
+
+#define NSWindowStyleMaskTitled NSTitledWindowMask
+#define NSWindowStyleMaskClosable NSClosableWindowMask
+#define NSWindowStyleMaskMiniaturizable NSMiniaturizableWindowMask
+#define NSWindowStyleMaskFullScreen NSFullScreenWindowMask
+#define NSWindowStyleMaskResizable NSResizableWindowMask
+
+#define NSWindowStyleMaskFullSizeContentView NSFullSizeContentViewWindowMask
+
+#define NSCompositingOperationCopy NSCompositeCopy
+
+#define NSEventModifierFlagOption NSAlternateKeyMask
+#define NSEventModifierFlagShift NSShiftKeyMask
+#endif
+
+#ifndef MAC_OS_X_VERSION_10_14
+#define NSControlStateValueOn NSOnState
+#define NSControlStateValueOff NSOffState
+#define NSControlStateValueMixed NSMixedState
+#endif
+
+@class CocoaScrollView;
 @class CocoaLayout;
 
 /**
@@ -40,6 +71,16 @@
 + (CocoaLabel *)createI:(CMsg::Id)titleid;
 + (CocoaLabel *)createT:(const char *)title align:(NSTextAlignment)align;
 + (CocoaLabel *)createI:(CMsg::Id)titleid align:(NSTextAlignment)align;
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title;
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid;
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title width:(int)width;
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid width:(int)width;
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title width:(int)width height:(int)height;
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid width:(int)width height:(int)height;
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title align:(NSTextAlignment)align;
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid align:(NSTextAlignment)align;
++ (CocoaLabel *)createT:(CocoaLayout *)layout title:(const char *)title align:(NSTextAlignment)align width:(int)width height:(int)height;
++ (CocoaLabel *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid align:(NSTextAlignment)align width:(int)width height:(int)height;
 + (CocoaLabel *)createWithFitW:(NSRect *)re title:(const char *)title;
 + (CocoaLabel *)createWithFitW:(NSRect *)re titleid:(CMsg::Id)titleid;
 + (CocoaLabel *)createWithFitW:(NSRect *)re title:(const char *)title align:(NSTextAlignment)align;
@@ -72,6 +113,25 @@
 + (CocoaTextField *)createT:(const char *)text action:(SEL)action align:(NSTextAlignment)align;
 + (CocoaTextField *)createI:(CMsg::Id)textid action:(SEL)action;
 + (CocoaTextField *)createI:(CMsg::Id)textid action:(SEL)action align:(NSTextAlignment)align;
++ (CocoaTextField *)createN:(CocoaLayout *)layout num:(int)num action:(SEL)action width:(int)width;
++ (CocoaTextField *)createN:(CocoaLayout *)layout num:(int)num action:(SEL)action align:(NSTextAlignment)align width:(int)width;
++ (CocoaTextField *)createT:(CocoaLayout *)layout text:(const char *)text action:(SEL)action width:(int)width;
++ (CocoaTextField *)createT:(CocoaLayout *)layout text:(const char *)text action:(SEL)action align:(NSTextAlignment)align width:(int)width;
++ (CocoaTextField *)createI:(CocoaLayout *)layout text:(CMsg::Id)textid action:(SEL)action width:(int)width;
++ (CocoaTextField *)createI:(CocoaLayout *)layout text:(CMsg::Id)textid action:(SEL)action align:(NSTextAlignment)align width:(int)width;
++ (CocoaTextField *)create:(CocoaLayout *)layout action:(SEL)action width:(int)width height:(int)height;
+@end
+
+/**
+	@brief Text view
+	@note This view is in a scroll view.
+*/
+@interface CocoaTextView : NSTextView
+{
+	CocoaScrollView *parent;
+}
+@property (assign) CocoaScrollView *parent;
++ (CocoaTextView *)create:(CocoaLayout *)layout edit:(bool)edit hasvs:(bool)hasvs hashs:(bool)hashs width:(int)width height:(int)height;
 @end
 
 /**
@@ -99,6 +159,10 @@
 + (CocoaButton *)create:(NSRect)re titleid:(CMsg::Id)titleid action:(SEL)action;
 + (CocoaButton *)createT:(const char *)title action:(SEL)action;
 + (CocoaButton *)createI:(CMsg::Id)titleid action:(SEL)action;
++ (CocoaButton *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action;
++ (CocoaButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action;
++ (CocoaButton *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action width:(int)width;
++ (CocoaButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action width:(int)width;
 @end
 
 /**
@@ -111,6 +175,12 @@
 + (CocoaPopUpButton *)createI:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx;
 + (CocoaPopUpButton *)createI:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx appendnum:(int)appendnum appendstr:(CMsg::Id)appendstr;
 + (CocoaPopUpButton *)createL:(const CPtrList<CTchar> *)items action:(SEL)action selidx:(int)selidx;
++ (CocoaPopUpButton *)createT:(CocoaLayout *)layout items:(const char **)items action:(SEL)action selidx:(int)selidx;
++ (CocoaPopUpButton *)createT:(CocoaLayout *)layout items:(const char **)items action:(SEL)action selidx:(int)selidx width:(int)width;
++ (CocoaPopUpButton *)createI:(CocoaLayout *)layout items:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx;
++ (CocoaPopUpButton *)createI:(CocoaLayout *)layout items:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx width:(int)width;
++ (CocoaPopUpButton *)createI:(CocoaLayout *)layout items:(const CMsg::Id *)itemids action:(SEL)action selidx:(int)selidx appendnum:(int)appendnum appendstr:(CMsg::Id)appendstr;
++ (CocoaPopUpButton *)createL:(CocoaLayout *)layout items:(const CPtrList<CTchar> *)items action:(SEL)action selidx:(int)selidx;
 - (void)addItemsT:(const char **)items selidx:(int)selidx;
 - (void)addItemsI:(const CMsg::Id *)itemids selidx:(int)selidx;
 - (void)addItemsI:(const CMsg::Id *)itemids selidx:(int)selidx appendnum:(int)appendnum appendstr:(CMsg::Id)appendstr;
@@ -133,6 +203,12 @@
 + (CocoaCheckBox *)createI:(CMsg::Id)titleid action:(SEL)action value:(bool)value;
 + (CocoaCheckBox *)createT:(const char *)title index:(int)index action:(SEL)action value:(bool)value;
 + (CocoaCheckBox *)createI:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value;
++ (CocoaCheckBox *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action value:(bool)value;
++ (CocoaCheckBox *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action value:(bool)value;
++ (CocoaCheckBox *)createT:(CocoaLayout *)layout title:(const char *)title index:(int)index action:(SEL)action value:(bool)value;
++ (CocoaCheckBox *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value;
++ (CocoaCheckBox *)createT:(CocoaLayout *)layout title:(const char *)title index:(int)index action:(SEL)action value:(bool)value width:(int)width height:(int)height;
++ (CocoaCheckBox *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value width:(int)width height:(int)height;
 @end
 
 /**
@@ -147,6 +223,10 @@
 + (CocoaRadioButton *)createI:(CMsg::Id)titleid action:(SEL)action value:(bool)value;
 + (CocoaRadioButton *)createT:(const char *)title index:(int)index action:(SEL)action value:(bool)value;
 + (CocoaRadioButton *)createI:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value;
++ (CocoaRadioButton *)createT:(CocoaLayout *)layout title:(const char *)title action:(SEL)action value:(bool)value;
++ (CocoaRadioButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid action:(SEL)action value:(bool)value;
++ (CocoaRadioButton *)createT:(CocoaLayout *)layout title:(const char *)title index:(int)index action:(SEL)action value:(bool)value;
++ (CocoaRadioButton *)createI:(CocoaLayout *)layout title:(CMsg::Id)titleid index:(int)index action:(SEL)action value:(bool)value;
 @end
 
 /**
@@ -159,6 +239,12 @@
 + (CocoaRadioGroup *)create:(int)height rows:(int)rows titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx;
 + (CocoaRadioGroup *)create:(int)width cols:(int)cols titles:(const char **)titles action:(SEL)action selidx:(int)selidx;
 + (CocoaRadioGroup *)create:(int)width cols:(int)cols titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx;
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout rect:(NSRect)re rows:(int)rows cols:(int)cols titles:(const char **)titles action:(SEL)action selidx:(int)selidx;
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout rect:(NSRect)re rows:(int)rows cols:(int)cols titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx;
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout height:(int)height rows:(int)rows titles:(const char **)titles action:(SEL)action selidx:(int)selidx;
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout height:(int)height rows:(int)rows titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx;
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout width:(int)width cols:(int)cols titles:(const char **)titles action:(SEL)action selidx:(int)selidx;
++ (CocoaRadioGroup *)create:(CocoaLayout *)layout width:(int)width cols:(int)cols titleids:(const CMsg::Id *)titleids action:(SEL)action selidx:(int)selidx;
 - (void)addItemsT:(const char **)titles rows:(int)rows cols:(int)cols selidx:(int)selidx width:(int)width height:(int)height;
 - (void)addItemsI:(const CMsg::Id *)titleids rows:(int)rows cols:(int)cols selidx:(int)selidx width:(int)width height:(int)height;
 @end
@@ -176,7 +262,27 @@
 + (CocoaSlider *)create:(NSRect)re index:(int)index action:(SEL)action value:(int)value;
 #endif
 + (CocoaSlider *)createN:(SEL)action value:(int)value;
++ (CocoaSlider *)createN:(SEL)action min:(int)min_val max:(int)max_val value:(int)value;
 + (CocoaSlider *)createN:(int)index action:(SEL)action value:(int)value;
++ (CocoaSlider *)createN:(int)index action:(SEL)action min:(int)min_val max:(int)max_val value:(int)value;
++ (CocoaSlider *)createN:(CocoaLayout *)layout action:(SEL)action value:(int)value width:(int)width height:(int)height;
++ (CocoaSlider *)createN:(CocoaLayout *)layout action:(SEL)action min:(int)min_val max:(int)max_val value:(int)value width:(int)width height:(int)height;
++ (CocoaSlider *)createN:(CocoaLayout *)layout index:(int)index action:(SEL)action value:(int)value width:(int)width height:(int)height;
++ (CocoaSlider *)createN:(CocoaLayout *)layout index:(int)index action:(SEL)action min:(int)min_val max:(int)max_val value:(int)value width:(int)width height:(int)height;
+@end
+
+/**
+	@brief Stepper control
+*/
+@interface CocoaStepper : NSStepper
+{
+	CocoaTextField *text;
+}
+@property (retain) CocoaTextField *text;
++ (CocoaStepper *)createMin:(int)min_val max:(int)max_val value:(int)value;
++ (CocoaStepper *)createN:(CocoaLayout *)layout min:(int)min_val max:(int)max_val value:(int)value;
++ (CocoaStepper *)createN:(CocoaLayout *)layout min:(int)min_val max:(int)max_val value:(int)value width:(int)width;
++ (CocoaStepper *)createN:(CocoaLayout *)layout min:(int)min_val max:(int)max_val value:(int)value width:(int)width height:(int)height;
 @end
 
 /**
@@ -191,9 +297,13 @@
 + (CocoaTabView *)create;
 + (CocoaTabView *)createT:(const char **)tabs;
 + (CocoaTabView *)createI:(const CMsg::Id *)tabids;
++ (CocoaTabView *)create:(CocoaLayout *)layout width:(int)width height:(int)height;
++ (CocoaTabView *)createT:(CocoaLayout *)layout tabs:(const char **)tabs width:(int)width height:(int)height;
++ (CocoaTabView *)createI:(CocoaLayout *)layout tabs:(const CMsg::Id *)tabids width:(int)width height:(int)height;
 - (void)addTabItemsT:(const char **)tabs;
 - (void)addTabItemsI:(const CMsg::Id *)tabids;
-- (NSTabViewItem *)addTabItem:(const char *)label;
+- (NSTabViewItem *)addTabItemT:(const char *)label;
+- (NSTabViewItem *)addTabItemI:(CMsg::Id)label_id;
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
 - (NSRect)adjustFrameSize:(NSRect)re;
 #endif
@@ -209,9 +319,18 @@
 #endif
 + (CocoaBox *)createT:(const char *)title;
 + (CocoaBox *)createI:(CMsg::Id)titleid;
++ (CocoaBox *)createT:(CocoaLayout *)layout :(const char *)title :(int)width :(int)height;
++ (CocoaBox *)createI:(CocoaLayout *)layout :(CMsg::Id)titleid :(int)width :(int)height;
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
 - (NSRect)adjustFrameSize:(NSRect)re;
 #endif
+@end
+
+/**
+	@brief Scroll view
+*/
+@interface CocoaScrollView : NSScrollView
++ (CocoaScrollView *)create:(CocoaLayout *)layout hasvs:(bool)hasvs hashs:(bool)hashs width:(int)width height:(int)height;
 @end
 
 /**
@@ -246,6 +365,7 @@
 //- (NSRect)adjustFrameSize:(NSRect)re;
 #endif
 @end
+
 
 /**
 	@brief Base panel
@@ -291,6 +411,7 @@ enum enAlign {
 	int w;
 	int h;
 	CocoaLayoutControls *next;
+	CocoaLayoutControls *prev;
 }
 @property (retain) CocoaLayout *box;
 @property (retain) NSView *ctrl;
@@ -301,6 +422,7 @@ enum enAlign {
 @property int w;
 @property int h;
 @property (retain) CocoaLayoutControls *next;
+@property (retain) CocoaLayoutControls *prev;
 + (CocoaLayoutControls *)create:(CocoaLayout *)box_ :(NSView *)ctrl_ :(int)x_ :(int)y_ :(int)px_ :(int)py_ :(int)w_ :(int)h_;
 @end
 
@@ -309,6 +431,8 @@ enum enAlign {
 */
 @interface CocoaLayout : NSObject
 {
+	CocoaView *contentView;
+
 	enOrient orient;
 	int      align;
 	VmRectWH re;	// absolute position
@@ -322,7 +446,7 @@ enum enAlign {
 	CocoaLayoutControls *controls;
 	int control_nums;
 }
-//@property (retain) CocoaView *view;
+@property (retain) CocoaView *contentView;
 @property enOrient orient;
 @property int align;
 @property VmRectWH re;
@@ -331,11 +455,11 @@ enum enAlign {
 @property VmRect margin;
 @property (retain) CocoaLayoutControls *controls;
 @property int control_nums;
-+ (CocoaLayout *)create:(int)orient_;
-+ (CocoaLayout *)create:(int)orient_ :(int)align_;
-+ (CocoaLayout *)create:(int)orient_ :(int)align_ :(int)margin_;
-+ (CocoaLayout *)create:(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_;
-- (id)initWith:(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_;
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_;
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_ :(int)align_;
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_ :(int)align_ :(int)margin_;
++ (CocoaLayout *)create:(CocoaView *)view_ :(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_;
+- (id)initWith:(CocoaView *)view_ :(int)orient_ :(int)align_ :(int)margin_ :(const _TCHAR *)name_;
 - (void)addItem:(CocoaLayout *)box_;
 - (void)addItem:(CocoaLayout *)box_ :(NSView *)ctrl_ :(int)width_ :(int)height_ :(int)px_ :(int)py_;
 - (CocoaLayout *)addBox:(int)orient_;
@@ -345,8 +469,8 @@ enum enAlign {
 - (void)addControl:(NSControl *)ctrl_;
 - (void)addControl:(NSControl *)ctrl_ width:(int)width_;
 - (void)addControl:(NSControl *)ctrl_ height:(int)height_;
-- (void)addControl:(NSView *)ctrl_ :(int)width_ :(int)height_;
-- (void)addControl:(NSView *)ctrl_ :(int)width_ :(int)height_ :(int)px_ :(int)py_;
+- (void)addControl:(NSView *)ctrl_ width:(int)width_ height:(int)height_;
+- (void)addControl:(NSView *)ctrl_ width:(int)width_ height:(int)height_ x:(int)px_ y:(int)py_;
 - (void)addControlWithBox:(CocoaLayout *)box_ :(NSView *)ctrl_;
 - (void)addSpace:(int)width_ :(int)height_;
 - (void)addSpace:(int)width_ :(int)height_ :(int)px_ :(int)py_;

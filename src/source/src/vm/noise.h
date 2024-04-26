@@ -62,6 +62,7 @@ public:
 	NOISE_BASE();
 	virtual ~NOISE_BASE();
 
+	virtual SAMPLES_T base() const = 0;
 	virtual void alloc(int size);
 	virtual void clear();
 
@@ -130,6 +131,13 @@ void NOISE_BASE<SAMPLES_T>::alloc(int size)
 		p_buffer_r = new SAMPLES_T[size];
 #endif
 		m_alloc_size = size;
+
+		for(int i=0; i<m_alloc_size; i++) {
+			p_buffer_l[i] = base();
+#ifdef USE_NOISE_STEREO
+			p_buffer_r[i] = base();
+#endif
+		}
 	}
 }
 
@@ -257,6 +265,8 @@ public:
 	NOISE() : NOISE_BASE<uint8_t>() {}
 	~NOISE() {}
 
+	uint8_t base() const { return 128; }
+
 	void set_file_name(const _TCHAR *file_name);
 	const _TCHAR *get_file_name() const;
 	int load_wav_file(const _TCHAR *path, int sample_rate);
@@ -277,6 +287,7 @@ public:
 	NOISE_FIFO();
 	~NOISE_FIFO() {}
 
+	int16_t base() const { return 0; }
 	void alloc(int size);
 
 	void add(int16_t sam);

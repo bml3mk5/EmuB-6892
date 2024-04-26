@@ -312,8 +312,8 @@ void SOUND::get_sample_data(uint64_t window_clock, uint64_t end_clock)
 
 void SOUND::update_config()
 {
-	if (config.sync_irq) {
-		event_power = config.cpu_power;
+	if (pConfig->sync_irq) {
+		event_power = pConfig->cpu_power;
 	} else {
 		event_power = 1;
 	}

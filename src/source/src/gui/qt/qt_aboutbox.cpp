@@ -12,7 +12,7 @@
 #include "ui_qt_aboutbox.h"
 #include "../../version.h"
 #include "../../emu.h"
-#include "../../parseopt.h"
+#include "../../osd/qt/qt_parseopt.h"
 #include "../../utils.h"
 #include "../../main.h"
 #include <QtCoreVersion>

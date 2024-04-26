@@ -14,6 +14,7 @@
 
 #ifdef __OBJC__
 #import <Cocoa/Cocoa.h>
+#import "cocoa_loggingpanel.h"
 #endif /* __OBJC__ */
 
 #include "../gui_base.h"
@@ -121,6 +122,7 @@ class GUI;
 
 - (void)UpdateRecentStateList:(id)sender;
 
+#ifdef USE_DATAREC
 - (void)ShowLoadDataRecDialog:(id)sender;
 - (void)ShowSaveDataRecDialog:(id)sender;
 - (void)RewindDataRec:(id)sender;
@@ -131,8 +133,9 @@ class GUI;
 - (void)LoadRecentDataRec:(id)sender;
 
 - (void)UpdateRecentDataRecList:(id)sender;
+#endif
 
-
+#ifdef USE_FD1
 - (void)ShowOpenFloppyDiskDialog:(id)sender;
 - (void)ChangeSideFloppyDisk:(id)sender;
 - (void)CloseFloppy:(id)sender;
@@ -143,7 +146,16 @@ class GUI;
 
 - (void)UpdateRecentFloppyList:(id)sender;
 - (void)UpdateVolumeFloppyList:(id)sender;
+#endif
 
+#ifdef USE_HD1
+- (void)ShowOpenHardDiskDialog:(id)sender;
+- (void)CloseHardDisk:(id)sender;
+- (void)ShowOpenBlankHardDiskDialog:(id)sender;
+- (void)OpenRecentHardDisk:(id)sender;
+
+- (void)UpdateRecentHardDiskList:(id)sender;
+#endif
 
 - (void)ChangeFrameRate:(id)sender;
 - (void)ResizeRecordVideoSurface:(id)sender;
@@ -157,7 +169,9 @@ class GUI;
 /* - (void)ToggleCutoutScreen:(id)sender; */
 - (void)ChangePixelAspectMode:(id)sender;
 - (void)ChangeScanLine:(id)sender;
+#ifdef USE_AFTERIMAGE
 - (void)ChangeAfterImage:(id)sender;
+#endif
 #ifdef USE_KEEPIMAGE
 - (void)ChangeKeepImage:(id)sender;
 #endif
@@ -198,6 +212,9 @@ class GUI;
 - (void)TogglePMeter:(id)sender;
 #endif
 - (void)ChangeUseJoypad:(id)sender;
+#ifdef USE_KEY2JOYSTICK
+- (void)ToggleEnableKey2Joypad:(id)sender;
+#endif
 #ifdef USE_LIGHTPEN
 - (void)ToggleEnableLightpen:(id)sender;
 #endif
@@ -205,9 +222,11 @@ class GUI;
 - (void)ToggleUseMouse:(id)sender;
 #endif
 - (void)ToggleLoosenKeyStroke:(id)sender;
+- (void)ShowJoySettingDialog:(id)sender;
 - (void)ShowKeybindDialog:(id)sender;
 - (void)ShowConfigureDialog:(id)sender;
 - (void)ShowVirtualKeyboard:(id)sender;
+- (void)ShowLoggingDialog:(id)sender;
 
 #ifdef USE_DEBUGGER
 - (void)OpenDebugger:(id)sender;
@@ -264,6 +283,7 @@ class GUI;
 //
 void add_main_menu(CocoaMenu *submenu, const char *new_title);
 void add_main_menu_by_id(CocoaMenu *submenu, CMsg::Id new_titleid);
+NSArray *get_file_filter(const char *str);
 
 #endif /* __OBJC__ */
 /**
@@ -274,9 +294,11 @@ class GUI : public GUI_BASE
 private:
 #ifdef __OBJC__
 	CocoaController *recv;
+	CocoaLoggingPanel *logging_dlg;
 /*	CocoaMenu *popupMenu; */
 #else
 	void *recv;
+	void *logging_dlg;
 /*	void *popupMenu; */
 #endif
 
@@ -302,12 +324,19 @@ public:
 
 	virtual void SetFocusToMainWindow();
 
+#ifdef USE_DATAREC
 	virtual bool ShowLoadDataRecDialog(void);
 	virtual bool ShowSaveDataRecDialog(void);
-
+#endif
+#ifdef USE_FD1
 	virtual bool ShowOpenFloppyDiskDialog(int drv);
 	virtual int  ShowSelectFloppyDriveDialog(int drv);
 	virtual bool ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type);
+#endif
+#ifdef USE_HD1
+	virtual bool ShowOpenHardDiskDialog(int drv);
+	virtual bool ShowOpenBlankHardDiskDialog(int drv, uint8_t type);
+#endif
 
 	virtual bool ShowLoadStateDialog(void);
 	virtual bool ShowSaveStateDialog(bool cont);
@@ -326,8 +355,11 @@ public:
 
 	virtual bool ShowVolumeDialog(void);
 
+	virtual bool ShowJoySettingDialog(void);
 	virtual bool ShowKeybindDialog(void);
 	virtual bool ShowConfigureDialog(void);
+	virtual bool ShowLoggingDialog(void);
+	virtual bool IsShownLoggingDialog(void);
 
 	virtual bool ShowVirtualKeyboard(void);
 

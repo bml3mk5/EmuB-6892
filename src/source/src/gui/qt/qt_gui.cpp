@@ -14,13 +14,13 @@
 #include <QScreen>
 #include <QPainter>
 #include <QVariant>
-#include <QFileDialog>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QClipboard>
 #include "../../emu_osd.h"
 #include "../../utils.h"
-#include "../../parseopt.h"
+#include "../../osd/qt/qt_parseopt.h"
+#include "../../labels.h"
 #include "../../utility.h"
 #include "../../config.h"
 #include "../../depend.h"
@@ -30,6 +30,9 @@
 #include "qt_recvidbox.h"
 #include "qt_recaudbox.h"
 #include "qt_aboutbox.h"
+#include "qt_joysetbox.h"
+#include "qt_loggingbox.h"
+#include "qt_filebox.h"
 #ifdef USE_LEDBOX
 #include "../ledbox.h"
 #endif
@@ -52,7 +55,10 @@ MainWindow *mainwindow = nullptr;
 GUI::GUI(int argc, char **argv, EMU *new_emu) :
 	GUI_BASE(argc, argv, new_emu)
 {
+}
 
+GUI::~GUI()
+{
 }
 
 /// overloaded function
@@ -105,15 +111,7 @@ QString GUI::replaceSemicolon(const QString &str)
 
 bool GUI::ShowLoadStateDialog(void)
 {
-	QString dir = QTChar::fromTChar(config.initial_state_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_l3r))
-			<< CMSG(All_Files_);
-
-	QFileDialog dlg(mainwindow, CMSG(Load_Status_Data), dir);
-	dlg.setAcceptMode(QFileDialog::AcceptOpen);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Load_Status_Data, false, pConfig->GetInitialStatePath(), LABELS::state_file_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -127,15 +125,7 @@ bool GUI::ShowLoadStateDialog(void)
 
 bool GUI::ShowSaveStateDialog(bool cont)
 {
-	QString dir = QTChar::fromTChar(config.initial_state_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_l3r))
-			<< CMSG(All_Files_);
-
-	QFileDialog dlg(mainwindow, CMSG(Save_Status_Data), dir);
-	dlg.setAcceptMode(QFileDialog::AcceptSave);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Save_Status_Data, true, pConfig->GetInitialStatePath(), LABELS::state_file_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -149,15 +139,7 @@ bool GUI::ShowSaveStateDialog(bool cont)
 
 bool GUI::ShowOpenAutoKeyDialog(void)
 {
-	QString dir = QTChar::fromTChar(config.initial_autokey_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_txt_bas_lpt))
-			<< CMSG(All_Files_);
-
-	QFileDialog dlg(mainwindow, CMSG(Open_Text_File), dir);
-	dlg.setAcceptMode(QFileDialog::AcceptOpen);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Open_Text_File, false, pConfig->GetInitialAutoKeyPath(), LABELS::autokey_file_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -171,15 +153,7 @@ bool GUI::ShowOpenAutoKeyDialog(void)
 
 bool GUI::ShowPlayRecKeyDialog(void)
 {
-	QString dir = QTChar::fromTChar(config.initial_state_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_l3k))
-			<< CMSG(All_Files_);
-
-	QFileDialog dlg(mainwindow, CMSG(Play_Recorded_Keys), dir);
-	dlg.setAcceptMode(QFileDialog::AcceptOpen);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Play_Recorded_Keys, false, pConfig->GetInitialStatePath(), LABELS::key_rec_file_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -193,15 +167,7 @@ bool GUI::ShowPlayRecKeyDialog(void)
 
 bool GUI::ShowRecordRecKeyDialog(void)
 {
-	QString dir = QTChar::fromTChar(config.initial_state_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_l3k))
-			<< CMSG(All_Files_);
-
-	QFileDialog dlg(mainwindow, CMSG(Record_Input_Keys), dir);
-	dlg.setAcceptMode(QFileDialog::AcceptSave);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Record_Input_Keys, true, pConfig->GetInitialStatePath(), LABELS::key_rec_file_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -222,15 +188,7 @@ bool GUI::ShowRecordStateAndRecKeyDialog(void)
 
 bool GUI::ShowLoadDataRecDialog(void)
 {
-	QString dir = QTChar::fromTChar(config.initial_datarec_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_l3_l3b_l3c_wav_t9x))
-			<< CMSG(All_Files_);
-
-	QFileDialog dlg(mainwindow, CMSG(Play_Data_Recorder_Tape), dir);
-	dlg.setAcceptMode(QFileDialog::AcceptOpen);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Play_Data_Recorder_Tape, false, pConfig->GetInitialDataRecPath(), LABELS::datarec_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -244,19 +202,7 @@ bool GUI::ShowLoadDataRecDialog(void)
 
 bool GUI::ShowSaveDataRecDialog(void)
 {
-	QString dir = QTChar::fromTChar(config.initial_datarec_path.Get());
-	QStringList filters;
-	filters << "L3 File (*.l3)"
-			<< "L3B File (*.l3b)"
-			<< "L3C File (*.l3c)"
-			<< "Wave File (*.wav)"
-			<< "T9X File (*.t9x)"
-			<< "All Files (*.*)";
-
-	QFileDialog dlg(mainwindow, "Record Data Recorder Tape", dir);
-	dlg.setAcceptMode(QFileDialog::AcceptSave);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Record_Data_Recorder_Tape, true, pConfig->GetInitialDataRecPath(), LABELS::datarec_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -270,16 +216,8 @@ bool GUI::ShowSaveDataRecDialog(void)
 
 bool GUI::ShowOpenFloppyDiskDialog(int drv)
 {
-	QString dir = QTChar::fromTChar(config.initial_disk_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_d88_d77_td0_imd_dsk_fdi_hdm_tfd_xdf_2d_sf7))
-			<< "All Files (*.*)";
-
-	QString title = QString::asprintf("Open Floppy Disk %d", drv);
-	QFileDialog dlg(mainwindow, title, dir);
-	dlg.setAcceptMode(QFileDialog::AcceptOpen);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	QString title = QString::asprintf(CMSG(Open_Floppy_Disk_VDIGIT), drv);
+	MyFileBox dlg(mainwindow, title, false, pConfig->GetInitialFloppyDiskPath(), LABELS::floppy_disk_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -294,19 +232,12 @@ bool GUI::ShowOpenFloppyDiskDialog(int drv)
 
 bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 {
-	QString dir = QTChar::fromTChar(config.initial_disk_path.Get());
-	QStringList filters;
-	filters << "Supported Files (*.d88 *.d77)"
-			<< "All Files (*.*)";
-
-	QString title = QString::asprintf("New Floppy Disk %d", drv);
-	QFileDialog dlg(mainwindow, title, dir);
-	dlg.setAcceptMode(QFileDialog::AcceptSave);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	const char *filter = LABELS::blank_floppy_disk_exts;
+	QString title = QString::asprintf(CMSG(New_Floppy_Disk_VDIGIT), drv);
+	MyFileBox dlg(mainwindow, title, true, pConfig->GetInitialFloppyDiskPath(), filter);
 
 	_TCHAR file_name[128];
-	UTILITY::create_date_file_path(nullptr, file_name, 128, "d88");
+	UTILITY::create_date_file_path(nullptr, file_name, 128, filter);
 	dlg.selectFile(file_name);
 
 	PostEtSystemPause(true);
@@ -328,16 +259,7 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 
 bool GUI::ShowSavePrinterDialog(int drv)
 {
-	QString dir = QTChar::fromTChar(config.initial_disk_path.Get());
-	QStringList filters;
-	filters << replaceSemicolon(CMSG(Supported_Files_lpt))
-			<< "All Files (*.*)";
-
-	QString title = "Save Printing Data";
-	QFileDialog dlg(mainwindow, title, dir);
-	dlg.setAcceptMode(QFileDialog::AcceptSave);
-	dlg.setNameFilters(filters);
-	dlg.setFileMode(QFileDialog::ExistingFile);	// select only one file
+	MyFileBox dlg(mainwindow, CMsg::Save_Printing_Data, true, pConfig->GetInitialFloppyDiskPath(), LABELS::printing_file_exts);
 	PostEtSystemPause(true);
 	int rc = dlg.exec();
 	if (rc != QDialog::Accepted) {
@@ -402,6 +324,15 @@ bool GUI::ShowVolumeDialog(void)
 	return true;
 }
 
+bool GUI::ShowJoySettingDialog(void)
+{
+	MyJoySettingBox dlg(mainwindow);
+	SystemPause(true);
+	dlg.exec();
+	SystemPause(false);
+	return true;
+}
+
 bool GUI::ShowKeybindDialog(void)
 {
 	MyKeybindBox dlg(mainwindow);
@@ -450,6 +381,16 @@ bool GUI::ShowAboutDialog(void)
 	return true;
 }
 
+bool GUI::ShowLoggingDialog(void)
+{
+	return mainwindow->showLoggingDialog();
+}
+
+bool GUI::IsShownLoggingDialog(void)
+{
+	return mainwindow->isShownLoggingDialog();
+}
+
 void GUI::CreateLedBoxSub()
 {
 	if (ledbox) {
@@ -492,6 +433,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	),
 	ui(new Ui::MainWindow)
 {
+	loggingbox = nullptr;
+
 	ui->setupUi(this);
 
 	initialize_ok = false;
@@ -508,11 +451,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QIcon icon(iconfile);
     setWindowIcon(icon);
 
-	// create gui menu
-//	int need_resize = gui->CreateMenu();
-//	if (need_resize == -1) {
-//		return;
-//	}
+	// window properties
+	setMouseTracking(true);
 
 	//
 	//
@@ -598,7 +538,7 @@ MainWindow::MainWindow(QWidget *parent) :
 			connectWithNumber(actionCPUSpeed[i], SIGNAL(triggered()), this, SLOT(cpuPowerSlot()), i);
 		}
 		ms->addSeparator();
-		actionSyncIRQ = ms->addAction(CMSG(Sync_With_CPU_Speed), this, SLOT(syncIrqSlot()));
+		actionSyncIRQ = ms->addAction(CMSG(Sync_Devices_With_CPU_Speed), this, SLOT(syncIrqSlot()));
 		actionSyncIRQ->setCheckable(true);
 
 	mn->addSeparator();
@@ -649,7 +589,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(menuTapeRecentFiles, SIGNAL(aboutToShow()), this, SLOT(updateRecentTapeSlot()));
 
 	// fdd menu
-	for(int drv=0; drv<MAX_DRIVE; drv++) {
+	for(int drv=0; drv<USE_FLOPPY_DISKS; drv++) {
 		QString str(CMSG(FDD));
 		mn = mb->addMenu(str + QString::asprintf("%d", drv));
 		mn->setProperty("drv", QVariant::fromValue(drv));
@@ -861,33 +801,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(actionStopRecordSound, SIGNAL(triggered()), this, SLOT(selectStopRecSndSlot()));
 
 	mn->addSeparator();
-	CMsg::Id sampleRateList[] = {
-		CMsg::F8000Hz,
-		CMsg::F11025Hz,
-		CMsg::F22050Hz,
-		CMsg::F44100Hz,
-		CMsg::F48000Hz,
-		CMsg::F96000Hz,
-		CMsg::End
-	};
-	for(int i = 0; i < 6; i++) {
-		actionSampleRate[i] = mn->addAction(CMSGV(sampleRateList[i]));
+	for(int i = 0; LABELS::sound_samples[i] != CMsg::End; i++) {
+		actionSampleRate[i] = mn->addAction(CMSGV(LABELS::sound_samples[i]));
 		actionSampleRate[i]->setCheckable(true);
 		connectWithNumber(actionSampleRate[i], SIGNAL(triggered()), this, SLOT(selectSoundFrequencySlot()), i + 2);
 	}
 
 	mn->addSeparator();
-	CMsg::Id soundLateList[] = {
-		CMsg::S50msec,
-		CMsg::S75msec,
-		CMsg::S100msec,
-		CMsg::S200msec,
-		CMsg::S300msec,
-		CMsg::S400msec,
-		CMsg::End
-	};
-	for(int i = 0; i < 6; i++) {
-		actionSoundLate[i] = mn->addAction(CMSGV(soundLateList[i]));
+	for(int i = 0; LABELS::sound_late[i] != CMsg::End; i++) {
+		actionSoundLate[i] = mn->addAction(CMSGV(LABELS::sound_late[i]));
 		actionSoundLate[i]->setCheckable(true);
 		connectWithNumber(actionSoundLate[i], SIGNAL(triggered()), this, SLOT(selectSoundLatencySlot()), i);
 	}
@@ -954,43 +876,53 @@ MainWindow::MainWindow(QWidget *parent) :
 	actionInsideLED->setCheckable(true);
 	actionShowMessage = mn->addAction(CMSG(Show_Message), this, SLOT(selectShowMessageSlot()));
 	actionShowMessage->setCheckable(true);
+	actionShowLogging = mn->addAction(CMSG(Log_), this, SLOT(selectShowLoggingSlot()));
+	actionShowLogging->setCheckable(true);
 #ifdef USE_PERFORMANCE_METER
 	actionShowPMeter = mn->addAction(CMSG(Show_Performance_Meter), this, SLOT(selectShowPMeterSlot()));
 	actionShowPMeter->setCheckable(true);
 #endif
+#ifdef USE_LIGHTPEN
+	mn->addSeparator();
+	actionLightPen = mn->addAction(CMSG(Enable_Lightpen), this, SLOT(selectEnableLightpenSlot()));
+	actionLightPen->setCheckable(true);
+#endif
+#ifdef USE_MOUSE
+	mn->addSeparator();
+	actionMouse = mn->addAction(CMSG(Enable_Mouse), this, SLOT(selectEnableMouseSlot()));
+	actionMouse->setCheckable(true);
+#endif
+
+#ifdef USE_JOYSTICK
 	mn->addSeparator();
 	actionUseJoypad[0] = mn->addAction(CMSG(Use_Joypad_Key_Assigned), this, SLOT(selectUseJoypadSlot()));
 	actionUseJoypad[0]->setCheckable(true);
 #ifdef USE_PIAJOYSTICK
 	actionUseJoypad[1] = mn->addAction(CMSG(Use_Joypad_PIA_Type), this, SLOT(selectUseJoypadSlot()));
 	actionUseJoypad[1]->setCheckable(true);
-#else
-	actionUseJoypad[1] = nullptr;
 #endif
-#ifdef USE_LIGHTPEN
-	actionLightPen = mn->addAction(CMSG(Enable_Lightpen), this, SLOT(selectEnableLightpenSlot()));
-	actionLightPen->setCheckable(true);
+#ifdef USE_KEY2JOYSTICK
+	actionKey2Joypad = mn->addAction(CMSG(Enable_Key_to_Joypad), this, SLOT(selectKeyToJoypadSlot()));
+	actionKey2Joypad->setCheckable(true);
 #endif
-#ifdef USE_MOUSE
-	actionMouse = mn->addAction(CMSG(Enable_Mouse), this, SLOT(selectEnableMouseSlot()));
-	actionMouse->setCheckable(true);
 #endif
+
+	mn->addSeparator();
 	actionLoosenKeyStroke = mn->addAction(CMSG(Loosen_Key_Stroke_Game), this, SLOT(selectLoosenKeyStrokeSlot()));
 	actionLoosenKeyStroke->setCheckable(true);
-	mn->addSeparator();
-	actionKeybind = mn->addAction(CMSG(Keybind_), this, SLOT(selectKeybindSlot()));
-	actionVirtualKeyboard = mn->addAction(CMSG(Virtual_Keyboard), this, SLOT(selectVirtualKeyboardSlot()));
+	actionVirtualKeyboard = mn->addAction(CMSG(Virtual_Keyboard_), this, SLOT(selectVirtualKeyboardSlot()));
 
 #ifdef USE_DEBUGGER
 	mn->addSeparator();
 	actionStartDebugger = mn->addAction(CMSG(Start_Debugger),this, SLOT(selectStartDebuggerSlot()));
 	actionStopDebugger = mn->addAction(CMSG(Stop_Debugger), this, SLOT(selectStopDebuggerSlot()));
-#else
-	actionStartDebugger = nullptr;
-	actionStopDebugger = nullptr;
 #endif
 
 	mn->addSeparator();
+#ifdef USE_JOYSTICK
+	actionJoySetting = mn->addAction(CMSG(Joypad_Setting_), this, SLOT(selectJoySettingSlot()));
+#endif
+	actionKeybind = mn->addAction(CMSG(Keybind_), this, SLOT(selectKeybindSlot()));
 	actionConfigure = mn->addAction(CMSG(Configure_), this, SLOT(selectConfigureSlot()));
 
 	// help menu
@@ -1131,15 +1063,34 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 	);
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *UNUSED_PARAM(event))
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-//	emu->mouse_move();
+	emu->mouse_move(event->x(), event->y());
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (emu) emu->resume_window_placement();
 	event->accept();
+}
+
+bool MainWindow::showLoggingDialog(void)
+{
+	if (!loggingbox) {
+		loggingbox = new MyLoggingBox(this);
+	}
+	if (!isShownLoggingDialog()) {
+		loggingbox->show();
+	} else {
+		loggingbox->hide();
+	}
+	return true;
+
+}
+
+bool MainWindow::isShownLoggingDialog(void)
+{
+	return loggingbox ? !loggingbox->isHidden() : false;
 }
 
 void MainWindow::updateScreenSlot()
@@ -1181,7 +1132,7 @@ void MainWindow::updateRecentMenu(QMenu *menu, CRecentPathList &list, const char
 	if (list.updated) {
 		menu->clear();
 		for(int i = 0; i < MAX_HISTORY && i < list.Count(); i++) {
-			if (!gui->GetRecentFileStr(list[i]->path, list[i]->num, str, TRIM_STRING_SIZE)) break;
+			if (!gui->GetRecentFileStr(list[i]->path.Get(), list[i]->num, str, TRIM_STRING_SIZE)) break;
 			QAction *act = menu->addAction(QTChar::fromTChar(str));
 			act->setData(QVariant::fromValue(drv << 16 | i));
 			connect(act, SIGNAL(triggered()), this, slot);
@@ -1376,7 +1327,7 @@ void MainWindow::tapeRealModeSlot()
 }
 void MainWindow::updateRecentTapeSlot()
 {
-	updateRecentMenu(menuTapeRecentFiles, config.recent_datarec_path, SLOT(recentTapeSlot()));
+	updateRecentMenu(menuTapeRecentFiles, pConfig->GetRecentDataRecPathList(), SLOT(recentTapeSlot()));
 }
 void MainWindow::recentTapeSlot()
 {
@@ -1400,11 +1351,11 @@ void MainWindow::updateMenuFddSlot(int drv, QAction *actOpen, QAction *actProtec
 
 	int side = gui->GetSideFloppyDisk(drv);
 	CMsg::Id msg_id = CMsg::Change_Side_to_B;
-	if (side == 1 && config.fdd_type == FDD_TYPE_3FDD) {
+	if (side == 1 && pConfig->fdd_type == FDD_TYPE_3FDD) {
 		msg_id = CMsg::Change_Side_to_A;
 	}
 	actSide->setText(CMSGV(msg_id));
-	actSide->setEnabled(config.fdd_type == FDD_TYPE_3FDD);
+	actSide->setEnabled(pConfig->fdd_type == FDD_TYPE_3FDD);
 }
 void MainWindow::updateMultiVolumeFddSlot()
 {
@@ -1422,7 +1373,7 @@ void MainWindow::updateRecentFddSlot()
 }
 void MainWindow::updateRecentFddSlot(int drv, QMenu *recent)
 {
-	updateRecentMenu(recent, config.recent_disk_path[drv], SLOT(recentFddSlot()), drv);
+	updateRecentMenu(recent, pConfig->GetRecentFloppyDiskPathList(drv), SLOT(recentFddSlot()), drv);
 }
 #endif
 
@@ -1502,7 +1453,7 @@ void MainWindow::updateMenuScreenSlot()
 }
 void MainWindow::updateMenuScreenRecordSlot()
 {
-	bool now_rec = gui->NowRecordingVideo() | gui->NowRecordingSound();
+	bool now_rec = gui->NowRecordingVideo() || gui->NowRecordingSound();
 	int siz_num = gui->GetRecordVideoSurfaceNum();
 	int fre_num = gui->GetRecordVideoFrameNum();
 	for(int i=0; i<2; i++) {
@@ -1655,7 +1606,7 @@ void MainWindow::updateMenuSoundSlot()
 }
 void MainWindow::updateMenuSoundRecordSlot()
 {
-	bool now_rec = gui->NowRecordingVideo() | gui->NowRecordingSound();
+	bool now_rec = gui->NowRecordingVideo() || gui->NowRecordingSound();
 	actionStartRecordSound->setChecked(now_rec);
 	actionStartRecordSound->setEnabled(!now_rec);
 }
@@ -1824,12 +1775,18 @@ void MainWindow::updateMenuOptionsSlot()
 	actionInsideLED->setChecked(show);
 	show = gui->IsShownMessageBoard();
 	actionShowMessage->setChecked(show);
+	show = isShownLoggingDialog();
+	actionShowLogging->setChecked(show);
 #ifdef USE_PERFORMANCE_METER
 	show = gui->IsShownPMeter();
 	actionShowPMeter->setChecked(show);
 #endif
 	show = gui->IsEnableJoypad(1);
 	actionUseJoypad[0]->setChecked(show);
+#ifdef USE_KEY2JOYSTICK
+	show = gui->IsEnableKey2Joypad();
+	actionKey2Joypad->setChecked(show);
+#endif
 #ifdef USE_LIGHTPEN
 	show = gui->IsEnableLightpen();
 	actionLightPen->setChecked(show);
@@ -1860,6 +1817,10 @@ void MainWindow::selectShowMessageSlot()
 {
 	gui->ToggleMessageBoard();
 }
+void MainWindow::selectShowLoggingSlot()
+{
+	showLoggingDialog();
+}
 #ifdef USE_PERFORMANCE_METER
 void MainWindow::selectShowPMeterSlot()
 {
@@ -1873,6 +1834,16 @@ void MainWindow::selectUseJoypadSlot()
 void MainWindow::selectUsePIAJoypadSlot()
 {
 	gui->ChangeUseJoypad(2);
+}
+#ifdef USE_KEY2JOYSTICK
+void MainWindow::selectKey2JoypadSlot()
+{
+	gui->ToggleEnableKey2Joypad();
+}
+#endif
+void MainWindow::selectJoySettingSlot()
+{
+	gui->ShowJoySettingDialog();
 }
 #ifdef USE_LIGHTPEN
 void MainWindow::selectEnableLightpenSlot()

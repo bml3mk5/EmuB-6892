@@ -27,6 +27,7 @@
 
 #include "../../common.h"
 #include "ffm_loadlib.h"
+#include "ffm_rec_base.h"
 #include "libavutil/channel_layout.h"
 
 class EMU;
@@ -35,28 +36,20 @@ class REC_AUDIO;
 /**
 	@brief Record audio using ffmpeg
 */
-class FFM_REC_AUDIO
+class FFM_REC_AUDIO : public FFM_REC_BASE
 {
 private:
-	EMU *emu;
 	REC_AUDIO *audio;
 	int rec_rate;
-	const _TCHAR *rec_path;
 
-	AVIOContext *avio;
-	AVFormatContext *fmtcont;
-	AVCodecContext *codcont;
-	AVFrame *frame;
-	AVPacket *packet;
 	union {
 		int16_t *s;
 		float *f;
 	} store_samples[2];
 	int store_sample_pos;
-	int write_error_count;
 
 	void Release();
-	void RemoveFile();
+
 	int SelectSampleRate(AVCodec *codec, int default_rate);
 	enum AVSampleFormat SelectSampleFmt(AVCodec *codec);
 
@@ -71,8 +64,6 @@ public:
 	bool Start(_TCHAR *path, size_t path_size, int sample_rate);
 	void Stop();
 	bool Restart();
-//	bool Record(uint8_t *buffer, int samples);
-//	bool Record(int16_t *buffer, int samples);
 	bool Record(int32_t *buffer, int samples);
 
 	const _TCHAR **GetCodecList();

@@ -92,6 +92,7 @@ EMUOSDOBJS:=$(SRCOSDWX)/wxw_emu.o \
 	$(SRCOSD)/emu_input_keysym.o \
 	$(SRCOSD)/emu_screen.o \
 	$(SRCOSD)/emu_sound.o \
+	$(SRCOSD)/keybind.o \
 	$(SRCOSD)/logging.o \
 	$(SRCOSD)/screenmode.o \
 	$(SRCOSD)/vkeyboardbase.o \
@@ -157,19 +158,22 @@ GUIOBJSWX:=$(SRCGUIWX)/wx_dlg.o \
 	$(SRCGUIWX)/wx_file_dlg.o \
 	$(SRCGUIWX)/wx_volume_dlg.o \
 	$(SRCGUIWX)/wx_config_dlg.o \
+	$(SRCGUIWX)/wx_keybind_ctrl.o \
 	$(SRCGUIWX)/wx_keybind_dlg.o \
 	$(SRCGUIWX)/wx_recvid_dlg.o \
 	$(SRCGUIWX)/wx_recaud_dlg.o \
 	$(SRCGUIWX)/wx_seldrv_dlg.o \
 	$(SRCGUIWX)/wx_ledbox.o \
 	$(SRCGUIWX)/wx_vkeyboard.o \
+	$(SRCGUIWX)/wx_joysetbox.o \
 	$(SRCGUIWX)/wx_about_dlg.o \
+	$(SRCGUIWX)/wx_logging_dlg.o \
 	$(SRCGUIWX)/wx_gui.o
 
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
 VIDOBJSVFW:=$(SRCVIDVFW)/vfw_rec_video.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
 
 VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSVFW) $(VIDOBJSFFM) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o
 

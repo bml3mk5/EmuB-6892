@@ -15,9 +15,9 @@ CC:=gcc
 CXX:=g++
 LD:=g++
 
-FFMPEGDIR:=$(HOME)/Devel/ffmpeg
+FFMPEGDIR:=-I/usr/include/ffmpeg -I$(HOME)/Devel/ffmpeg
 
-COMMONCFLAGS:=-I/usr/local/include -I$(FFMPEGDIR) -I./include
+COMMONCFLAGS:=-I/usr/local/include $(FFMPEGDIR) -I./include
 
 CFLAGS:=$(CFLAGS) $(COMMONCFLAGS)
 CXXFLAGS:=$(CXXFLAGS) $(COMMONCFLAGS)
@@ -68,10 +68,10 @@ EMUOBJS:=$(SRCDIR)/config.o \
 	$(SRCDIR)/labels.o \
 	$(SRCDIR)/msgs.o \
 	$(SRCDIR)/simple_ini.o \
-	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/debugger_bpoint.o \
 	$(SRCDIR)/debugger_socket.o \
 	$(SRCDIR)/debugger_symbol.o \
+	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/utility.o
 
 EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
@@ -94,7 +94,9 @@ EMUOSDOBJS:=$(SRCOSDSDL)/sdl_emu.o \
 	$(SRCOSD)/emu_input_keysym.o \
 	$(SRCOSD)/emu_screen.o \
 	$(SRCOSD)/emu_sound.o \
+	$(SRCOSD)/keybind.o \
 	$(SRCOSD)/logging.o \
+	$(SRCOSD)/parseopt.o \
 	$(SRCOSD)/screenmode.o \
 	$(SRCOSD)/simple_clocale.o \
 	$(SRCOSD)/vkeyboardbase.o \
@@ -190,6 +192,7 @@ GUIOBJSGTKX11=$(SRCGUIGTKX11)/gtk_x11_gui.o \
 	$(SRCGUIGTKX11)/gtk_dialogbox.o \
 	$(SRCGUIGTKX11)/gtk_configbox.o \
 	$(SRCGUIGTKX11)/gtk_x11_key_trans.o \
+	$(SRCGUIGTKX11)/gtk_keybindctrl.o \
 	$(SRCGUIGTKX11)/gtk_keybindbox.o \
 	$(SRCGUIGTKX11)/gtk_volumebox.o \
 	$(SRCGUIGTKX11)/gtk_recaudbox.o \
@@ -198,10 +201,12 @@ GUIOBJSGTKX11=$(SRCGUIGTKX11)/gtk_x11_gui.o \
 	$(SRCGUIGTKX11)/gtk_folderbox.o \
 	$(SRCGUIGTKX11)/gtk_aboutbox.o \
 	$(SRCGUIGTKX11)/gtk_vkeyboard.o \
+	$(SRCGUIGTKX11)/gtk_joysetbox.o \
+	$(SRCGUIGTKX11)/gtk_loggingbox.o \
 	$(SRCGUIGTKX11)/gtk_ledbox.o
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
 VIDOBJSPNG:=$(SRCVIDPNG)/png_rec_video.o $(SRCVIDPNG)/png_bitmap.o
 
 VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSFFM) $(VIDOBJSPNG) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o

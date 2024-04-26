@@ -106,14 +106,19 @@ private:
 	bool pressed_global_key;
 
 #ifdef USE_JOYSTICK
-	int joy_xmin[2], joy_xmax[2];
-	int joy_ymin[2], joy_ymax[2];
 #ifdef USE_SDL_JOYSTICK
-	SDL_Joystick *joy[2];
+	SDL_Joystick *joy[MAX_JOYSTICKS];
 #else
-	wxJoystick *joy[2];
+	wxJoystick *joy[MAX_JOYSTICKS];
 #endif
 #endif
+
+	enum en_mouse_logic_type {
+		MOUSE_LOGIC_DEFAULT = 0,
+		MOUSE_LOGIC_FLEXIBLE,
+		MOUSE_LOGIC_PREPARE
+	} mouse_logic_type;
+	VmPoint mouse_position;
 	//@}
 
 private:
@@ -287,9 +292,12 @@ public:
 	void update_joystick();
 
 	void update_mouse();
-	void update_mouse_event(wxMouseState &mstat);
+//	void update_mouse_event(wxMouseState &mstat);
 	void enable_mouse(int mode);
 	void disable_mouse(int mode);
+	void mouse_enter();
+	void mouse_move(int x, int y);
+	void mouse_leave();
 	//@}
 	/// @name screen device procedures for host machine
 	//@{

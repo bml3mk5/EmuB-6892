@@ -105,15 +105,15 @@ bool MsgBoard::SetFont()
 	if (!inited) return false;
 
 	// メッセージ用フォントの設定
-	enable = set_sys_font(CMsg::message, config.msgboard_msg_fontname.Get(), config.msgboard_msg_fontsize, &msg.font, msg.font_name);
+	enable = set_sys_font(CMsg::message, pConfig->msgboard_msg_fontname.Get(), pConfig->msgboard_msg_fontsize, &msg.font, msg.font_name);
 	if (enable) {
 		TTF_SetFontStyle(msg.font, TTF_STYLE_NORMAL);
-		config.msgboard_msg_fontname.SetN(msg.font_name);
+		pConfig->msgboard_msg_fontname.SetN(msg.font_name);
 		// 情報用フォントの設定
-		enable = set_sys_font(CMsg::info, config.msgboard_info_fontname.Get(), config.msgboard_info_fontsize, &info.font, info.font_name);
+		enable = set_sys_font(CMsg::info, pConfig->msgboard_info_fontname.Get(), pConfig->msgboard_info_fontsize, &info.font, info.font_name);
 		if (enable) {
 			TTF_SetFontStyle(info.font, TTF_STYLE_NORMAL);
-			config.msgboard_info_fontname.SetN(info.font_name);
+			pConfig->msgboard_info_fontname.SetN(info.font_name);
 		}
 	}
 	return enable;
@@ -444,7 +444,7 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, TTF_Font
 //	TTF_Font *f;
 
 #if defined(_WIN32)
-	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
 	emu->resource_path(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
@@ -459,13 +459,13 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, TTF_Font
 	fname.Add(new CNchar("arial.ttf"));
 
 #elif defined(linux)
-	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
 	emu->resource_path(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
 	emu->application_path(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
-	sprintf(sbuf.buf, "%s/.fonts/", getenv("HOME"));
+	UTILITY::sprintf(sbuf.buf, _MAX_PATH, "%s/.fonts/", getenv("HOME"));
 	fpath.Add(new CNchar(sbuf.buf));
 	fpath.Add(new CNchar("/usr/share/fonts/*"));
 	fpath.Add(new CNchar("/usr/X11R6/lib/X11/fonts/*"));
@@ -479,13 +479,13 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, TTF_Font
 	fname.Add(new CNchar("FreeSans.ttf"));
 
 #elif defined(__APPLE__) && defined(__MACH__)
-	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
 	emu->resource_path(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
 	emu->application_path(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
-	sprintf(sbuf.buf, "%s/Library/Fonts/", getenv("HOME"));
+	UTILITY::sprintf(sbuf.buf, _MAX_PATH, "%s/Library/Fonts/", getenv("HOME"));
 	fpath.Add(new CNchar(sbuf.buf));
 	fpath.Add(new CNchar("/System/Library/Fonts/"));
 	fpath.Add(new CNchar("/Library/Fonts/"));
@@ -499,13 +499,13 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, TTF_Font
 	fname.Add(new CNchar("AppleGothic.ttf"));
 
 #elif defined(__FreeBSD__)
-	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
 	emu->resource_path(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
 	emu->application_path(sbuf.buf, _MAX_PATH);
 	fpath.Add(new CNchar(sbuf.buf));
-	sprintf(sbuf.buf, "%s/.fonts/", getenv("HOME"));
+	UTILITY::sprintf(sbuf.buf, _MAX_PATH, "%s/.fonts/", getenv("HOME"));
 	fpath.Add(new CNchar(sbuf.buf));
 	fpath.Add(new CNchar("/usr/share/fonts/*"));
 	fpath.Add(new CNchar("/usr/local/lib/X11/fonts/*"));
@@ -529,17 +529,17 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, TTF_Font
 				char fpath_sbuf[1024];
 				UTILITY::strcpy(fpath_sbuf, 1024, fpath_buf);
 				fpath_sbuf[fpath_len - 1] = '\0';
-				if (open_font_subdir(font, fpath_sbuf, fname[ni]->Get(), pt, xtitle.GetM().Get(), font_file, 0)) {
+				if (open_font_subdir(font, fpath_sbuf, fname[ni]->Get(), pt, xtitle.GetM(), font_file, 0)) {
 					return true;
 				}
 			} else {
-				if (open_font(font, fpath_buf, fname[ni]->Get(), pt, xtitle.GetM().Get(), font_file)) {
+				if (open_font(font, fpath_buf, fname[ni]->Get(), pt, xtitle.GetM(), font_file)) {
 					return true;
 				}
 			}
 		}
 	}
-	logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_find_fonts_for_VSTR, xtitle.GetM().Get());
+	logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_find_fonts_for_VSTR, xtitle.GetM());
 	return false;
 }
 

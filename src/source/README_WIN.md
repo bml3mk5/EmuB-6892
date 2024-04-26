@@ -37,30 +37,37 @@
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2015/
         bml3mk5.vcxproj ...... VC++2015用プロジェクトファイル
+        mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2017/
         bml3mk5.vcxproj ...... VC++2017用プロジェクトファイル
+        mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2019/
         bml3mk5.vcxproj ...... VC++2019用プロジェクトファイル
+        mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       README_WIN.md ........ このファイル
 
 ## コンパイル方法
 
+  Visual Studioからvcxprojファイルを開いてビルドしてください。
+
 * 必要なライブラリ
-  * FFmpeg-3.x
+
+  * FFmpeg-4.x (https://ffmpeg.org/)
+
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
+
     * ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
+      includeフォルダにヘッダファイルを入れてください。
+    * 64ビット版のsharedライブラリとincludeファイルは以下のサイトから入手できます。
+      [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/)
+      にある ffmpeg-4.4.1-full_build-shared.7z をダウンロードします。
+    * ヘッダファイルがあれば、32ビット版のビルドもできます。
+    * バージョン3のヘッダファイルでもビルドできます。
+    * バージョン5のヘッダファイルでもビルドできますが動作するかは未確認。
 
 * mmf_loader
   * Microsoft Media Foundationを使用するためのDLLファイルを作成します。
-
-* その他のライブラリ(現バージョンでは使用しません)
-  * gettext-0.19.4(libintl)
-    1. ソースを入手(http://www.gnu.org/software/gettext/)
-    2. 以下からプロジェクトファイルを入手してビルドしてください。
-       (http://osdn.jp/projects/libintl-msvc10/)
-    3. libフォルダに作成したlibファイルを入れてください。
 
 
 ## 免責事項

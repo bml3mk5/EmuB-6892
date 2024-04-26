@@ -24,22 +24,29 @@ namespace GUI_GTK_X11
 {
 
 /**
-	@brief Dialog base box
+	@brief Layout control widgets on a dialog
 */
-class DialogBox
+class Box
 {
 protected:
-	GUI *gui;
-
 	int cellspace;
 
-	GtkWidget *window;
-	GtkWidget *dialog;
+public:
+	Box();
+	virtual ~Box();
+	GtkWidget *create_hbox(GtkWidget *parent, int cell_space = -1);
+	GtkWidget *create_vbox(GtkWidget *parent, int cell_space = -1);
+	void add_widget(GtkWidget *parent, GtkWidget *child, gboolean expand = FALSE, gboolean fill = FALSE);
+};
 
-	GtkWidget *create_dialog(GtkWidget *parent, const char *title);
-	GtkWidget *create_dialog(GtkWidget *parent, CMsg::Id titleid);
-	GtkWidget *add_accept_button(CMsg::Id labelid);
-	GtkWidget *add_reject_button(CMsg::Id labelid);
+/**
+	@brief Control widget
+*/
+class Control
+{
+protected:
+	int cellspace;
+
 	GtkWidget *create_notebook(GtkWidget *parent);
 	void add_note(GtkWidget *parent, GtkWidget *child, const char *label);
 	void add_note(GtkWidget *parent, GtkWidget *child, CMsg::Id labelid);
@@ -65,30 +72,60 @@ protected:
 	GtkWidget *create_combo_box(GtkWidget *parent, CMsg::Id labelid, const CPtrList<CTchar> &list, int sel_num);
 	int get_combo_sel_num(GtkWidget *combo);
 	void set_combo_sel_num(GtkWidget *combo, int sel_num);
+	GtkWidget *create_text(GtkWidget *parent, int width);
 	GtkWidget *create_text(GtkWidget *parent, const char *text, int len);
 	GtkWidget *create_text_with_label(GtkWidget *parent, const char *label, const char *text, int len);
 	GtkWidget *create_text_with_label(GtkWidget *parent, CMsg::Id labelid, const char *text, int len);
 	const char *get_text(GtkWidget *entry);
 	void set_text(GtkWidget *entry, const char *text);
+	GtkWidget *create_text_view(GtkWidget *parent, int width, int height);
+	GtkWidget *create_spin(GtkWidget *parent, int range_min, int range_max, int val);
+	gdouble get_spin_value(GtkWidget *spin);
 	GtkWidget *create_label(GtkWidget *parent, const char *label);
 	GtkWidget *create_label(GtkWidget *parent, CMsg::Id labelid);
 	GtkWidget *create_button(GtkWidget *parent, const char *label, GCallback handler = NULL);
 	GtkWidget *create_button(GtkWidget *parent, CMsg::Id labelid, GCallback handler = NULL);
 	GtkWidget *create_volume_box(GtkWidget *parent, int val, int num = 0, GCallback handler = NULL);
 	gdouble get_volume_value(GtkWidget *volume);
-	GtkWidget *create_hbox(GtkWidget *parent, int cell_space = -1);
-	GtkWidget *create_vbox(GtkWidget *parent, int cell_space = -1);
+	GtkWidget *create_scale_box(GtkWidget *parent, int range_min, int range_max, int val, bool vertical = true, int num = 0, GCallback handler = NULL);
+	gdouble get_scale_value(GtkWidget *scale);
+	GtkWidget *create_hbox(GtkWidget *parent, int cell_space = -1, gboolean expand = FALSE);
+	GtkWidget *create_vbox(GtkWidget *parent, int cell_space = -1, gboolean expand = FALSE);
 	GtkWidget *create_grid(GtkWidget *parent);
 	void attach_to_grid(GtkWidget *grid, GtkWidget *child, int col, int row);
-	GtkWidget *create_scroll_win(GtkWidget *parent, int width = -1, int height = -1);
-	void add_widget(GtkWidget *parent, GtkWidget *child);
+	GtkWidget *create_scroll_win(GtkWidget *parent, int width = -1, int height = -1, gboolean expand = FALSE);
+	void add_widget(GtkWidget *parent, GtkWidget *child, gboolean expand = FALSE, gboolean fill = FALSE);
+	void set_enable(GtkWidget *widget, bool enable);
+
+public:
+	Control();
+	virtual ~Control();
+};
+
+/**
+	@brief Dialog base box
+*/
+class DialogBox : public Control
+{
+protected:
+	GUI *gui;
+
+	GtkWidget *window;
+	GtkWidget *dialog;
+
+	GtkWidget *create_dialog(GtkWidget *parent, const char *title);
+	GtkWidget *create_dialog(GtkWidget *parent, CMsg::Id titleid);
+	GtkWidget *create_window(GtkWidget *parent, const char *title);
+	GtkWidget *create_window(GtkWidget *parent, CMsg::Id titleid);
+	GtkWidget *add_accept_button(CMsg::Id labelid);
+	GtkWidget *add_reject_button(CMsg::Id labelid);
 
 public:
 	DialogBox(GUI *new_gui);
 	virtual ~DialogBox();
 	virtual bool Show(GtkWidget *parent_window);
 	virtual void Hide();
-
+	virtual bool IsVisible() const;
 };
 
 }; /* namespace GUI_GTK_X11 */

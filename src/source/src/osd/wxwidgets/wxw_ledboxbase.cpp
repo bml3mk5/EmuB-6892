@@ -174,7 +174,7 @@ bool LedBoxBase::create_surface(CPixelFormat *format)
 	w = led[LED_TYPE_BASE]->Width();
 	h = led[LED_TYPE_BASE]->Height();
 #ifdef USE_PERFORMANCE_METER
-	if (config.show_pmeter) {
+	if (pConfig->show_pmeter) {
 		w += 108;
 	}
 #endif
@@ -333,7 +333,7 @@ void LedBoxBase::Update(uint64_t flag)
 
 #ifdef USE_PERFORMANCE_METER
 		// for debug
-		if (config.show_pmeter) {
+		if (pConfig->show_pmeter) {
 			re.x = suf->w - 108; re.y = 0;
 			re.w = 108; re.h = suf->h;
 			SDL_FillRect(suf, &re, SDL_MapRGBA(suf->format, 0x40, 0x40, 0x40, 0xff));

@@ -23,12 +23,12 @@ static const uint16_t krom[16] = {
 void KANJI::initialize()
 {
 	memset(font, 0x01, sizeof(font));
-	font_enable = false;
+	font_enable = 0;
 
 	// load rom images
 	const _TCHAR *app_path, *rom_path[2];
 
-	rom_path[0] = config.rom_path;
+	rom_path[0] = pConfig->rom_path.Get();
 	rom_path[1] = vm->application_path();
 
 	for(int i=0; i<2; i++) {

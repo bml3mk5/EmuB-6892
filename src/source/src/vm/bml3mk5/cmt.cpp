@@ -101,7 +101,7 @@ void CMT::reset()
 			register_my_event(i);
 		}
 	}
-	REG_REMOTE = (config.now_power_off ? 0 : 0x80);
+	REG_REMOTE = (pConfig->now_power_off ? 0 : 0x80);
 }
 
 void CMT::release()
@@ -129,7 +129,7 @@ void CMT::load_relay_wav()
 //	wav_data_chank_t data;
 //	size_t			 data_len;
 
-	rom_path[0] = config.rom_path;
+	rom_path[0] = pConfig->rom_path.Get();
 	rom_path[1] = vm->application_path();
 
 	for (int j=0; j<WAV_RELAY_ALL; j++) {
@@ -206,7 +206,7 @@ void CMT::set_data(uint32_t data)
 	int len, c_len;
 
 	if (REG_REMOTE && recv_ok && rec) {
-		if (config.realmode_datarec) {
+		if (pConfig->NowRealModeDataRec()) {
 			set_tape_wave(data);
 		}
 		if (data_write_pos >= CMTDATA_BUFFER_SIZE) {
@@ -220,8 +220,8 @@ void CMT::set_data(uint32_t data)
 				// .wav
 				if (need_header) {
 					// wav header
-					wav->SetSampleRatePos(config.wav_sample_rate);
-					wav->SetSampleBitsPos(config.wav_sample_bits);
+					wav->SetSampleRatePos(pConfig->wav_sample_rate);
+					wav->SetSampleBitsPos(pConfig->wav_sample_bits);
 					//
 					data_write_pos = wav->InitFileHeader(data_buffer);
 					data_len = data_write_pos;
@@ -331,7 +331,7 @@ uint32_t CMT::get_data()
 				data = data_buffer[data_read_pos];
 				data_read_pos++;
 
-				if (config.realmode_datarec) {
+				if (pConfig->NowRealModeDataRec()) {
 					set_tape_direct((int16_t *)w_onedata, w_onelen >> 1);
 				}
 				data_total_pos = ((int)wav->GetSamplePos() / samples_base);
@@ -343,7 +343,7 @@ uint32_t CMT::get_data()
 				data = data_buffer[data_read_pos];
 				data_read_pos++;
 
-				if (config.realmode_datarec) {
+				if (pConfig->NowRealModeDataRec()) {
 					set_tape_amp(c_onedata, c_onelen);
 				}
 				data_total_pos = (int)wav->GetSamplePos();
@@ -356,7 +356,7 @@ uint32_t CMT::get_data()
 				data_read_pos++;
 
 				if ((data & 0xff) != 0x0a && (data & 0xff) != 0x0d) {
-					if (config.realmode_datarec) {
+					if (pConfig->NowRealModeDataRec()) {
 						set_tape_wave(data);
 					}
 					data_total_pos += 8;
@@ -376,7 +376,7 @@ uint32_t CMT::get_data()
 //				logging->out_debugf(_T("t9x r: %d-%d %d"), data_read_pos, t9x_dlen, data);
 				t9x_dlen++;
 
-				if (config.realmode_datarec) {
+				if (pConfig->NowRealModeDataRec()) {
 					set_tape_wave(data);
 				}
 				data_total_pos += 8;
@@ -388,7 +388,7 @@ uint32_t CMT::get_data()
 				data = data_buffer[data_read_pos];
 				data_read_pos++;
 
-				if (config.realmode_datarec) {
+				if (pConfig->NowRealModeDataRec()) {
 					set_tape_wave(data);
 				}
 				data_total_pos += 88;
@@ -606,7 +606,8 @@ void CMT::stop_datarec()
 
 void CMT::realmode_datarec()
 {
-	config.realmode_datarec = !config.realmode_datarec;
+	// toggle
+	pConfig->SetRealModeDataRec(!pConfig->NowRealModeDataRec());
 	if (register_id[0] != -1) {
 		cancel_my_event(0);
 		register_my_event(0);
@@ -686,7 +687,7 @@ bool CMT::set_load_param()
 			logging->out_log(LOG_ERROR, wav->Errmsg());
 			return false;
 		}
-		wav->SetParseParamerers(config.wav_half, config.wav_reverse, config.wav_correct ? config.wav_correct_type + 1 : 0, config.wav_correct_amp[0], config.wav_correct_amp[1]);
+		wav->SetParseParamerers(pConfig->wav_half, pConfig->wav_reverse, pConfig->wav_correct ? pConfig->wav_correct_type + 1 : 0, pConfig->wav_correct_amp[0], pConfig->wav_correct_amp[1]);
 		wav->InitData(*fio, baud_rate, sizeof(w_onedata));
 	} else {
 		// .l3b or .l3 or .t9x
@@ -710,20 +711,20 @@ bool CMT::set_save_param()
 {
 	if (file_type <= 1) {
 		// .l3c or .wav
-		int rc = wav->OpenFile(*fio, file_type, config.wav_sample_rate, config.wav_sample_bits, 1);
+		int rc = wav->OpenFile(*fio, file_type, pConfig->wav_sample_rate, pConfig->wav_sample_bits, 1);
 		if (rc > 1) {
 			logging->out_log(LOG_ERROR, wav->Errmsg());
 			return false;
 		}
 		if (rc == 0) {
 			// get sample_rate and sample_bits parameters from file data.
-			config.wav_sample_rate = wav->GetSampleRatePos();
-			config.wav_sample_bits = wav->GetSampleBitsPos();
+			pConfig->wav_sample_rate = wav->GetSampleRatePos();
+			pConfig->wav_sample_bits = wav->GetSampleBitsPos();
 			need_header = false;
 		} else {
 			// new file
-			wav->SetSampleRatePos(config.wav_sample_rate);
-			wav->SetSampleBitsPos(config.wav_sample_bits);
+			wav->SetSampleRatePos(pConfig->wav_sample_rate);
+			wav->SetSampleBitsPos(pConfig->wav_sample_bits);
 			need_header = true;
 		}
 		wav->InitData(*fio, baud_rate, sizeof(w_onedata));
@@ -887,7 +888,7 @@ void CMT::register_my_event(int event_id)
 
 	switch(event_id) {
 	case 0:
-		if (config.realmode_datarec) {
+		if (pConfig->NowRealModeDataRec()) {
 			if (is_bytedata) {
 				// read/write 1byte data per one process
 				period = (int)(CPU_CLOCKS / baud_rate * 11);	// 1startbit + 8databit + 2stopbit
@@ -934,7 +935,7 @@ void CMT::event_callback(int event_id, int err)
 				send_ok = false;
 				d_ctrl->write_signal(ACIA::SIG_ACIA_RXCLK, 1, 1);
 
-				if (play && (config.realmode_datarec || send_ok || now_reset)) {
+				if (play && (pConfig->NowRealModeDataRec() || send_ok || now_reset)) {
 					// read data
 					data = get_data();
 
@@ -963,7 +964,7 @@ void CMT::event_callback(int event_id, int err)
 			}
 			if (rec) {
 				// set data to buffer
-				if (txdata_received || config.realmode_datarec) {
+				if (txdata_received || pConfig->NowRealModeDataRec()) {
 					set_data(txdata);
 				}
 				// write data to file
@@ -1195,12 +1196,12 @@ void CMT::set_tape_one_amp(char data)
 void CMT::set_tape_direct(int16_t *w_data, int w_len)
 {
 //	for(int i=0; i<w_len && tape_wave_buf_wpos < TAPEWAV_BUFFER_SIZE; i++) {
-//		tape_wave_buf[tape_wave_buf_wpos] = (int16_t)((int)w_data[i] * tape_volume * (config.wav_correct ? 2 : 1) / 16384);
+//		tape_wave_buf[tape_wave_buf_wpos] = (int16_t)((int)w_data[i] * tape_volume * (pConfig->wav_correct ? 2 : 1) / 16384);
 //		tape_wave_buf_wpos++;
 //	}
 	for(int i=0; i<w_len && !m_tape_wave.is_full(); i++) {
 		int data = w_data[i];
-		if (config.wav_correct) data = ((data + data + data) >> 1);
+		if (pConfig->wav_correct) data = ((data + data + data) >> 1);
 		m_tape_wave.add(data);
 	}
 }
@@ -1214,14 +1215,14 @@ uint32_t CMT::get_cmt_mode()
 // ----------------------------------------------------------------------------
 void CMT::update_config()
 {
-	int cpu_power = (config.sync_irq ? config.cpu_power : 1);
+	int cpu_power = (pConfig->sync_irq ? pConfig->cpu_power : 1);
 	if (cpu_power >= 1) {
 		sample_rate = sample_rate_base >> (cpu_power - 1);
 	} else {
 		sample_rate = sample_rate_base << (1 - cpu_power);
 	}
 	//
-	wav->SetParseParamerers(config.wav_half, config.wav_reverse, config.wav_correct ? config.wav_correct_type + 1 : 0, config.wav_correct_amp[0], config.wav_correct_amp[1]);
+	wav->SetParseParamerers(pConfig->wav_half, pConfig->wav_reverse, pConfig->wav_correct ? pConfig->wav_correct_type + 1 : 0, pConfig->wav_correct_amp[0], pConfig->wav_correct_amp[1]);
 }
 
 // ----------------------------------------------------------------------------
@@ -1238,7 +1239,7 @@ void CMT::save_state(FILEIO *fp)
 	memset(&vm_state, 0, sizeof(vm_state));
 	vm_state.flags = (REG_REMOTE ? 1 : 0) | (play ? 2 : 0) | (rec ? 4 : 0);
 	vm_state.flags |= (send_ok ? 0x10 : 0) | (recv_ok ? 0x20 : 0);
-	vm_state.flags |= (config.realmode_datarec ? 0x80 : 0); // add version 2
+	vm_state.flags |= (pConfig->NowRealModeDataRec() ? 0x80 : 0); // add version 2
 	vm_state.baud_sel = REG_BAUD_SEL; // add version 3
 
 	vm_state.register_id = Int32_LE(register_id[0]);
@@ -1262,7 +1263,7 @@ bool CMT::load_state(FILEIO *fp)
 	send_ok = (vm_state.flags & 0x10) ? true : false;
 	recv_ok = (vm_state.flags & 0x20) ? true : false;
 	if (Uint16_LE(vm_state_i.version) >= 2) {
-		config.realmode_datarec = (vm_state.flags & 0x80) ? true : false;
+		pConfig->SetRealModeDataRec((vm_state.flags & 0x80) ? true : false);
 	}
 	if (Uint16_LE(vm_state_i.version) >= 3) {
 		REG_BAUD_SEL = vm_state.baud_sel;

@@ -50,6 +50,13 @@
 			}
 			break;
 		case 0xff20:
+		case 0xff21:
+		case 0xff22:
+		case 0xff23:
+		case 0xff24:
+		case 0xff25:
+		case 0xff26:
+		case 0xff27:
 			// fdd drive select
 			if (IOPORT_USE_3FDD) {
 				data = d_fdd->READ_IO8(0);
@@ -163,7 +170,7 @@
 			break;
 		case 0xffc9:
 			// newon number
-			data = config.dipswitch;
+			data = pConfig->dipswitch;
 			break;
 		case 0xffca:
 			// timer irq
@@ -228,7 +235,7 @@
 		case 0xffdf:
 			// color register sel
 #ifdef _DEBUG_CRAM
-			logging->out_debugf("cr c%02x",color_reg);
+			logging->out_debugf("cr creg:%02x",color_reg);
 #endif
 			data = ((color_reg & 0xbf) | 0x40);
 			break;

@@ -30,6 +30,7 @@ extern EMU *emu;
 #else /* USE_MMF_EXTERNAL_DLL */
 
 #include "../../loadlibrary.h"
+#include "../../utility.h"
 
 static HINSTANCE hMMFLoader = NULL;
 
@@ -275,7 +276,7 @@ void MMF_OutLog(int level, const _TCHAR *msg, HRESULT hr)
 {
 	_TCHAR msgf[_MAX_PATH];
 
-	_stprintf(msgf, _T("%s [%x]"), msg, (int)hr);
+	UTILITY::stprintf(msgf, _MAX_PATH, _T("%s [%x]"), msg, (int)hr);
 	logging->out_log(level, msgf); 
 }
 

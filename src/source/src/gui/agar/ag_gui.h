@@ -19,12 +19,14 @@ namespace GUI_AGAR
 
 #define ID_CONFIGBOX	0
 #define ID_KEYBINDBOX	1
+#define ID_JOYSETBOX	2
 
 #define EVT_OPEN_LOAD_RECKEY_DIALOG	1
 #define EVT_OPEN_SAVE_RECKEY_DIALOG	2
 
 class AG_CONFIG_DLG;
 class AG_KEYBIND_DLG;
+class AG_JOYSET_DLG;
 
 }; /* namespace GUI_AGAR */
 
@@ -39,6 +41,7 @@ public:
 	// dialog
 	GUI_AGAR::AG_CONFIG_DLG *configbox;
 	GUI_AGAR::AG_KEYBIND_DLG *keybindbox;
+	GUI_AGAR::AG_JOYSET_DLG *joysetbox;
 
 	virtual int Init();
 
@@ -54,6 +57,7 @@ public:
 	virtual bool ShowPlayRecKeyDialog(void);
 	virtual bool ShowRecordRecKeyDialog(void);
 	virtual bool ShowRecordStateAndRecKeyDialog(void);
+	virtual bool ShowJoySettingDialog(void);
 	virtual bool ShowKeybindDialog(void);
 	virtual bool ShowConfigureDialog(void);
 
@@ -129,6 +133,8 @@ private:
 #endif
 	static void OnSelectUseJoypad(AG_Event *);
 	static void OnUpdateUseJoypad(AG_Event *);
+	static void OnSelectEnableKey2Joy(AG_Event *);
+	static void OnUpdateEnableKey2Joy(AG_Event *);
 #ifdef USE_LIGHTPEN
 	static void OnSelectEnableLightpen(AG_Event *);
 	static void OnUpdateEnableLightpen(AG_Event *);
@@ -139,6 +145,7 @@ private:
 #endif
 	static void OnSelectLoosenKeyStroke(AG_Event *);
 	static void OnUpdateLoosenKeyStroke(AG_Event *);
+	static void OnSelectJoypadSetting(AG_Event *);
 	static void OnSelectKeybindBox(AG_Event *);
 	static void OnSelectConfigureBox(AG_Event *);
 	static void OnSelectPrintPrinter(AG_Event *);

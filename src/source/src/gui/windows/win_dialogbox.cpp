@@ -106,6 +106,8 @@ INT_PTR CALLBACK CDialogBox::Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 			return myObj->onControlColorDialog(message, wParam, lParam);
 		case WM_SIZE:
 			return myObj->onSize(message, wParam, lParam);
+		case WM_GETMINMAXINFO:
+			return myObj->onMinMaxInfo(message, wParam, lParam);
 		break;
 
 	}
@@ -177,6 +179,11 @@ INT_PTR CDialogBox::onHelp(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 INT_PTR CDialogBox::onSize(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return (INT_PTR)FALSE;
+}
+
+INT_PTR CDialogBox::onMinMaxInfo(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return (INT_PTR)FALSE;
 }
@@ -477,6 +484,51 @@ HWND CDialogBox::CreateComboBox(CBox *box, int nItemId, const CPtrList<CTchar> &
 		SetComboBoxItems(hCtrl, list, selnum);
 		AdjustComboBox(box, nItemId, nMinSize);
 	}
+	return hCtrl;
+}
+
+/// @brief Create a combo box with static label.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of combo box
+/// @param[in] label : label string
+/// @param[in] list : item string list
+/// @param[in] selnum : select index number
+/// @param[in] nMinSize : width of combo box
+/// @return : window handle of combo box
+HWND CDialogBox::CreateComboBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const _TCHAR **list, int selnum, int nMinSize)
+{
+	CreateStatic(box, IDC_STATIC, label);
+	HWND hCtrl = CreateComboBox(box, nItemId, list, selnum, nMinSize);
+	return hCtrl;
+}
+
+/// @brief Create a combo box with static label.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of combo box
+/// @param[in] label : label string
+/// @param[in] list : item string list
+/// @param[in] selnum : select index number
+/// @param[in] nMinSize : width of combo box
+/// @return : window handle
+HWND CDialogBox::CreateComboBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const CMsg::Id *list, int selnum, int nMinSize)
+{
+	CreateStatic(box, IDC_STATIC, label);
+	HWND hCtrl = CreateComboBox(box, nItemId, list, selnum, nMinSize);
+	return hCtrl;
+}
+
+/// @brief Create a combo box with static label.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of combo box
+/// @param[in] label : label string
+/// @param[in] list : item string list
+/// @param[in] selnum : select index number
+/// @param[in] nMinSize : width of combo box
+/// @return : window handle
+HWND CDialogBox::CreateComboBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const CPtrList<CTchar> &list, int selnum, int nMinSize)
+{
+	CreateStatic(box, IDC_STATIC, label);
+	HWND hCtrl = CreateComboBox(box, nItemId, list, selnum, nMinSize);
 	return hCtrl;
 }
 
@@ -805,12 +857,12 @@ HWND CDialogBox::CreateEditBox(CBox *box, int nItemId, const _TCHAR *text, int n
 /// @brief Create a edit box.
 /// @param[in] box : layout box object
 /// @param[in] nItemId : control id of edit box
-/// @param[in] text : default string on edit box
+/// @param[in] digit : default string on edit box
 /// @param[in] nMaxSize : width of edit box
 /// @param[in] align : align string
 /// @param[in] ch : a char using size hint of width on edit box 
 /// @return : handle of edit box
-HWND CDialogBox::CreateEditBox(CBox *box, int nItemId, int digit, int nMaxSize,int align, const _TCHAR ch)
+HWND CDialogBox::CreateEditBox(CBox *box, int nItemId, int digit, int nMaxSize, int align, const _TCHAR ch)
 {
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL;
 	align |= WS_EX_CLIENTEDGE;
@@ -819,6 +871,64 @@ HWND CDialogBox::CreateEditBox(CBox *box, int nItemId, int digit, int nMaxSize,i
 		SendMessage(hCtrl, WM_SETFONT, (WPARAM)font->GetFont(), MAKELPARAM(TRUE, 0));
 		SetDlgItemInt(hDlg, nItemId, digit, TRUE);
 		AdjustEditBox(box, nItemId, nMaxSize, ch);
+	}
+	return hCtrl;
+}
+
+/// @brief Create a edit box with static label.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of edit box
+/// @param[in] label : label string
+/// @param[in] text : default string on edit box
+/// @param[in] nMaxSize : width of edit box
+/// @param[in] align : align string
+/// @param[in] ch : a char using size hint of width on edit box 
+/// @return : handle of edit box
+HWND CDialogBox::CreateEditBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, const _TCHAR *text, int nMaxSize, int align, const _TCHAR ch)
+{
+	CreateStatic(box, IDC_STATIC, label);
+	HWND hCtrl = CreateEditBox(box, nItemId, text, nMaxSize, align, ch);
+	return hCtrl;
+}
+
+/// @brief Create a edit box with static label.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of edit box
+/// @param[in] label : label string
+/// @param[in] digit : default string on edit box
+/// @param[in] nMaxSize : width of edit box
+/// @param[in] align : align string
+/// @param[in] ch : a char using size hint of width on edit box 
+/// @return : handle of edit box
+HWND CDialogBox::CreateEditBoxWithLabel(CBox *box, int nItemId, CMsg::Id label, int digit, int nMaxSize, int align, const _TCHAR ch)
+{
+	CreateStatic(box, IDC_STATIC, label);
+	HWND hCtrl = CreateEditBox(box, nItemId, digit, nMaxSize, align, ch);
+	return hCtrl;
+}
+
+/// @brief Create a text control.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of radio button
+/// @param[in] multi_line : control has multi line?
+/// @param[in] read_only : control is read only?
+/// @param[in] min_w : minimum width
+/// @param[in] min_h : minimum height
+/// @return : handle of control
+HWND CDialogBox::CreateTextControl(CBox *box, int nItemId, bool multi_line, bool read_only, int min_w, int min_h)
+{
+	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL;
+	DWORD align = WS_EX_CLIENTEDGE;
+	if (multi_line) {
+		dwStyle |= (ES_MULTILINE | WS_HSCROLL | WS_VSCROLL | ES_AUTOVSCROLL);
+	}
+	if (read_only) {
+		dwStyle |= ES_READONLY;
+	}
+	HWND hCtrl = CreateWindowEx(align, WC_EDIT, _T(""), dwStyle, 0, 0, min_w, min_h, hDlg, (HMENU)(INT_PTR)nItemId, hInstance, NULL);
+	if (hCtrl) {
+		SendMessage(hCtrl, WM_SETFONT, (WPARAM)font->GetFont(), MAKELPARAM(TRUE, 0));
+		AdjustControl(box, nItemId, min_w, min_h);
 	}
 	return hCtrl;
 }
@@ -850,6 +960,35 @@ HWND CDialogBox::CreateSlider(CBox *box, int nItemId, int min_w, int min_h, int 
 	return hCtrl;
 }
 
+/// @brief Create a updown button.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of slider
+/// @param[in] hEdit : handle of edit box
+/// @param[in] range_min : minimum value
+/// @param[in] range_max : maximum value
+/// @param[in] value : default value 
+/// @return : handle of updown button
+HWND CDialogBox::CreateUpDown(CBox *box, int nItemId, HWND hEdit, int range_min, int range_max, int value)
+{
+	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | UDS_ALIGNRIGHT | UDS_SETBUDDYINT;
+	HWND hCtrl = CreateWindowEx(0, UPDOWN_CLASS, _T(""), dwStyle, 0, 0, 16, 16, hDlg, (HMENU)(INT_PTR)nItemId, hInstance, NULL);
+	if (hCtrl) {
+		SendMessage(hCtrl, WM_SETFONT, (WPARAM)font->GetFont(), MAKELPARAM(TRUE, 0));
+		SendMessage(hCtrl, UDM_SETBUDDY, (WPARAM)hEdit, 0);
+		SendMessage(hCtrl, UDM_SETRANGE, 0, MAKELPARAM(range_max, range_min));
+		SendMessage(hCtrl, UDM_SETPOS, 0, value);
+
+		SIZE siz = { 0, 0 };
+		const _TCHAR *buf = _T("0");
+
+		// edit box
+		font->GetTextSize(hDlg, buf, &siz);
+
+		AdjustControl(box, nItemId, padding + siz.cx * 2 + padding, siz.cy + padding * 4);
+	}
+	return hCtrl;
+}
+
 #ifdef USE_LAYOUT_RECT
 void CDialogBox::AdjustButton(int nItemId, int nSize, RECT *re, bool align_right)
 {
@@ -877,6 +1016,10 @@ void CDialogBox::AdjustButton(int nItemId, int nSize, RECT *re, bool align_right
 }
 #endif
 
+/// @brief Adjust position and size of a button control.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of button
+/// @param[in] nSize : minimum size
 void CDialogBox::AdjustButton(CBox *box, int nItemId, int nSize)
 {
 	_TCHAR buf[_MAX_PATH];
@@ -919,6 +1062,11 @@ void CDialogBox::AdjustStatic(int nItemId, RECT *re, bool align_right)
 }
 #endif
 
+/// @brief Adjust position and size of a static text control.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of static text
+/// @param[in] min_w : minimum width
+/// @param[in] min_h : minimum height
 void CDialogBox::AdjustStatic(CBox *box, int nItemId, int min_w, int min_h)
 {
 	_TCHAR buf[_MAX_PATH];
@@ -933,6 +1081,12 @@ void CDialogBox::AdjustStatic(CBox *box, int nItemId, int min_w, int min_h)
 	box->AddControl(nItemId, siz.cx, siz.cy +  padding * 4, 0, padding * 2);
 }
 
+/// @brief Adjust position and size of a group box.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of group box
+/// @param[in] orient : CBox::VerticalBox / CBox::HorizontalBox
+/// @param[in] align : text align
+/// @return : layout box object
 CBox *CDialogBox::AdjustGroup(CBox *box, int nItemId, int orient, int align)
 {
 	_TCHAR buf[_MAX_PATH];
@@ -970,6 +1124,11 @@ void CDialogBox::AdjustCheckBox(int nItemId, RECT *re, bool align_right)
 }
 #endif
 
+/// @brief Adjust position and size of a check box.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of check box
+/// @param[in] min_w : minimum width
+/// @param[in] min_h : minimum height
 void CDialogBox::AdjustCheckBox(CBox *box, int nItemId, int min_w, int min_h)
 {
 	_TCHAR buf[_MAX_PATH];
@@ -1023,6 +1182,11 @@ void CDialogBox::AdjustEditBox(int nItemId, RECT *re, const _TCHAR *cLenStr, boo
 }
 #endif
 
+/// @brief Adjust position and size of a edit box.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of edit box
+/// @param[in] nMaxSize : width of edit box
+/// @param[in] ch : a char using size hint of width on edit box 
 void CDialogBox::AdjustEditBox(CBox *box, int nItemId, int nMaxSize, const _TCHAR ch)
 {
 	_TCHAR buf[2] = { ch, _T('\0') };
@@ -1093,6 +1257,10 @@ void CDialogBox::AdjustComboBox(int nItemId, int nMinSize, RECT *re, bool align_
 }
 #endif
 
+/// @brief Adjust position and size of a combo box.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id of combo box
+/// @param[in] nMinSize : width of combo box
 void CDialogBox::AdjustComboBox(CBox *box, int nItemId, int nMinSize)
 {
 	_TCHAR buf[_MAX_PATH];
@@ -1168,6 +1336,12 @@ void CDialogBox::AdjustControl(int nItemId, RECT *re, int w, int h, bool align_r
 }
 #endif
 
+/// @brief Adjust position and size of a control.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id
+/// @param[in] w : minimum width
+/// @param[in] h : minimum height
+/// @param[in] style : style on control
 void CDialogBox::AdjustControl(CBox *box, int nItemId, int w, int h, int style)
 {
 	if (style != 0) {
@@ -1186,6 +1360,10 @@ void CDialogBox::AdjustControl(CBox *box, int nItemId, int w, int h, int style)
 	}
 }
 
+/// @brief Adjust position and size of a tab control.
+/// @param[in] box : layout box object
+/// @param[in] nItemId : control id
+/// @param[in] nBGItemId : control id of back ground
 CBox *CDialogBox::AdjustTabControl(CBox *box, int nItemId, int nBGItemId)
 {
 	int h = font->GetHeight();
@@ -1198,6 +1376,8 @@ CBox *CDialogBox::AdjustTabControl(CBox *box, int nItemId, int nBGItemId)
 	return cbox;
 }
 
+/// @brief Fit size of a window.
+/// @param[in] lmargin : margin
 void CDialogBox::AdjustWindow(int lmargin)
 {
 	WINDOWINFO wi;
@@ -1226,6 +1406,10 @@ void CDialogBox::AdjustWindow(int lmargin)
 
 }
 
+/// @brief Resize a control.
+/// @param[in] nItemId : control id
+/// @param[in] w : width
+/// @param[in] h : height
 void CDialogBox::ResizeControl(int nItemId, int w, int h)
 {
 	HWND hCtrl;
@@ -1238,6 +1422,10 @@ void CDialogBox::ResizeControl(int nItemId, int w, int h)
 	SetWindowPos(hCtrl, NULL, 0, 0, w, h, SWP_NOMOVE | SWP_NOZORDER);
 }
 
+/// @brief Adjust size of a control.
+/// @param[in] nItemId : control id
+/// @param[in] diff_x : difference of width
+/// @param[in] diff_y : difference of height
 void CDialogBox::AdjustControlSize(int nItemId, int diff_x, int diff_y)
 {
 	HWND hCtrl;
@@ -1260,6 +1448,10 @@ void CDialogBox::AdjustControlSize(int nItemId, int diff_x, int diff_y)
 	}
 }
 
+/// @brief Adjust position of a control.
+/// @param[in] nItemId : control id
+/// @param[in] diff_x : difference of x
+/// @param[in] diff_y : difference of y
 void CDialogBox::AdjustControlPos(int nItemId, int diff_x, int diff_y)
 {
 	HWND hCtrl = GetDlgItem(hDlg, nItemId);
@@ -1271,6 +1463,10 @@ void CDialogBox::AdjustControlPos(int nItemId, int diff_x, int diff_y)
 	SetWindowPos(hCtrl, NULL, re.left, re.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
 
+/// @brief Calcurate difference of with on a control.
+/// @param[in] nItemId : control id
+/// @param[in] new_width : width
+/// @return difference of width
 int CDialogBox::GetControlXdiff(int nItemId, int new_width)
 {
 	WINDOWINFO wi;
@@ -1279,7 +1475,9 @@ int CDialogBox::GetControlXdiff(int nItemId, int new_width)
 	return new_width - wi.rcClient.right + wi.rcClient.left;
 }
 
-/// コントロールのウィンドウ上の相対位置を得る
+/// @brief Get relative position of a control on a window
+/// @param[in] nItemId : control id
+/// @param[in] re : rectangle
 void CDialogBox::GetControlPos(int nItemId, RECT *re)
 {
 	HWND hCtrl = GetDlgItem(hDlg, nItemId);
@@ -1296,7 +1494,9 @@ void CDialogBox::GetControlPos(int nItemId, RECT *re)
 	}
 }
 
-/// コントロールのサイズを得る
+/// @brief Get size of a control
+/// @param[in] nItemId : control id
+/// @param[in] size : size
 void CDialogBox::GetControlSize(int nItemId, SIZE *size)
 {
 	HWND hCtrl = GetDlgItem(hDlg, nItemId);
@@ -1325,6 +1525,11 @@ void CDialogBox::ShowDlgItem(int nItemId, bool value)
 
 #undef _DEBUG_CBOX
 
+/// @brief layout box
+/// @param[in] orient : CBox::VerticalBox, CBox::HorizontalBox, CBox::TabControlBox
+/// @param[in] align : CBox::LeftPos,  CBox::CenterPos,  CBox::RightPos,  CBox::TopPos,  CBox::MiddlePos,  CBox::BottomPos
+/// @param[in] margin : margin (px)
+/// @param[in] name : unique name (optional)
 CBox::CBox(int orient, int align, int margin, const _TCHAR *name)
 {
 	this->orient = (enOrient)orient;
@@ -1349,7 +1554,7 @@ CBox::CBox(int orient, int align, int margin, const _TCHAR *name)
 
 	memset(this->name, 0, sizeof(this->name));
 	if (name) {
-		_tcsncpy(this->name, name, 9);
+		UTILITY::tcsncpy(this->name, sizeof(this->name)/sizeof(_TCHAR), name, 9);
 	}
 
 	tab_items = NULL;
@@ -1392,11 +1597,19 @@ void CBox::AddHeight(int height)
 	}
 }
 
+/// @brief Add a layout box
+/// @param[in] box : a layout box
 void CBox::AddBox(CBox *box)
 {
 	AddItem(box, 0, 0, 0, 0, 0);
 }
 
+/// @brief Create a new layout box
+/// @param[in] orient : CBox::VerticalBox, CBox::HorizontalBox, CBox::TabControlBox
+/// @param[in] align : CBox::LeftPos, CBox::CenterPos, CBox::RightPos, CBox::TopPos, CBox::MiddlePos, CBox::BottomPos
+/// @param[in] margin : margin (px)
+/// @param[in] name : unique name (optional)
+/// @return new layout box object
 CBox *CBox::AddBox(int orient, int align, int margin, const _TCHAR *name)
 {
 	CBox *box = new CBox(orient, align, margin, name);
@@ -1404,21 +1617,42 @@ CBox *CBox::AddBox(int orient, int align, int margin, const _TCHAR *name)
 	return box;
 }
 
+/// @brief Add a control
+/// @param[in] itemid : a control id
+/// @param[in] width
+/// @param[in] height
+/// @param[in] px
+/// @param[in] py
 void CBox::AddControl(int itemid, int width, int height, int px, int py)
 {
 	AddItem(NULL, itemid, width, height, px, py);
 }
 
+/// @brief Add a box and control
+/// @param[in] box : a layout box
+/// @param[in] itemid : a control id
 void CBox::AddControlWithBox(CBox *box, int itemid)
 {
 	AddItem(box, itemid, 0, 0, 0, 0);
 }
 
+/// @brief Add a spacer
+/// @param[in] width
+/// @param[in] height
+/// @param[in] px
+/// @param[in] py
 void CBox::AddSpace(int width, int height, int px, int py)
 {
 	AddItem(NULL, 0, width, height, px, py);
 }
 
+/// @brief Add a box or control
+/// @param[in] box : a layout box
+/// @param[in] itemid : a control id
+/// @param[in] width
+/// @param[in] height
+/// @param[in] px
+/// @param[in] py
 void CBox::AddItem(CBox *box, int itemid, int width, int height, int px, int py)
 {
 	if (box) box->parent_box = this;
@@ -1450,6 +1684,8 @@ void CBox::AddItem(CBox *box, int itemid, int width, int height, int px, int py)
 	if (itemid > 0) AddIdToTabItems(itemid);
 }
 
+/// @brief Adjust position and size of items in a dialog
+/// @param[in] dlg : a dialog
 void CBox::Realize(CDialogBox &dlg)
 {
 	if (realized) return;

@@ -17,7 +17,7 @@
 //#include <wx/dialog.h>
 #include <wx/dnd.h>
 
-#define FDD_NUMS	MAX_DRIVE
+#define FDD_NUMS	USE_FLOPPY_DISKS
 
 class CRecentPathList;
 class MyApp;
@@ -25,6 +25,7 @@ class MyFrame;
 class MyPanel;
 class MyGLCanvas;
 class MyConnection;
+class MyLoggingDlg;
 
 /**
  * @brief GUI class
@@ -36,6 +37,7 @@ private:
 	wxMutex *mux_need_update;
 	wxCondition *cond_need_update;
 #endif
+	MyLoggingDlg *logging_dlg;
 
 public:
 	GUI(int argc, char **argv, EMU *new_emu);
@@ -77,6 +79,10 @@ public:
 
 	bool ShowVolumeDialog(void);
 
+	bool ShowLoggingDialog(void);
+	bool IsShownLoggingDialog(void);
+
+	bool ShowJoySettingDialog(void);
 	bool ShowKeybindDialog(void);
 	bool ShowConfigureDialog(void);
 

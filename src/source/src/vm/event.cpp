@@ -24,6 +24,8 @@
 //#endif
 #endif
 
+//#define _DEBUG_SOUND_ADJUST
+
 EVENT::EVENT(VM* parent_vm, EMU* parent_emu, char* identifier)
 	: DEVICE(parent_vm, parent_emu, identifier)
 {
@@ -60,6 +62,10 @@ EVENT::EVENT(VM* parent_vm, EMU* parent_emu, char* identifier)
 	next_frames_per_sec = FRAMES_PER_SEC;
 	next_lines_per_frame = LINES_PER_FRAME;
 
+	update_samples_real = 0.0;
+	update_samples = 0;
+	update_samples_adjust = 0;
+
 #ifdef _DEBUG_LOG
 	initialize_done = false;
 #endif
@@ -71,21 +77,21 @@ EVENT::EVENT(VM* parent_vm, EMU* parent_emu, char* identifier)
 void EVENT::initialize()
 {
 	// load config
-	if(!(0 <= config.cpu_power && config.cpu_power <= 5)) {
-		config.cpu_power = 1;
+	if(!(0 <= pConfig->cpu_power && pConfig->cpu_power <= 5)) {
+		pConfig->cpu_power = 1;
 	}
 
 #ifdef USE_EMU_INHERENT_SPEC
-	if (config.sync_irq) {
+	if (pConfig->sync_irq) {
 		cpu_power = 1;
-		event_power = config.cpu_power;
+		event_power = pConfig->cpu_power;
 	} else {
-		cpu_power = config.cpu_power;
+		cpu_power = pConfig->cpu_power;
 		event_power = 1;
 	}
 	vm_pause = emu->get_pause_ptr();
 #else
-	cpu_power = config.cpu_power;
+	cpu_power = pConfig->cpu_power;
 	event_power = 0;
 #endif
 #ifdef USE_CPU_HALF_SPEED
@@ -118,12 +124,19 @@ void EVENT::initialize_sound(int rate, int samples)
 	// initialize sound
 	sound_rate = rate;
 	sound_samples = samples;
+	sound_samples_25 = rate * 25 / 1000;
 #ifdef EVENT_CONTINUOUS_SOUND
 	sound_tmp_samples = samples * 3;
 #else
 	sound_tmp_samples = samples;
 #endif
-	update_samples = (int)(1024.0 * (double)sound_rate / frames_per_sec / (double)lines_per_frame + 0.5);
+	if (frames_per_sec > 0.0 && lines_per_frame > 0) {
+		update_samples_real = (double)sound_rate / frames_per_sec / (double)lines_per_frame;
+		update_samples = (int)(1024.0 * update_samples_real);
+	} else {
+		update_samples_real = 0.0;
+		update_samples = 0;
+	}
 //	update_config();
 	sound_buffer = (audio_sample_t*)malloc(sound_samples * sizeof(audio_sample_t) * 2);
 	memset(sound_buffer, 0, sound_samples * sizeof(audio_sample_t) * 2);
@@ -269,7 +282,8 @@ void EVENT::drive(int split_num)
 						device->update_timing(d_cpu[0].cpu_clocks, frames_per_sec, lines_per_frame);
 					}
 				}
-				update_samples = (int)(1024.0 * (double)sound_rate / frames_per_sec / (double)lines_per_frame + 0.5);
+				update_samples_real = (double)sound_rate / frames_per_sec / (double)lines_per_frame;
+				update_samples = (int)(1024.0 * update_samples_real);
 			}
 
 			// run virtual machine for 1 frame period
@@ -277,6 +291,21 @@ void EVENT::drive(int split_num)
 				frame_event[i]->event_frame();
 			}
 
+#ifdef EVENT_CONTINUOUS_SOUND
+			// adjusting count of samples per vline
+#ifdef _DEBUG_SOUND_ADJUST
+			int prev_adjust = update_samples_adjust;
+#endif
+			if ((sound_samples + sound_samples_25) > sound_buffer_ptr) {
+				// samples left little
+				update_samples_adjust = 32;
+			} else {
+				update_samples_adjust = 0;
+			}
+#ifdef _DEBUG_SOUND_ADJUST
+			if (prev_adjust != update_samples_adjust) logging->out_logf(LOG_DEBUG,_T("EVENT::drive samples:%d buf_ptr:%d samples_adjust:%d"),sound_samples,sound_buffer_ptr,update_samples_adjust);
+#endif
+#endif
 			first_frame = false;
 		}
 
@@ -729,7 +758,8 @@ void EVENT::cancel_event(DEVICE *device, int register_id)
 	if(0 <= register_id && register_id < MAX_EVENT) {
 		event_t *event_handle = &event[register_id];
 		if(device != NULL && device != event_handle->device) {
-			logging->out_debugf(_T("EVENT: event cannot be canceled by non owned device (id=%d) !!!\n"), device->get_id());
+			logging->out_debugf(_T("EVENT: event cannot be canceled by non owned device!!! device_id:%d [%s:%s]")
+				, device->get_id(), device->get_class_name(), device->get_identifier());
 			return;
 		}
 		if(event_handle->active) {
@@ -870,7 +900,7 @@ void EVENT::mix_sound(int samples)
 
 void EVENT::update_sound(int v)
 {
-	accum_samples += update_samples;
+	accum_samples += (update_samples + update_samples_adjust);
 	int samples = (accum_samples >> 9 >> event_power);
 	accum_samples -= (samples << 9 << event_power);
 //	int samples = (int)(update_sound_rate_f / lines_per_frame / frames_per_sec / 16.0);
@@ -891,7 +921,7 @@ void EVENT::update_sound(int v)
 	mix_sound(samples);
 }
 
-/// @attention called by another thread.
+/// @attention called by another thread (EMU::update_sound).
 /// @param[in] extra_frames 0
 /// @param[in] samples      requested samples by DirectSound / SDLSound
 audio_sample_t* EVENT::create_sound(int* extra_frames, int samples)
@@ -916,6 +946,9 @@ audio_sample_t* EVENT::create_sound(int* extra_frames, int samples)
 #ifdef EVENT_CONTINUOUS_SOUND
 	//  skip if buffer is not fill
 	if (samples > sound_buffer_ptr) {
+#ifdef _DEBUG_SOUND_ADJUST
+		if (sound_buffer_ptr > 0) logging->out_logf(LOG_DEBUG,_T("EVENT::create_sound underflow: samples:%d buf_ptr:%d"),samples,sound_buffer_ptr);
+#endif
 		*extra_frames = frames;
 		return sound_empty;
 	}
@@ -936,7 +969,11 @@ audio_sample_t* EVENT::create_sound(int* extra_frames, int samples)
 			sound_buffer_ptr -= samples;
 		} else {
 			sound_buffer_ptr -= samples + samples / 2;
+#ifdef _DEBUG_SOUND_ADJUST
+			logging->out_logf(LOG_DEBUG,_T("EVENT::create_sound overflow: %d samples:%d buf_ptr:%d"),sound_buffer_overflow,samples,sound_buffer_ptr);
+#endif
 		}
+		// shift buffer (samples * stereo(2))
 		memcpy(sound_tmp, sound_tmp + samples * 2, sound_buffer_ptr * sizeof(int32_t) * 2);
 #ifdef _DEBUG_SOUND_LATE
 		memcpy(sound_tmp_clocks, sound_tmp_clocks + samples, sound_buffer_ptr * sizeof(uint64_t));
@@ -971,24 +1008,24 @@ void EVENT::record_sound(int samples)
 void EVENT::update_config()
 {
 #ifdef USE_EMU_INHERENT_SPEC
-	if (config.sync_irq) {
-		event_power = config.cpu_power;
+	if (pConfig->sync_irq) {
+		event_power = pConfig->cpu_power;
 		cpu_power = 1;
 		cpu_accum = 0;
 	} else {
-		cpu_power = config.cpu_power;
+		cpu_power = pConfig->cpu_power;
 		event_power = 1;
 		cpu_accum = 0;
 	}
 
 	draw_count_per_frame = 1;
 #ifdef USE_AFTERIMAGE
-	if (config.afterimage != 0) {
+	if (pConfig->afterimage != 0) {
 		draw_count_per_frame = 2;
 	}
 #endif
 #ifdef USE_KEEPIMAGE
-	if (config.keepimage != 0) {
+	if (pConfig->keepimage != 0) {
 		draw_count_per_frame = 2;
 	}
 #endif
@@ -1098,7 +1135,7 @@ void EVENT::save_state(FILEIO *fio)
 	fio->FputInt32_LE(cpu_accum);
 
 	// Version 3 or 0x43
-	fio->FputUint64_LE(*((uint64_t *)&next_frames_per_sec));
+	fio->FputDouble_LE(next_frames_per_sec);
 	fio->FputInt32_LE(next_lines_per_frame);
 	fio->FputInt32_LE(frame_split_num);
 }
@@ -1186,8 +1223,7 @@ bool EVENT::load_state(FILEIO *fio)
 		cpu_accum = fio->FgetInt32_LE();
 		if (Uint16_LE(vm_state_i.version) >= 0x43) {
 			// Version 0x43
-			uint64_t tmp = fio->FgetUint64_LE();
-			next_frames_per_sec = *((double *)&tmp);
+			next_frames_per_sec = fio->FgetDouble_LE();
 			next_lines_per_frame = fio->FgetInt32_LE();
 			frame_split_num = fio->FgetInt32_LE();
 
@@ -1215,8 +1251,7 @@ bool EVENT::load_state(FILEIO *fio)
 		}
 		if (Uint16_LE(vm_state_i.version) >= 3) {
 			// Version 3
-			uint64_t tmp = fio->FgetUint64_LE();
-			next_frames_per_sec = *((double *)&tmp);
+			next_frames_per_sec = fio->FgetDouble_LE();
 			next_lines_per_frame = fio->FgetInt32_LE();
 			frame_split_num = fio->FgetInt32_LE();
 
@@ -1241,8 +1276,7 @@ bool EVENT::load_state(FILEIO *fio)
 	}
 	if (Uint16_LE(vm_state_i.version) >= 3) {
 		// Version 3
-		uint64_t tmp = fio->FgetUint64_LE();
-		next_frames_per_sec = *((double *)&tmp);
+		next_frames_per_sec = fio->FgetDouble_LE();
 		next_lines_per_frame = fio->FgetInt32_LE();
 		frame_split_num = fio->FgetInt32_LE();
 

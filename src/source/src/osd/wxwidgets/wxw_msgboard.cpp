@@ -110,15 +110,15 @@ bool MsgBoard::SetFont()
 	if (!inited) return false;
 
 	// メッセージ用フォントの設定
-	enable = set_sys_font(CMsg::message, config.msgboard_msg_fontname, config.msgboard_msg_fontsize, &msg.font, msg.font_name);
+	enable = set_sys_font(CMsg::message, pConfig->msgboard_msg_fontname.Get(), pConfig->msgboard_msg_fontsize, &msg.font, msg.font_name);
 	if (enable) {
 //		TTF_SetFontStyle(msg.font, TTF_STYLE_NORMAL);
-		config.msgboard_msg_fontname.Set(msg.font_name);
+		pConfig->msgboard_msg_fontname.Set(msg.font_name);
 		// 情報用フォントの設定
-		enable = set_sys_font(CMsg::info, config.msgboard_info_fontname, config.msgboard_info_fontsize, &info.font, info.font_name);
+		enable = set_sys_font(CMsg::info, pConfig->msgboard_info_fontname.Get(), pConfig->msgboard_info_fontsize, &info.font, info.font_name);
 		if (enable) {
 //			TTF_SetFontStyle(info.font, TTF_STYLE_NORMAL);
-			config.msgboard_info_fontname.Set(info.font_name);
+			pConfig->msgboard_info_fontname.Set(info.font_name);
 		}
 	}
 	return enable;
@@ -431,7 +431,7 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, wxFont *
 
 #if 0
 #if defined(_WIN32)
-//	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+//	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 //	fpath.push_back(sbuf);
 //	emu->resource_path(sbuf.buf, _MAX_PATH);
 //	fpath.push_back(sbuf);
@@ -443,7 +443,7 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, wxFont *
 
 
 #elif defined(linux)
-	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 	fpath.push_back(sbuf);
 	emu->resource_path(sbuf.buf, _MAX_PATH);
 	fpath.push_back(sbuf);
@@ -472,7 +472,7 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, wxFont *
 	fname.push_back(sbuf);
 
 #elif defined(__APPLE__) && defined(__MACH__)
-	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 	fpath.push_back(sbuf);
 	emu->resource_path(sbuf.buf, _MAX_PATH);
 	fpath.push_back(sbuf);
@@ -495,7 +495,7 @@ bool MsgBoard::set_sys_font(CMsg::Id title, const _TCHAR *name, int pt, wxFont *
 	fname.push_back(sbuf);
 
 #elif defined(__FreeBSD__)
-	config.font_path.GetN(sbuf.buf, _MAX_PATH);
+	pConfig->font_path.GetN(sbuf.buf, _MAX_PATH);
 	fpath.push_back(sbuf);
 	emu->resource_path(sbuf.buf, _MAX_PATH);
 	fpath.push_back(sbuf);

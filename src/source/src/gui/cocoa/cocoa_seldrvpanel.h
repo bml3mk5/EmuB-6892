@@ -1,6 +1,5 @@
 /** @file cocoa_seldrvpanel.h
 
- HITACHI BASIC MASTER LEVEL3 Mark5 Emulator 'EmuB-6892'
  Skelton for retropc emulator
  SDL edition + Cocoa GUI
 

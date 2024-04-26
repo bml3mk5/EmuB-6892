@@ -41,7 +41,7 @@ void MySelDrvDlg::InitDialog()
 
 	// button
 	wxButton *btn;
-	for(int drv=0; drv<MAX_DRIVE; drv++) {
+	for(int drv=0; drv<USE_FLOPPY_DISKS; drv++) {
 		wxString str = wxString::Format(_T("%s%d"), prefix, drv);
 		btn = new wxButton(this, IDC_BUTTON_DRIVE0 + drv, str);
 		szrH->Add(btn, flags);

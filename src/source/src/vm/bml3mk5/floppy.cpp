@@ -33,65 +33,65 @@ static int     debug_regr_cnt[5];
 #define OUT_DEBUG_REGR(emu, addr, data, msg)
 #endif
 
-#define DRIVE_MASK	(MAX_DRIVE - 1)
+#define DRIVE_MASK	(USE_FLOPPY_DISKS - 1)
 
 void FLOPPY::cancel_my_event(int event_no)
 {
-	if(register_id[event_no] != -1) {
-		cancel_event(this, register_id[event_no]);
-		register_id[event_no] = -1;
+	if(m_register_id[event_no] != -1) {
+		cancel_event(this, m_register_id[event_no]);
+		m_register_id[event_no] = -1;
 	}
 }
 
 void FLOPPY::register_my_event(int event_no, int wait)
 {
 	cancel_my_event(event_no);
-	register_event(this, event_no, wait, false, &register_id[event_no]);
+	register_event(this, event_no, wait, false, &m_register_id[event_no]);
 }
 
 void FLOPPY::register_index_hole_event(int event_no, int wait)
 {
 	cancel_my_event(event_no);
-	register_event_by_clock(this, event_no, wait, false, &register_id[event_no], &index_hole_next_clock);
+	register_event_by_clock(this, event_no, wait, false, &m_register_id[event_no], &m_index_hole_next_clock);
 }
 
 void FLOPPY::initialize()
 {
 	// setup/reset floppy drive
-	for(int i = 0; i < MAX_DRIVE; i++) {
-		disk[i] = new DISK(i);
+	for(int i = 0; i < USE_FLOPPY_DISKS; i++) {
+		p_disk[i] = new DISK(i);
 	}
-	for(int i = 0; i < MAX_DRIVE; i++) {
-		fdd[i].side = 0;
-		fdd[i].track = 0;
-		fdd[i].index = 0;
+	for(int i = 0; i < USE_FLOPPY_DISKS; i++) {
+		m_fdd[i].side = 0;
+		m_fdd[i].track = 0;
+		m_fdd[i].index = 0;
 #ifdef USE_SIG_FLOPPY_ACCESS
-		fdd[i].access = false;
+		m_fdd[i].access = false;
 #endif
-		fdd[i].ready = 0;
-		fdd[i].motor_warmup = 0;
-		fdd[i].head_loading = 0;
-		fdd[i].delay_write = 0;
+		m_fdd[i].ready = 0;
+		m_fdd[i].motor_warmup = 0;
+		m_fdd[i].head_loading = 0;
+		m_fdd[i].delay_write = 0;
 
-		fdd[i].shown_media_error = false;
+		m_fdd[i].shown_media_error = false;
 	}
-	ignore_crc = false;
+	m_ignore_crc = false;
 
-	sidereg = 0;
-	sectorcnt = 0;
-	sectorcnt_cont = false;
+	m_sidereg = 0;
+	m_sectorcnt = 0;
+	m_sectorcnt_cont = false;
 
-	index_hole = 0;
-	index_hole_next_clock = 0;
-	head_load = 0;
+	m_index_hole = 0;
+	m_index_hole_next_clock = 0;
+	m_head_load = 0;
 
 	for(int i = 0; i < FLOPPY_MAX_EVENT; i++) {
-		register_id[i] = -1;
+		m_register_id[i] = -1;
 	}
 
 //	wav_enable = 0;
 	m_wav_fddtype = FLOPPY_WAV_FDD3;
-	wav_loaded_at_first = false;
+	m_wav_loaded_at_first = false;
 
 #if 0
 	for(int ty = 0; ty < FLOPPY_WAV_SNDTYPES; ty++) {
@@ -137,26 +137,26 @@ void FLOPPY::initialize()
 /// power on reset
 void FLOPPY::reset()
 {
-	m_wav_fddtype = config.fdd_type - 1;
+	m_wav_fddtype = pConfig->fdd_type - 1;
 	if (m_wav_fddtype < 0) m_wav_fddtype = 0;
 
 	load_wav();
 
-	for(int i = 0; i < MAX_DRIVE; i++) {
-		fdd[i].track = 0;
-		fdd[i].index = 0;
+	for(int i = 0; i < USE_FLOPPY_DISKS; i++) {
+		m_fdd[i].track = 0;
+		m_fdd[i].index = 0;
 #ifdef USE_SIG_FLOPPY_ACCESS
-		fdd[i].access = false;
+		m_fdd[i].access = false;
 #endif
-		fdd[i].ready = 0;
-		fdd[i].motor_warmup = 0;
-		fdd[i].head_loading = 0;
+		m_fdd[i].ready = 0;
+		m_fdd[i].motor_warmup = 0;
+		m_fdd[i].head_loading = 0;
 
-		fdd[i].shown_media_error = false;
+		m_fdd[i].shown_media_error = false;
 
 #if defined(_MBS1)
 		// set drive type
-		if (config.fdd_type == FDD_TYPE_58FDD) {
+		if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 			// 5inch 2HD type
 			if (i < 2) {
 				set_drive_type(i, DRIVE_TYPE_2HD);
@@ -168,7 +168,7 @@ void FLOPPY::reset()
 		}
 #else
 		// set drive type
-		if (config.fdd_type == FDD_TYPE_58FDD) {
+		if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 			// 8inch type
 			set_drive_type(i, DRIVE_TYPE_2HD);
 		} else {
@@ -200,38 +200,38 @@ void FLOPPY::warm_reset(bool por)
 	} else {
 		// events were already canceled by EVENT::reset()
 		for(int i = 0; i < FLOPPY_MAX_EVENT; i++) {
-			register_id[i] = -1;
+			m_register_id[i] = -1;
 		}
 	}
-	for(int i = 0; i < MAX_DRIVE; i++) {
-		fdd[i].ready = 0;
-		fdd[i].motor_warmup = 0;
-		fdd[i].head_loading = 0;
-		fdd[i].shown_media_error = false;
+	for(int i = 0; i < USE_FLOPPY_DISKS; i++) {
+		m_fdd[i].ready = 0;
+		m_fdd[i].motor_warmup = 0;
+		m_fdd[i].head_loading = 0;
+		m_fdd[i].shown_media_error = false;
 	}
 
 	for(int i = 0; i < MAX_FDC_NUMS; i++) {
-		drv_num[i] = 0;
-		drvsel[i] = 0;
+		m_drv_num[i] = 0;
+		m_drvsel[i] = 0;
 
-		motor_on_expand[i] = 0;
+		m_motor_on_expand[i] = 0;
 
-		fdd5outreg[i] = 0x81;
+		m_fdd5outreg[i] = 0x81;
 	}
-	fdd5outreg_delay = 0;
+	m_fdd5outreg_delay = 0;
 
-	index_hole = 0;
+	m_index_hole = 0;
 
 	set_drive_speed();
 
-	density = 0;
+	m_density = 0;
 
-	irqflg = false;
-	irqflgprev = irqflg;
-	drqflg = false;
-	drqflgprev = drqflg;
+	m_irqflg = false;
+	m_irqflgprev = m_irqflg;
+	m_drqflg = false;
+	m_drqflgprev = m_drqflg;
 
-	ignore_write = false;
+	m_ignore_write = false;
 
 	for(int ft = 0; ft < FLOPPY_WAV_FDDTYPES; ft++) {
 		for(int ty = 0; ty < FLOPPY_WAV_SNDTYPES; ty++) {
@@ -241,12 +241,12 @@ void FLOPPY::warm_reset(bool por)
 	}
 
 	if (IOPORT_USE_FDD) {
-		register_my_event(EVENT_INDEXHOLE_ON, delay_index_hole);	// index hole
-		if (config.fdd_type != FDD_TYPE_58FDD) {
+		register_my_event(EVENT_INDEXHOLE_ON, m_delay_index_hole);	// index hole
+		if (pConfig->fdd_type != FDD_TYPE_58FDD) {
 			// motor off time
 			register_my_event(EVENT_MOTOR_TIMEOUT, DELAY_MOTOR_TIMEOUT);	// delay motor off(timeout) (60s)
 		}
-		d_fdc5[0]->write_signal(MB8866::SIG_MB8866_CLOCKNUM, config.fdd_type == FDD_TYPE_58FDD ? 1 : 0, 1);
+		d_fdc5[0]->write_signal(MB8866::SIG_MB8866_CLOCKNUM, pConfig->fdd_type == FDD_TYPE_58FDD ? 1 : 0, 1);
 	}
 }
 
@@ -260,8 +260,8 @@ void FLOPPY::cancel_my_events()
 void FLOPPY::release()
 {
 	// release d88 handler
-	for(int i = 0; i < MAX_DRIVE; i++) {
-		delete disk[i];
+	for(int i = 0; i < USE_FLOPPY_DISKS; i++) {
+		delete p_disk[i];
 	}
 #if 0
 	for(int ft = 0; ft < FLOPPY_WAV_FDDTYPES; ft++) {
@@ -284,14 +284,14 @@ void FLOPPY::load_wav()
 //	size_t           data_max[FLOPPY_WAV_SNDTYPES];
 //	PARSEWAV::Util   wavu;
 
-	rom_path[0] = config.rom_path;
+	rom_path[0] = pConfig->rom_path.Get();
 	rom_path[1] = vm->application_path();
 
 #if 0
-	data_max[FLOPPY_WAV_SEEK] = (sample_rate / 5);	// 0.2sec (seek)
-	data_max[FLOPPY_WAV_MOTOR] = (sample_rate / 5);	// 0.2sec (moror)
-	data_max[FLOPPY_WAV_HEADON] = (sample_rate / 5);	// 0.2sec (head on)
-	data_max[FLOPPY_WAV_HEADOFF] = (sample_rate / 5);	// 0.2sec (head off)
+	data_max[FLOPPY_WAV_SEEK] = (m_sample_rate / 5);	// 0.2sec (seek)
+	data_max[FLOPPY_WAV_MOTOR] = (m_sample_rate / 5);	// 0.2sec (moror)
+	data_max[FLOPPY_WAV_HEADON] = (m_sample_rate / 5);	// 0.2sec (head on)
+	data_max[FLOPPY_WAV_HEADOFF] = (m_sample_rate / 5);	// 0.2sec (head off)
 #endif
 	for (int ft=0; ft<FLOPPY_WAV_FDDTYPES; ft++) {
 		for (int ty=0; ty<FLOPPY_WAV_SNDTYPES; ty++) {
@@ -302,7 +302,7 @@ void FLOPPY::load_wav()
 				memset(wav_data[ft][ty], 128, sizeof(uint8_t) * data_max[ty]);
 			}
 #endif
-			m_noises[ft][ty].alloc(sample_rate / 5);	// 0.2sec
+			m_noises[ft][ty].alloc(m_sample_rate / 5);	// 0.2sec
 		}
 	}
 
@@ -326,7 +326,7 @@ void FLOPPY::load_wav()
 					}
 				}
 #endif
-				if (m_noises[ft][ty].load_wav_file(app_path, sample_rate) > 0) {
+				if (m_noises[ft][ty].load_wav_file(app_path, m_sample_rate) > 0) {
 					logging->out_logf_x(LOG_INFO, CMsg::VSTR_was_loaded, m_noises[ft][ty].get_file_name());
 				}
 			}
@@ -349,13 +349,13 @@ void FLOPPY::load_wav()
 #endif
 			if (!m_noises[ft][ty].is_enable()) {
 				m_noises[ft][ty].clear();
-				if (!wav_loaded_at_first) {
+				if (!m_wav_loaded_at_first) {
 					OUT_DEBUG(_T("%s couldn't be loaded."), m_noises[ft][ty].get_file_name());
 				}
 			}
 		}
 	}
-	wav_loaded_at_first = true;
+	m_wav_loaded_at_first = true;
 }
 
 void FLOPPY::write_io8(uint32_t addr, uint32_t data)
@@ -367,7 +367,7 @@ void FLOPPY::write_io8(uint32_t addr, uint32_t data)
 			case 0x1:
 			case 0x2:
 				// FDC access ok
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && (drvsel[0] & 0x80) == 0)) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && (m_drvsel[0] & 0x80) == 0)) {
 					OUT_DEBUG(_T("fddw a:%05x d:%02x (%02x)"),addr,data,(~data) & 0xff);
 					d_fdc5[0]->write_io8(addr & 0xf, data);
 				} else {
@@ -376,7 +376,7 @@ void FLOPPY::write_io8(uint32_t addr, uint32_t data)
 				break;
 			case 0x3:
 				// FDC access ok or DRQ on
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && ((drvsel[0] & fdd5outreg_delay & 0x80) == 0))) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && ((m_drvsel[0] & m_fdd5outreg_delay & 0x80) == 0))) {
 					OUT_DEBUG(_T("fddw a:%05x d:%02x (%02x)"),addr,data,(~data) & 0xff);
 					d_fdc5[0]->write_io8(addr & 0xf, data);
 				} else {
@@ -384,14 +384,14 @@ void FLOPPY::write_io8(uint32_t addr, uint32_t data)
 				}
 				break;
 			case 0x4:
-				set_drive_select(1, data);
-				if ((drvsel[0] & 0x80) == 0) fdd5outreg_delay &= 0x7f;
-				OUT_DEBUG(_T("fddw a:%05x d:%02x"),addr,data);
+				set_drive_select(FDC_TYPE_5INCH, data);
+				if ((m_drvsel[0] & 0x80) == 0) m_fdd5outreg_delay &= 0x7f;
+				OUT_DEBUG(_T("fddw a:%05x d:%02x clk:%ld"),addr,data,get_current_clock());
 				break;
 			case 0x8:
 				// Send HALT signal if DRQ signal on FDC is false. 
-				if (config.fdd_type == FDD_TYPE_58FDD && !drqflg) {
-					OUT_DEBUG(_T("fddw a:%05x d:%02x drq:%02x"),addr,data,drqflg);
+				if (pConfig->fdd_type == FDD_TYPE_58FDD && !m_drqflg) {
+					OUT_DEBUG(_T("fddw a:%05x d:%02x drq:%02x"),addr,data,m_drqflg);
 					d_board->write_signal(SIG_CPU_HALT, SIG_HALT_FD_MASK, SIG_HALT_FD_MASK);
 				}
 				break;
@@ -400,7 +400,7 @@ void FLOPPY::write_io8(uint32_t addr, uint32_t data)
 		}
 	} else if (IOPORT_USE_3FDD) {
 		// 3inch
-		set_drive_select(0, data);
+		set_drive_select(FDC_TYPE_3INCH, data);
 	}
 }
 
@@ -412,7 +412,7 @@ void out_debug_regr(EMU *emu, uint32_t addr, uint32_t data, const TCHAR *msg)
 		if (debug_regr_cnt[n] > 0) {
 			OUT_DEBUG(_T("fddr a:%05x d:%02x (%02x) repeat %d times"), addr, debug_regr[n], (~debug_regr[n]) & 0xff, debug_regr_cnt[n]);
 		}
-		OUT_DEBUG(_T("fddr a:%05x d:%02x (%02x)%s"), addr, data, (~data) & 0xff, msg != NULL ? msg : _T(""));
+		OUT_DEBUG(_T("fddr a:%05x d:%02x (%02x)%s clk:%ld"), addr, data, (~data) & 0xff, msg != NULL ? msg : _T(""), emu->get_current_clock());
 		debug_regr_cnt[n] = 0;
 	} else {
 		debug_regr_cnt[n]++;
@@ -431,7 +431,7 @@ uint32_t FLOPPY::read_io8(uint32_t addr)
 			case 0x0:
 			case 0x1:
 				// FDC access ok
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && (drvsel[0] & 0x80) == 0)) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && (m_drvsel[0] & 0x80) == 0)) {
 					data = d_fdc5[0]->read_io8(addr & 0xf);
 					OUT_DEBUG_REGR(emu, addr, data, NULL);
 				} else {
@@ -440,19 +440,19 @@ uint32_t FLOPPY::read_io8(uint32_t addr)
 				break;
 			case 0x2:
 				// FDC access ok
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && (drvsel[0] & 0x80) == 0)) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && (m_drvsel[0] & 0x80) == 0)) {
 					data = d_fdc5[0]->read_io8(addr & 0xf);
 					OUT_DEBUG_REGR(emu, addr, data, NULL);
 				} else {
 					// When FDC access mask is ON, send DRQ signal
-					data = (fdd5outreg[0] | 0x7f);
-					fdd5outreg_delay = data;
+					data = (m_fdd5outreg[0] | 0x7f);
+					m_fdd5outreg_delay = data;
 					OUT_DEBUG_REGR(emu, addr, data, _T(" Wait DRQ"));
 				}
 				break;
 			case 0x3:
 				// FDC access ok or DRQ on
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && ((drvsel[0] & fdd5outreg_delay & 0x80) == 0))) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && ((m_drvsel[0] & m_fdd5outreg_delay & 0x80) == 0))) {
 					data = d_fdc5[0]->read_io8(addr & 0xf);
 					OUT_DEBUG_REGR(emu, addr, data, NULL);
 				} else {
@@ -460,13 +460,13 @@ uint32_t FLOPPY::read_io8(uint32_t addr)
 				}
 				break;
 			case 0x4:
-				if (config.fdd_type == FDD_TYPE_58FDD) data = 0xff;
-				else data = (fdd5outreg[0] | 0x7e);
+				if (pConfig->fdd_type == FDD_TYPE_58FDD) data = 0xff;
+				else data = (m_fdd5outreg[0] | 0x7e);
 				OUT_DEBUG_REGR(emu, addr, data, NULL);
 				break;
 			case 0xc:
 				// Type
-				if (config.fdd_type == FDD_TYPE_58FDD) {
+				if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 					// always zero
 					data = 0x00;
 				}
@@ -474,7 +474,8 @@ uint32_t FLOPPY::read_io8(uint32_t addr)
 		}
 	} else if (IOPORT_USE_3FDD) {
 		// 3inch
-		data = drvsel[0];
+		// also update the unit_sel in a reading sequence
+		set_drive_select(FDC_TYPE_3INCH, data);
 	}
 
 	return data;
@@ -485,44 +486,44 @@ void FLOPPY::write_signal(int id, uint32_t data, uint32_t mask)
 	int fdcnum = (id >> 16);
 	id &= 0xffff;
 
-	int ndrv_num = drv_num[fdcnum];
+	int ndrv_num = m_drv_num[fdcnum];
 
 	switch (id) {
 #ifdef USE_SIG_FLOPPY_ACCESS
 		case SIG_FLOPPY_ACCESS:
-			fdd[ndrv_num].access = (data & 1) ? true : false;
+			m_fdd[ndrv_num].access = (data & 1) ? true : false;
 			break;
 #endif
 		case SIG_FLOPPY_WRITE:
-			if(!ignore_write && fdd[ndrv_num].index < disk[ndrv_num]->sector_size) {
-				disk[ndrv_num]->sector_data[fdd[ndrv_num].index] = (data & mask);
-				fdd[ndrv_num].index++;
-				fdd[ndrv_num].delay_write = DELAY_WRITE_FRAME;
+			if(!m_ignore_write && m_fdd[ndrv_num].index < p_disk[ndrv_num]->sector_size) {
+				p_disk[ndrv_num]->sector_data[m_fdd[ndrv_num].index] = (data & mask);
+				m_fdd[ndrv_num].index++;
+				m_fdd[ndrv_num].delay_write = DELAY_WRITE_FRAME;
 			}
 			break;
 		case SIG_FLOPPY_WRITE_TRACK:
-			if(!ignore_write && fdd[ndrv_num].index < disk[ndrv_num]->track_size) {
-				disk[ndrv_num]->track[fdd[ndrv_num].index] = (data & mask);
-				fdd[ndrv_num].index++;
-				fdd[ndrv_num].delay_write = DELAY_WRITE_FRAME;
+			if(!m_ignore_write && m_fdd[ndrv_num].index < p_disk[ndrv_num]->track_size) {
+				p_disk[ndrv_num]->track[m_fdd[ndrv_num].index] = (data & mask);
+				m_fdd[ndrv_num].index++;
+				m_fdd[ndrv_num].delay_write = DELAY_WRITE_FRAME;
 			}
 			break;
 		case SIG_FLOPPY_WRITEDELETE:
-			if (!ignore_write) {
-				disk[ndrv_num]->deleted = (data & 1) ? 0x10 : 0;
+			if (!m_ignore_write) {
+				p_disk[ndrv_num]->deleted = (data & 1) ? 0x10 : 0;
 			}
 			break;
 		case SIG_FLOPPY_STEP:
 			{
-				int cur_track = fdd[ndrv_num].track;
+				int cur_track = m_fdd[ndrv_num].track;
 
-				if (data < 0x80) fdd[ndrv_num].track++;
-				else if (data > 0x80) fdd[ndrv_num].track--;
+				if (data < 0x80) m_fdd[ndrv_num].track++;
+				else if (data > 0x80) m_fdd[ndrv_num].track--;
 
-				if (fdd[ndrv_num].track < 0) fdd[ndrv_num].track = 0;
-				if (fdd[ndrv_num].track > 255) fdd[ndrv_num].track = 255;
+				if (m_fdd[ndrv_num].track < 0) m_fdd[ndrv_num].track = 0;
+				if (m_fdd[ndrv_num].track > 255) m_fdd[ndrv_num].track = 255;
 
-				if (cur_track != fdd[ndrv_num].track) {
+				if (cur_track != m_fdd[ndrv_num].track) {
 					// fddseek sound turn on
 					m_noises[m_wav_fddtype][FLOPPY_WAV_SEEK].play();
 //					wav_play[FLOPPY_WAV_SEEK] = 1;
@@ -531,44 +532,48 @@ void FLOPPY::write_signal(int id, uint32_t data, uint32_t mask)
 			}
 			break;
 		case SIG_FLOPPY_TRACK_SIZE:
-			if (config.fdd_type == FDD_TYPE_58FDD) {
+			if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 				// 26sectors max
-				disk[ndrv_num]->track_size = TRACK_SIZE_8INCH_2D;
+				p_disk[ndrv_num]->track_size = TRACK_SIZE_8INCH_2D;
 			} else {
 				// 16sectors max
-				disk[ndrv_num]->track_size = TRACK_SIZE_5INCH_2D;
+				p_disk[ndrv_num]->track_size = TRACK_SIZE_5INCH_2D;
 			}
-			fdd[ndrv_num].index = 0;
+			m_fdd[ndrv_num].index = 0;
 			break;
 #ifdef SET_CURRENT_TRACK_IMMEDIATELY
 		case SIG_FLOPPY_CURRENTTRACK:
-			fdd[ndrv_num].track = (data & mask);
+			m_fdd[ndrv_num].track = (data & mask);
 			break;
 #endif
 		case SIG_FLOPPY_HEADLOAD:
-			head_load = (data & mask);
-			if (disk[ndrv_num]->inserted) {
-				if (head_load && !fdd[ndrv_num].head_loading) {
+			m_head_load = (data & mask);
+			if (p_disk[ndrv_num]->inserted) {
+				if (m_head_load && !m_fdd[ndrv_num].head_loading) {
 					// fddheadon sound turn on
 					m_noises[m_wav_fddtype][FLOPPY_WAV_HEADON].play();
 //					wav_play[FLOPPY_WAV_HEADON] = 1;
 //					wav_play_pos[FLOPPY_WAV_HEADON] = 0;
 				}
 			}
-			if (head_load) {
-				fdd[ndrv_num].head_loading = 120;
+			if (m_head_load) {
+				m_fdd[ndrv_num].head_loading = 120;
 			}
-//			if (config.fdd_type == FDD_TYPE_58FDD) {
+//			if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 //				// 8inch doesn't have motor on/off signal
 //				motor(ndrv_num, head_load != 0);
 //			}
-			OUT_DEBUG(_T("fdd %d sig HEADLOAD %x UL:%d"),ndrv_num,head_load,fdd[ndrv_num].head_loading);
+			OUT_DEBUG(_T("fdd %d sig HEADLOAD %x UL:%d"),ndrv_num,m_head_load,m_fdd[ndrv_num].head_loading);
+			// When drive is ready, update timeout
+			if (p_disk[ndrv_num]->inserted && m_fdd[ndrv_num].ready >= 2) {
+				register_my_event(EVENT_MOTOR_TIMEOUT, DELAY_MOTOR_TIMEOUT);	// delay motor off(timeout) (60s)
+			}
 			break;
 		case SIG_CPU_RESET:
 			now_reset = (data & mask) ? true : false;
 			warm_reset(false);
 			if (now_reset) {
-				set_drive_select(IOPORT_USE_3FDD ? 0 : 1, 0);
+				set_drive_select(IOPORT_USE_3FDD ? FDC_TYPE_3INCH : FDC_TYPE_5INCH, 0);
 			}
 			break;
 	}
@@ -577,20 +582,20 @@ void FLOPPY::write_signal(int id, uint32_t data, uint32_t mask)
 		// for 5inch mini floppy
 		fdcnum = (mask >> 16);
 		mask &= 0xffff;
-		uint8_t nfdd5outreg = fdd5outreg[fdcnum];
+		uint8_t nfdd5outreg = m_fdd5outreg[fdcnum];
 
 		switch (id) {
 			case SIG_FLOPPY_IRQ:
-				irqflg = (data & mask) ? true : false;
-				if (irqflg) {
+				m_irqflg = (data & mask) ? true : false;
+				if (m_irqflg) {
 					nfdd5outreg &= 0xfe;
 				} else {
 					nfdd5outreg |= 0x01;
 				}
 				break;
 			case SIG_FLOPPY_DRQ:
-				drqflg = (data & mask) ? true : false;
-				if (drqflg) {
+				m_drqflg = (data & mask) ? true : false;
+				if (m_drqflg) {
 					nfdd5outreg &= 0x7f;
 				} else {
 					nfdd5outreg |= 0x80;
@@ -606,25 +611,25 @@ void FLOPPY::write_signal(int id, uint32_t data, uint32_t mask)
 		// interrupt
 		switch (id) {
 		case SIG_FLOPPY_IRQ:
-			if (irqflg != irqflgprev) {
-				if (config.fdd_type == FDD_TYPE_58FDD || (drvsel[fdcnum] & 0x40) == 0) {	// nmi non mask
+			if (m_irqflg != m_irqflgprev) {
+				if (pConfig->fdd_type == FDD_TYPE_58FDD || (m_drvsel[fdcnum] & 0x40) == 0) {	// nmi non mask
 					register_my_event(EVENT_IRQ, 20);	// delay
 				}
-				irqflgprev = irqflg;
+				m_irqflgprev = m_irqflg;
 			}
 			break;
 		case SIG_FLOPPY_DRQ:
-			if (drqflg != drqflgprev) {
-				if (config.fdd_type == FDD_TYPE_58FDD) { // halt release
+			if (m_drqflg != m_drqflgprev) {
+				if (pConfig->fdd_type == FDD_TYPE_58FDD) { // halt release
 //					register_my_event(EVENT_DRQ, 20);	// delay
-					set_drq(drqflg);					// immediate
+					set_drq(m_drqflg);					// immediate
 				}
-				drqflgprev = drqflg;
+				m_drqflgprev = m_drqflg;
 			}
 			break;
 		}
 
-		fdd5outreg[fdcnum] = nfdd5outreg;
+		m_fdd5outreg[fdcnum] = nfdd5outreg;
 	}
 }
 
@@ -635,61 +640,61 @@ uint32_t FLOPPY::read_signal(int id)
 	int fdcnum = (id >> 16);
 	id &= 0xffff;
 
-	int ndrv_num = drv_num[fdcnum];
+	int ndrv_num = m_drv_num[fdcnum];
 
 	switch (id) {
 		case SIG_FLOPPY_READ_ID:
-			if(fdd[ndrv_num].index < 6) {
-				data = disk[ndrv_num]->id[fdd[ndrv_num].index];
-				fdd[ndrv_num].index++;
+			if(m_fdd[ndrv_num].index < 6) {
+				data = p_disk[ndrv_num]->id[m_fdd[ndrv_num].index];
+				m_fdd[ndrv_num].index++;
 			}
 			break;
 		case SIG_FLOPPY_READ:
-			if(fdd[ndrv_num].index < disk[ndrv_num]->sector_size) {
-				data = disk[ndrv_num]->sector_data[fdd[ndrv_num].index];
-				fdd[ndrv_num].index++;
+			if(m_fdd[ndrv_num].index < p_disk[ndrv_num]->sector_size) {
+				data = p_disk[ndrv_num]->sector_data[m_fdd[ndrv_num].index];
+				m_fdd[ndrv_num].index++;
 			}
 			break;
 		case SIG_FLOPPY_READ_TRACK:
-			if(fdd[ndrv_num].index < disk[ndrv_num]->track_size) {
-				data = disk[ndrv_num]->track[fdd[ndrv_num].index];
-				fdd[ndrv_num].index++;
+			if(m_fdd[ndrv_num].index < p_disk[ndrv_num]->track_size) {
+				data = p_disk[ndrv_num]->track[m_fdd[ndrv_num].index];
+				m_fdd[ndrv_num].index++;
 			}
 			break;
 		case SIG_FLOPPY_WRITEPROTECT:
-			data = (disk[ndrv_num]->write_protected || ignore_write) ? 1 : 0;
+			data = (p_disk[ndrv_num]->write_protected || m_ignore_write) ? 1 : 0;
 			break;
 		case SIG_FLOPPY_HEADLOAD:
-			data = (fdd[ndrv_num].head_loading & 0xff) ? 1 : 0;
+			data = (m_fdd[ndrv_num].head_loading & 0xff) ? 1 : 0;
 			break;
 		case SIG_FLOPPY_READY:
-			data = (disk[ndrv_num]->inserted && fdd[ndrv_num].ready >= 2) ? 1 : 0;
+			data = (p_disk[ndrv_num]->inserted && m_fdd[ndrv_num].ready >= 2) ? 1 : 0;
 			break;
 		case SIG_FLOPPY_TRACK0:
-			data = (fdd[ndrv_num].track == 0) ? 1 : 0;
+			data = (m_fdd[ndrv_num].track == 0) ? 1 : 0;
 			break;
 		case SIG_FLOPPY_INDEX:
-			data = index_hole;
+			data = m_index_hole;
 			break;
 		case SIG_FLOPPY_DELETED:
-			data = disk[ndrv_num]->deleted ? 1 : 0;
+			data = p_disk[ndrv_num]->deleted ? 1 : 0;
 			break;
 #ifdef SET_CURRENT_TRACK_IMMEDIATELY
 		case SIG_FLOPPY_CURRENTTRACK:
-			data = fdd[ndrv_num].track;
+			data = m_fdd[ndrv_num].track;
 			break;
 #endif
 		case SIG_FLOPPY_SECTOR_NUM:
-			data = disk[ndrv_num]->sector_nums;
+			data = p_disk[ndrv_num]->sector_nums;
 			break;
 		case SIG_FLOPPY_SECTOR_SIZE:
-			data = disk[ndrv_num]->sector_size;
+			data = p_disk[ndrv_num]->sector_size;
 			break;
 		case SIG_FLOPPY_TRACK_SIZE:
-			data = disk[ndrv_num]->track_size;
+			data = p_disk[ndrv_num]->track_size;
 			break;
 		case SIG_FLOPPY_DENSITY:
-			data = density;
+			data = m_density;
 			break;
 	}
 
@@ -702,20 +707,20 @@ uint32_t FLOPPY::read_signal(int id)
 
 void FLOPPY::event_frame()
 {
-	for(int i=0; i<MAX_DRIVE; i++) {
-		if (fdd[i].head_loading & 0xff) {
-			fdd[i].head_loading--;
-			if (disk[i]->inserted && fdd[i].head_loading == 0) {
+	for(int i=0; i<USE_FLOPPY_DISKS; i++) {
+		if (m_fdd[i].head_loading & 0xff) {
+			m_fdd[i].head_loading--;
+			if (p_disk[i]->inserted && m_fdd[i].head_loading == 0) {
 				// fddheadoff sound turn on
 				m_noises[m_wav_fddtype][FLOPPY_WAV_HEADOFF].play();
 //				wav_play[FLOPPY_WAV_HEADOFF] = 1;
 //				wav_play_pos[FLOPPY_WAV_HEADOFF] = 0;
 			}
 		}
-		if (fdd[i].delay_write > 0) {
-			fdd[i].delay_write--;
-			if (fdd[i].delay_write == 0) {
-				disk[i]->flash();
+		if (m_fdd[i].delay_write > 0) {
+			m_fdd[i].delay_write--;
+			if (m_fdd[i].delay_write == 0) {
+				p_disk[i]->flash();
 			}
 		}
 	}
@@ -725,7 +730,7 @@ void FLOPPY::event_callback(int event_id, int err)
 {
 	int event_no = event_id;
 
-	register_id[event_no] = -1;
+	m_register_id[event_no] = -1;
 
 	switch(event_no) {
 		case EVENT_MOTOR_TIMEOUT:
@@ -734,25 +739,25 @@ void FLOPPY::event_callback(int event_id, int err)
 			break;
 		case EVENT_INDEXHOLE_ON:
 			// index hole on
-			index_hole = 1;
-			register_index_hole_event(EVENT_INDEXHOLE_OFF, limit_index_hole);	// index hole off
-			index_hole_next_clock += (delay_index_hole - limit_index_hole); 
+			m_index_hole = 1;
+			register_index_hole_event(EVENT_INDEXHOLE_OFF, m_limit_index_hole);	// index hole off
+			m_index_hole_next_clock += (m_delay_index_hole - m_limit_index_hole); 
 			break;
 		case EVENT_INDEXHOLE_OFF:
 			// index hole off
-			index_hole = 0;
-			for(int i=0; i<MAX_DRIVE; i++) {
-				if (fdd[i].motor_warmup) {
-					fdd[i].motor_warmup <<= 1;
-					if (fdd[i].motor_warmup > 4) fdd[i].motor_warmup = 0;
-					OUT_DEBUG(_T("fdd %d event MOTOR WARMUP %d"), i, fdd[i].motor_warmup);
+			m_index_hole = 0;
+			for(int i=0; i<USE_FLOPPY_DISKS; i++) {
+				if (m_fdd[i].motor_warmup) {
+					m_fdd[i].motor_warmup <<= 1;
+					if (m_fdd[i].motor_warmup > 4) m_fdd[i].motor_warmup = 0;
+					OUT_DEBUG(_T("fdd %d event MOTOR WARMUP %d"), i, m_fdd[i].motor_warmup);
 				}
 			}
-			register_index_hole_event(EVENT_INDEXHOLE_ON, delay_index_hole - limit_index_hole);	// index hole on
+			register_index_hole_event(EVENT_INDEXHOLE_ON, m_delay_index_hole - m_limit_index_hole);	// index hole on
 			break;
 		case EVENT_IRQ:
 			cancel_my_event(EVENT_IRQ);
-			set_irq(irqflg);
+			set_irq(m_irqflg);
 			break;
 //		case EVENT_DRQ:
 //			cancel_my_event(EVENT_DRQ);
@@ -768,8 +773,8 @@ void FLOPPY::event_callback(int event_id, int err)
 		case EVENT_READY_ON_7:
 			{
 				int i = event_no - EVENT_READY_ON_0;
-				fdd[i].ready <<= 1;
-				OUT_DEBUG(_T("fdd %d event READY %d"), i, fdd[i].ready);
+				m_fdd[i].ready <<= 1;
+				OUT_DEBUG(_T("fdd %d event READY %d clk:%ld"), i, m_fdd[i].ready, get_current_clock());
 			}
 			break;
 		case EVENT_MOTOR_OFF:
@@ -781,34 +786,27 @@ void FLOPPY::event_callback(int event_id, int err)
 }
 
 // ----------------------------------------------------------------------------
-/// @param [in] type: 0:3inch 1:5inch 2:unused
-/// @param [in] data: unit sel
-void FLOPPY::set_drive_select(int type, uint8_t data)
+/// @param [in] fdc_type: 0:3inch 1:5inch 2:unused
+/// @param [in] data: data bus
+void FLOPPY::set_drive_select(int fdc_type, uint8_t data)
 {
 	uint8_t ndrv_num = 0;
-	int fdcnum = (type == 2 ? 1 : 0);
-
-	if (now_reset) {
-		if (type != 0) {
-			// 5inch
-			data = 0;
-		} else {
-			// 3inch
-			data = 0xff;
-		}
-	}
+	int fdcnum = (fdc_type == FDC_TYPE_5INCHEX ? 1 : 0);
 
 	// drive number
-	if (type == 2) {
+	switch(fdc_type) {
+	case FDC_TYPE_5INCHEX:
 		// 5inch ex always use drive 2 or 3
 		ndrv_num = (data & DRIVE_MASK) | 2;
+		break;
 
-	} else if (type != 0) {
+	case FDC_TYPE_5INCH:
 		// 5inch
 		ndrv_num = (data & DRIVE_MASK);
-
 //		d_fdc5[0]->write_signal(SIG_MB8866_DRIVEREG, ndrv_num, DRIVE_MASK);
-	} else {
+		break;
+
+	default:
 		// 3inch
 		switch(data & 0x0f) {
 			case 2:
@@ -825,65 +823,69 @@ void FLOPPY::set_drive_select(int type, uint8_t data)
 				break;
 		}
 		ndrv_num &= DRIVE_MASK;
-		if (drv_num[fdcnum] != ndrv_num) {
+		if (m_drv_num[fdcnum] != ndrv_num) {
 			// update status
 			d_fdc3->write_signal(MC6843::SIG_MC6843_UPDATESTATUS, 0, 0);
 		}
+		break;
 	}
-	drv_num[fdcnum] = ndrv_num;
+	m_drv_num[fdcnum] = ndrv_num;
 
 	// set drive speed
 	set_drive_speed();
 
 	// side and motor
-	if (type != 0) {
+	switch(fdc_type) {
+	case FDC_TYPE_5INCH:
+	case FDC_TYPE_5INCHEX:
 		// 5inch
 		// side select
-		set_disk_side(drv_num[fdcnum], (data & 0x10) ? 1 : 0);
+		set_disk_side(m_drv_num[fdcnum], (data & 0x10) ? 1 : 0);
 //		d_fdc5[0]->write_signal(SIG_MB8866_SIDEREG, data, 0x10);
 		// density
-		density = (data & 0x20) ? 1 : 0;
-		d_fdc5[0]->write_signal(SIG_FLOPPY_DENSITY, density, 1);
+		m_density = (data & 0x20) ? 1 : 0;
+		d_fdc5[0]->write_signal(SIG_FLOPPY_DENSITY, m_density, 1);
 
 		// motor
-		if ((data & 0x08) == 0 && motor_on_expand[fdcnum] != 0 && config.fdd_type != FDD_TYPE_58FDD) {
+		if ((data & 0x08) == 0 && m_motor_on_expand[fdcnum] != 0 && pConfig->fdd_type != FDD_TYPE_58FDD) {
 			// motor on -> off
-			OUT_DEBUG(_T("fdd %d MOTOR OFF REQUEST data:%02x drvsel:%02x"), drv_num[fdcnum], data, drvsel[fdcnum]);
+			OUT_DEBUG(_T("fdd %d MOTOR OFF REQUEST data:%02x drvsel:%02x"), m_drv_num[fdcnum], data, m_drvsel[fdcnum]);
 			register_my_event(EVENT_MOTOR_OFF, DELAY_MOTOR_OFF_5);	// delay motor off
-			motor_on_expand[fdcnum] = 1;
-			drvsel[fdcnum] = (data & 0xff);
-		} else if ((data & 0x08) != 0 || config.fdd_type == FDD_TYPE_58FDD) {
+			m_motor_on_expand[fdcnum] = 1;
+			m_drvsel[fdcnum] = (data & 0xff);
+		} else if ((data & 0x08) != 0 || pConfig->fdd_type == FDD_TYPE_58FDD) {
 			// motor on
-			motor(drv_num[fdcnum], true);
-			drvsel[fdcnum] = (data & 0xff);
-			motor_on_expand[fdcnum] = 1;
+			motor(m_drv_num[fdcnum], true);
+			m_drvsel[fdcnum] = (data & 0xff);
+			m_motor_on_expand[fdcnum] = 1;
 		} else {
 			// motor off
-			OUT_DEBUG(_T("fdd %d MOTOR OFF FORCE data:%02x drvsel:%02x"), drv_num[fdcnum], data, drvsel[fdcnum]);
+			OUT_DEBUG(_T("fdd %d MOTOR OFF FORCE data:%02x drvsel:%02x"), m_drv_num[fdcnum], data, m_drvsel[fdcnum]);
 			motor(-1, false);
 		}
 //		d_fdc5[0]->write_signal(SIG_MB8866_MOTOR, drvsel, 0x08);
+		break;
 
-	} else {
+	default:
 		// 3inch
 		// motor
-		if ((data & 0x80) == 0 && motor_on_expand[fdcnum] != 0) {
+		if ((data & 0x80) == 0 && m_motor_on_expand[fdcnum] != 0) {
 			// motor on -> off
-			OUT_DEBUG(_T("fdd %d MOTOR OFF REQUEST data:%02x drvsel:%02x"), drv_num[fdcnum], data, drvsel[fdcnum]);
+			OUT_DEBUG(_T("fdd %d MOTOR OFF REQUEST data:%02x drvsel:%02x"), m_drv_num[fdcnum], data, m_drvsel[fdcnum]);
 			register_my_event(EVENT_MOTOR_OFF, DELAY_MOTOR_OFF_3);	// delay motor off
-			motor_on_expand[fdcnum] = 1;
-			drvsel[fdcnum] = (data & 0xff);
+			m_motor_on_expand[fdcnum] = 1;
+			m_drvsel[fdcnum] = (data & 0xff);
 		} else if ((data & 0x80) != 0) {
 			// motor on
-			motor(drv_num[fdcnum], true);
-			drvsel[fdcnum] = (data & 0xff);
-			motor_on_expand[fdcnum] = 1;
+			motor(m_drv_num[fdcnum], true);
+			m_drvsel[fdcnum] = (data & 0xff);
+			m_motor_on_expand[fdcnum] = 1;
 		} else {
 			// motor off
-			OUT_DEBUG(_T("fdd %d MOTOR OFF FORCE data:%02x drvsel:%02x"), drv_num[fdcnum], data, drvsel[fdcnum]);
+			OUT_DEBUG(_T("fdd %d MOTOR OFF FORCE data:%02x drvsel:%02x"), m_drv_num[fdcnum], data, m_drvsel[fdcnum]);
 			motor(-1, false);
 		}
-
+		break;
 	}
 }
 
@@ -891,65 +893,65 @@ void FLOPPY::motor(int drv, bool val)
 {
 	if (val) {
 		// motor on
-		if (config.fdd_type != FDD_TYPE_58FDD) {
+		if (pConfig->fdd_type != FDD_TYPE_58FDD) {
 			register_my_event(EVENT_MOTOR_TIMEOUT, DELAY_MOTOR_TIMEOUT);	// delay motor off(timeout) (60s)
 		}
 
 		// motor sound on
-//		if (wav_play[FLOPPY_WAV_MOTOR] == 0 && disk[drv]->inserted) {
+//		if (wav_play[FLOPPY_WAV_MOTOR] == 0 && p_disk[drv]->inserted) {
 //			wav_play[FLOPPY_WAV_MOTOR] = 1;
 //		}
-		if (!m_noises[m_wav_fddtype][FLOPPY_WAV_MOTOR].now_playing() && disk[drv]->inserted) {
+		if (!m_noises[m_wav_fddtype][FLOPPY_WAV_MOTOR].now_playing() && p_disk[drv]->inserted) {
 			m_noises[m_wav_fddtype][FLOPPY_WAV_MOTOR].play();
 		}
 
-		OUT_DEBUG(_T("fdd %d MOTOR ON REQUEST READY:%d WARMUP:%d"), drv, fdd[drv].ready, fdd[drv].motor_warmup);
+		OUT_DEBUG(_T("fdd %d MOTOR ON REQUEST READY:%d WARMUP:%d"), drv, m_fdd[drv].ready, m_fdd[drv].motor_warmup);
 
 		// ready on
-		if (fdd[drv].ready == 0) {
-			fdd[drv].ready = 1;
-			register_my_event(EVENT_READY_ON_0 + drv, delay_ready_on);	// delay ready on (1s)
-			if (disk[drv]->inserted) {
-				fdd[drv].motor_warmup = 1;
+		if (m_fdd[drv].ready == 0) {
+			m_fdd[drv].ready = 1;
+			register_my_event(EVENT_READY_ON_0 + drv, m_delay_ready_on);	// delay ready on (1s)
+			if (p_disk[drv]->inserted) {
+				m_fdd[drv].motor_warmup = 1;
 			}
 		}
 
 		cancel_my_event(EVENT_MOTOR_OFF);
 
-		OUT_DEBUG(_T("fdd %d MOTOR ON  READY:%d WARMUP:%d"), drv, fdd[drv].ready, fdd[drv].motor_warmup);
+		OUT_DEBUG(_T("fdd %d MOTOR ON  READY:%d WARMUP:%d"), drv, m_fdd[drv].ready, m_fdd[drv].motor_warmup);
 	} else {
 		// motor off
-		ignore_write = false;
+		m_ignore_write = false;
 
 //		cancel_my_event(EVENT_MOTOR_OFF);
 
 		// motor sound off
 //		wav_play[FLOPPY_WAV_MOTOR] = 0;
 		uint8_t wav_playing = 0;
-		for(int i=0; i<MAX_DRIVE; i++) {
+		for(int i=0; i<USE_FLOPPY_DISKS; i++) {
 			if (drv == -1 || drv == i) {
-				fdd[i].ready = 0;
-				fdd[i].motor_warmup = 0;
+				m_fdd[i].ready = 0;
+				m_fdd[i].motor_warmup = 0;
 			}
-//			wav_play[FLOPPY_WAV_MOTOR] |= fdd[i].ready;
-			wav_playing |= fdd[i].ready;
+//			wav_play[FLOPPY_WAV_MOTOR] |= m_fdd[i].ready;
+			wav_playing |= m_fdd[i].ready;
 		}
 //		if (wav_play[FLOPPY_WAV_MOTOR] < 2) {
 		if (wav_playing < 2) {
 			// reset motor flag when all drives stopped
 			for(int n = 0; n < MAX_FDC_NUMS; n++) {
-				motor_on_expand[n] = 0;
+				m_motor_on_expand[n] = 0;
 			}
 
 			if (IOPORT_USE_3FDD) {
 				// 3inch
 				for(int n = 0; n < MAX_FDC_NUMS; n++) {
-					drvsel[n] &= 0x7f;
+					m_drvsel[n] &= 0x7f;
 				}
 			} else if (IOPORT_USE_5FDD) {
 				// 5inch
 				for(int n = 0; n < MAX_FDC_NUMS; n++) {
-					drvsel[n] &= 0xf7;
+					m_drvsel[n] &= 0xf7;
 				}
 			}
 			m_noises[m_wav_fddtype][FLOPPY_WAV_MOTOR].stop();
@@ -961,21 +963,24 @@ void FLOPPY::motor(int drv, bool val)
 
 void FLOPPY::set_drive_speed()
 {
-	if (config.fdd_type == FDD_TYPE_58FDD) {
-		delay_index_hole = DELAY_INDEX_HOLE_H;
-		delay_ready_on = DELAY_READY_ON_H;
+	if (pConfig->fdd_type == FDD_TYPE_58FDD) {
+		// 2HD
+		m_delay_index_hole = DELAY_INDEX_HOLE_H;
+		m_delay_ready_on = DELAY_READY_ON_H;
 	} else {
-		delay_index_hole = DELAY_INDEX_HOLE;
-		delay_ready_on = DELAY_READY_ON;
+		// 2D
+		m_delay_index_hole = DELAY_INDEX_HOLE;
+		m_delay_ready_on = DELAY_READY_ON;
 	}
-	delay_index_hole = (int)((double)delay_index_hole * CPU_CLOCKS / 1000000.0);
-	limit_index_hole = (int)(300.0 * CPU_CLOCKS / 1000000.0);
+	m_delay_index_hole = (int)((double)m_delay_index_hole * CPU_CLOCKS / 1000000.0);
+	m_limit_index_hole = (int)(300.0 * CPU_CLOCKS / 1000000.0);
 
-	delay_index_mark = 147 * 8;
-	if (config.fdd_type != FDD_TYPE_58FDD) {
-		delay_index_mark *= 2;
+	m_delay_index_mark = 147 * 8 * 2;	// GAP4a + Sync + Index mark + GAP1 on MFM 
+	if (pConfig->fdd_type != FDD_TYPE_58FDD) {
+		// 2D
+		m_delay_index_mark *= 2;
 	}
-	delay_index_mark = (int)((double)delay_index_mark * CPU_CLOCKS / 1000000.0);
+	m_delay_index_mark = (int)((double)m_delay_index_mark * CPU_CLOCKS / 1000000.0);
 }
 
 // ----------------------------------------------------------------------------
@@ -984,26 +989,26 @@ void FLOPPY::set_drive_speed()
 bool FLOPPY::search_track(int channel)
 {
 	int fdcnum = (channel >> 16);
-	int drvnum = drv_num[fdcnum];
+	int drvnum = m_drv_num[fdcnum];
 
-	fdd[drvnum].index = 0;
+	m_fdd[drvnum].index = 0;
 
-	return disk[drvnum]->get_track(fdd[drvnum].track, fdd[drvnum].side);
+	return p_disk[drvnum]->get_track(m_fdd[drvnum].track, m_fdd[drvnum].side);
 }
 
 bool FLOPPY::verify_track(int channel, int track)
 {
 	// verify track number
 	int fdcnum = (channel >> 16);
-	int drvnum = drv_num[fdcnum];
-	return disk[drvnum]->verify_track(track);
+	int drvnum = m_drv_num[fdcnum];
+	return p_disk[drvnum]->verify_track(track);
 }
 
 int FLOPPY::get_current_track_number(int channel)
 {
 	int fdcnum = (channel >> 16);
-	int drvnum = drv_num[fdcnum];
-	return disk[drvnum]->id_c_in_track[0];
+	int drvnum = m_drv_num[fdcnum];
+	return p_disk[drvnum]->id_c_in_track[0];
 }
 
 /// search sector
@@ -1017,24 +1022,24 @@ int FLOPPY::search_sector_main(int fdcnum, int drvnum, int index)
 	int status = 0;
 
 	do {
-		int sta = disk[drvnum]->get_sector_by_index(fdd[drvnum].track, fdd[drvnum].side, index);
+		int sta = p_disk[drvnum]->get_sector_by_index(m_fdd[drvnum].track, m_fdd[drvnum].side, index);
 		if (sta) {
-			if (sta == 3 && !fdd[drvnum].shown_media_error) {
+			if (sta == 3 && !m_fdd[drvnum].shown_media_error) {
 				// different media type
 				logging->out_logf_x(LOG_ERROR, CMsg::The_media_type_in_drive_VDIGIT_is_different_from_specified_one, drvnum); 
-				fdd[drvnum].shown_media_error = true;
+				m_fdd[drvnum].shown_media_error = true;
 			}
 			status = 1; // SECTOR NOT FOUND
 			break;
 		}
 		// check density
 		if (FLG_CHECK_FDDENSITY) {
-			if (disk[drvnum]->density) {
-				uint8_t sector_density = (((*disk[drvnum]->density) & 0x40) ? 0 : 1);
-				if (density ^ sector_density) {
-					if (!fdd[drvnum].shown_media_error) {
-						logging->out_logf_x(LOG_ERROR, CMsg::The_density_in_track_VDIGIT_side_VDIGIT_is_different_from_specified_one, fdd[drvnum].track, fdd[drvnum].side); 
-						fdd[drvnum].shown_media_error = true;
+			if (p_disk[drvnum]->density) {
+				uint8_t sector_density = (((*p_disk[drvnum]->density) & 0x40) ? 0 : 1);
+				if (m_density ^ sector_density) {
+					if (!m_fdd[drvnum].shown_media_error) {
+						logging->out_logf_x(LOG_ERROR, CMsg::The_density_in_track_VDIGIT_side_VDIGIT_is_different_from_specified_one, m_fdd[drvnum].track, m_fdd[drvnum].side); 
+						m_fdd[drvnum].shown_media_error = true;
 					}
 					status = 1; // SECTOR NOT FOUND
 					break;
@@ -1042,12 +1047,12 @@ int FLOPPY::search_sector_main(int fdcnum, int drvnum, int index)
 			}
 		}
 
-		fdd[drvnum].index = 0;
+		m_fdd[drvnum].index = 0;
 
-		if (disk[drvnum]->status && !ignore_crc) {
+		if (p_disk[drvnum]->status && !m_ignore_crc) {
 			status |= 2;	// CRC ERROR
 		}
-		if (disk[drvnum]->deleted) {
+		if (p_disk[drvnum]->deleted) {
 			status |= 4;	// DELETED MARK DETECTED
 		}
 	} while(0);
@@ -1062,13 +1067,13 @@ int FLOPPY::search_sector_main(int fdcnum, int drvnum, int index)
 int FLOPPY::search_sector(int channel)
 {
 	int fdcnum = (channel >> 16);
-	int drvnum = drv_num[fdcnum];
+	int drvnum = m_drv_num[fdcnum];
 
-	int sector_num = disk[drvnum]->sector_nums;
+	int sector_num = p_disk[drvnum]->sector_nums;
 	if (sector_num <= 0) sector_num = 16;
-	sectorcnt = (sectorcnt % sector_num);
+	m_sectorcnt = (m_sectorcnt % sector_num);
 
-	return search_sector_main(fdcnum, drvnum, sectorcnt);
+	return search_sector_main(fdcnum, drvnum, m_sectorcnt);
 }
 
 //int FLOPPY::search_sector(int channel, int sect)
@@ -1087,32 +1092,32 @@ int FLOPPY::search_sector(int channel)
 int FLOPPY::search_sector(int channel, int track, int sect, bool compare_side, int side)
 {
 	int fdcnum = (channel >> 16);
-	int drvnum = drv_num[fdcnum];
-	int sector_num = disk[drvnum]->sector_nums;
+	int drvnum = m_drv_num[fdcnum];
+	int sector_num = p_disk[drvnum]->sector_nums;
 	if (sector_num <= 0) sector_num = 16;
 	if (sect < 256) {
-		sectorcnt = disk[drvnum]->sector_pos[sect];
-		sectorcnt = (sectorcnt % sector_num);
+		m_sectorcnt = p_disk[drvnum]->sector_pos[sect];
+		m_sectorcnt = (m_sectorcnt % sector_num);
 	}
 
-	int status = search_sector_main(fdcnum, drvnum, sectorcnt);
+	int status = search_sector_main(fdcnum, drvnum, m_sectorcnt);
 	do {
 		if (status) {
 			break;
 		}
 
 		// check track in id field
-		if(disk[drvnum]->id[0] != track) {
+		if(p_disk[drvnum]->id[0] != track) {
 			status = 1;
 			break;
 		}
 		// check sector in id field
-		if(disk[drvnum]->id[2] != sect) {
+		if(p_disk[drvnum]->id[2] != sect) {
 			status = 1;
 			break;
 		}
 		// check side in id field
-		if(compare_side && disk[drvnum]->id[1] != side) {
+		if(compare_side && p_disk[drvnum]->id[1] != side) {
 			status = 1;
 			break;
 		}
@@ -1125,16 +1130,16 @@ int FLOPPY::search_sector(int channel, int track, int sect, bool compare_side, i
 bool FLOPPY::make_track(int channel)
 {
 	int fdcnum = (channel >> 16);
-	int drvnum = drv_num[fdcnum];
-	return disk[drvnum]->make_track(fdd[drvnum].track, fdd[drvnum].side, density);
+	int drvnum = m_drv_num[fdcnum];
+	return p_disk[drvnum]->make_track(m_fdd[drvnum].track, m_fdd[drvnum].side, m_density);
 }
 
 bool FLOPPY::parse_track(int channel)
 {
 	int fdcnum = (channel >> 16);
-	int drvnum = drv_num[fdcnum];
-//	return disk[drvnum]->parse_track(fdd[drvnum].track, fdd[drvnum].side, density);
-	return disk[drvnum]->parse_track2(fdd[drvnum].track, fdd[drvnum].side, density);
+	int drvnum = m_drv_num[fdcnum];
+//	return p_disk[drvnum]->parse_track(m_fdd[drvnum].track, m_fdd[drvnum].side, m_density);
+	return p_disk[drvnum]->parse_track2(m_fdd[drvnum].track, m_fdd[drvnum].side, m_density);
 }
 
 // ----------------------------------------------------------------------------
@@ -1142,13 +1147,13 @@ bool FLOPPY::parse_track(int channel)
 int FLOPPY::get_head_loading_clock(int channel)
 {
 	int fdcnum = (channel >> 16);
-	return (fdd[drv_num[fdcnum]].head_loading & 0xff) ? 200 : HEAD_LOADED_CLOCK;
+	return (m_fdd[m_drv_num[fdcnum]].head_loading & 0xff) ? 200 : HEAD_LOADED_CLOCK;
 }
 
 int FLOPPY::get_index_hole_remain_clock()
 {
 	int64_t sum = 0;
-	sum = index_hole_next_clock - get_current_clock();
+	sum = m_index_hole_next_clock - get_current_clock();
 	if (sum < 0) sum = 0;
 	return (int)sum;
 }
@@ -1157,11 +1162,11 @@ int FLOPPY::calc_index_hole_search_clock(int channel)
 {
 	int sum = get_head_loading_clock(channel);
 	int idx_sum = 0;
-	sectorcnt_cont = false;
+	m_sectorcnt_cont = false;
 	if (!FLG_DELAY_FDSEARCH) {
 		idx_sum = get_index_hole_remain_clock();
 		if (sum >= idx_sum) sum = idx_sum;
-		else sum = idx_sum + delay_index_hole;
+		else sum = idx_sum + m_delay_index_hole;
 	}
 
 //	logging->out_debugf(_T("calc_index_hole_search_clock: idx:%06d sum:%06d"), idx_sum, sum);
@@ -1171,18 +1176,18 @@ int FLOPPY::calc_index_hole_search_clock(int channel)
 int FLOPPY::get_clock_arrival_sector(int channel, int sect, int delay)
 {
 	int fdcnum = (channel >> 16);
-	int sector_num = disk[drv_num[fdcnum]]->sector_nums;
+	int sector_num = p_disk[m_drv_num[fdcnum]]->sector_nums;
 	if (sector_num <= 0) sector_num = 16;
 	int sector_pos = 0;
 	if (sect < 256) {
-		sector_pos = disk[drv_num[fdcnum]]->sector_pos[sect];
+		sector_pos = p_disk[m_drv_num[fdcnum]]->sector_pos[sect];
 		sector_pos = (sector_pos % sector_num);
 	}
 
-	int sect_sum = sector_pos * (delay_index_hole - delay_index_mark) / sector_num;
+	int sect_sum = sector_pos * (m_delay_index_hole - m_delay_index_mark) / sector_num;
 	int idx_sum = get_index_hole_remain_clock() - delay;
-	int sum = sect_sum + delay_index_mark + idx_sum - delay_index_hole;
-	if (sum < 0) sum += delay_index_hole;
+	int sum = sect_sum + m_delay_index_mark + idx_sum - m_delay_index_hole;
+	if (sum < 0) sum += m_delay_index_hole;
 	sum += delay;
 
 //	logging->out_debugf(_T("get_clock_arrival_sector: sect:%02d %06d idx:%06d sum:%06d"), sect, sect_sum, delay_index_hole - idx_sum, sum);
@@ -1192,29 +1197,29 @@ int FLOPPY::get_clock_arrival_sector(int channel, int sect, int delay)
 int FLOPPY::get_clock_next_sector(int channel, int delay)
 {
 	int fdcnum = (channel >> 16);
-	int sector_num = disk[drv_num[fdcnum]]->sector_nums;
+	int sector_num = p_disk[m_drv_num[fdcnum]]->sector_nums;
 	if (sector_num <= 0) sector_num = 16;
 
-	int sect_sum = (delay_index_hole - delay_index_mark) / sector_num;
+	int sect_sum = (m_delay_index_hole - m_delay_index_mark) / sector_num;
 	int idx_sum = get_index_hole_remain_clock() - delay;
-	if (idx_sum < 0) idx_sum += delay_index_hole;
+	if (idx_sum < 0) idx_sum += m_delay_index_hole;
 	int sector_pos = sector_num - (idx_sum / sect_sum);
 	if (sector_pos < 0) sector_pos = 0;
 
-	if (FLG_DELAY_FDSEARCH && sectorcnt_cont) {
-		sector_pos = sectorcnt + 1;
+	if (FLG_DELAY_FDSEARCH && m_sectorcnt_cont) {
+		sector_pos = m_sectorcnt + 1;
 	}
 
 	sector_pos %= sector_num;
 
-	sectorcnt = sector_pos;
-	sectorcnt_cont = true;
+	m_sectorcnt = sector_pos;
+	m_sectorcnt_cont = true;
 
 	if (FLG_DELAY_FDSEARCH) return 200;
 
 	sect_sum = sector_pos * sect_sum;
-	int sum = sect_sum + delay_index_mark + idx_sum - delay_index_hole;
-	if (sum < 0) sum += delay_index_hole;
+	int sum = sect_sum + m_delay_index_mark + idx_sum - m_delay_index_hole;
+	if (sum < 0) sum += m_delay_index_hole;
 	sum += delay;
 
 //	logging->out_debugf(_T("get_clock_next_sector: sect_pos:%02d cur_clk:%lld next_clk:%lld idx:%06d sect_sum:%06d sum:%06d"), sector_pos, get_current_clock(), index_hole_next_clock, idx_sum, sect_sum, sum);
@@ -1224,7 +1229,7 @@ int FLOPPY::get_clock_next_sector(int channel, int delay)
 int FLOPPY::calc_sector_search_clock(int channel, int sect)
 {
 	int sum_clk = 0;
-	sectorcnt_cont = false;
+	m_sectorcnt_cont = false;
 	if (!FLG_DELAY_FDSEARCH) sum_clk = get_clock_arrival_sector(channel, sect, get_head_loading_clock(channel));
 //	logging->out_debugf(_T("calc_sector_search_clock: sect:%02d hld:%06d clk:%06d"), sect, sum_hld, sum_clk);
 	return sum_clk;
@@ -1243,7 +1248,7 @@ void FLOPPY::set_irq(bool val)
 	// NMI
 	write_signals(&outputs_irq, val ? 0xffffffff : 0);
 
-	if (config.fdd_type == FDD_TYPE_58FDD && val == true) {
+	if (pConfig->fdd_type == FDD_TYPE_58FDD && val == true) {
 		// clear HALT signal
 		d_board->write_signal(SIG_CPU_HALT, 0, SIG_HALT_FD_MASK);
 	}
@@ -1260,31 +1265,11 @@ void FLOPPY::set_drq(bool val)
 // ----------------------------------------------------------------------------
 bool FLOPPY::open_disk(int drv, const _TCHAR *path, int offset, uint32_t flags)
 {
-	if(drv < MAX_DRIVE) {
-		bool rc = disk[drv]->open(path, offset, flags);
-#if 0
-		if (IOPORT_USE_5FDD) {
-			// 5inch
-			if (rc) {
-				motor(drv, true);
-				register_my_event(EVENT_MOTOR_OFF, DELAY_MOTOR_OFF_5S);	// delay motor off
-			}
-		}
-#endif
+	if(drv < USE_FLOPPY_DISKS) {
+		bool rc = p_disk[drv]->open(path, offset, flags);
 		if (rc) {
-			if (!(flags & OPEN_DISK_FLAGS_FORCELY)) {
-				for(int i=0; i<MAX_DRIVE; i++) {
-					if (i == drv) continue;
-					if (disk[i]->is_same_file(path, offset)) {
-						int drvmin = (i < drv ? i : drv);
-						int drvmax = (i < drv ? drv : i);
-						logging->out_logf_x(LOG_WARN, CMsg::There_is_the_same_disk_in_drive_VDIGIT_and_VDIGIT, drvmin, drvmax);
-						break;
-					}
-				}
-			}
-			fdd[drv].delay_write = 0;
-			fdd[drv].shown_media_error = false;
+			m_fdd[drv].delay_write = 0;
+			m_fdd[drv].shown_media_error = false;
 		}
 		return rc;
 	} else {
@@ -1294,17 +1279,17 @@ bool FLOPPY::open_disk(int drv, const _TCHAR *path, int offset, uint32_t flags)
 
 bool FLOPPY::close_disk(int drv, uint32_t flags)
 {
-	if(drv < MAX_DRIVE) {
+	if(drv < USE_FLOPPY_DISKS) {
 		if (flags & OPEN_DISK_FLAGS_FORCELY) {
 
-			disk[drv]->close();
+			p_disk[drv]->close();
 
 		} else {
 
-			disk[drv]->close();
+			p_disk[drv]->close();
 			set_disk_side(drv, 0);
 			motor(drv, false);
-			fdd[drv].delay_write = 0;
+			m_fdd[drv].delay_write = 0;
 
 		}
 	}
@@ -1313,10 +1298,10 @@ bool FLOPPY::close_disk(int drv, uint32_t flags)
 
 int FLOPPY::change_disk(int drv)
 {
-	if(drv < MAX_DRIVE) {
-		set_disk_side(drv, 1 - fdd[drv].side);
+	if(drv < USE_FLOPPY_DISKS) {
+		set_disk_side(drv, 1 - m_fdd[drv].side);
 		motor(drv, false);
-		return fdd[drv].side;
+		return m_fdd[drv].side;
 	} else {
 		return 0;
 	}
@@ -1324,38 +1309,38 @@ int FLOPPY::change_disk(int drv)
 
 void FLOPPY::set_disk_side(int drv, int side)
 {
-	fdd[drv].side = (side & 1) % disk[drv]->num_of_side;
-	if (fdd[drv].side) {
-		sidereg |= (1 << drv);
+	m_fdd[drv].side = (side & 1) % p_disk[drv]->num_of_side;
+	if (m_fdd[drv].side) {
+		m_sidereg |= (1 << drv);
 	} else {
-		sidereg &= ~(1 << drv);
+		m_sidereg &= ~(1 << drv);
 	}
 }
 
 int FLOPPY::get_disk_side(int drv)
 {
-	return (disk[drv]->num_of_side > 1 ? fdd[drv].side % disk[drv]->num_of_side : -1);
+	return (p_disk[drv]->num_of_side > 1 ? m_fdd[drv].side % p_disk[drv]->num_of_side : -1);
 }
 
 bool FLOPPY::disk_inserted(int drv)
 {
-	if(drv < MAX_DRIVE) {
-		return disk[drv]->inserted;
+	if(drv < USE_FLOPPY_DISKS) {
+		return p_disk[drv]->inserted;
 	}
 	return false;
 }
 
 void FLOPPY::set_drive_type(int drv, uint8_t type)
 {
-	if(drv < MAX_DRIVE) {
-		disk[drv]->set_drive_type(type);
+	if(drv < USE_FLOPPY_DISKS) {
+		p_disk[drv]->set_drive_type(type);
 	}
 }
 
 uint8_t FLOPPY::get_drive_type(int drv)
 {
-	if(drv < MAX_DRIVE) {
-		return disk[drv]->get_drive_type();
+	if(drv < USE_FLOPPY_DISKS) {
+		return p_disk[drv]->get_drive_type();
 	}
 	return DRIVE_TYPE_UNK;
 }
@@ -1367,51 +1352,66 @@ uint8_t FLOPPY::fdc_status()
 
 void FLOPPY::toggle_disk_write_protect(int drv)
 {
-	if(drv < MAX_DRIVE) {
-		if (ignore_write) {
-			ignore_write = false;
-			disk[drv]->set_write_protect(true);
+	if(drv < USE_FLOPPY_DISKS) {
+		if (m_ignore_write) {
+			m_ignore_write = false;
+			p_disk[drv]->set_write_protect(true);
 		}
-		disk[drv]->set_write_protect(!(disk[drv]->write_protected));
+		p_disk[drv]->set_write_protect(!(p_disk[drv]->write_protected));
 	}
 }
 
 bool FLOPPY::disk_write_protected(int drv)
 {
-	if(drv < MAX_DRIVE) {
-		return (disk[drv]->write_protected || ignore_write);
+	if(drv < USE_FLOPPY_DISKS) {
+		return (p_disk[drv]->write_protected || m_ignore_write);
 	}
 	return true;
 }
 
 bool FLOPPY::is_same_disk(int drv, const _TCHAR *file_path, int offset)
 {
-	if(drv < MAX_DRIVE) {
-		return disk[drv]->is_same_file(file_path, offset);
+	if(drv < USE_FLOPPY_DISKS) {
+		return p_disk[drv]->is_same_file(file_path, offset);
 	}
 	return false;
 }
 
+/// Is the disk already inserted in another drive?
+int FLOPPY::inserted_disk_another_drive(int drv, const _TCHAR *file_path, int offset)
+{
+	int match = -1;
+	for(int i=0; i<USE_FLOPPY_DISKS; i++) {
+		if (i == drv) continue;
+		if (p_disk[i]->is_same_file(file_path, offset)) {
+			match = i;
+			break;
+		}
+	}
+	return match;
+}
+
 // ----------------------------------------------------------------------------
+
+/// for led indicator
+/// @return b3-b0: drive select, b4-b7: 0:green led, 1:red led b8-11:inserted?
 uint16_t FLOPPY::get_drive_select()
 {
-	// for led indicator
-	// b3-b0: drive select, b4-b7: 0:green led, 1:red led b8-11:inserted?
 	uint16_t data = 0;
 
-	if (!config.now_power_off) {
-		switch(config.fdd_type) {
+	if (!pConfig->now_power_off) {
+		switch(pConfig->fdd_type) {
 		case FDD_TYPE_3FDD:
 			// 3inch
-			if (motor_on_expand[0]) {
-				data = (drvsel[0] & 0x0f) | ((sidereg & 0x0f) << 4);
+			if (m_motor_on_expand[0]) {
+				data = (m_drvsel[0] & 0x0f) | ((m_sidereg & 0x0f) << 4);
 			}
 			break;
 		case FDD_TYPE_5FDD:
 		case FDD_TYPE_58FDD:
 			// 5inch or 8inch
-			int i = drv_num[0];
-			if (fdd[i].head_loading > 0 && fdd[i].ready >= 2) {
+			int i = m_drv_num[0];
+			if (m_fdd[i].head_loading > 0 && m_fdd[i].ready >= 2) {
 				data |= ((1 << i) | (0x10 << i));
 			}
 			break;
@@ -1419,9 +1419,9 @@ uint16_t FLOPPY::get_drive_select()
 	}
 
 	// inserted diskette ?
-	for(int i=0; i<MAX_DRIVE; i++) {
-		if (disk[i]->inserted) {
-			data |= (1 << (8 + i));
+	for(int i=0; i<USE_FLOPPY_DISKS; i++) {
+		if (p_disk[i]->inserted) {
+			data |= (0x100 << i);
 		}
 	}
 
@@ -1432,7 +1432,7 @@ uint16_t FLOPPY::get_drive_select()
 void FLOPPY::mix(int32_t* buffer, int cnt)
 {
 //	int32_t *buffer_start = buffer;
-//	int fdd_type = (config.fdd_type > 0) ? (config.fdd_type - 1) : 0;
+//	int fdd_type = (pConfig->fdd_type > 0) ? (pConfig->fdd_type - 1) : 0;
 
 	for(int ty=0; ty<FLOPPY_WAV_SNDTYPES; ty++) {
 #if 0
@@ -1474,7 +1474,7 @@ void FLOPPY::set_volume(int decibel, bool vol_mute)
 
 void FLOPPY::initialize_sound(int rate, int decibel)
 {
-	sample_rate = rate;
+	m_sample_rate = rate;
 //	max_vol = volume;
 	set_volume(decibel, false);
 
@@ -1494,15 +1494,15 @@ void FLOPPY::save_state(FILEIO *fp)
 	// copy values
 	memset(&vm_state, 0, sizeof(vm_state));
 	for(int i=0; i<22 && i<FLOPPY_MAX_EVENT; i++) {
-		vm_state.register_id[i] = Int32_LE(register_id[i]);
+		vm_state.register_id[i] = Int32_LE(m_register_id[i]);
 	}
-	vm_state.drv_num = drv_num[0];
-	vm_state.drvsel  = drvsel[0];
-	vm_state.sidereg = sidereg;
-	vm_state.fdd5outreg = fdd5outreg[0];
-	vm_state.irqflg  = irqflg ? 1 : 0;
-	vm_state.drqflg  = drqflg ? 1 : 0;
-	vm_state.flags   = density;
+	vm_state.drv_num = m_drv_num[0];
+	vm_state.drvsel  = m_drvsel[0];
+	vm_state.sidereg = m_sidereg;
+	vm_state.fdd5outreg = m_fdd5outreg[0];
+	vm_state.irqflg  = m_irqflg ? 1 : 0;
+	vm_state.drqflg  = m_drqflg ? 1 : 0;
+	vm_state.flags   = m_density;
 
 	// sound
 	for(int ft=0; ft<FLOPPY_WAV_FDDTYPES; ft++) {
@@ -1528,52 +1528,52 @@ bool FLOPPY::load_state(FILEIO *fp)
 		READ_STATE_CHUNK(fp, vm_state_i, vm_state_v1);
 
 		for(int i=0; i<FLOPPY_MAX_EVENT_V1; i++) {
-			register_id[i] = Int32_LE(vm_state_v1.register_id[i]);
+			m_register_id[i] = Int32_LE(vm_state_v1.register_id[i]);
 		}
 		for(int i=FLOPPY_MAX_EVENT_V1; i<FLOPPY_MAX_EVENT; i++) {
-			register_id[i] = -1;
+			m_register_id[i] = -1;
 		}
 
-		drv_num[0] = vm_state_v1.drv_num;
-		drvsel[0]  = vm_state_v1.drvsel;
-		sidereg = vm_state_v1.sidereg;
-		fdd5outreg[0] = vm_state_v1.fdd5outreg;
-		irqflg  = vm_state_v1.irqflg ? true : false;
-		drqflg  = vm_state_v1.drqflg ? true : false;
+		m_drv_num[0] = vm_state_v1.drv_num;
+		m_drvsel[0]  = vm_state_v1.drvsel;
+		m_sidereg = vm_state_v1.sidereg;
+		m_fdd5outreg[0] = vm_state_v1.fdd5outreg;
+		m_irqflg  = vm_state_v1.irqflg ? true : false;
+		m_drqflg  = vm_state_v1.drqflg ? true : false;
 
 		// cannot write to disk when load state from file.
-		sectorcnt = 0;
-		sectorcnt_cont = false;
-		ignore_write = true;
+		m_sectorcnt = 0;
+		m_sectorcnt_cont = false;
+		m_ignore_write = true;
 
 	} else {
 		READ_STATE_CHUNK(fp, vm_state_i, vm_state);
 
 		for(int i=0; i<22 && i<FLOPPY_MAX_EVENT; i++) {
-			register_id[i] = Int32_LE(vm_state.register_id[i]);
+			m_register_id[i] = Int32_LE(vm_state.register_id[i]);
 		}
 
-		drv_num[0] = vm_state.drv_num;
-		drvsel[0]  = vm_state.drvsel;
-		sidereg = vm_state.sidereg;
-		fdd5outreg[0] = vm_state.fdd5outreg;
-		fdd5outreg_delay = (fdd5outreg[0] & 0x80);
-		irqflg  = vm_state.irqflg ? true : false;
-		drqflg  = vm_state.drqflg ? true : false;
+		m_drv_num[0] = vm_state.drv_num;
+		m_drvsel[0]  = vm_state.drvsel;
+		m_sidereg = vm_state.sidereg;
+		m_fdd5outreg[0] = vm_state.fdd5outreg;
+		m_fdd5outreg_delay = (m_fdd5outreg[0] & 0x80);
+		m_irqflg  = vm_state.irqflg ? true : false;
+		m_drqflg  = vm_state.drqflg ? true : false;
 
 	}
 	// shift event id
 	if (Uint16_LE(vm_state_i.version) < 4) {
 		for(int i=FLOPPY_MAX_EVENT-1; i>1; i--) {
-			register_id[i] = register_id[i-1];
+			m_register_id[i] = m_register_id[i-1];
 		}
 	}
 	if (Uint16_LE(vm_state_i.version) >= 5) {
-		density = vm_state.flags;
+		m_density = vm_state.flags;
 	}
 
-	irqflgprev = irqflg;
-	drqflgprev = drqflg;
+	m_irqflgprev = m_irqflg;
+	m_drqflgprev = m_drqflg;
 
 	// sound off
 	for(int ft=0; ft<FLOPPY_WAV_FDDTYPES; ft++) {
@@ -1591,7 +1591,7 @@ bool FLOPPY::load_state(FILEIO *fp)
 	set_drive_speed();
 
 	for(int n = 0; n < MAX_FDC_NUMS; n++) {
-		motor_on_expand[n] = 0;
+		m_motor_on_expand[n] = 0;
 	}
 
 	return true;
@@ -1610,32 +1610,32 @@ uint32_t FLOPPY::debug_read_io8(uint32_t addr)
 			case 0x0:
 			case 0x1:
 				// FDC access ok
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && (drvsel[0] & 0x80) == 0)) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && (m_drvsel[0] & 0x80) == 0)) {
 					data = d_fdc5[0]->debug_read_io8(addr & 0xf);
 				}
 				break;
 			case 0x2:
 				// FDC access ok
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && (drvsel[0] & 0x80) == 0)) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && (m_drvsel[0] & 0x80) == 0)) {
 					data = d_fdc5[0]->debug_read_io8(addr & 0xf);
 				} else {
 					// When FDC access mask is ON, send DRQ signal
-					data = (fdd5outreg[0] | 0x7f);
+					data = (m_fdd5outreg[0] | 0x7f);
 				}
 				break;
 			case 0x3:
 				// FDC access ok or DRQ on
-				if (config.fdd_type != FDD_TYPE_58FDD || (config.fdd_type == FDD_TYPE_58FDD && ((drvsel[0] & fdd5outreg_delay & 0x80) == 0))) {
+				if (pConfig->fdd_type != FDD_TYPE_58FDD || (pConfig->fdd_type == FDD_TYPE_58FDD && ((m_drvsel[0] & m_fdd5outreg_delay & 0x80) == 0))) {
 					data = d_fdc5[0]->debug_read_io8(addr & 0xf);
 				}
 				break;
 			case 0x4:
-				if (config.fdd_type == FDD_TYPE_58FDD) data = 0xff;
-				else data = (fdd5outreg[0] | 0x7e);
+				if (pConfig->fdd_type == FDD_TYPE_58FDD) data = 0xff;
+				else data = (m_fdd5outreg[0] | 0x7e);
 				break;
 			case 0xc:
 				// Type
-				if (config.fdd_type == FDD_TYPE_58FDD) {
+				if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 					// always zero
 					data = 0x00;
 				}
@@ -1643,7 +1643,7 @@ uint32_t FLOPPY::debug_read_io8(uint32_t addr)
 		}
 	} else if (IOPORT_USE_3FDD) {
 		// 3inch
-		data = drvsel[0];
+		data = m_drvsel[0];
 	}
 
 	return data;
@@ -1655,14 +1655,14 @@ bool FLOPPY::debug_write_reg(uint32_t reg_num, uint32_t data)
 		// 5inch or 8inch
 		switch (reg_num) {
 		case 0:
-			drvsel[0] = data;
+			m_drvsel[0] = data;
 			return true;
 		}
 	} else if (IOPORT_USE_3FDD) {
 		// 3inch
 		switch (reg_num) {
 		case 0:
-			drvsel[0] = data;
+			m_drvsel[0] = data;
 			return true;
 		}
 	}
@@ -1679,14 +1679,14 @@ void FLOPPY::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
 	buffer[0] = _T('\0');
 	if (IOPORT_USE_5FDD) {
 		// 5inch or 8inch
-		if (config.fdd_type == FDD_TYPE_58FDD) {
-			UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("FDD8 2D UNITSEL"), drvsel[0]);
+		if (pConfig->fdd_type == FDD_TYPE_58FDD) {
+			UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("FDD8 2D UNITSEL"), m_drvsel[0]);
 		} else {
-			UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("FDD5 2D UNITSEL"), drvsel[0]);
+			UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("FDD5 2D UNITSEL"), m_drvsel[0]);
 		}
 	} else if (IOPORT_USE_3FDD) {
 		// 3inch
-		UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("FDD3 UNITSEL"), drvsel[0]);
+		UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("FDD3 UNITSEL"), m_drvsel[0]);
 	} else {
 		// no fdd
 		UTILITY::tcscat(buffer, buffer_len, _T(" FDD is not available."));

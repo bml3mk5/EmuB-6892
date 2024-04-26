@@ -33,7 +33,7 @@
 #define OUT_DEBUG2 dummyf
 #endif
 
-#define DRIVE_MASK		(MAX_DRIVE - 1)
+#define DRIVE_MASK		(USE_FLOPPY_DISKS - 1)
 
 /// seek stepping rate 6msec, 12msec, 20msec, 30msec
 static const int seek_wait[2][4] = {
@@ -100,7 +100,7 @@ void MB8866::register_restore_event()
 void MB8866::initialize()
 {
 	// config
-	ignore_crc = config.ignore_crc;
+	ignore_crc = pConfig->ignore_crc;
 
 	// initialize fdc
 	seektrk = 0;
@@ -170,7 +170,7 @@ void MB8866::cancel_my_events()
 
 void MB8866::update_config()
 {
-	ignore_crc = config.ignore_crc;
+	ignore_crc = pConfig->ignore_crc;
 }
 
 void MB8866::write_io8(uint32_t addr, uint32_t data)

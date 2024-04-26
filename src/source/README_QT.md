@@ -53,9 +53,11 @@
    * installを実行すると、リソースなどをビルドディレクトリにコピーします。
      システムディレクトリ(/usr/localなど)にインストールはしません。
 
- * FFmpeg-3.x (libavcodec57, libavutil55, libavformat57, libswscale4)
+ * FFmpeg-4.x (https://ffmpeg.org/)
+
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
+
   + ヘッダファイルが必要です。
     includeフォルダにヘッダファイルを入れてください。
 

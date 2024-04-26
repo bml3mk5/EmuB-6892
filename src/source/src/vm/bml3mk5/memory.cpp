@@ -82,10 +82,10 @@ void MEMORY::SET_BANK(int s, int e, uint8_t* w, uint8_t* r, uint8_t type) {
 
 void MEMORY::initialize()
 {
-	rom_loaded = false;
-	rom1802_loaded = false;
-	rom1805_loaded = false;
-	rom1806_loaded = false;
+	rom_loaded = 0;
+	rom1802_loaded = 0;
+	rom1805_loaded = 0;
+	rom1806_loaded = 0;
 	rom_loaded_at_first = false;
 
 	memset(rom, 0xff, sizeof(rom));
@@ -149,7 +149,7 @@ void MEMORY::load_rom_files()
 	// load rom
 	const _TCHAR *app_path, *rom_path[2];
 
-	rom_path[0] = config.rom_path;
+	rom_path[0] = pConfig->rom_path.Get();
 	rom_path[1] = vm->application_path();
 
 	for(int i=0; i<2; i++) {
@@ -428,7 +428,7 @@ void MEMORY::change_l3_memory_bank()
 	uint8_t *rexram80 = rdmy;
 
 	// have extended ram
-	if (config.exram_size_num == 1) {
+	if (pConfig->exram_size_num == 1) {
 		wexram00 = ram2 + 0x0000;
 		rexram00 = ram2 + 0x0000;
 		wexram04 = ram2 + 0x0400;
@@ -498,14 +498,14 @@ void MEMORY::change_l3_memory_bank()
 			SET_BANK(0xf800, 0xffff, NULL, rom1805, 0x09);
 		}
 		if (IOPORT_USE_5FDD) {
-			if (config.fdd_type == FDD_TYPE_5FDD) {
+			if (pConfig->fdd_type == FDD_TYPE_5FDD) {
 				// for 5.25inch mini floppy
 				if (rom1802_loaded) {
 					SET_BANK(0xf800, 0xffff, NULL, rom1802, 0x0a);
 				} else if (rom1806_loaded) {
 					SET_BANK(0xf800, 0xffff, NULL, rom1806, 0x0b);
 				}
-			} else if (config.fdd_type == FDD_TYPE_58FDD) {
+			} else if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 				// for 8inch standard floppy
 				if (rom1806_loaded) {
 					SET_BANK(0xf800, 0xffff, NULL, rom1806, 0x0b);
@@ -547,14 +547,14 @@ void MEMORY::change_l3_memory_bank()
 				SET_BANK(0xf800, 0xfeff, NULL, rom1805, 0x09);
 			}
 			if (IOPORT_USE_5FDD) {
-				if (config.fdd_type == FDD_TYPE_5FDD) {
+				if (pConfig->fdd_type == FDD_TYPE_5FDD) {
 					// for 5.25inch mini floppy
 					if (rom1802_loaded) {
 						SET_BANK(0xf800, 0xfeff, NULL, rom1802, 0x0a);
 					} else if (rom1806_loaded) {
 						SET_BANK(0xf800, 0xfeff, NULL, rom1806, 0x0b);
 					}
-				} else if (config.fdd_type == FDD_TYPE_58FDD) {
+				} else if (pConfig->fdd_type == FDD_TYPE_58FDD) {
 					// for 8inch standard floppy
 					if (rom1806_loaded) {
 						SET_BANK(0xf800, 0xfeff, NULL, rom1806, 0x0b);
@@ -667,9 +667,9 @@ void MEMORY::save_state(FILEIO *fio)
 	fio->FputUint32_LE(pc_prev);
 
 	// save config
-	fio->FputUint8(config.dipswitch);
-	fio->FputInt32_LE(config.fdd_type);
-	fio->FputInt32_LE(config.io_port);
+	fio->FputUint8(pConfig->dipswitch);
+	fio->FputInt32_LE(pConfig->fdd_type);
+	fio->FputInt32_LE(pConfig->io_port);
 
 	fio->Fsets(0, sizeof(vm_state->reserved));
 }
@@ -697,9 +697,9 @@ bool MEMORY::load_state(FILEIO *fio)
 	pc_prev = fio->FgetUint32_LE();
 
 	// load config
-	config.dipswitch = fio->FgetUint8();
-	config.fdd_type = fio->FgetInt32_LE();
-	config.io_port = fio->FgetInt32_LE();
+	pConfig->dipswitch = fio->FgetUint8();
+	pConfig->fdd_type = fio->FgetInt32_LE();
+	pConfig->io_port = fio->FgetInt32_LE();
 
 	fio->Fseek(sizeof(vm_state->reserved), FILEIO::SEEKCUR);
 
@@ -973,9 +973,9 @@ void MEMORY::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
 {
 }
 
-int MEMORY::get_debug_graphic_memory_size(int type, int *width, int *height)
+int MEMORY::get_debug_graphic_memory_size(int num, int type, int *width, int *height)
 {
-	return d_disp->get_debug_graphic_memory_size(type, width, height);
+	return d_disp->get_debug_graphic_memory_size(num, type, width, height);
 }
 
 bool MEMORY::debug_graphic_type_name(int type, _TCHAR *buffer, size_t buffer_len)
@@ -986,6 +986,11 @@ bool MEMORY::debug_graphic_type_name(int type, _TCHAR *buffer, size_t buffer_len
 bool MEMORY::debug_draw_graphic(int type, int width, int height, scrntype *buffer)
 {
 	return d_disp->debug_draw_graphic(type, width, height, buffer);
+}
+
+bool MEMORY::debug_dump_graphic(int type, int width, int height, uint16_t *buffer)
+{
+	return d_disp->debug_dump_graphic(type, width, height, buffer);
 }
 
 bool MEMORY::debug_basic_is_supported()

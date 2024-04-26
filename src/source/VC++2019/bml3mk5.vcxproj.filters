@@ -159,6 +159,9 @@
     <ClCompile Include="..\src\gui\windows\win_gui.cpp">
       <Filter>Source Files\GUI Source Files\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\gui\windows\win_joysetbox.cpp">
+      <Filter>Source Files\GUI Source Files\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\gui\windows\win_keybindbox.cpp">
       <Filter>Source Files\GUI Source Files\Windows</Filter>
     </ClCompile>
@@ -166,6 +169,9 @@
       <Filter>Source Files\GUI Source Files\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gui\windows\win_ledbox.cpp">
+      <Filter>Source Files\GUI Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gui\windows\win_loggingbox.cpp">
       <Filter>Source Files\GUI Source Files\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gui\windows\win_recaudbox.cpp">
@@ -216,7 +222,13 @@
     <ClCompile Include="..\src\osd\emu_sound.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\osd\keybind.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\osd\logging.cpp">
+      <Filter>Source Files\OSD Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\parseopt.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\osd\screenmode.cpp">
@@ -298,6 +310,9 @@
       <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
     </ClCompile>
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_audio.cpp">
+      <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\ffmpeg\ffm_rec_base.cpp">
       <Filter>Source Files\VIDEO Source Files\ffmpeg</Filter>
     </ClCompile>
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_video.cpp">
@@ -587,6 +602,9 @@
     <ClInclude Include="..\src\gui\windows\win_gui.h">
       <Filter>Header Files\GUI Header Files\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\gui\windows\win_joysetbox.h">
+      <Filter>Header Files\GUI Header Files\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\gui\windows\win_keybindbox.h">
       <Filter>Header Files\GUI Header Files\Windows</Filter>
     </ClInclude>
@@ -594,6 +612,9 @@
       <Filter>Header Files\GUI Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gui\windows\win_ledbox.h">
+      <Filter>Header Files\GUI Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gui\windows\win_loggingbox.h">
       <Filter>Header Files\GUI Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gui\windows\win_recaudbox.h">
@@ -645,6 +666,12 @@
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osd\emu_input.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\keybind.h">
+      <Filter>Header Files\OSD Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\parseopt.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osd\screenmode.h">
@@ -707,9 +734,6 @@
     <ClInclude Include="..\src\osd\windows\win_vkeyboardbase.h">
       <Filter>Header Files\OSD Header Files\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\parseopt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\rec_video_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -729,6 +753,9 @@
       <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
     </ClInclude>
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_audio.h">
+      <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\ffmpeg\ffm_rec_base.h">
       <Filter>Header Files\VIDEO Header Files\ffmpeg</Filter>
     </ClInclude>
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_video.h">

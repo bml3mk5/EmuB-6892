@@ -13,6 +13,12 @@
 #include "gtk_x11_key_trans.h"
 #include <SDL.h>
 
+#define USE_XKBKEYCODETOKEYSYM 1
+
+#ifdef USE_XKBKEYCODETOKEYSYM
+#include <X11/XKBlib.h>
+#endif
+
 namespace GUI_GTK_X11
 {
 
@@ -159,7 +165,11 @@ uint32_t X11_TranslateKeycode(Display *display, KeyCode kc)
 	KeySym xsym;
 	SDLKey key;
 
+#ifdef USE_XKBKEYCODETOKEYSYM
+	xsym = XkbKeycodeToKeysym(display, kc, 0, 0);
+#else
 	xsym = XKeycodeToKeysym(display, kc, 0);
+#endif
 #ifdef DEBUG_KEYS
 	fprintf(stderr, "Translating key code %d -> 0x%.4x\n", kc, xsym);
 #endif
@@ -346,11 +356,11 @@ Uint32 X11_TranslateKeycode(Display *display, KeyCode keycode)
     KeySym keysym;
     int i;
 
-//#if SDL_VIDEO_DRIVER_X11_HAS_XKBKEYCODETOKEYSYM
-//    keysym = X11_XkbKeycodeToKeysym(display, keycode, 0, 0);
-//#else
+#ifdef USE_XKBKEYCODETOKEYSYM
+    keysym = XkbKeycodeToKeysym(display, keycode, 0, 0);
+#else
     keysym = XKeycodeToKeysym(display, keycode, 0);
-//#endif
+#endif
     if (keysym == NoSymbol) {
         return SDL_SCANCODE_UNKNOWN;
     }
@@ -363,7 +373,7 @@ Uint32 X11_TranslateKeycode(Display *display, KeyCode keycode)
         return SDL_SCANCODE_0 + (keysym - XK_0);
     }
 
-    for (i = 0; i < SDL_arraysize(KeySymToSDLScancode); ++i) {
+    for (i = 0; i < (int)SDL_arraysize(KeySymToSDLScancode); ++i) {
         if (keysym == KeySymToSDLScancode[i].keysym) {
             return (Uint32)KeySymToSDLScancode[i].scancode;
         }

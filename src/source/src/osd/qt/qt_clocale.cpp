@@ -306,12 +306,12 @@ const CLocaleRegion *CLocale::FindRegionByLocale(const QString &locale)
 
 const _TCHAR *CLocale::GetLocaleName() const
 {
-	return mLocaleName;
+	return mLocaleName.Get();
 }
 
 const _TCHAR *CLocale::GetLanguageName() const
 {
-	return mLanguageName;
+	return mLanguageName.Get();
 }
 
 void CLocale::ChangeLocaleIfNeed(const CTchar &new_language)

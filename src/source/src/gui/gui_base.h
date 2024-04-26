@@ -224,6 +224,11 @@ public:
 	virtual bool ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type);
 #endif
 
+#ifdef USE_HD1
+	virtual bool ShowOpenHardDiskDialog(int drv);
+	virtual bool ShowOpenBlankHardDiskDialog(int drv, uint8_t type);
+#endif
+
 #ifdef USE_CART1
 	virtual bool ShowOpenCartridgeDialog(int drv);
 #endif
@@ -262,8 +267,11 @@ public:
 	virtual bool ShowSndFilterDialog(void);
 #endif
 
+	virtual bool ShowJoySettingDialog(void);
+
 	virtual bool ShowKeybindDialog(void);
 	virtual bool ShowConfigureDialog(void);
+	virtual bool ShowLoggingDialog(void);
 
 	virtual bool ShowAboutDialog(void);
 
@@ -423,6 +431,15 @@ public:
 	virtual D88File *GetD88File(int drv);
 #endif
 
+#ifdef USE_HD1
+	// Hard disk
+
+	virtual void PostEtOpenHardDiskMessage(int drv, const _TCHAR *file_path, uint32_t flags);
+	virtual void PostEtOpenRecentHardDiskMessage(int drv, int num);
+	virtual void PostEtCloseHardDiskMessage(int drv);
+	virtual bool MountedHardDisk(int drv);
+#endif
+
 #ifdef USE_CART1
 	// Cartridge
 
@@ -530,12 +547,17 @@ public:
 
 	virtual void ToggleMessageBoard(void);
 	virtual bool IsShownMessageBoard(void);
+	virtual bool IsShownLoggingDialog(void);
 #ifdef USE_PERFORMANCE_METER
 	virtual void TogglePMeter(void);
 	virtual bool IsShownPMeter(void);
 #endif
 	virtual void ChangeUseJoypad(int num);
 	virtual bool IsEnableJoypad(int num);
+#ifdef USE_KEY2JOYSTICK
+	virtual void ToggleEnableKey2Joypad(void);
+	virtual bool IsEnableKey2Joypad(void);
+#endif
 #ifdef USE_LIGHTPEN
 	virtual void ToggleEnableLightpen(void);
 	virtual bool IsEnableLightpen(void);
@@ -571,6 +593,16 @@ public:
 
 	/// @name utilities
 	//@{
+	enum enSupportedFileTypes {
+		FILE_TYPE_NONE = 0,
+		FILE_TYPE_DATAREC,
+		FILE_TYPE_FLOPPY,
+		FILE_TYPE_HARD_DISK,
+		FILE_TYPE_STATE,
+		FILE_TYPE_AUTO_KEY,
+		FILE_TYPE_KEY_RECORD,
+		FILE_TYPE_INITIALIZE,
+	};
 	static int CheckSupportedFile(const _TCHAR *file_path);
 	virtual void GetLibVersionString(_TCHAR *str, int max_len = _MAX_PATH, const _TCHAR *sep_str = _T("\n"));
 	//@}

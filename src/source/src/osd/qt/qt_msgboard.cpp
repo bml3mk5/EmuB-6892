@@ -107,10 +107,10 @@ bool MsgBoard::SetFont()
 	if (!inited) return false;
 
 	// メッセージ用フォントの設定
-	enable = set_sys_font(CMsg::message, config.msgboard_msg_fontname, config.msgboard_msg_fontsize, &msg.font);
+	enable = set_sys_font(CMsg::message, pConfig->msgboard_msg_fontname.Get(), pConfig->msgboard_msg_fontsize, &msg.font);
 	if (enable) {
 		// 情報用フォントの設定
-		enable = set_sys_font(CMsg::info, config.msgboard_info_fontname, config.msgboard_info_fontsize, &info.font);
+		enable = set_sys_font(CMsg::info, pConfig->msgboard_info_fontname.Get(), pConfig->msgboard_info_fontsize, &info.font);
 	}
 	return enable;
 }

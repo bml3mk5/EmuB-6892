@@ -35,31 +35,36 @@ public:
 private:
 	DEVICE *d_ctrl, *d_cmt;
 
-	int cfg_num;
+	int m_cfg_num;
 
-	int	is_rs;	// casette = 0 / rs-232c = 1
-	uint16_t dipswitch;	// baud speed 
-	bool through;	// send/receive 8bit on through mode 
+	int	m_is_rs;	// casette = 0 / rs-232c = 1
+	uint16_t m_dipswitch;	// baud speed 
+	bool m_through;	// send/receive 8bit on through mode 
 
-//	uint8_t receive_data;
-	bool received;
-	uint8_t send_buff[COMM_MAX_BUFF];
-	int send_buff_w_pos;
-	int send_buff_r_pos;
-	uint8_t recv_buff[COMM_MAX_BUFF];
-	int recv_buff_w_pos;
-	int recv_buff_r_pos;
+	bool m_received;
+	uint8_t m_send_buff[COMM_MAX_BUFF];
+	int m_send_buff_w_pos;
+	int m_send_buff_r_pos;
+	uint8_t m_recv_buff[COMM_MAX_BUFF];
+	int m_recv_buff_w_pos;
+	int m_recv_buff_r_pos;
 
-	uint8_t cr;	// acia control register
+	uint8_t m_cr;	// acia control register
 
-	int register_id;
+	int m_register_id;
 
-	int connect;
-	int client_ch;
-	int server_ch;
-	int uart_ch;
+	enum en_connect {
+		DISCONNECT = 0,
+		CONNECTING,
+		CONNECTED,
+		CONNWRITEABLE,
+	};
+	int m_connect;
+	int m_client_ch;
+	int m_server_ch;
+	int m_uart_ch;
 
-	int send_telcmd_pos;
+	int m_send_telcmd_pos;
 
 	//for resume
 #pragma pack(1)
@@ -91,7 +96,7 @@ public:
 		set_class_name("COMM");
 		d_ctrl = NULL;
 		d_cmt = NULL;
-		cfg_num = config_num;
+		m_cfg_num = config_num;
 	}
 	~COMM() {}
 

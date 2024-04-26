@@ -13,37 +13,12 @@
 
 #include <QDialog>
 #include <QTableWidget>
-#include "../gui_keybinddata.h"
+#include "qt_keybindctrl.h"
+#include <vector>
 
 namespace Ui {
 class MyKeybindBox;
 }
-
-/**
-	@brief Keybind table
-*/
-class MyTableWidget : public QTableWidget
-{
-	Q_OBJECT
-
-public:
-	MyTableWidget(int tab, KeybindData *data, QWidget *parent = Q_NULLPTR);
-//	MyTableWidget(int rows, int columns, QWidget *parent = Q_NULLPTR) : QTableWidget(rows, columns, parent) {}
-
-protected:
-	void keyPressEvent(QKeyEvent *event);
-//	void keyReleaseEvent(QKeyEvent *event);
-
-private:
-	KeybindData *kbdata;
-	int tab_num;
-
-public slots:
-	void update();
-
-private slots:
-	void cellDoubleClick(int row, int column);
-};
 
 /**
 	@brief Keybind dialog box
@@ -58,9 +33,9 @@ public:
 
 private:
 //	Ui::MyKeybindBox *ui;
-	MyTableWidget *tables[KEYBIND_MAX_NUM];
-	KeybindData *kbdata[KEYBIND_MAX_NUM];
+	std::vector<MyTableWidget *> tables;
 	int curr_tab;
+	uint32_t joy_mask;
 
 	void setData();
 
@@ -69,7 +44,8 @@ private slots:
 	void savePreset();
 	void accept();
 	void update();
-
+	void tabChanged(int index);
+	void toggleAxis(bool checked);
 };
 
 #endif // QT_KEYBINDBOX_H

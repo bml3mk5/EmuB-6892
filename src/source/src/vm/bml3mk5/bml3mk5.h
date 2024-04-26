@@ -214,14 +214,14 @@ public:
 #ifdef USE_FD1
 	/// @name floppy disk menu for user interface
 	//@{
-	bool open_disk(int drv, const _TCHAR* file_path, int offset, uint32_t flags);
-	bool close_disk(int drv, uint32_t flags);
-	int  change_disk(int drv);
-	bool disk_inserted(int drv);
-	int  get_disk_side(int drv);
-	void toggle_disk_write_protect(int drv);
-	bool disk_write_protected(int drv);
-	bool is_same_disk(int drv, const _TCHAR *file_path, int offset);
+	bool open_floppy_disk(int drv, const _TCHAR* file_path, int offset, uint32_t flags);
+	bool close_floppy_disk(int drv, uint32_t flags);
+	int  change_floppy_disk(int drv);
+	bool floppy_disk_inserted(int drv);
+	int  get_floppy_disk_side(int drv);
+	void toggle_floppy_disk_write_protect(int drv);
+	bool floppy_disk_write_protected(int drv);
+	bool is_same_floppy_disk(int drv, const _TCHAR *file_path, int offset);
 	//@}
 #endif
 	/// @name sound menu for user interface
@@ -249,7 +249,10 @@ public:
 	//@}
 	/// @name options menu for user interface
 	//@{
+	void modify_joytype();
 	void save_keybind();
+	void clear_joy2joyk_map();
+	void set_joy2joyk_map(int num, int idx, uint32_t joy_code);
 	//@}
 
 	// ----------------------------------------
@@ -280,14 +283,6 @@ public:
 	enum enumParamiId {
 		ParamFddType = 0,		///< current FDD type
 		ParamIOPort,			///< current I/O port settings
-		ParamVmKeyMapSize0,
-		ParamVmKeyMapSize1,
-		ParamVmKeyMapSize2,
-		ParamVkKeyMapKeys0,
-		ParamVkKeyMapKeys1,
-		ParamVkKeyMapKeys2,
-		ParamVkKeyMapAssign,
-		ParamVkKeyPresets,
 		ParamRecVideoType,
 		ParamRecVideoCodec,
 		ParamRecVideoQuality,
@@ -297,27 +292,7 @@ public:
 	};
 	/// for EMU::get_paramv method
 	enum enumParamvId {
-		ParamVmKeyMap0 = 0,
-		ParamVmKeyMap1,
-		ParamVmKeyMap2,
-		ParamVkKeyDefMap0,
-		ParamVkKeyDefMap1,
-		ParamVkKeyDefMap2,
-		ParamVkKeyMap0,
-		ParamVkKeyMap1,
-		ParamVkKeyMap2,
-		ParamVkKeyPresetMap00,
-		ParamVkKeyPresetMap01,
-		ParamVkKeyPresetMap02,
-		ParamVkKeyPresetMap10,
-		ParamVkKeyPresetMap11,
-		ParamVkKeyPresetMap12,
-		ParamVkKeyPresetMap20,
-		ParamVkKeyPresetMap21,
-		ParamVkKeyPresetMap22,
-		ParamVkKeyPresetMap30,
-		ParamVkKeyPresetMap31,
-		ParamVkKeyPresetMap32,
+		ParamvDummy = 0,
 		ParamvUnknown
 	};
 	/// for VM::change_archtecture method
@@ -329,10 +304,10 @@ public:
 	// ----------------------------------------
 	/// @name load rom image
 	//@{
-	static bool load_data_from_file(const _TCHAR *file_path, const _TCHAR *file_name
+	static int load_data_from_file(const _TCHAR *file_path, const _TCHAR *file_name
 		, uint8_t *data, size_t size
-		, const uint8_t *first_data = NULL, size_t first_data_size = 0
-		, const uint8_t *last_data = NULL,  size_t last_data_size = 0);
+		, const uint8_t *first_data = NULL, size_t first_data_size = 0, size_t first_data_pos = 0
+		, const uint8_t *last_data = NULL,  size_t last_data_size = 0, size_t last_data_pos = 0);
 	//@}
 	/// @name get/set VM specific parameter
 	//@{

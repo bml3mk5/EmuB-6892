@@ -21,6 +21,8 @@
 #include "wx_recvid_dlg.h"
 #include "wx_recaud_dlg.h"
 #include "wx_seldrv_dlg.h"
+#include "wx_joyset_dlg.h"
+#include "wx_logging_dlg.h"
 #include "wx_about_dlg.h"
 #ifdef USE_LEDBOX
 #include "wx_ledbox.h"
@@ -29,6 +31,7 @@
 #include "wx_vkeyboard.h"
 #endif
 #include "../../depend.h"
+#include "../../labels.h"
 #include "../../utility.h"
 #include "../../res/resource.h"
 #if defined(_BML3MK5)
@@ -45,6 +48,7 @@ GUI::GUI(int argc, char **argv, EMU *new_emu)
 	mux_need_update = NULL;
 	cond_need_update = NULL;
 #endif
+	logging_dlg = NULL;
 }
 
 GUI::~GUI()
@@ -61,7 +65,7 @@ bool GUI::NeedUpdateScreen()
 #endif
 //		logging->out_logf(LOG_DEBUG, _T("NeedUpdateScreen: nus:%d"), need_update_screen);
 		// post refresh meesage to frame event loop
-#if defined(__WXGTK__)
+#if defined(__WXGTK__) || defined(__WXOSX__)
 		PostCommandMessage(ID_UPDATE_SCREEN);
 #else
 		frame->UpdateScreen();
@@ -117,6 +121,12 @@ void GUI::Exit(void)
 		delete vkeyboard;
 		vkeyboard = NULL;
 	}
+	// close logging dialog
+	if (logging_dlg) {
+		logging_dlg->Close();
+		delete logging_dlg;
+		logging_dlg = NULL;
+	}
 	// request to close window
 	frame->Close();
 }
@@ -124,15 +134,16 @@ void GUI::Exit(void)
 #ifdef USE_DATAREC
 bool GUI::ShowLoadDataRecDialog(void)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_l3_l3b_l3c_wav_t9x,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_l3_l3b_l3c_wav_t9x,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::datarec_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Play_Data_Recorder_Tape,
-		wxString(config.initial_datarec_path),
+		wxString(pConfig->GetInitialDataRecPath()),
 		wxEmptyString,
 		filter,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -152,19 +163,20 @@ bool GUI::ShowLoadDataRecDialog(void)
 }
 bool GUI::ShowSaveDataRecDialog(void)
 {
-	const CMsg::Id filter[] = {
-		CMsg::L3_File_l3,
-		CMsg::L3B_File_l3b,
-		CMsg::L3C_File_l3c,
-		CMsg::Wave_File_wav,
-		CMsg::T9X_File_t9x,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::L3_File_l3,
+//		CMsg::L3B_File_l3b,
+//		CMsg::L3C_File_l3c,
+//		CMsg::Wave_File_wav,
+//		CMsg::T9X_File_t9x,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::datarec_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Record_Data_Recorder_Tape,
-		wxString(config.initial_datarec_path),
+		wxString(pConfig->GetInitialDataRecPath()),
 		wxEmptyString,
 		filter,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -188,17 +200,18 @@ bool GUI::ShowSaveDataRecDialog(void)
 #ifdef USE_FD1
 bool GUI::ShowOpenFloppyDiskDialog(int drv)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_d88,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_d88,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::floppy_disk_exts;
 
 	wxString title = wxString::Format(CMSG(Open_Floppy_Disk_VDIGIT), drv);
 
 	MyFileDialog *dlg = new MyFileDialog(
 		title,
-		wxString(config.initial_disk_path),
+		wxString(pConfig->GetInitialFloppyDiskPath()),
 		wxEmptyString,
 		filter,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -226,20 +239,21 @@ int  GUI::ShowSelectFloppyDriveDialog(int drv)
 }
 bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_d88,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_d88,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::blank_floppy_disk_exts;
 
 	wxString title = wxString::Format(CMSG(New_Floppy_Disk_VDIGIT), drv);
 
 	_TCHAR file_name[128];
-	UTILITY::create_date_file_path(NULL, file_name, 128, "d88");
+	UTILITY::create_date_file_path(NULL, file_name, 128, filter);
 
 	MyFileDialog *dlg = new MyFileDialog(
 		title,
-		wxString(config.initial_disk_path),
+		wxString(pConfig->GetInitialFloppyDiskPath()),
 		file_name,
 		filter,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -266,15 +280,16 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 
 bool GUI::ShowLoadStateDialog(void)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_l3r,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_l3r,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::state_file_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Load_Status_Data,
-		wxString(config.initial_state_path),
+		wxString(pConfig->GetInitialStatePath()),
 		wxEmptyString,
 		filter,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -294,15 +309,16 @@ bool GUI::ShowLoadStateDialog(void)
 }
 bool GUI::ShowSaveStateDialog(bool cont)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_l3r,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_l3r,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::state_file_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Save_Status_Data,
-		wxString(config.initial_state_path),
+		wxString(pConfig->GetInitialStatePath()),
 		wxEmptyString,
 		filter,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -324,15 +340,16 @@ bool GUI::ShowSaveStateDialog(bool cont)
 
 bool GUI::ShowOpenAutoKeyDialog(void)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_txt_bas_lpt,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_txt_bas_lpt,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::autokey_file_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Open_Text_File,
-		wxString(config.initial_autokey_path),
+		wxString(pConfig->GetInitialAutoKeyPath()),
 		wxEmptyString,
 		filter,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -353,15 +370,16 @@ bool GUI::ShowOpenAutoKeyDialog(void)
 
 bool GUI::ShowPlayRecKeyDialog(void)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_l3k,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_l3k,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::key_rec_file_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Play_Recorded_Keys,
-		wxString(config.initial_state_path),
+		wxString(pConfig->GetInitialStatePath()),
 		wxEmptyString,
 		filter,
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -382,15 +400,16 @@ bool GUI::ShowPlayRecKeyDialog(void)
 
 bool GUI::ShowRecordRecKeyDialog(void)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_l3k,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_l3k,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::key_rec_file_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Record_Input_Keys,
-		wxString(config.initial_state_path),
+		wxString(pConfig->GetInitialStatePath()),
 		wxEmptyString,
 		filter,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -419,15 +438,16 @@ bool GUI::ShowRecordStateAndRecKeyDialog(void)
 
 bool GUI::ShowSavePrinterDialog(int drv)
 {
-	const CMsg::Id filter[] = {
-		CMsg::Supported_Files_lpt,
-		CMsg::All_Files_,
-		CMsg::End
-	};
+//	const CMsg::Id filter[] = {
+//		CMsg::Supported_Files_lpt,
+//		CMsg::All_Files_,
+//		CMsg::End
+//	};
+	const char *filter = LABELS::printing_file_exts;
 
 	MyFileDialog *dlg = new MyFileDialog(
 		CMsg::Save_Printing_Data,
-		wxString(config.initial_printer_path),
+		wxString(pConfig->GetInitialPrinterPath()),
 		wxEmptyString,
 		filter,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -506,6 +526,31 @@ bool GUI::ShowVolumeDialog(void)
 	return true;
 }
 
+bool GUI::ShowLoggingDialog(void)
+{
+	if (!logging_dlg) {
+		logging_dlg = new MyLoggingDlg(frame, IDD_LOGGING, emu, this);
+	}
+	logging_dlg->Show();
+	return true;
+}
+
+bool GUI::IsShownLoggingDialog(void)
+{
+	return logging_dlg ? logging_dlg->IsShown() : false;
+}
+
+bool GUI::ShowJoySettingDialog(void)
+{
+	MyJoySettingDlg dlg(frame, IDD_JOYSETTING, emu, this);
+
+	SystemPause(true);
+
+	int rc = dlg.ShowModal();
+	SystemPause(false);
+	return (rc == wxID_OK);
+}
+
 bool GUI::ShowKeybindDialog(void)
 {
 	MyKeybindDlg dlg(frame, IDD_KEYBIND, emu, this);
@@ -529,7 +574,7 @@ bool GUI::ShowConfigureDialog(void)
 
 	int rc = dlg.ShowModal();
 	if (rc == wxID_OK) {
-		config.save();
+		pConfig->save();
 #ifdef USE_OPENGL
 		emu->change_opengl_attr();
 #endif
@@ -651,7 +696,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	//
 	EVT_CHAR_HOOK(MyFrame::OnCharHook)
 	//
-//	EVT_MOTION(MyFrame::OnMouseMotion)
+	EVT_MOTION(MyFrame::OnMouseMotion)
 	EVT_MOVE_END(MyFrame::OnMoveEnd)
 	// menu and global key
 	EVT_COMMAND(ID_ACCEL_SCREEN, wxEVT_USER1, MyFrame::OnSelect)
@@ -719,7 +764,7 @@ MyFrame::MyFrame(MyApp *parent, EMU *new_emu, GUI_BASE *new_gui, int x, int y, i
 //	key_mod = emu->get_key_mod_ptr();
 
 	// set window size
-	SetClientSize(config.screen_width, config.screen_height);
+	SetClientSize(pConfig->screen_width, pConfig->screen_height);
 	Centre();
 	Show();
 
@@ -770,15 +815,15 @@ MyFrame::MyFrame(MyApp *parent, EMU *new_emu, GUI_BASE *new_gui, int x, int y, i
 		enable_opengl = false;
 	} else {
 		// create opengl canvas
-		glcanvas = new MyGLCanvas(this, wxID_ANY, attr_list, wxDefaultPosition, wxSize(config.screen_width, config.screen_height));
+		glcanvas = new MyGLCanvas(this, wxID_ANY, attr_list, wxDefaultPosition, wxSize(pConfig->screen_width, pConfig->screen_height));
 
 		enable_opengl = true;
 	}
-	emu->set_use_opengl(enable_opengl ? config.use_opengl : 0);
+	emu->set_use_opengl(enable_opengl ? pConfig->use_opengl : 0);
 #endif /* USE_OPENGL */
 
 	// select display panel
-	ChangePanel(config.use_opengl);
+	ChangePanel(pConfig->use_opengl);
 
 	// Our MyFrame is the Top Window
     parent->SetTopWindow(this);
@@ -896,7 +941,7 @@ void MyFrame::CreateMenu(wxMenuBar *mb)
 		ms->AppendRadioItemById(ID_CPU_POWER5, CMsg::CPU_x16);
 	menuControl->AppendSubMenuById(ms, CMsg::CPU_Speed);
 	menuControl->AppendSeparator();
-	menuControl->AppendCheckItemById(ID_SYNC_IRQ, CMsg::Sync_Machine_Speed_With_CPU_Speed);
+	menuControl->AppendCheckItemById(ID_SYNC_IRQ, CMsg::Sync_Devices_With_CPU_Speed);
 	menuControl->AppendSeparator();
 		ms = new MyMenu;
 		ms->AppendById(ID_AUTOKEY_OPEN, CMsg::Open_);
@@ -1060,21 +1105,13 @@ void MyFrame::CreateMenu(wxMenuBar *mb)
 		ms->AppendById(ID_SOUND_STOP, CMsg::Stop);
 	menuSound->AppendSubMenuById(ms, CMsg::Record_Sound);
 	menuSound->AppendSeparator();
-//	menuSound->AppendRadioItemById(ID_SOUND_FREQ0, CMsg::F2000Hz);
-//	menuSound->AppendRadioItemById(ID_SOUND_FREQ1, CMsg::F4000Hz);
-	menuSound->AppendRadioItemById(ID_SOUND_FREQ2, CMsg::F8000Hz);
-	menuSound->AppendRadioItemById(ID_SOUND_FREQ3, CMsg::F11025Hz);
-	menuSound->AppendRadioItemById(ID_SOUND_FREQ4, CMsg::F22050Hz);
-	menuSound->AppendRadioItemById(ID_SOUND_FREQ5, CMsg::F44100Hz);
-	menuSound->AppendRadioItemById(ID_SOUND_FREQ6, CMsg::F48000Hz);
-	menuSound->AppendRadioItemById(ID_SOUND_FREQ7, CMsg::F96000Hz);
+	for(int i=0; LABELS::sound_samples[i] != CMsg::End; i++) {
+		menuSound->AppendRadioItemById(ID_SOUND_FREQ2 + i, LABELS::sound_samples[i]);
+	}
 	menuSound->AppendSeparator();
-	menuSound->AppendRadioItemById(ID_SOUND_LATE0, CMsg::S50msec);
-	menuSound->AppendRadioItemById(ID_SOUND_LATE1, CMsg::S75msec);
-	menuSound->AppendRadioItemById(ID_SOUND_LATE2, CMsg::S100msec);
-	menuSound->AppendRadioItemById(ID_SOUND_LATE3, CMsg::S200msec);
-	menuSound->AppendRadioItemById(ID_SOUND_LATE4, CMsg::S300msec);
-	menuSound->AppendRadioItemById(ID_SOUND_LATE5, CMsg::S400msec);
+	for(int i=0; LABELS::sound_late[i] != CMsg::End; i++) {
+		menuSound->AppendRadioItemById(ID_SOUND_LATE0 + i, LABELS::sound_late[i]);
+	}
     // add the sound menu to the menu bar
     mb->Append(menuSound, CMSG(Sound));
 
@@ -1123,32 +1160,41 @@ void MyFrame::CreateMenu(wxMenuBar *mb)
 	menuOptions->AppendCheckItemById(ID_OPTIONS_LEDBOX_INSIDE, CMsg::Inside_LED);
 #endif
 	menuOptions->AppendCheckItemById(ID_OPTIONS_MSGBOARD, CMsg::Show_Message);
+	menuOptions->AppendCheckItemById(ID_OPTIONS_LOGGING, CMsg::Log_);
 #ifdef USE_PERFORMANCE_METER
 	menuOptions->AppendCheckItemById(ID_OPTIONS_PMETER, CMsg::Show_Performance_Meter);
 #endif
+#ifdef USE_LIGHTPEN
 	menuOptions->AppendSeparator();
+	menuOptions->AppendCheckItemById(ID_OPTIONS_LIGHTPEN, CMsg::Enable_Lightpen);
+#endif
+#ifdef USE_MOUSE
+	menuOptions->AppendSeparator();
+	menuOptions->AppendCheckItemById(ID_OPTIONS_MOUSE, CMsg::Enable_Mouse);
+#endif
 #ifdef USE_JOYSTICK
+	menuOptions->AppendSeparator();
 	menuOptions->AppendCheckItemById(ID_OPTIONS_JOYPAD0, CMsg::Use_Joypad_Key_Assigned);
 #ifdef USE_PIAJOYSTICK
 	menuOptions->AppendCheckItemById(ID_OPTIONS_JOYPAD1, CMsg::Use_Joypad_PIA_Type);
 #endif
+#ifdef USE_KEY2JOYSTICK
+	menuOptions->AppendCheckItemById(ID_OPTIONS_KEY2JOYPAD, CMsg::Enable_Key_to_Joypad);
 #endif
-#ifdef USE_LIGHTPEN
-	menuOptions->AppendCheckItemById(ID_OPTIONS_LIGHTPEN, CMsg::Enable_Lightpen);
 #endif
-#ifdef USE_MOUSE
-	menuOptions->AppendCheckItemById(ID_OPTIONS_MOUSE, CMsg::Enable_Mouse);
-#endif
+	menuOptions->AppendSeparator();
 	menuOptions->AppendCheckItemById(ID_OPTIONS_LOOSEN_KEY, CMsg::Loosen_Key_Stroke_Game);
-	menuOptions->AppendSeparator();
-	menuOptions->AppendById(ID_OPTIONS_KEYBIND, CMsg::Keybind_);
-	menuOptions->AppendCheckItemById(ID_OPTIONS_VKEYBOARD, CMsg::Virtual_Keyboard);
-	menuOptions->AppendSeparator();
+	menuOptions->AppendCheckItemById(ID_OPTIONS_VKEYBOARD, CMsg::Virtual_Keyboard_);
 #ifdef USE_DEBUGGER
+	menuOptions->AppendSeparator();
 	menuOptions->AppendById(ID_OPEN_DEBUGGER0, CMsg::Start_Debugger);
 	menuOptions->AppendById(ID_CLOSE_DEBUGGER, CMsg::Stop_Debugger);
-	menuOptions->AppendSeparator();
 #endif
+	menuOptions->AppendSeparator();
+#ifdef USE_JOYSTICK
+	menuOptions->AppendById(ID_OPTIONS_JOYSETTING, CMsg::Joypad_Setting_);
+#endif
+	menuOptions->AppendById(ID_OPTIONS_KEYBIND, CMsg::Keybind_);
 	menuOptions->AppendById(ID_OPTIONS_CONFIG, CMsg::Configure_);
     // add the options menu to the menu bar
     mb->Append(menuOptions, CMSG(Options));
@@ -1243,7 +1289,7 @@ void MyFrame::UpdateMenuRecentFiles(MyMenu *menu, int id, CRecentPathList &recen
 		for(int i=0; i<recent_path.Count() && i<MAX_HISTORY; i++) {
 			_TCHAR path[_MAX_PATH];
 			path[0] = '\0';
-			gui->GetRecentFileStr(recent_path.Item(i)->path, recent_path.Item(i)->num, path, 72);
+			gui->GetRecentFileStr(recent_path.Item(i)->path.Get(), recent_path.Item(i)->num, path, 72);
 			if (path[0] != '\0') {
 				menu->Append(id + i, wxString(path));
 				flag = true;
@@ -1313,42 +1359,42 @@ void MyFrame::UpdateMenuMultiVolume(MyMenu *menu, int drv, int id, bool remake)
 /// update control menu status
 void MyFrame::UpdateMenuControl(bool remake)
 {
-	menuControl->Check(ID_RESET, !config.now_power_off);
+	menuControl->Check(ID_RESET, !pConfig->now_power_off);
 #if defined(_BML3MK5)
-	menuControl->Check(ID_DIPSWITCH3, (config.dipswitch & (1 << 2)) ? true : false);
+	menuControl->Check(ID_DIPSWITCH3, (pConfig->dipswitch & (1 << 2)) ? true : false);
 #endif
 #if defined(_MBS1)
 	menuControl->Check(ID_SYSTEM_MODE_1, gui->GetSystemMode() == 1);
 	menuControl->Check(ID_SYSTEM_MODE_2, gui->GetSystemMode() == 0);
 #endif
 	SELECT_MENU_ITEM(menuControl, ID_FDD_TYPE_1, ID_FDD_TYPE_3, gui->NextFddType());
-	SELECT_MENU_ITEM(menuControl, ID_CPU_POWER0, ID_CPU_POWER5, config.cpu_power);
-	menuControl->Check(ID_SYNC_IRQ, config.sync_irq);
-	menuControl->Check(ID_RECKEY_PLAY, config.reckey_playing);
-	menuControl->Check(ID_RECKEY_REC,  config.reckey_recording);
+	SELECT_MENU_ITEM(menuControl, ID_CPU_POWER0, ID_CPU_POWER5, pConfig->cpu_power);
+	menuControl->Check(ID_SYNC_IRQ, pConfig->sync_irq);
+	menuControl->Check(ID_RECKEY_PLAY, pConfig->reckey_playing);
+	menuControl->Check(ID_RECKEY_REC,  pConfig->reckey_recording);
 	// update recent files
-	UpdateMenuRecentFiles(menuStateRecent, ID_RECENT_STATE, config.recent_state_path, config.recent_state_path.updated || remake);
-	config.recent_state_path.updated = false;
+	UpdateMenuRecentFiles(menuStateRecent, ID_RECENT_STATE, pConfig->GetRecentStatePathList(), pConfig->UpdatedRecentStatePath() || remake);
+	pConfig->RecentStatePathUpdated(false);
 }
 /// update tape menu status
 void MyFrame::UpdateMenuTape(bool remake)
 {
 	menuTape->Check(ID_PLAY_DATAREC, (emu->datarec_opened(true)));
 	menuTape->Check(ID_REC_DATAREC, (emu->datarec_opened(false)));
-	menuTape->Check(ID_REAL_DATAREC, config.realmode_datarec);
+	menuTape->Check(ID_REAL_DATAREC, pConfig->NowRealModeDataRec());
 	// update recent files
-	UpdateMenuRecentFiles(menuTapeRecent, ID_RECENT_DATAREC, config.recent_datarec_path, config.recent_datarec_path.updated || remake);
-	config.recent_datarec_path.updated = false;
+	UpdateMenuRecentFiles(menuTapeRecent, ID_RECENT_DATAREC, pConfig->GetRecentDataRecPathList(), pConfig->UpdatedRecentDataRecPath() || remake);
+	pConfig->RecentDataRecPathUpdated(false);
 }
 /// update fdd menu status
 void MyFrame::UpdateMenuFdd(int drv, bool remake)
 {
 	// open
-	menuFdd[drv]->Check(ID_OPEN_FD1 + (drv * 100), emu->disk_inserted(drv));
+	menuFdd[drv]->Check(ID_OPEN_FD1 + (drv * 100), emu->floppy_disk_inserted(drv));
 	// side
-	menuFdd[drv]->Enable(ID_CHANGE_FD1 + (drv * 100), (config.fdd_type != 0));
+	menuFdd[drv]->Enable(ID_CHANGE_FD1 + (drv * 100), (pConfig->fdd_type != 0));
 	CMsg::Id labelid;
-	int side = emu->get_disk_side(drv);
+	int side = emu->get_floppy_disk_side(drv);
 	if (side) {
 		// ..Change side to A
 		labelid = CMsg::Change_Side_to_A;
@@ -1357,20 +1403,20 @@ void MyFrame::UpdateMenuFdd(int drv, bool remake)
 	}
 	menuFdd[drv]->SetLabel(ID_CHANGE_FD1 + (drv * 100), gMessages.Get(labelid));
 	// write protect
-	menuFdd[drv]->Enable(ID_WRITEPROTECT_FD1 + (drv * 100), emu->disk_inserted(drv));
-	menuFdd[drv]->Check(ID_WRITEPROTECT_FD1 + (drv * 100), emu->disk_write_protected(drv));
+	menuFdd[drv]->Enable(ID_WRITEPROTECT_FD1 + (drv * 100), emu->floppy_disk_inserted(drv));
+	menuFdd[drv]->Check(ID_WRITEPROTECT_FD1 + (drv * 100), emu->floppy_disk_write_protected(drv));
 	// update multi volume
-	UpdateMenuMultiVolume(menuFddMulti[drv], drv, (ID_SELECT_D88_BANK1 + (drv * 100)), config.recent_disk_path[drv].updated || remake);
+	UpdateMenuMultiVolume(menuFddMulti[drv], drv, (ID_SELECT_D88_BANK1 + (drv * 100)), pConfig->UpdatedRecentFloppyDiskPath(drv) || remake);
 	// update recent files
-	UpdateMenuRecentFiles(menuFddRecent[drv], (ID_RECENT_FD1 + (drv * 100)), config.recent_disk_path[drv],  config.recent_disk_path[drv].updated || remake);
-	config.recent_disk_path[drv].updated = false;
+	UpdateMenuRecentFiles(menuFddRecent[drv], (ID_RECENT_FD1 + (drv * 100)), pConfig->GetRecentFloppyDiskPathList(drv),  pConfig->UpdatedRecentFloppyDiskPath(drv) || remake);
+	pConfig->RecentFloppyDiskPathUpdated(drv, false);
 }
 /// update screen menu status
 void MyFrame::UpdateMenuScreen()
 {
-	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_VFRAME, ID_SCREEN_FPS10, config.fps_no);
-	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_WINDOW1, ID_SCREEN_WINDOW8, config.window_mode);
-	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_REC_SIZE1, ID_SCREEN_REC_SIZE2, config.screen_video_size);
+	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_VFRAME, ID_SCREEN_FPS10, pConfig->fps_no);
+	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_WINDOW1, ID_SCREEN_WINDOW8, pConfig->window_mode);
+	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_REC_SIZE1, ID_SCREEN_REC_SIZE2, pConfig->screen_video_size);
 	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_PIXEL_ASPECT0, ID_SCREEN_PIXEL_ASPECT2, gui->GetPixelAspectMode());
 	bool now_rec = gui->NowRecordingVideo() | gui->NowRecordingSound();
 	if (!now_rec) {
@@ -1378,32 +1424,32 @@ void MyFrame::UpdateMenuScreen()
 	}
 	ENABLE_MENU_ITEMS(menuScreen, ID_SCREEN_REC_SIZE1, ID_SCREEN_REC_SIZE2, !now_rec);
 	ENABLE_MENU_ITEMS(menuScreen, ID_SCREEN_REC60, ID_SCREEN_REC10, !now_rec);
-	if (config.window_mode < WINDOW_MODE_MAX) {
+	if (pConfig->window_mode < WINDOW_MODE_MAX) {
 		ENABLE_MENU_ITEMS(menuScreen, ID_SCREEN_WINDOW1, ID_SCREEN_WINDOW8, true);
 		ENABLE_MENU_ITEMS(menuScreen, ID_SCREEN_FULLSCREEN0_01, ID_SCREEN_FULLSCREEN5_01 + VIDEO_MODE_MAX, true);
 	} else {
 		ENABLE_MENU_ITEMS(menuScreen, ID_SCREEN_WINDOW1, ID_SCREEN_WINDOW8, true);
 		ENABLE_MENU_ITEMS(menuScreen, ID_SCREEN_FULLSCREEN0_01, ID_SCREEN_FULLSCREEN5_01 + VIDEO_MODE_MAX, false);
 	}
-	menuScreen->Check(ID_SCREEN_STRETCH, config.stretch_screen == 1);
-	menuScreen->Check(ID_SCREEN_CUTOUT, config.stretch_screen == 2);
+	menuScreen->Check(ID_SCREEN_STRETCH, pConfig->stretch_screen == 1);
+	menuScreen->Check(ID_SCREEN_CUTOUT, pConfig->stretch_screen == 2);
 	menuScreen->Check(ID_SCREEN_SCANLINE0, gui->GetDrawMode() == 0);
 	menuScreen->Check(ID_SCREEN_SCANLINE1, gui->GetDrawMode() == 1);
 	menuScreen->Check(ID_SCREEN_SCANLINE2, gui->GetDrawMode() == 2);
 	menuScreen->Check(ID_SCREEN_SCANLINE3, gui->GetDrawMode() == 3);
-	menuScreen->Check(ID_SCREEN_AFTERIMAGE1, (config.afterimage == 1));
-	menuScreen->Check(ID_SCREEN_AFTERIMAGE2, (config.afterimage == 2));
+	menuScreen->Check(ID_SCREEN_AFTERIMAGE1, (pConfig->afterimage == 1));
+	menuScreen->Check(ID_SCREEN_AFTERIMAGE2, (pConfig->afterimage == 2));
 #ifdef USE_KEEPIMAGE
-	menuScreen->Check(ID_SCREEN_KEEPIMAGE1, (config.keepimage == 1));
-	menuScreen->Check(ID_SCREEN_KEEPIMAGE2, (config.keepimage == 2));
+	menuScreen->Check(ID_SCREEN_KEEPIMAGE1, (pConfig->keepimage == 1));
+	menuScreen->Check(ID_SCREEN_KEEPIMAGE2, (pConfig->keepimage == 2));
 #endif
 #if defined(_MBS1)
 	menuScreen->Check(ID_SCREEN_DIGITAL, gui->GetRGBTypeMode() == 0);
 	menuScreen->Check(ID_SCREEN_ANALOG, gui->GetRGBTypeMode() == 1);
 #endif
 #ifdef USE_OPENGL
-	menuScreen->Check(ID_SCREEN_OPENGL_SYNC, (config.use_opengl == 1));
-	menuScreen->Check(ID_SCREEN_OPENGL_ASYNC, (config.use_opengl == 2));
+	menuScreen->Check(ID_SCREEN_OPENGL_SYNC, (pConfig->use_opengl == 1));
+	menuScreen->Check(ID_SCREEN_OPENGL_ASYNC, (pConfig->use_opengl == 2));
 #endif
 	menuScreen->Enable(ID_SCREEN_OPENGL_SYNC, enable_opengl);
 	menuScreen->Enable(ID_SCREEN_OPENGL_ASYNC, enable_opengl);
@@ -1417,8 +1463,8 @@ void MyFrame::UpdateMenuSound()
 	bool now_rec = gui->NowRecordingVideo() | gui->NowRecordingSound();
 	menuSound->Enable(ID_SOUND_REC, !now_rec);
 //	menuSound->Enable(ID_SOUND_STOP, now_rec);
-	SELECT_MENU_ITEM(menuSound, ID_SOUND_FREQ0, ID_SOUND_FREQ7, config.sound_frequency);
-	SELECT_MENU_ITEM(menuSound, ID_SOUND_LATE0, ID_SOUND_LATE4, config.sound_latency);
+	SELECT_MENU_ITEM(menuSound, ID_SOUND_FREQ0, ID_SOUND_FREQ7, pConfig->sound_frequency);
+	SELECT_MENU_ITEM(menuSound, ID_SOUND_LATE0, ID_SOUND_LATE4, pConfig->sound_latency);
 }
 /// update printer menu status
 void MyFrame::UpdateMenuPrinter(int dev)
@@ -1482,6 +1528,7 @@ void MyFrame::UpdateMenuOptions()
 	menuOptions->Check(ID_OPTIONS_LEDBOX_INSIDE, FLG_INSIDELEDBOX != 0);
 #endif
 	menuOptions->Check(ID_OPTIONS_MSGBOARD, FLG_SHOWMSGBOARD != 0);
+	menuOptions->Check(ID_OPTIONS_LOGGING, gui->IsShownLoggingDialog());
 #ifdef USE_PERFORMANCE_METER
 	menuOptions->Check(ID_OPTIONS_PMETER, gui->IsShownPMeter());
 #endif
@@ -1496,6 +1543,9 @@ void MyFrame::UpdateMenuOptions()
 #endif
 #ifdef USE_MOUSE
 	menuOptions->Check(ID_OPTIONS_MOUSE, gui->IsEnableMouse());
+#endif
+#ifdef USE_KEY2JOYSTICK
+	menuOptions->Check(ID_OPTIONS_KEY2JOYPAD, gui->IsEnableKey2Joypad());
 #endif
 	menuOptions->Check(ID_OPTIONS_LOOSEN_KEY, gui->IsLoosenKeyStroke());
 	menuOptions->Check(ID_OPTIONS_VKEYBOARD, gui->IsShownVirtualKeyboard());
@@ -1523,7 +1573,7 @@ void MyFrame::UpdateScreen()
 #ifdef USE_OPENGL
 	if (enable_opengl
 #ifdef OPENGL_IMMCHANGE
-		&& config.use_opengl != 0
+		&& pConfig->use_opengl != 0
 #else
 		&& emu && emu->now_use_opengl() != 0
 #endif
@@ -1589,7 +1639,7 @@ void MyFrame::SetFocus()
 	wxFrame::SetFocus();
 
 #ifdef USE_OPENGL
-	if (enable_opengl && config.use_opengl != 0) {
+	if (enable_opengl && pConfig->use_opengl != 0) {
 		glcanvas->SetFocus();
 	} else
 #endif /* USE_OPENGL */
@@ -1603,6 +1653,7 @@ void MyFrame::SetFocus()
  */
 void MyFrame::OnMouseMotion(wxMouseEvent &event)
 {
+#if 0
 	if(IsFullScreen()) {
 		wxPoint p = event.GetPosition();
 		if(p.y == 0 && !now_showmenu) {
@@ -1618,17 +1669,19 @@ void MyFrame::OnMouseMotion(wxMouseEvent &event)
 			now_showmenu = false;
 		}
 	}
+#endif
 	if (emu) {
-		EMU_OSD *emu_osd = (EMU_OSD *)emu;
-		emu_osd->update_mouse_event(event);
+		emu->mouse_move(event.GetX(), event.GetY());
 	}
 }
 void MyFrame::OnMouseDown(wxMouseEvent &event)
 {
+#if 0
 	if (emu) {
 		EMU_OSD *emu_osd = (EMU_OSD *)emu;
 		emu_osd->update_mouse_event(event);
 	}
+#endif
 }
 
 void MyFrame::GoUnfullscreen(int width, int height)
@@ -1702,9 +1755,9 @@ void MyFrame::OpenRecentFile()
 			if (!app->disk_file[drv].IsEmpty()) {
 				path = app->disk_file[drv];
 			}
-			else if (config.recent_disk_path[drv].Count() > 0 && config.recent_disk_path[drv][0]->path.Length() > 0) {
-				path = wxString(config.recent_disk_path[drv][0]->path);
-				bank_num = config.recent_disk_path[drv][0]->num;
+			else if (pConfig->GetRecentFloppyDiskPathCount(drv) > 0 && pConfig->GetRecentFloppyDiskPathLength(drv, 0) > 0) {
+				path = wxString(pConfig->GetRecentFloppyDiskPathString(drv, 0));
+				bank_num = pConfig->GetRecentFloppyDiskPathNumber(drv, 0);
 			}
 			if (!path.IsEmpty()) {
 				gui->PostEtOpenFloppyMessage(drv, path, bank_num, 0, false);

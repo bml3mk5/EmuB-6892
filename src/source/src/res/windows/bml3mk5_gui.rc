@@ -127,6 +127,22 @@ FONT 9, "Ms Shell Dlg"
 {
 }
 
+IDD_JOYSETTING DIALOG 0, 0, 240, 121
+STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP
+CAPTION "Joypad Setting"
+FONT 9, "Ms Shell Dlg"
+{
+    CONTROL         "", IDC_TAB1, WC_TABCONTROL, 0, 5, 5, 250, 260
+    LTEXT           "", IDC_STATIC_0, 0, 5, 5, 270, SS_LEFT
+}
+
+IDD_LOGGING DIALOG 0, 0, 320, 200
+STYLE DS_3DLOOK | DS_CENTER | DS_MODALFRAME | DS_SHELLFONT | WS_CAPTION | WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Log"
+FONT 9, "Ms Shell Dlg"
+{
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
@@ -159,7 +175,7 @@ BEGIN
             MENUITEM "CPU x8\tAlt+4",           ID_CPU_POWER4
             MENUITEM "CPU x16\tAlt+5",          ID_CPU_POWER5
             MENUITEM SEPARATOR
-            MENUITEM "Sync With CPU Speed\tAlt+0",ID_SYNC_IRQ
+            MENUITEM "Sync Devices With CPU Speed\tAlt+0",ID_SYNC_IRQ
         END
         MENUITEM SEPARATOR
         POPUP "Auto Key"
@@ -483,28 +499,40 @@ BEGIN
         MENUITEM "Show LED\tAlt+L",             ID_OPTIONS_LEDBOX_SHOW
         MENUITEM "Inside LED\tAlt+L",           ID_OPTIONS_LEDBOX_INSIDE
         MENUITEM "Show Message\tAlt+Z",         ID_OPTIONS_MSGBOARD
+        MENUITEM "Log...",                      ID_OPTIONS_LOGGING
 #ifdef USE_PERFORMANCE_METER
-        MENUITEM "Show Performance Meter",      ID_OPTIONS_PMETER
+        MENUITEM "Performance Meter...",        ID_OPTIONS_PMETER
 #endif
+#ifdef USE_LIGHTPEN
         MENUITEM SEPARATOR
-#ifdef USE_DIRECTINPUT
-        MENUITEM "Use DirectInput",             ID_OPTIONS_USE_DINPUT
+        MENUITEM "Enable Lightpen\tAlt+Ctrl",   ID_OPTIONS_LIGHTPEN
 #endif
+#ifdef USE_JOYSTICK
+        MENUITEM SEPARATOR
         MENUITEM "Use Joypad (Key Assigned)\tAlt+J",ID_OPTIONS_JOYPAD0
 #ifdef USE_PIAJOYSTICK
         MENUITEM "Use Joypad (PIA Type)\tAlt+J",ID_OPTIONS_JOYPAD1
 #endif
-        MENUITEM "Enable Lightpen\tAlt+Ctrl",   ID_OPTIONS_LIGHTPEN
-        MENUITEM "Loosen Key Stroke (For Game)",ID_OPTIONS_LOOSEN_KEY
+#endif
+#ifdef USE_KEY2JOYSTICK
+        MENUITEM "Enable Key to Joypad",        ID_OPTIONS_KEY2JOYPAD
+#endif
         MENUITEM SEPARATOR
-        MENUITEM "Keybind...\tAlt+K",           ID_OPTIONS_KEYBIND
-        MENUITEM "Virtual Keyboard",            ID_OPTIONS_VKEYBOARD
+#ifdef USE_DIRECTINPUT
+        MENUITEM "Use DirectInput For Key In",  ID_OPTIONS_USE_DINPUT
+#endif
+        MENUITEM "Loosen Key Stroke (For Game)",ID_OPTIONS_LOOSEN_KEY
+        MENUITEM "Virtual Keyboard...",         ID_OPTIONS_VKEYBOARD
 #ifdef USE_DEBUGGER
         MENUITEM SEPARATOR
         MENUITEM "Start Debugger\tAlt+D",       ID_OPEN_DEBUGGER0
         MENUITEM "Stop Debugger",               ID_CLOSE_DEBUGGER
 #endif
         MENUITEM SEPARATOR
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+        MENUITEM "Joypad Setting...",           ID_OPTIONS_JOYSETTING
+#endif
+        MENUITEM "Keybind...\tAlt+K",           ID_OPTIONS_KEYBIND
         MENUITEM "Configure...\tAlt+C",         ID_OPTIONS_CONFIG
     END
     POPUP "&Help"

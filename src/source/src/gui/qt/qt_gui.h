@@ -32,6 +32,7 @@ class Connection;
 #ifdef USE_UART
 class CommPorts;
 #endif
+class MyLoggingBox;
 
 /**
 	@brief GUI class
@@ -42,6 +43,8 @@ private:
 	QString replaceSemicolon(const QString &str);
 public:
 	GUI(int argc, char **argv, EMU *new_emu);
+	virtual ~GUI();
+
 	bool NeedUpdateScreen();
 	void UpdatedScreen();
 	void ScreenModeChanged(bool fullscreen);
@@ -63,10 +66,13 @@ public:
 	bool ShowRecordAudioDialog(void);
 	bool ShowRecordVideoAndAudioDialog(int fps_num);
 	bool ShowVolumeDialog(void);
+	bool ShowJoySettingDialog(void);
 	bool ShowKeybindDialog(void);
 	bool ShowVirtualKeyboard(void);
 	bool ShowConfigureDialog(void);
 	bool ShowAboutDialog(void);
+	bool ShowLoggingDialog(void);
+	bool IsShownLoggingDialog(void);
 
 	void CreateLedBoxSub();
 
@@ -94,6 +100,9 @@ public:
     void resizeAll(int w, int h);
 	void goFullScreen(int x, int y, int w, int h);
 	void goNormalScreen(int w, int h);
+
+	bool showLoggingDialog(void);
+	bool isShownLoggingDialog(void);
 
 #ifdef USE_SOCKET
 	Connection *conn;
@@ -232,11 +241,16 @@ private slots:
 	void selectShowLEDSlot();
 	void selectInsideLEDSlot();
 	void selectShowMessageSlot();
+	void selectShowLoggingSlot();
 #ifdef USE_PERFORMANCE_METER
 	void selectShowPMeterSlot();
 #endif
 	void selectUseJoypadSlot();
 	void selectUsePIAJoypadSlot();
+#ifdef USE_KEY2JOYSTICK
+	void selectKey2JoypadSlot();
+#endif
+	void selectJoySettingSlot();
 #ifdef USE_LIGHTPEN
 	void selectEnableLightpenSlot();
 #endif
@@ -275,6 +289,8 @@ private:
 	Ui::MainWindow *ui;
 	bool initialize_ok;
 
+	MyLoggingBox *loggingbox;
+
 	QAction *actionPowerOn;
 #if defined(_MBS1)
 	QAction *actionSystemMode[2];
@@ -291,11 +307,11 @@ private:
 	QAction *actionTapeRecord;
 	QAction *actionTapeRealMode;
 	QMenu *menuTapeRecentFiles;
-	QAction *actionFddOpen[MAX_DRIVE];
-	QAction *actionFddChangeSide[MAX_DRIVE];
-	QAction *actionFddWriteProtect[MAX_DRIVE];
-	QMenu *menuFddMultiVolume[MAX_DRIVE];
-	QMenu *menuFddRecentFiles[MAX_DRIVE];
+	QAction *actionFddOpen[USE_FLOPPY_DISKS];
+	QAction *actionFddChangeSide[USE_FLOPPY_DISKS];
+	QAction *actionFddWriteProtect[USE_FLOPPY_DISKS];
+	QMenu *menuFddMultiVolume[USE_FLOPPY_DISKS];
+	QMenu *menuFddRecentFiles[USE_FLOPPY_DISKS];
 	QMenu *menuFrameRate;
 	QMenu *menuRecordScreen;
 	QAction *actionRecordScreenSize[2];
@@ -334,10 +350,17 @@ private:
 	QAction *actionShowLED;
 	QAction *actionInsideLED;
 	QAction *actionShowMessage;
+	QAction *actionShowLogging;
 #ifdef USE_PERFORMANCE_METER
 	QAction *actionShowPMeter;
 #endif
+#ifdef USE_JOYSTICK
 	QAction *actionUseJoypad[2];
+#ifdef USE_KEY2JOYSTICK
+	QAction *actionKey2Joypad;
+#endif
+	QAction *actionJoySetting;
+#endif
 #ifdef USE_LIGHTPEN
 	QAction *actionLightPen;
 #endif
@@ -347,8 +370,10 @@ private:
 	QAction *actionLoosenKeyStroke;
 	QAction *actionKeybind;
 	QAction *actionVirtualKeyboard;
+#ifdef USE_DEBUGGER
 	QAction *actionStartDebugger;
 	QAction *actionStopDebugger;
+#endif
 	QAction *actionConfigure;
 
 	static void connectWithNumber(QAction *sender, const char *signal, MainWindow *recv, const char *slot, int num);
@@ -357,3 +382,4 @@ private:
 extern MainWindow *mainwindow;
 
 #endif /* QT_GUI_H */
+;

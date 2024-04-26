@@ -220,17 +220,17 @@ void VFW_REC_VIDEO::Stop()
 
 	// repair header
 	CTchar crec_path(rec_path);
-	FILE* fp = _tfopen(crec_path.GetM(), _T("r+b"));
-	if(fp != NULL) {
+	FILEIO fio;
+	if (fio.Fopen(crec_path.GetM(), FILEIO::READ_WRITE_BINARY)) {
 		// copy fccHandler
 		uint8_t buf[4];
-		fseek(fp, 0xbc, SEEK_SET);
-		if(ftell(fp) == 0xbc) {
-			fread(buf, 4, 1, fp);
-			fseek(fp, 0x70, SEEK_SET);
-			fwrite(buf, 4, 1, fp);
+		fio.Fseek(0xbc, FILEIO::SEEKSET);
+		if(fio.Ftell() == 0xbc) {
+			fio.Fread(buf, 4, 1);
+			fio.Fseek(0x70, FILEIO::SEEKSET);
+			fio.Fwrite(buf, 4, 1);
 		}
-		fclose(fp);
+		fio.Fclose();
 	}
 }
 

@@ -60,11 +60,11 @@ private:
 
 	/// @brief delay time on each modules
 	enum DELAY_TIMES {
-		/// index hole (usually 300rpm -> 200ms)
-		DELAY_INDEX_HOLE	  = 200000,
+		/// index hole (2D,2DD) (usually 300rpm -> 200ms)
+		DELAY_INDEX_HOLE	  = 200000,	// (us)
 		//DELAY_INDEX_HOLE	   = 50000,
-		/// index hole (8inch/5inch 2HD) (usually 360rpm -> 167ms)
-		DELAY_INDEX_HOLE_H	  = 166667,
+		/// index hole (8inch/5inch 2HD) (usually 360rpm -> 166.666ms)
+		DELAY_INDEX_HOLE_H	  = 166667,	// (us)
 
 		/// ready on delay time after motor on (us)
 		DELAY_READY_ON		 = 1000000,
@@ -91,33 +91,34 @@ private:
 	DEVICE *d_fdc3, *d_fdc5[MAX_FDC_NUMS], *d_board;
 
 	/// config
-	bool ignore_crc;
+	bool m_ignore_crc;
 
 	/// event
-	int register_id[FLOPPY_MAX_EVENT];
+	int m_register_id[FLOPPY_MAX_EVENT];
 
 	//
-	uint8_t drv_num[MAX_FDC_NUMS];	///< drive number
-	uint8_t drvsel[MAX_FDC_NUMS];	///< drive select + motor
+	uint8_t m_drv_num[MAX_FDC_NUMS];	///< drive number
+	uint8_t m_drvsel[MAX_FDC_NUMS];	///< drive select + motor
 
-	uint8_t sidereg;	///< head select
+	uint8_t m_sidereg;	///< head select
 
-	uint8_t index_hole;	///< index hole
-	uint64_t index_hole_next_clock;
-	uint8_t head_load;	///< head loaded
+	uint8_t m_index_hole;	///< index hole
+	uint64_t m_index_hole_next_clock;
+	uint8_t m_head_load;	///< head loaded
 
-	uint8_t density;	///< density (double = 1)
-	uint8_t motor_on_expand[MAX_FDC_NUMS];	///< motor on (expand)
+	uint8_t m_density;	///< density (double = 1)
+	uint8_t m_motor_on_expand[MAX_FDC_NUMS];	///< motor on (expand)
 
-	int sectorcnt;
-	bool sectorcnt_cont;
+	int m_sectorcnt;
+	bool m_sectorcnt_cont;
 
-	uint8_t fdd5outreg[MAX_FDC_NUMS];	///< bit7:/DRQ bit0:/IRQ
-	uint8_t fdd5outreg_delay;			///< bit7:/DRQ for 8inch or 2HD
-	bool irqflg;
-	bool irqflgprev;
-	bool drqflg;
-	bool drqflgprev;
+	uint8_t m_fdd5outreg[MAX_FDC_NUMS];	///< bit7:/DRQ bit0:/IRQ
+	uint8_t m_fdd5outreg_delay;			///< bit7:/DRQ for 8inch or 2HD
+
+	bool m_irqflg;
+	bool m_irqflgprev;
+	bool m_drqflg;
+	bool m_drqflgprev;
 
 	// output signals
 	outputs_t outputs_irq;
@@ -131,33 +132,33 @@ private:
 #ifdef USE_SIG_FLOPPY_ACCESS
 		bool access;
 #endif
-		uint8_t ready;	///< ready warmup:01 on:11
+		uint8_t ready;			///< ready warmup:01 on:11
 		uint8_t motor_warmup;	///< motor warming up:1
 		uint8_t head_loading;
 		int delay_write;
 
 		bool shown_media_error; 
 	} fdd_t;
-	fdd_t fdd[MAX_DRIVE];
+	fdd_t m_fdd[USE_FLOPPY_DISKS];
 
 	// diskette info
-	DISK* disk[MAX_DRIVE];
+	DISK* p_disk[USE_FLOPPY_DISKS];
 
 	// index hole
-	int delay_index_hole;	///< spent clocks per round
-	int limit_index_hole;
-	int delay_index_mark;	///< clocks in index mark area
+	int m_delay_index_hole;	///< spent clocks per round (cpu clocks)
+	int m_limit_index_hole; ///< width of asserting index signal (cpu clocks)
+	int m_delay_index_mark;	///< clocks in index mark area (cpu clocks)
 	// ready on
-	int delay_ready_on;
+	int m_delay_ready_on;
 
 //	int sector_step[1];
 
-	int sample_rate;
+	int m_sample_rate;
 //	int max_vol;
 //	int wav_volume;
 //	int wav_enable;
 	int m_wav_fddtype;
-	bool wav_loaded_at_first;
+	bool m_wav_loaded_at_first;
 
 	/// sound data 1st dimension [0]:3inch [1]:5inch [2]:8inch
 	enum WAV_FDDTYPES {
@@ -216,7 +217,7 @@ private:
 	};
 #pragma pack()
 	// cannot write when load state from file
-	bool ignore_write;
+	bool m_ignore_write;
 
 	void warm_reset(bool);
 
@@ -225,7 +226,12 @@ private:
 	void register_index_hole_event(int, int);
 	void cancel_my_events();
 
-	void set_drive_select(int type, uint8_t data);
+	enum FDC_TYPES {
+		FDC_TYPE_3INCH = 0,
+		FDC_TYPE_5INCH,
+		FDC_TYPE_5INCHEX,
+	};
+	void set_drive_select(int fdc_type, uint8_t data);
 
 	// irq/dma
 	void set_irq(bool val);
@@ -309,6 +315,7 @@ public:
 	void toggle_disk_write_protect(int drv);
 	bool disk_write_protected(int drv);
 	bool is_same_disk(int drv, const _TCHAR *file_path, int offset);
+	int  inserted_disk_another_drive(int drv, const _TCHAR *file_path, int offset);
 
 	uint16_t get_drive_select();
 

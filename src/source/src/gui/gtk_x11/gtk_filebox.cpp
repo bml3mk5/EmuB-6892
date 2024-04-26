@@ -31,40 +31,119 @@ FileBox::~FileBox()
 	if (dialog) gtk_widget_destroy(dialog);
 }
 
-bool FileBox::Show(GtkWidget *parent_window, const char *filter[], const char *title, const char *dir, const char *ext, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
+/// @brief Show a file dialog
+/// @param[in] parent_window
+/// @param[in] filter : message string list (NULL terminate)
+/// @param[in] title : title string
+/// @param[in] dir : directory
+/// @param[in] save : is a save dialog?
+/// @param[in] path : path to open/save a file
+/// @param[in] callback_handler : callback function after submitted button
+/// @param[out] callback_data : callback data after submitted button
+/// @return true if pressed ok button
+bool FileBox::Show(GtkWidget *parent_window, const char *filter[], const char *title, const char *dir, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
 {
 	if (create_chooser(parent_window,
 		title,
-		dir, ext, save, path) == NULL) return false;
+		dir, save, path) == NULL) return false;
 
 	parse_filter(GTK_FILE_CHOOSER(dialog), filter);
 
 	return set_handler(callback_handler, callback_data);
 }
 
-bool FileBox::Show(GtkWidget *parent_window, const CMsg::Id *filter, const char *title, const char *dir, const char *ext, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
+/// @brief Show a file dialog
+/// @param[in] parent_window
+/// @param[in] filter : message id list (CMsg::End terminate)
+/// @param[in] title : title string
+/// @param[in] dir : directory
+/// @param[in] save : is a save dialog?
+/// @param[in] path : path to open/save a file
+/// @param[in] callback_handler : callback function after submitted button
+/// @param[out] callback_data : callback data after submitted button
+/// @return true if pressed ok button
+bool FileBox::Show(GtkWidget *parent_window, const CMsg::Id *filter, const char *title, const char *dir, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
 {
 	if (create_chooser(parent_window,
 		title,
-		dir, ext, save, path) == NULL) return false;
+		dir, save, path) == NULL) return false;
 
 	parse_filter(GTK_FILE_CHOOSER(dialog), filter);
 
 	return set_handler(callback_handler, callback_data);
 }
 
-bool FileBox::Show(GtkWidget *parent_window, const CMsg::Id *filter, CMsg::Id titleid, const char *dir, const char *ext, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
+/// @brief Show a file dialog
+/// @param[in] parent_window
+/// @param[in] filter : message id list (CMsg::End terminate)
+/// @param[in] titleid : title id
+/// @param[in] dir : directory
+/// @param[in] save : is a save dialog?
+/// @param[in] path : path to open/save a file
+/// @param[in] callback_handler : callback function after submitted button
+/// @param[out] callback_data : callback data after submitted button
+/// @return true if pressed ok button
+bool FileBox::Show(GtkWidget *parent_window, const CMsg::Id *filter, CMsg::Id titleid, const char *dir, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
 {
 	if (create_chooser(parent_window,
 		gMessages.Get(titleid),
-		dir, ext, save, path) == NULL) return false;
+		dir, save, path) == NULL) return false;
 
 	parse_filter(GTK_FILE_CHOOSER(dialog), filter);
 
 	return set_handler(callback_handler, callback_data);
 }
 
-GtkWidget *FileBox::create_chooser(GtkWidget *parent, const char *title, const char *dir, const char *ext, bool save, const char *path)
+/// @brief Show a file dialog
+/// @param[in] parent_window
+/// @param[in] filter : string such as "foo;bar;baz"
+/// @param[in] title : title string
+/// @param[in] dir : directory
+/// @param[in] save : is a save dialog?
+/// @param[in] path : path to open/save a file
+/// @param[in] callback_handler : callback function after submitted button
+/// @param[out] callback_data : callback data after submitted button
+/// @return true if pressed ok button
+bool FileBox::Show(GtkWidget *parent_window, const char *filter, const char *title, const char *dir, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
+{
+	if (create_chooser(parent_window,
+		title,
+		dir, save, path) == NULL) return false;
+
+	parse_filter(GTK_FILE_CHOOSER(dialog), filter, save);
+
+	return set_handler(callback_handler, callback_data);
+}
+
+/// @brief Show a file dialog
+/// @param[in] parent_window
+/// @param[in] filter : string such as "foo;bar;baz"
+/// @param[in] titleid : title id
+/// @param[in] dir : directory
+/// @param[in] save : is a save dialog?
+/// @param[in] path : path to open/save a file
+/// @param[in] callback_handler : callback function after submitted button
+/// @param[out] callback_data : callback data after submitted button
+/// @return true if pressed ok button
+bool FileBox::Show(GtkWidget *parent_window, const char *filter, CMsg::Id titleid, const char *dir, bool save, const char *path, CbFileBox callback_handler, void *callback_data)
+{
+	if (create_chooser(parent_window,
+		gMessages.Get(titleid),
+		dir, save, path) == NULL) return false;
+
+	parse_filter(GTK_FILE_CHOOSER(dialog), filter, save);
+
+	return set_handler(callback_handler, callback_data);
+}
+
+/// @brief Create a file dialog
+/// @param[in] parent
+/// @param[in] title : title string
+/// @param[in] dir : directory
+/// @param[in] save : is a save dialog?
+/// @param[in] path : path to open/save a file
+/// @return created the file dialog
+GtkWidget *FileBox::create_chooser(GtkWidget *parent, const char *title, const char *dir, bool save, const char *path)
 {
 	if (dialog) return dialog;
 	window = parent;
@@ -95,6 +174,9 @@ GtkWidget *FileBox::create_chooser(GtkWidget *parent, const char *title, const c
 	return dialog;
 }
 
+/// @brief Parse a filter string list
+/// @param[in] chooser
+/// @param[in] filter_list : string list terminated NULL
 void FileBox::parse_filter(GtkFileChooser *chooser, const char *filter_list[])
 {
 	if (!filter_list) return;
@@ -121,6 +203,10 @@ void FileBox::parse_filter(GtkFileChooser *chooser, const char *filter_list[])
 		gtk_file_chooser_add_filter(chooser, filter);
 	}
 }
+
+/// @brief Parse a filter id list
+/// @param[in] chooser
+/// @param[in] filter_list : id list terminated CMsg::End
 void FileBox::parse_filter(GtkFileChooser *chooser, const CMsg::Id *filter_list)
 {
 	if (!filter_list) return;
@@ -146,6 +232,93 @@ void FileBox::parse_filter(GtkFileChooser *chooser, const CMsg::Id *filter_list)
 		gtk_file_filter_set_name(filter, label);
 
 		gtk_file_chooser_add_filter(chooser, filter);
+	}
+}
+
+/// @brief Parse a filter string
+/// @param[in] chooser
+/// @param[in] filter_str : string such as "foo;bar;baz"
+/// @param[in] save : is a save dialog?
+void FileBox::parse_filter(GtkFileChooser *chooser, const char *filter_str, bool save)
+{
+	if (!filter_str) return;
+
+	char subext[8];
+	char label[_MAX_PATH];
+
+	GtkFileFilter *filter = NULL;
+
+	int fil_pos = 0;
+	int fil_len = (int)strlen(filter_str);
+	int sub_len = 0;
+	int ext_nums = 0;
+	strcpy(subext, "*.");
+	if (!save) {
+		// for load dialog
+		// "Supported Files (*.foo;*.bar)"
+		UTILITY::strcpy(label, sizeof(label), CMSG(Supported_Files));
+		UTILITY::strcat(label, sizeof(label), " (");
+		do {
+			sub_len = 0;
+			fil_pos = UTILITY::get_token(filter_str, fil_pos, fil_len, &subext[2], 6, ';', &sub_len);
+			if (fil_len > 0) {
+				if (!filter) {
+					filter = gtk_file_filter_new();
+				}
+				for(char *p=&subext[2]; *p != '\0'; p++) *p = tolower(*p);
+				if (ext_nums > 0) {
+					UTILITY::strcat(label, sizeof(label), ";");
+				}
+				UTILITY::strcat(label, sizeof(label), subext);
+				gtk_file_filter_add_pattern(filter, subext);
+				for(char *p=&subext[2]; *p != '\0'; p++) *p = toupper(*p);
+				UTILITY::strcat(label, sizeof(label), ";");
+				UTILITY::strcat(label, sizeof(label), subext);
+				gtk_file_filter_add_pattern(filter, subext);
+				ext_nums++;
+			}
+		} while(fil_pos >= 0);
+		UTILITY::strcat(label, sizeof(label), ")");
+		if (ext_nums > 0) {
+			gtk_file_filter_set_name(filter, label);
+			gtk_file_chooser_add_filter(chooser, filter);
+		}
+		// "All Files (*.*)"
+		filter = gtk_file_filter_new();
+		gtk_file_filter_add_pattern(filter, "*.*");
+		UTILITY::strcpy(label, sizeof(label), CMSG(All_Files));
+		UTILITY::strcat(label, sizeof(label), " (*.*)");
+		gtk_file_filter_set_name(filter, label);
+		gtk_file_chooser_add_filter(chooser, filter);
+
+	} else {
+		// for save dialog
+		// "Foo File (*.foo)"
+		// "Bar File (*.bar)"
+		do {
+			sub_len = 0;
+			fil_pos = UTILITY::get_token(filter_str, fil_pos, fil_len, &subext[2], 6, ';', &sub_len);
+			if (fil_len > 0) {
+				for(int i=0; i<2; i++) {
+					filter = gtk_file_filter_new();
+					if (i == 0) {
+						for(char *p=&subext[2]; *p != '\0'; p++) *p = tolower(*p);
+					} else {
+						for(char *p=&subext[2]; *p != '\0'; p++) *p = toupper(*p);
+					}
+					gtk_file_filter_add_pattern(filter, subext);
+					UTILITY::strcpy(label, sizeof(label), &subext[2]);
+					UTILITY::strcat(label, sizeof(label), " ");
+					UTILITY::strcat(label, sizeof(label), CMSG(File));
+					UTILITY::strcat(label, sizeof(label), " (");
+					UTILITY::strcat(label, sizeof(label), subext);
+					UTILITY::strcat(label, sizeof(label), ")");
+					gtk_file_filter_set_name(filter, label);
+					gtk_file_chooser_add_filter(chooser, filter);
+				}
+				ext_nums++;
+			}
+		} while(fil_pos >= 0);
 	}
 }
 

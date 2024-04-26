@@ -27,70 +27,49 @@
 void EMU_OSD::EMU_INPUT()
 {
 #ifdef USE_JOYSTICK
-//	memset(joy_status, 0, sizeof(joy_status));
-	for(int i=0; i<2; i++) {
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		joy[i] = NULL;
-//		joy_enabled[i] = false;
 	}
 #endif
 
-	pressed_global_key = false;
+	mouse_logic_type = MOUSE_LOGIC_DEFAULT;
+	mouse_position.x = mouse_position.y = 0;
 
-#ifdef USE_AUTO_KEY
-	// initialize autokey
-//	autokey_buffer = NULL;
-//	autokey_phase = 0;
-//	autokey_shift = 0;
-//	autokey_enabled = false;
-#endif
+	pressed_global_key = false;
 }
 
 void EMU_OSD::initialize_input()
 {
 #ifdef USE_JOYSTICK
-//	use_joystick = FLG_USEJOYSTICK_ALL ? true : false;
 	// initialize joysticks
-#ifdef USE_SDL_JOYSTICK
+# ifdef USE_SDL_JOYSTICK
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK)) {
 		logging->out_logf(LOG_WARN, _T("SDL_InitSubSystem(SDL_INIT_JOYSTICK): %s."), SDL_GetError());
 	}
-#else
-	joy_num = wxJoystick::GetNumberJoysticks();
+
+	SDL_JoystickEventState(SDL_IGNORE);
+#ifdef USE_WX2
+	// enable joystick status on all window
+	SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+#endif
+# else
+	int joy_num = wxJoystick::GetNumberJoysticks();
 	logging->out_logf(LOG_DEBUG, _T("wxJoystick::GetNumberJoysticks: %d"), joy_num);
+# endif
 #endif
-#endif
+
 	EMU::initialize_input();
-
-	// mouse emulation is disabled
-//	mouse_disabled = 1;
-//	initialize_mouse(FLG_USEMOUSE ? true : false);
-
-#ifdef USE_AUTO_KEY
-	// initialize autokey
-//	autokey_buffer = new FIFO(65536);
-//	autokey_buffer->clear();
-//	autokey_phase = 31;	// wait a few sec.
-//	autokey_shift = 0;
-//	autokey_enabled = false;
-#endif
-//	lost_focus = false;
-//	key_mod = 0;
 }
 
 void EMU_OSD::initialize_joystick()
 {
 #ifdef USE_JOYSTICK
-	for(int i = 0; i < 2; i++) {
-		joy_xmin[i] = -16384;
-		joy_xmax[i] = 16384;
-		joy_ymin[i] = -16384;
-		joy_ymax[i] = 16384;
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		memset(&joy_prm[i], 0, sizeof(joy_prm[i]));
 	}
-#ifdef USE_SDL_JOYSTICK
-	SDL_JoystickEventState(SDL_IGNORE);
 #endif
-	reset_joystick();
-#endif
+
+	EMU::initialize_joystick();
 }
 
 void EMU_OSD::reset_joystick()
@@ -98,56 +77,66 @@ void EMU_OSD::reset_joystick()
 #ifdef USE_JOYSTICK
 	if (!use_joystick) return;
 
-#ifdef USE_SDL_JOYSTICK
-	joy_num = SDL_NumJoysticks();
-	for(int i = 0; i < joy_num && i < 2; i++) {
-#if defined(USE_WX2)
-		if (!SDL_JoystickGetAttached(joy[i])) {
-#else
+# ifdef USE_SDL_JOYSTICK
+	int joy_num = SDL_NumJoysticks();
+	for(int i = 0; i < joy_num && i < MAX_JOYSTICKS; i++) {
+#if !defined(USE_WX2)
 		if (!SDL_JoystickOpened(i)) {
+#else
+		if (!SDL_JoystickGetAttached(joy[i])) {
 #endif
 			if ((joy[i] = SDL_JoystickOpen(i)) != NULL) {
+				int axes = SDL_JoystickNumAxes(joy[i]);
+				set_joy_range(axes >= 1, -32768, 32767, joy_prm[i].x);
+				set_joy_range(axes >= 2, -32768, 32767, joy_prm[i].y);
+				set_joy_range(axes >= 3, -32768, 32767, joy_prm[i].z);
+				set_joy_range(axes >= 4, -32768, 32767, joy_prm[i].u);
+				set_joy_range(axes >= 5, -32768, 32767, joy_prm[i].v);
+				set_joy_range(axes >= 6, -32768, 32767, joy_prm[i].r);
+
+				joy_prm[i].has_pov = SDL_JoystickNumHats(joy[i]) >= 1 ? 1 : 0;
+
+#ifndef USE_WX2
+				CTchar cstr(SDL_JoystickName(i));
+#else
+				CTchar cstr(SDL_JoystickName(joy[i]));
+#endif
+				logging->out_logf(LOG_DEBUG, _T("Joypad #%d: %s"), i, cstr.Get());
 				joy_enabled[i] = true;
 			}
 		}
 	}
-#else
-	joy_num = wxJoystick::GetNumberJoysticks();
-	for(int i = 0; i < joy_num && i < 2; i++) {
+# else
+	int joy_num = wxJoystick::GetNumberJoysticks();
+	for(int i = 0; i < joy_num && i < MAX_JOYSTICKS; i++) {
 		delete joy[i];
 		joy[i] = new wxJoystick(i);
 		if (joy[i]->IsOk()) {
-			int offset = (joy[i]->GetXMax() - joy[i]->GetXMin()) / 4;
-			joy_xmin[i] = joy[i]->GetXMin() + offset;
-			joy_xmax[i] = joy[i]->GetXMax() - offset;
-			offset = (joy[i]->GetYMax() - joy[i]->GetYMin()) / 4;
-			joy_ymin[i] = joy[i]->GetYMin() + offset;
-			joy_ymax[i] = joy[i]->GetYMax() - offset;
+			int axes = joy[i]->GetNumberAxes();
+			set_joy_range(axes >= 1, joy[i]->GetXMin(),joy[i]->GetXMax(), pConfig->joy_axis_threshold[i][0], joy_prm[i].x);
+			set_joy_range(axes >= 2, joy[i]->GetYMin(),joy[i]->GetYMax(), pConfig->joy_axis_threshold[i][1], joy_prm[i].y);
+			set_joy_range(joy[i]->HasZ(), joy[i]->GetZMin(),joy[i]->GetZMax(), pConfig->joy_axis_threshold[i][2], joy_prm[i].z);
+			set_joy_range(joy[i]->HasRudder(), joy[i]->GetRudderMin(),joy[i]->GetRudderMax(), pConfig->joy_axis_threshold[i][3], joy_prm[i].r);
+			set_joy_range(joy[i]->HasU(), joy[i]->GetUMin(),joy[i]->GetUMax(), pConfig->joy_axis_threshold[i][4], joy_prm[i].u);
+			set_joy_range(joy[i]->HasV(), joy[i]->GetVMin(),joy[i]->GetVMax(), pConfig->joy_axis_threshold[i][5], joy_prm[i].v);
+
+			joy_prm[i].has_pov = joy[i]->HasPOV() ? 1 : 0;
+
+			logging->out_logf(LOG_DEBUG, _T("Joypad #%d: %s"), i, joy[i]->GetProductName().t_str());
+
 			joy_enabled[i] = true;
 		}
 	}
-#endif
+# endif
 #endif
 }
 
 void EMU_OSD::release_input()
 {
-	EMU::release_input();
-
-	// release mouse
-//	if(!mouse_disabled) {
-//		disable_mouse(0);
-//	}
 	// release joystick
 	release_joystick();
 
-#ifdef USE_AUTO_KEY
-	// release autokey buffer
-//	if(autokey_buffer) {
-//		autokey_buffer->release();
-//		delete autokey_buffer;
-//	}
-#endif
+	EMU::release_input();
 }
 
 void EMU_OSD::release_joystick()
@@ -156,16 +145,15 @@ void EMU_OSD::release_joystick()
 
 #ifdef USE_JOYSTICK
 	// release joystick
-	for(int i = 0; i < 2; i++) {
-#ifdef USE_SDL_JOYSTICK
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
+# ifdef USE_SDL_JOYSTICK
 		if (joy[i] != NULL) {
 			SDL_JoystickClose(joy[i]);
 		}
-#else
+# else
 		delete joy[i];
-#endif
+# endif
 		joy[i] = NULL;
-//		joy_enabled[i] = false;
 	}
 #endif
 }
@@ -210,50 +198,59 @@ void EMU_OSD::update_input()
 	}
 	lost_focus = false;
 
-#ifdef USE_JOYSTICK
+	// update joystick status
 	update_joystick();
-#endif
-#ifdef USE_KEY_TO_JOY
-	// emulate joystick #1 with keyboard
-	if(key_status[0x26]) joy_status[0] |= 0x01;	// up
-	if(key_status[0x28]) joy_status[0] |= 0x02;	// down
-	if(key_status[0x25]) joy_status[0] |= 0x04;	// left
-	if(key_status[0x27]) joy_status[0] |= 0x08;	// right
-#endif
 
 	// update mouse status
-//	update_mouse();
+	update_mouse();
 }
 
 void EMU_OSD::update_mouse()
 {
-}
-
-void EMU_OSD::update_mouse_event(wxMouseState &mstat)
-{
 	if (!initialized) return;
-
-	wxPoint pt;
 
 	// update mouse status
 	memset(mouse_status, 0, sizeof(mouse_status));
+	wxMouseState mstat = wxGetMouseState();
+#ifdef USE_MOUSE
 	if(!mouse_disabled) {
 		// get current status
-		mouse_status[0]  = mstat.GetX() - display_size.w / 2;
-		mouse_status[1]  = mstat.GetY() - display_size.h / 2;
+		wxPoint pt;
+		pt.x = mstat.GetX();
+		pt.y = mstat.GetY();
+
 		mouse_status[2] =  (mstat.LeftIsDown() ? 1 : 0);
 		mouse_status[2] |= (mstat.RightIsDown() ? 2 : 0);
 		mouse_status[2] |= (mstat.MiddleIsDown() ? 4 : 0);
-		// move mouse cursor to the center of window
-		if(!(mouse_status[0] == 0 && mouse_status[1] == 0)) {
-			pt.x = display_size.w / 2;
-			pt.y = display_size.h / 2;
-			mstat.SetPosition(pt);
+
+		switch(mouse_logic_type) {
+		case MOUSE_LOGIC_FLEXIBLE:
+			mouse_status[0]  = pt.x - mouse_position.x;
+			mouse_status[1]  = pt.y - mouse_position.y;
+			mouse_position.x = pt.x;
+			mouse_position.y = pt.y;
+			break;
+
+		case MOUSE_LOGIC_DEFAULT:
+			mouse_status[0]  = pt.x - display_size.w / 2;
+			mouse_status[1]  = pt.y - display_size.h / 2;
+			// move mouse cursor to the center of window
+			if(!(mouse_status[0] == 0 && mouse_status[1] == 0)) {
+				pt.x = display_size.w / 2;
+				pt.y = display_size.h / 2;
+				mstat.SetPosition(pt);
+			}
+			break;
+
+		default:
+			break;
 		}
 	}
+#endif
 #ifdef USE_LIGHTPEN
 	if(FLG_USELIGHTPEN) {
 		// get current status
+		wxPoint pt;
 		pt.x = mstat.GetX();
 		pt.y = mstat.GetY();
 		pt.x = screen_size.w * (pt.x - stretched_dest_real.x) / stretched_size.w;
@@ -268,61 +265,209 @@ void EMU_OSD::update_mouse_event(wxMouseState &mstat)
 #endif
 }
 
+//void EMU_OSD::update_mouse_event(wxMouseState &mstat)
+//{
+//}
+
 void EMU_OSD::update_joystick()
 {
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	memset(joy_status, 0, sizeof(joy_status));
-
-	if (!use_joystick) return;
-
-	// update joystick status
-#ifdef USE_SDL_JOYSTICK
-	SDL_JoystickUpdate();
-	for(int i = 0; i < 2; i++) {
-		if(joy_enabled[i] == true) {
-#if defined(USE_WX2)
-			if (!SDL_JoystickGetAttached(joy[i])) {
-#else
-			if (SDL_JoystickOpened(i)) {
 #endif
-				int x = SDL_JoystickGetAxis(joy[i], 0);
-				int y = SDL_JoystickGetAxis(joy[i], 1);
-				if(y < joy_ymin[i]) joy_status[i] |= 0x01;
-				if(y > joy_ymax[i]) joy_status[i] |= 0x02;
-				if(x < joy_xmin[i]) joy_status[i] |= 0x04;
-				if(x > joy_xmax[i]) joy_status[i] |= 0x08;
-				int nbuttons = SDL_JoystickNumButtons(joy[i]);
-				for(int n=0; n<nbuttons && n<28; n++) {
-					if (SDL_JoystickGetButton(joy[i], n)) {
-						joy_status[i] |= (0x10 << n);
+#ifdef USE_JOYSTICK
+	memset(joy2joy_status, 0, sizeof(joy2joy_status));
+	if (use_joystick) {
+		// update joystick status
+# ifdef USE_SDL_JOYSTICK
+		SDL_JoystickUpdate();
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			uint32_t joy_stat = 0;
+			if(joy_enabled[i]) {
+#if !defined(USE_WX2)
+				if (SDL_JoystickOpened(i)) {
+#else
+				if (SDL_JoystickGetAttached(joy[i])) {
+#endif
+					int axes = SDL_JoystickNumAxes(joy[i]);
+					int x = SDL_JoystickGetAxis(joy[i], 0);
+					int y = SDL_JoystickGetAxis(joy[i], 1);
+					if(y < joy_prm[i].y.mintd) joy_stat |= JOYCODE_UP;
+					if(y > joy_prm[i].y.maxtd) joy_stat |= JOYCODE_DOWN;
+					if(x < joy_prm[i].x.mintd) joy_stat |= JOYCODE_LEFT;
+					if(x > joy_prm[i].x.maxtd) joy_stat |= JOYCODE_RIGHT;
+
+					int z = axes >= 3 ? SDL_JoystickGetAxis(joy[i], 2) : joy_prm[i].z.offset;
+					int r = axes >= 6 ? SDL_JoystickGetAxis(joy[i], 5) : joy_prm[i].r.offset;
+					if(r < joy_prm[i].r.mintd) joy_stat |= JOYCODE_R_UP;
+					if(r > joy_prm[i].r.maxtd) joy_stat |= JOYCODE_R_DOWN;
+					if(z < joy_prm[i].z.mintd) joy_stat |= JOYCODE_Z_LEFT;
+					if(z > joy_prm[i].z.maxtd) joy_stat |= JOYCODE_Z_RIGHT;
+
+					int u = axes >= 4 ? SDL_JoystickGetAxis(joy[i], 3) : joy_prm[i].u.offset;
+					int v = axes >= 5 ? SDL_JoystickGetAxis(joy[i], 4) : joy_prm[i].v.offset;
+					if(v < joy_prm[i].v.mintd) joy_stat |= JOYCODE_V_UP;
+					if(v > joy_prm[i].v.maxtd) joy_stat |= JOYCODE_V_DOWN;
+					if(u < joy_prm[i].u.mintd) joy_stat |= JOYCODE_U_LEFT;
+					if(u > joy_prm[i].u.maxtd) joy_stat |= JOYCODE_U_RIGHT;
+
+					int nbuttons = SDL_JoystickNumButtons(joy[i]);
+					for(int n=0; n<nbuttons && n<16; n++) {
+						if (SDL_JoystickGetButton(joy[i], n)) {
+							joy_stat |= (0x10000 << n);
+						}
 					}
+
+					if (joy_prm[i].has_pov) {
+						int hatpos = SDL_JoystickGetHat(joy[i], 0);
+						switch(hatpos) {
+						case SDL_HAT_UP:
+							joy_stat |= JOYCODE_POV_UP;
+							break;
+						case SDL_HAT_RIGHTUP:
+							joy_stat |= JOYCODE_POV_UPRIGHT;
+							break;
+						case SDL_HAT_RIGHT:
+							joy_stat |= JOYCODE_POV_RIGHT;
+							break;
+						case SDL_HAT_RIGHTDOWN:
+							joy_stat |= JOYCODE_POV_DOWNRIGHT;
+							break;
+						case SDL_HAT_DOWN:
+							joy_stat |= JOYCODE_POV_DOWN;
+							break;
+						case SDL_HAT_LEFTDOWN:
+							joy_stat |= JOYCODE_POV_DOWNLEFT;
+							break;
+						case SDL_HAT_LEFT:
+							joy_stat |= JOYCODE_POV_LEFT;
+							break;
+						case SDL_HAT_LEFTUP:
+							joy_stat |= JOYCODE_POV_UPLEFT;
+							break;
+						}
+					}
+
+#ifdef USE_ANALOG_JOYSTICK
+					// analog 10bits
+					joy2joy_status[i][2] = (x - joy_prm[i].x.offset) * 1024 / joy_prm[i].x.range + 512;
+					joy2joy_status[i][3] = (y - joy_prm[i].y.offset) * 1024 / joy_prm[i].y.range + 512;
+					joy2joy_status[i][4] = (z - joy_prm[i].z.offset) * 1024 / joy_prm[i].z.range + 512;
+					joy2joy_status[i][5] = (r - joy_prm[i].r.offset) * 1024 / joy_prm[i].r.range + 512;
+					joy2joy_status[i][6] = (u - joy_prm[i].u.offset) * 1024 / joy_prm[i].u.range + 512;
+					joy2joy_status[i][7] = (v - joy_prm[i].v.offset) * 1024 / joy_prm[i].v.range + 512;
+#endif
+				} else {
+					joy_enabled[i] = false;
 				}
-			} else {
-				joy_enabled[i] = false;
+			}
+			joy2joy_status[i][0] = joy_stat;
+
+			// convert
+			convert_joy_status(i);
+		}
+# else
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			uint32_t joy_stat = 0;
+			if(joy_enabled[i]) {
+				if (joy[i]->IsOk()) {
+					int y = joy[i]->GetPosition(1);
+					int x = joy[i]->GetPosition(0);
+					if(y < joy_prm[i].y.mintd) joy_stat |= JOYCODE_UP;
+					if(y > joy_prm[i].y.maxtd) joy_stat |= JOYCODE_DOWN;
+					if(x < joy_prm[i].x.mintd) joy_stat |= JOYCODE_LEFT;
+					if(x > joy_prm[i].x.maxtd) joy_stat |= JOYCODE_RIGHT;
+
+					int r = joy[i]->GetRudderPosition();
+					if(r < joy_prm[i].r.mintd) joy_stat |= JOYCODE_R_UP;
+					if(r > joy_prm[i].r.maxtd) joy_stat |= JOYCODE_R_DOWN;
+
+					int z = joy[i]->GetZPosition();
+					if(z < joy_prm[i].z.mintd) joy_stat |= JOYCODE_Z_LEFT;
+					if(z > joy_prm[i].z.maxtd) joy_stat |= JOYCODE_Z_RIGHT;
+
+					int v = joy[i]->GetVPosition();
+					if(v < joy_prm[i].v.mintd) joy_stat |= JOYCODE_V_UP;
+					if(v > joy_prm[i].v.maxtd) joy_stat |= JOYCODE_V_DOWN;
+
+					int u = joy[i]->GetUPosition();
+					if(u < joy_prm[i].u.mintd) joy_stat |= JOYCODE_U_LEFT;
+					if(u > joy_prm[i].u.maxtd) joy_stat |= JOYCODE_U_RIGHT;
+
+					joy_stat |= (joy[i]->GetButtonState() << 16);
+
+					if (joy_prm[i].has_pov) {
+						int hatpos = joy[i]->GetPOVPosition();
+						switch(hatpos) {
+						case SDL_HAT_UP:
+							joy_stat |= JOYCODE_POV_UP;
+							break;
+						case SDL_HAT_RIGHTUP:
+							joy_stat |= JOYCODE_POV_UPRIGHT;
+							break;
+						case SDL_HAT_RIGHT:
+							joy_stat |= JOYCODE_POV_RIGHT;
+							break;
+						case SDL_HAT_RIGHTDOWN:
+							joy_stat |= JOYCODE_POV_DOWNRIGHT;
+							break;
+						case SDL_HAT_DOWN:
+							joy_stat |= JOYCODE_POV_DOWN;
+							break;
+						case SDL_HAT_LEFTDOWN:
+							joy_stat |= JOYCODE_POV_DOWNLEFT;
+							break;
+						case SDL_HAT_LEFT:
+							joy_stat |= JOYCODE_POV_LEFT;
+							break;
+						case SDL_HAT_LEFTUP:
+							joy_stat |= JOYCODE_POV_UPLEFT;
+							break;
+						}
+					}
+
+#ifdef USE_ANALOG_JOYSTICK
+					// analog 10bits
+					joy2joy_status[i][2] = (x - joy_prm[i].x.offset) * 1024 / joy_prm[i].x.range + 512;
+					joy2joy_status[i][3] = (y - joy_prm[i].y.offset) * 1024 / joy_prm[i].y.range + 512;
+					joy2joy_status[i][4] = (z - joy_prm[i].z.offset) * 1024 / joy_prm[i].z.range + 512;
+					joy2joy_status[i][5] = (r - joy_prm[i].r.offset) * 1024 / joy_prm[i].r.range + 512;
+					joy2joy_status[i][6] = (u - joy_prm[i].u.offset) * 1024 / joy_prm[i].u.range + 512;
+					joy2joy_status[i][7] = (v - joy_prm[i].v.offset) * 1024 / joy_prm[i].v.range + 512;
+#endif
+				} else {
+					joy_enabled[i] = false;
+				}
+				joy2joy_status[i][0] = joy_stat;
+
+				// convert
+				convert_joy_status(i);
 			}
 		}
+# endif
 	}
-#else
-	for(int i = 0; i < 2; i++) {
-		if(joy_enabled[i] == true) {
-			if (joy[i]->IsOk()) {
-				wxPoint xy = joy[i]->GetPosition();
-				if(xy.y < joy_ymin[i]) joy_status[i] |= 0x01;
-				if(xy.y > joy_ymax[i]) joy_status[i] |= 0x02;
-				if(xy.x < joy_xmin[i]) joy_status[i] |= 0x04;
-				if(xy.x > joy_xmax[i]) joy_status[i] |= 0x08;
-				int nbuttons = joy[i]->GetNumberButtons();
-				for(int n=0; n<nbuttons && n<28; n++) {
-					if (joy[i]->GetButtonState(n)) {
-						joy_status[i] |= (0x10 << n);
-					}
-				}
-			} else {
-				joy_enabled[i] = false;
+#endif // USE_JOYSTICK
+#ifdef USE_KEY2JOYSTICK
+	if (key2joy_enabled) {
+#ifndef USE_PIAJOYSTICKBIT
+		// update key 2 joystick status
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			for(int k = 0; k < 9; k++) {
+				joy_status[i][0] |= key2joy_status[i][k];
 			}
 		}
+#else
+		for(int i = 0; i < MAX_JOYSTICKS; i++) {
+			joy_status[i][0] |= key2joy_status[i];
+		}
+#endif
 	}
 #endif
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
+		joy_status[i][0] &= joy_mashing_mask[i][joy_mashing_count];
+	}
+	joy_mashing_count++;
+	joy_mashing_count &= 0xf;
 #endif
 }
 
@@ -398,10 +543,16 @@ void EMU_OSD::enable_mouse(int mode)
 	if(pmouse_disabled && !mouse_disabled) {
 		// hide mouse cursor
 		wxSetCursor(wxNullCursor);
-		// move mouse cursor to the center of window
+
+		mouse_logic_type = MOUSE_LOGIC_PREPARE;
+
 		wxPoint pt;
+		// move mouse cursor to the center of window
 		pt.x = display_size.w / 2;
 		pt.y = display_size.h / 2;
+
+		mouse_position.x = pt.x;
+		mouse_position.y = pt.y;
 		wxMouseState ms = wxGetMouseState();
 		ms.SetPosition(pt);
 	}
@@ -411,9 +562,33 @@ void EMU_OSD::disable_mouse(int mode)
 {
 	// disable mouse emulation
 	if(!mouse_disabled) {
+		// show mouse cursor
 		wxSetCursor(wxCursor(wxCURSOR_ARROW));
 	}
 	mouse_disabled |= (mode ? 2 : 1);
+}
+
+void EMU_OSD::mouse_enter()
+{
+}
+
+void EMU_OSD::mouse_move(int x, int y)
+{
+	if (mouse_logic_type == MOUSE_LOGIC_PREPARE) {
+		if (mouse_position.x == x
+		 && mouse_position.y == y) {
+			// mouse warped
+			mouse_logic_type = MOUSE_LOGIC_DEFAULT;
+		} else {
+			mouse_position.x = x;
+			mouse_position.y = y;
+			mouse_logic_type = MOUSE_LOGIC_FLEXIBLE;
+		}
+	}
+}
+
+void EMU_OSD::mouse_leave()
+{
 }
 
 #if 0

@@ -36,14 +36,15 @@ private:
 	int frame_count;
 	size_t store_sample_pos;
 	bool use_float;
+	int sample_idx;
 
 	int write_error_count;
 
 #ifdef __OBJC__
 	AVAssetWriter *asset;
 	AVAssetWriterInput *input;
-	CMBlockBufferRef store_buffer;
-	CMSampleBufferRef sample_buffer;
+//	CMBlockBufferRef store_buffer;
+	CMSampleBufferRef sample_buffer[2];
 	NSString *rec_file;
 
 //	AVAsset *oya;
@@ -52,8 +53,8 @@ private:
 #else
 	void *asset;
 	void *input;
-	void *store_buffer;
-	void *sample_buffer;
+//	void *store_buffer;
+	void *sample_buffer[2];
 	void *rec_file;
 
 //	void *oya;

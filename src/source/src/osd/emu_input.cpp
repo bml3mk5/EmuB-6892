@@ -18,6 +18,16 @@
 #include "../fifo.h"
 #include "../fileio.h"
 #include "emu_input.h"
+#include "../utility.h"
+
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#ifndef USE_PIAJOYSTICKBIT
+///
+const int EMU::joy_allow_map[16] = {
+	-1, 0, 1, -1, 2, 3, 4, -1, 5, 6, 7, -1, -1, -1, -1, -1
+};
+#endif
+#endif
 
 void EMU::EMU_INPUT()
 {
@@ -31,10 +41,23 @@ void EMU::EMU_INPUT()
 
 	vm_key_history = new FIFOINT(64);
 
-#ifdef USE_JOYSTICK
-	joy_num = 0;
+#ifdef USE_KEY2JOYSTICK
+	clear_key2joy_map();
+	memset(key2joy_status, 0, sizeof(key2joy_status));
+	key2joy_scancode = NULL;
+#endif
+
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	memset(joy_status, 0, sizeof(joy_status));
-	for(int i=0; i<2; i++) {
+	memset(joy_mashing_mask, 0xff, sizeof(joy_mashing_mask));
+	joy_mashing_count = 0;
+#endif
+
+#ifdef USE_JOYSTICK
+	clear_joy2joy_map();
+	memset(joy2joy_status, 0, sizeof(joy2joy_status));
+	// joy_num = 0;
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		joy_enabled[i] = false;
 	}
 #endif
@@ -52,11 +75,17 @@ void EMU::initialize_input()
 {
 	logging->out_debug(_T("EMU::initialize_input"));
 
+#ifdef USE_KEY2JOYSTICK
+	key2joy_enabled = FLG_USEKEY2JOYSTICK ? true : false;
+#endif
 #ifdef USE_JOYSTICK
 	use_joystick = FLG_USEJOYSTICK_ALL ? true : false;
 #endif
 	// initialize joysticks
 	initialize_joystick();
+
+	// initialize key to joystick
+	initialize_key2joy();
 
 	// mouse emulation is disabled
 	mouse_disabled = 1;
@@ -81,16 +110,68 @@ void EMU::initialize_input()
 
 void EMU::initialize_joystick()
 {
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	modify_joy_mashing();
+#endif
+
 #ifdef USE_JOYSTICK
-	for(int i=0; i<2; i++) {
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		joy_enabled[i] = false;
 	}
 	reset_joystick();
 #endif
 }
 
+void EMU::initialize_key2joy()
+{
+#ifdef USE_KEY2JOYSTICK
+	reset_key2joy();
+#endif
+}
+
 void EMU::reset_joystick()
 {
+}
+
+void EMU::reset_key2joy()
+{
+#ifdef USE_KEY2JOYSTICK
+	key2joy_scancode = gKeybind.GetVkKeyDefMap(0);
+#endif
+}
+
+void EMU::set_joy_range(bool enable, int mintd, int maxtd, int threshold, struct st_joy_range &out)
+{
+#ifdef USE_JOYSTICK
+	int offset = (mintd + 1 + maxtd) / 2;
+	int range = (maxtd + 1 - mintd);
+	out.enable = enable;
+	out.offset = offset;
+	out.range = range;
+	if (enable) {
+		range = range * threshold / 20;
+	} else {
+		range /= 2;
+	}
+	out.mintd = - range + offset;
+	out.maxtd = range + offset;
+#endif
+}
+
+void EMU::set_joy_threshold(int threshold, struct st_joy_range &out)
+{
+#ifdef USE_JOYSTICK
+	bool enable = out.enable;
+	int offset = out.offset;
+	int range = out.range;
+	if (enable) {
+		range = range * threshold / 20;
+	} else {
+		range /= 2;
+	}
+	out.mintd = - range + offset;
+	out.maxtd = range + offset;
+#endif
 }
 
 void EMU::release_input()
@@ -120,10 +201,45 @@ void EMU::release_joystick()
 {
 #ifdef USE_JOYSTICK
 	// release joystick
-	for(int i = 0; i < 2; i++) {
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
 		joy_enabled[i] = false;
 	}
+	memset(joy2joy_status, 0, sizeof(joy2joy_status));
+#endif
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	memset(joy_status, 0, sizeof(joy_status));
+#endif
+}
+
+void EMU::release_key2joy()
+{
+#ifdef USE_KEY2JOYSTICK
+	memset(key2joy_status, 0, sizeof(key2joy_status));
+#endif
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	memset(joy_status, 0, sizeof(joy_status));
+#endif
+}
+
+void EMU::convert_joy_status(int num)
+{
+#ifdef USE_JOYSTICK
+	// convert
+	for(int n = 0; n <= joy2joy_map_size && n < 32; n++) {
+		uint32_t code = joy2joy_map[num][n];
+		if (joy2joy_status[num][0] & code) {
+			joy_status[num][0] |= joy2joy_idx[n];
+		}
+	}
+	joy_status[num][1] = joy2joy_status[num][1];
+
+#ifdef USE_ANALOG_JOYSTICK
+	for(int n=2; n<8; n++) {
+		int kk = joy2joy_ana_map[num][n-2];
+		joy_status[num][n] = joy2joy_status[num][kk];
+		if (joy2joy_ana_rev[num][n-2]) joy_status[num][n] = 1023 - joy_status[num][n];
+	}
+#endif
 #endif
 }
 
@@ -277,6 +393,14 @@ int EMU::key_down_up(uint8_t type, int code, long status)
 /// @brief key pressed
 int EMU::key_down(int code, bool keep_frames)
 {
+#ifdef USE_KEY2JOYSTICK
+	if (key2joy_enabled) {
+		if (key2joy_down(code)) {
+			return code;
+		}
+	}
+#endif
+
 	key_status[code] = keep_frames ? (KEY_KEEP_FRAMES * FRAME_SPLIT_NUM) : 0x80;
 	vm_key_down(vm_key_map[code], VM_KEY_STATUS_KEYBOARD);
 #ifdef NOTIFY_KEY_DOWN_TO_GUI
@@ -299,6 +423,11 @@ void EMU::key_up(int code, bool keep_frames)
 #ifdef NOTIFY_KEY_DOWN
 	if(!key_status[code]) {
 		vm->key_up(code);
+	}
+#endif
+#ifdef USE_KEY2JOYSTICK
+	if (key2joy_enabled) {
+		key2joy_up(code);
 	}
 #endif
 }
@@ -342,6 +471,17 @@ void EMU::vm_key_up(int code, uint8_t mask)
 /// @param[in] mask : flags
 void EMU::vkey_key_down(int code, uint8_t mask)
 {
+#ifdef USE_KEY2JOYSTICK
+	if (key2joy_enabled) {
+		for(int i=0; i<KEYBIND_ASSIGN; i++) {
+			int vk_code = key2joy_scancode[code].d[i];
+			if (key2joy_down(vk_code)) {
+				return;
+			}
+		}
+	}
+#endif
+
 	vm_key_down(code, mask);
 }
 
@@ -351,6 +491,15 @@ void EMU::vkey_key_down(int code, uint8_t mask)
 void EMU::vkey_key_up(int code, uint8_t mask)
 {
 	vm_key_up(code, mask);
+
+#ifdef USE_KEY2JOYSTICK
+	if (key2joy_enabled) {
+		for(int i=0; i<KEYBIND_ASSIGN; i++) {
+			int vk_code = key2joy_scancode[code].d[i];
+			key2joy_up(vk_code);
+		}
+	}
+#endif
 }
 
 /// @brief clear the vm key mapping table
@@ -379,6 +528,256 @@ int EMU::get_vm_key_map(uint32_t key_code) const
 	return 0;
 }
 #endif
+
+void EMU::modify_joy_threshold()
+{
+#if defined(USE_JOYSTICK)
+	for(int i = 0; i < MAX_JOYSTICKS; i++) {
+		set_joy_threshold(pConfig->joy_axis_threshold[i][0], joy_prm[i].x);
+		set_joy_threshold(pConfig->joy_axis_threshold[i][1], joy_prm[i].y);
+		set_joy_threshold(pConfig->joy_axis_threshold[i][2], joy_prm[i].z);
+		set_joy_threshold(pConfig->joy_axis_threshold[i][3], joy_prm[i].r);
+		set_joy_threshold(pConfig->joy_axis_threshold[i][4], joy_prm[i].u);
+		set_joy_threshold(pConfig->joy_axis_threshold[i][5], joy_prm[i].v);
+	}
+#endif
+}
+
+void EMU::modify_joy_mashing()
+{
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int n=0; n<16; n++) {
+		for(int i=0; i<MAX_JOYSTICKS; i++) {
+			joy_mashing_mask[i][n] = 0xffffffff;
+			for(int k=0; k<KEYBIND_JOY_BUTTONS && k<16; k++) {
+				if (!pConfig->joy_mashing[i][k]) continue;
+
+				int nn = 1 << (4 - pConfig->joy_mashing[i][k]);
+				if (n & nn) {
+					joy_mashing_mask[i][n] &= ~(0x10000 << k);
+				}
+			}
+		}
+	}
+#endif
+}
+
+void EMU::clear_joy2joy_idx()
+{
+#ifdef USE_JOYSTICK
+	memset(joy2joy_idx, 0, sizeof(joy2joy_idx));
+#endif
+}
+
+void EMU::set_joy2joy_idx(int pos, uint32_t joy_code)
+{
+#ifdef USE_JOYSTICK
+	if (pos < 0 || pos >= 32) return;
+	joy2joy_idx[pos] = joy_code;
+#endif
+}
+
+/// @brief clear the joypad button mapping table
+void EMU::clear_joy2joy_map()
+{
+#ifdef USE_JOYSTICK
+	joy2joy_map_size = 0;
+	memset(joy2joy_map, 0, sizeof(joy2joy_map));
+#ifdef USE_ANALOG_JOYSTICK
+	for(int i=0; i<2; i++) {
+		for(int n=0; n<6; n++) {
+			joy2joy_ana_map[i][n] = n + 2;
+			joy2joy_ana_rev[i][n] = false;
+		}
+	}
+#endif
+#endif
+}
+
+/// @brief set the joypad button mapping table
+void EMU::set_joy2joy_map(int num, int pos, uint32_t joy_code)
+{
+#ifdef USE_JOYSTICK
+	if (num < 0 || num >= MAX_JOYSTICKS) return;
+	if (pos < 0 || pos >= 32) return;
+	joy2joy_map[num][pos] = joy_code;
+	if (joy_code != 0 && pos > joy2joy_map_size) joy2joy_map_size = pos;
+#endif
+}
+
+#if 0
+/// @brief get the joypad button mapping table
+uint32_t EMU::get_joy2joy_map(int num, int pos) const
+{
+#ifdef USE_JOYSTICK
+	if (num < 0 || num >= MAX_JOYSTICKS) return 0;
+	if (pos < 0 || pos >= 32) return 0;
+	return joy2joy_map[num][pos];
+#endif
+	return 0;
+}
+#endif
+
+void EMU::set_joy2joy_ana_map(int num, int pos, uint32_t joy_code)
+{
+#if defined(USE_JOYSTICK) && defined(USE_ANALOG_JOYSTICK)
+	if (num < 0 || num >= MAX_JOYSTICKS) return;
+	if (pos < 0 || pos >= 6) return;
+	int n = -1;
+	bool rev = false;
+	switch(joy_code) {
+	case JOYCODE_ANA_X_REV:
+		rev = true;
+		// [through]
+	case JOYCODE_ANA_X:
+		n = 0;
+		break;
+	case JOYCODE_ANA_Y_REV:
+		rev = true;
+		// [through]
+	case JOYCODE_ANA_Y:
+		n = 1;
+		break;
+	case JOYCODE_ANA_Z_REV:
+		rev = true;
+		// [through]
+	case JOYCODE_ANA_Z:
+		n = 2;
+		break;
+	case JOYCODE_ANA_R_REV:
+		rev = true;
+		// [through]
+	case JOYCODE_ANA_R:
+		n = 3;
+		break;
+	case JOYCODE_ANA_U_REV:
+		rev = true;
+		// [through]
+	case JOYCODE_ANA_U:
+		n = 4;
+		break;
+	case JOYCODE_ANA_V_REV:
+		rev = true;
+		// [through]
+	case JOYCODE_ANA_V:
+		n = 5;
+		break;
+	}
+	if (n >= 0) {
+		joy2joy_ana_map[num][pos] = n + 2;
+		joy2joy_ana_rev[num][pos] = rev;
+	}
+#endif
+}
+
+void EMU::clear_joy2joyk_map()
+{
+	vm->clear_joy2joyk_map();
+}
+
+void EMU::set_joy2joyk_map(int num, int idx, uint32_t joy_code)
+{
+	vm->set_joy2joyk_map(num, idx, joy_code);
+}
+
+/// @brief clear the key2joypad mapping table
+void EMU::clear_key2joy_map()
+{
+#ifdef USE_KEY2JOYSTICK
+	memset(key2joy_map, 0, sizeof(key2joy_map));
+#endif
+}
+
+/// @brief set the key2joypad mapping table
+void EMU::set_key2joy_map(uint32_t key_code, int num, uint32_t joy_code)
+{
+#ifdef USE_KEY2JOYSTICK
+	if (0 < key_code && key_code < KEY_STATUS_SIZE) {
+#ifndef USE_PIAJOYSTICKBIT
+		if (joy_code & 0x80000000) {
+			joy_code &= 0x7fffffff;
+			joy_code = (0x10000 << joy_code);
+		}
+		key2joy_map[num][key_code] |= joy_code;
+#else
+		if (joy_code & 0x80000000) {
+			joy_code &= 0x7fffffff;
+			joy_code = (0x10000 << joy_code);
+		} else {
+			joy_code = (1 << joy_code);
+		}
+		key2joy_map[key_code] = joy_code;
+#endif
+	}
+#endif
+}
+
+/// @brief get the key2joypad mapping table
+uint8_t EMU::get_key2joy_map(uint32_t key_code) const
+{
+#ifdef USE_KEY2JOYSTICK
+	if (0 < key_code && key_code < KEY_STATUS_SIZE) {
+#ifndef USE_PIAJOYSTICKBIT
+		return key2joy_map[0][key_code];
+#else
+		return key2joy_map[key_code];
+#endif
+	}
+#endif
+	return 0;
+}
+
+/// @brief convert pressed key to joypad status
+/// @return true: key pressed
+bool EMU::key2joy_down(int code)
+{
+#ifdef USE_KEY2JOYSTICK
+# ifdef USE_PIAJOYSTICKBIT
+	if (key2joy_map[code]) {
+		key2joy_status[0] |= key2joy_map[code];
+		vm_key_down(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
+		return true;
+	}
+	return false;
+# else
+	uint32_t joy_all = 0;
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		uint32_t joy_code = key2joy_map[i][code];
+		uint32_t k = (joy_code & 0xf);
+		int kk = joy_allow_map[k];
+		if (kk >= 0) key2joy_status[i][kk] |= k;
+		key2joy_status[i][8] |= (joy_code & 0xfffffff0);
+		joy_all |= joy_code;
+	}
+	vm_key_down(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
+	return (joy_all != 0);
+# endif
+#else
+	return false;
+#endif
+}
+
+/// @brief convert released key to joypad status
+void EMU::key2joy_up(int code)
+{
+#ifdef USE_KEY2JOYSTICK
+# ifdef USE_PIAJOYSTICKBIT
+	if (key2joy_map[code]) {
+		key2joy_status[0] &= ~key2joy_map[code];
+		vm_key_up(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
+	}
+# else
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		uint32_t joy_code = key2joy_map[i][code];
+		uint32_t k = (joy_code & 0xf);
+		int kk = joy_allow_map[k];
+		if (kk >= 0) key2joy_status[i][kk] &= ~k;
+		key2joy_status[i][8] &= ~(joy_code & 0xfffffff0);
+	}
+	vm_key_up(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
+# endif
+#endif
+}
 
 #ifdef USE_BUTTON
 void EMU::press_button(int num)
@@ -430,6 +829,21 @@ void EMU::set_mouse_position()
 }
 #endif
 
+void EMU::mouse_enter()
+{
+
+}
+
+void EMU::mouse_move(int x, int y)
+{
+
+}
+
+void EMU::mouse_leave()
+{
+
+}
+
 void EMU::enable_joystick()
 {
 }
@@ -477,14 +891,14 @@ bool EMU::open_auto_key(const _TCHAR *file_path)
 
 		parsed_auto_key(prev_code, prev_mod);
 
-		config.opened_autokey_path.Set(file_path, 0);
+		pConfig->SetOpenedAutoKeyPath(file_path, 0);
 	} else {
 		logging->out_log(LOG_ERROR, _T("Auto key file couldn't be opened."));
 		rc = false;
 	}
 	delete fp;
 
-	config.initial_autokey_path.SetFromPath(file_path);
+	pConfig->SetInitialAutoKeyPathFrom(file_path);
 
 	update_config();
 
@@ -598,7 +1012,7 @@ void EMU::stop_auto_key()
 	autokey_shift = 0;
 	autokey_enabled = false;
 
-	config.opened_autokey_path.Clear();
+	pConfig->ClearOpenedAutoKeyPath();
 
 	update_config();
 }

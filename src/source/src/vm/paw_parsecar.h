@@ -34,7 +34,7 @@ private:
 	/// 出力位置
 	uint32_t prev_data;
 	int prev_width;
-	uint8_t over_buf[128];
+//	uint8_t over_buf[128];
 	int over_pos;
 
 	int CalcL3CSize(InputFile &file);

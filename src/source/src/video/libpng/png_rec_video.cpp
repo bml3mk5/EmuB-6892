@@ -10,7 +10,7 @@
 
 #include "png_rec_video.h"
 
-#if defined(USE_REC_VIDEO) && defined(USE_CAP_SCREEN_LIBPNG)
+#if defined(USE_CAPTURE_SCREEN_PNG) && defined(USE_CAP_SCREEN_LIBPNG)
 
 #include <png.h>
 #include "../rec_video.h"
@@ -78,5 +78,5 @@ bool PNG_REC_VIDEO::Capture(int type, CSurface *surface, const char *file_name)
 	return true;
 }
 
-#endif /* USE_REC_VIDEO && USE_CAP_SCREEN_LIBPNG */
+#endif /* USE_CAPTURE_SCREEN_PNG && USE_CAP_SCREEN_LIBPNG */
 

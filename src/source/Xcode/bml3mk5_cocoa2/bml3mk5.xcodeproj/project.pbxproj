@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -61,8 +61,11 @@
 		D94A741F1B0F571F003DAF01 /* rec_video.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94A741C1B0F571F003DAF01 /* rec_video.cpp */; };
 		D94D42C81DE9EB7D00ED9377 /* cocoa_key_trans.mm in Sources */ = {isa = PBXBuildFile; fileRef = D94D42C71DE9EB7D00ED9377 /* cocoa_key_trans.mm */; };
 		D94DEE831DF546B000A95F7F /* cocoa_rec_video.mm in Sources */ = {isa = PBXBuildFile; fileRef = D94DEE821DF546B000A95F7F /* cocoa_rec_video.mm */; };
+		D94EAF342B7BA125003E835D /* keybind.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94EAF322B7BA125003E835D /* keybind.cpp */; };
 		D94F52E42234DB77008332AF /* cpixfmt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94F52E22234DB77008332AF /* cpixfmt.cpp */; };
+		D94F9DF02BCFD45C00F3DEC0 /* cocoa_loggingpanel.mm in Sources */ = {isa = PBXBuildFile; fileRef = D94F9DEF2BCFC89400F3DEC0 /* cocoa_loggingpanel.mm */; };
 		D95239BA1C610F6F00BA9197 /* cchar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D95239B71C610F6F00BA9197 /* cchar.cpp */; };
+		D9576A572923562600B1F260 /* parseopt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9576A552923562600B1F260 /* parseopt.cpp */; };
 		D96173731E66AE940035D28D /* cocoa_bitmap.mm in Sources */ = {isa = PBXBuildFile; fileRef = D96173721E66AE940035D28D /* cocoa_bitmap.mm */; };
 		D961737F1E66B3930035D28D /* bml3mk5_key_break.png in Resources */ = {isa = PBXBuildFile; fileRef = D96173771E66B3930035D28D /* bml3mk5_key_break.png */; };
 		D96173801E66B3930035D28D /* bml3mk5_key_mode.png in Resources */ = {isa = PBXBuildFile; fileRef = D96173781E66B3930035D28D /* bml3mk5_key_mode.png */; };
@@ -73,6 +76,7 @@
 		D96173851E66B3930035D28D /* ledbox_11.png in Resources */ = {isa = PBXBuildFile; fileRef = D961737D1E66B3930035D28D /* ledbox_11.png */; };
 		D96173861E66B3930035D28D /* ledparts.png in Resources */ = {isa = PBXBuildFile; fileRef = D961737E1E66B3930035D28D /* ledparts.png */; };
 		D961739B1E66B6710035D28D /* bml3mk5.icns in Resources */ = {isa = PBXBuildFile; fileRef = D971DA3D1AF0A6EE00896525 /* bml3mk5.icns */; };
+		D967368C2962CD2000DBFEB5 /* ffm_rec_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D967368A2962CD1F00DBFEB5 /* ffm_rec_base.cpp */; };
 		D967FC6A2350A177008A021A /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D967FC662350A177008A021A /* common.cpp */; };
 		D967FC7D2350A196008A021A /* d88_files.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D967FC6B2350A196008A021A /* d88_files.cpp */; };
 		D967FC7E2350A196008A021A /* debugger_console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D967FC6D2350A196008A021A /* debugger_console.cpp */; };
@@ -88,6 +92,7 @@
 		D968889323633CD600997394 /* debugger_bpoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D968888923633CD600997394 /* debugger_bpoint.cpp */; };
 		D968889423633CD600997394 /* debugger_socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D968888C23633CD600997394 /* debugger_socket.cpp */; };
 		D968889523633CD600997394 /* debugger_symbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D968888E23633CD600997394 /* debugger_symbol.cpp */; };
+		D96B95B1296EC84500031248 /* cocoa_joysetpanel.mm in Sources */ = {isa = PBXBuildFile; fileRef = D96B95B0296EC84400031248 /* cocoa_joysetpanel.mm */; };
 		D971D9BF1AF0A31000896525 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D971D9BE1AF0A31000896525 /* Cocoa.framework */; };
 		D971DAB51AF0AA6C00896525 /* config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D971D9E31AF0A6EE00896525 /* config.cpp */; };
 		D971DAB71AF0AA6C00896525 /* ConvertUTF.c in Sources */ = {isa = PBXBuildFile; fileRef = D971D9E51AF0A6EE00896525 /* ConvertUTF.c */; };
@@ -126,7 +131,7 @@
 		D971DB2D1AF0AA6C00896525 /* hd46505.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D971DA971AF0A6EE00896525 /* hd46505.cpp */; };
 		D971DB2F1AF0AA6C00896525 /* mc6809.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D971DA991AF0A6EE00896525 /* mc6809.cpp */; };
 		D971DB3B1AF0B2FA00896525 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D971DB3A1AF0B2FA00896525 /* OpenGL.framework */; };
-		D971DB721AF0C06600896525 /* libfreetype.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D971DB711AF0C06600896525 /* libfreetype.dylib */; };
+		D97AE4E52B5BE68D00E58B9A /* cocoa_keybindctrl.mm in Sources */ = {isa = PBXBuildFile; fileRef = D97AE4E32B5BE68D00E58B9A /* cocoa_keybindctrl.mm */; };
 		D98414BE1FF65F6F0054E87C /* cocoa_savedatarec.mm in Sources */ = {isa = PBXBuildFile; fileRef = D98414BD1FF65F6F0054E87C /* cocoa_savedatarec.mm */; };
 		D984CB071FDD0E53000F5DC7 /* emu_screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D984CB051FDD0E53000F5DC7 /* emu_screen.cpp */; };
 		D984CB081FDD0E53000F5DC7 /* emu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D984CB061FDD0E53000F5DC7 /* emu.cpp */; };
@@ -282,15 +287,20 @@
 		D94A741B1B0F571F003DAF01 /* qt_rec_video.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = qt_rec_video.mm; sourceTree = "<group>"; };
 		D94A741C1B0F571F003DAF01 /* rec_video.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rec_video.cpp; sourceTree = "<group>"; };
 		D94A741D1B0F571F003DAF01 /* rec_video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rec_video.h; sourceTree = "<group>"; };
-		D94A74211B0F5773003DAF01 /* parseopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parseopt.h; sourceTree = "<group>"; };
 		D94D42C71DE9EB7D00ED9377 /* cocoa_key_trans.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_key_trans.mm; sourceTree = "<group>"; };
 		D94DEE811DF546B000A95F7F /* cocoa_rec_video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_rec_video.h; sourceTree = "<group>"; };
 		D94DEE821DF546B000A95F7F /* cocoa_rec_video.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_rec_video.mm; sourceTree = "<group>"; };
+		D94EAF322B7BA125003E835D /* keybind.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keybind.cpp; sourceTree = "<group>"; };
+		D94EAF332B7BA125003E835D /* keybind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keybind.h; sourceTree = "<group>"; };
 		D94F52E22234DB77008332AF /* cpixfmt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cpixfmt.cpp; sourceTree = "<group>"; };
 		D94F52E32234DB77008332AF /* cpixfmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cpixfmt.h; sourceTree = "<group>"; };
+		D94F9DEE2BCFC89400F3DEC0 /* cocoa_loggingpanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cocoa_loggingpanel.h; sourceTree = "<group>"; };
+		D94F9DEF2BCFC89400F3DEC0 /* cocoa_loggingpanel.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_loggingpanel.mm; sourceTree = "<group>"; };
 		D95239B71C610F6F00BA9197 /* cchar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cchar.cpp; sourceTree = "<group>"; };
 		D95239B81C610F6F00BA9197 /* cchar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cchar.h; sourceTree = "<group>"; };
 		D95239B91C610F6F00BA9197 /* cptrlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cptrlist.h; sourceTree = "<group>"; };
+		D9576A552923562600B1F260 /* parseopt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parseopt.cpp; sourceTree = "<group>"; };
+		D9576A562923562600B1F260 /* parseopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parseopt.h; sourceTree = "<group>"; };
 		D96173711E66AE940035D28D /* cocoa_bitmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_bitmap.h; sourceTree = "<group>"; };
 		D96173721E66AE940035D28D /* cocoa_bitmap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_bitmap.mm; sourceTree = "<group>"; };
 		D96173751E66AEB90035D28D /* cbitmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cbitmap.h; sourceTree = "<group>"; };
@@ -301,6 +311,8 @@
 		D961737C1E66B3930035D28D /* digit10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = digit10.png; sourceTree = "<group>"; };
 		D961737D1E66B3930035D28D /* ledbox_11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ledbox_11.png; sourceTree = "<group>"; };
 		D961737E1E66B3930035D28D /* ledparts.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ledparts.png; sourceTree = "<group>"; };
+		D967368A2962CD1F00DBFEB5 /* ffm_rec_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ffm_rec_base.cpp; sourceTree = "<group>"; };
+		D967368B2962CD1F00DBFEB5 /* ffm_rec_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ffm_rec_base.h; sourceTree = "<group>"; };
 		D967FC652350A177008A021A /* ccolor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccolor.h; sourceTree = "<group>"; };
 		D967FC662350A177008A021A /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
 		D967FC672350A177008A021A /* d88_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d88_defs.h; sourceTree = "<group>"; };
@@ -334,6 +346,8 @@
 		D968888F23633CD600997394 /* debugger_symbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debugger_symbol.h; sourceTree = "<group>"; };
 		D968889023633CD600997394 /* emu_osd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = emu_osd.h; sourceTree = "<group>"; };
 		D968889623633D0400997394 /* vm_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vm_defs.h; sourceTree = "<group>"; };
+		D96B95AF296EC84400031248 /* cocoa_joysetpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_joysetpanel.h; sourceTree = "<group>"; };
+		D96B95B0296EC84400031248 /* cocoa_joysetpanel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_joysetpanel.mm; sourceTree = "<group>"; };
 		D971D9BA1AF0A31000896525 /* bml3mk5.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bml3mk5.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D971D9BE1AF0A31000896525 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		D971D9C11AF0A31000896525 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -434,11 +448,11 @@
 		D971DA9A1AF0A6EE00896525 /* mc6809.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mc6809.h; sourceTree = "<group>"; };
 		D971DA9B1AF0A6EE00896525 /* vm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vm.h; sourceTree = "<group>"; };
 		D971DB3A1AF0B2FA00896525 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		D971DB421AF0B58600896525 /* libintl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.dylib; path = /usr/local/lib/libintl.dylib; sourceTree = "<absolute>"; };
-		D971DB711AF0C06600896525 /* libfreetype.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreetype.dylib; path = /usr/local/lib/libfreetype.dylib; sourceTree = "<absolute>"; };
 		D971DB761AF0D55900896525 /* bml3mk5.mo */ = {isa = PBXFileReference; lastKnownFileType = file; path = bml3mk5.mo; sourceTree = "<group>"; };
 		D971DB771AF0D55900896525 /* bml3mk5.po */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bml3mk5.po; sourceTree = "<group>"; };
 		D9741B601C32B67D0052C2F5 /* displaysub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = displaysub.h; sourceTree = "<group>"; };
+		D97AE4E32B5BE68D00E58B9A /* cocoa_keybindctrl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_keybindctrl.mm; sourceTree = "<group>"; };
+		D97AE4E42B5BE68D00E58B9A /* cocoa_keybindctrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_keybindctrl.h; sourceTree = "<group>"; };
 		D98414BD1FF65F6F0054E87C /* cocoa_savedatarec.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa_savedatarec.mm; sourceTree = "<group>"; };
 		D98414BF1FF65FAD0054E87C /* cocoa_savedatarec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_savedatarec.h; sourceTree = "<group>"; };
 		D984CB051FDD0E53000F5DC7 /* emu_screen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = emu_screen.cpp; sourceTree = "<group>"; };
@@ -518,7 +532,6 @@
 				D94A74141B0F56E3003DAF01 /* QTKit.framework in Frameworks */,
 				D971D9BF1AF0A31000896525 /* Cocoa.framework in Frameworks */,
 				D971DB3B1AF0B2FA00896525 /* OpenGL.framework in Frameworks */,
-				D971DB721AF0C06600896525 /* libfreetype.dylib in Frameworks */,
 				D9E42CA22646AFF300C6E06F /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -577,8 +590,6 @@
 			children = (
 				D928FD791AFF47C000907A46 /* libSDL2.dylib */,
 				D928FD7B1AFF47C000907A46 /* libSDL2_ttf.dylib */,
-				D971DB711AF0C06600896525 /* libfreetype.dylib */,
-				D971DB421AF0B58600896525 /* libintl.dylib */,
 			);
 			name = Libs;
 			sourceTree = "<group>";
@@ -729,12 +740,18 @@
 				D9C64E2E1BF6243C003F0D6E /* cocoa_fontpanel.mm */,
 				D9EF037E1AF0F766009AD185 /* cocoa_gui.h */,
 				D9EF037F1AF0F766009AD185 /* cocoa_gui.mm */,
+				D96B95AF296EC84400031248 /* cocoa_joysetpanel.h */,
+				D96B95B0296EC84400031248 /* cocoa_joysetpanel.mm */,
 				D94858C51AFCA8E80086B02C /* cocoa_key_trans.h */,
 				D94D42C71DE9EB7D00ED9377 /* cocoa_key_trans.mm */,
+				D97AE4E42B5BE68D00E58B9A /* cocoa_keybindctrl.h */,
+				D97AE4E32B5BE68D00E58B9A /* cocoa_keybindctrl.mm */,
 				D99E9D611AFA3C6D0014DE79 /* cocoa_keybindpanel.h */,
 				D99E9D621AFA3C6D0014DE79 /* cocoa_keybindpanel.mm */,
 				D907C5C91C2C416E00F62CF6 /* cocoa_ledbox.h */,
 				D907C5C71C2C402200F62CF6 /* cocoa_ledbox.mm */,
+				D94F9DEE2BCFC89400F3DEC0 /* cocoa_loggingpanel.h */,
+				D94F9DEF2BCFC89400F3DEC0 /* cocoa_loggingpanel.mm */,
 				D9388ACA1DEEC66800222B43 /* cocoa_recaudpanel.h */,
 				D9388ACB1DEEC66800222B43 /* cocoa_recaudpanel.mm */,
 				D93B80B31B10A7FE00154E04 /* cocoa_recvidpanel.h */,
@@ -782,6 +799,8 @@
 				D9388AE01DEEC6B700222B43 /* ffm_loadlib.h */,
 				D9388AE11DEEC6B700222B43 /* ffm_rec_audio.cpp */,
 				D9388AE21DEEC6B700222B43 /* ffm_rec_audio.h */,
+				D967368A2962CD1F00DBFEB5 /* ffm_rec_base.cpp */,
+				D967368B2962CD1F00DBFEB5 /* ffm_rec_base.h */,
 				D9D876B61B1CA7F6000A737E /* ffm_rec_video.cpp */,
 				D9D876B71B1CA7F6000A737E /* ffm_rec_video.h */,
 			);
@@ -878,10 +897,14 @@
 				D967FC712350A196008A021A /* emu_input_keysym.cpp */,
 				D984CB051FDD0E53000F5DC7 /* emu_screen.cpp */,
 				D967FC742350A196008A021A /* emu_sound.cpp */,
+				D94EAF322B7BA125003E835D /* keybind.cpp */,
+				D94EAF332B7BA125003E835D /* keybind.h */,
 				D967FC782350A196008A021A /* logging.cpp */,
 				D9E42C9D2646AA2100C6E06F /* mac */,
 				D9EFF8C5241E067E002F8BA1 /* opengl.cpp */,
 				D9EFF8C6241E067F002F8BA1 /* opengl.h */,
+				D9576A552923562600B1F260 /* parseopt.cpp */,
+				D9576A562923562600B1F260 /* parseopt.h */,
 				D946001F242C9ED5008F0B18 /* screenmode.cpp */,
 				D967FC792350A196008A021A /* screenmode.h */,
 				D9B04306232CB8B0001BA3C8 /* simple_clocale.cpp */,
@@ -965,7 +988,6 @@
 				D9FDD1EB223A4ADB0055E9C7 /* msgs.cpp */,
 				D9FDD1EC223A4ADC0055E9C7 /* msgs.h */,
 				D902B81C1FB331AC00EC8622 /* osd */,
-				D94A74211B0F5773003DAF01 /* parseopt.h */,
 				D967FC692350A177008A021A /* rec_video_defs.h */,
 				D971DA2A1AF0A6EE00896525 /* res */,
 				D9F141F3233CD5ED0025638D /* simple_ini.cpp */,
@@ -1107,10 +1129,11 @@
 				ORGANIZATIONNAME = Sasaji;
 			};
 			buildConfigurationList = D971D9B41AF0A31000896525 /* Build configuration list for PBXProject "bml3mk5" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = D971D9AF1AF0A31000896525;
@@ -1193,9 +1216,13 @@
 				D94A741F1B0F571F003DAF01 /* rec_video.cpp in Sources */,
 				D94D42C81DE9EB7D00ED9377 /* cocoa_key_trans.mm in Sources */,
 				D94DEE831DF546B000A95F7F /* cocoa_rec_video.mm in Sources */,
+				D94EAF342B7BA125003E835D /* keybind.cpp in Sources */,
 				D94F52E42234DB77008332AF /* cpixfmt.cpp in Sources */,
+				D94F9DF02BCFD45C00F3DEC0 /* cocoa_loggingpanel.mm in Sources */,
 				D95239BA1C610F6F00BA9197 /* cchar.cpp in Sources */,
+				D9576A572923562600B1F260 /* parseopt.cpp in Sources */,
 				D96173731E66AE940035D28D /* cocoa_bitmap.mm in Sources */,
+				D967368C2962CD2000DBFEB5 /* ffm_rec_base.cpp in Sources */,
 				D967FC6A2350A177008A021A /* common.cpp in Sources */,
 				D967FC7D2350A196008A021A /* d88_files.cpp in Sources */,
 				D967FC7E2350A196008A021A /* debugger_console.cpp in Sources */,
@@ -1211,6 +1238,7 @@
 				D968889323633CD600997394 /* debugger_bpoint.cpp in Sources */,
 				D968889423633CD600997394 /* debugger_socket.cpp in Sources */,
 				D968889523633CD600997394 /* debugger_symbol.cpp in Sources */,
+				D96B95B1296EC84500031248 /* cocoa_joysetpanel.mm in Sources */,
 				D971DAB51AF0AA6C00896525 /* config.cpp in Sources */,
 				D971DAB71AF0AA6C00896525 /* ConvertUTF.c in Sources */,
 				D971DAB91AF0AA6C00896525 /* depend.cpp in Sources */,
@@ -1247,6 +1275,7 @@
 				D971DB281AF0AA6C00896525 /* psg.cpp in Sources */,
 				D971DB2D1AF0AA6C00896525 /* hd46505.cpp in Sources */,
 				D971DB2F1AF0AA6C00896525 /* mc6809.cpp in Sources */,
+				D97AE4E52B5BE68D00E58B9A /* cocoa_keybindctrl.mm in Sources */,
 				D98414BE1FF65F6F0054E87C /* cocoa_savedatarec.mm in Sources */,
 				D984CB071FDD0E53000F5DC7 /* emu_screen.cpp in Sources */,
 				D984CB081FDD0E53000F5DC7 /* emu.cpp in Sources */,
@@ -1326,7 +1355,7 @@
 					USE_SDL2,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Devel/ffmpeg-3.4.1",
+					"$(HOME)/Devel/ffmpeg",
 					/usr/local/include,
 					/usr/X11/include,
 					/usr/local/include/SDL2,
@@ -1334,7 +1363,7 @@
 				);
 				INFOPLIST_FILE = ../../src/res/macosx/Contents/Info.plist;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1403,7 +1432,7 @@
 					USE_SDL2,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Devel/ffmpeg-3.4.1",
+					"$(HOME)/Devel/ffmpeg",
 					/usr/local/include,
 					/usr/X11/include,
 					/usr/local/include/SDL2,
@@ -1411,7 +1440,7 @@
 				);
 				INFOPLIST_FILE = ../../src/res/macosx/Contents/Info.plist;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1432,7 +1461,7 @@
 					USE_SDL2,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Devel/ffmpeg-3.4.1",
+					"$(HOME)/Devel/ffmpeg",
 					/usr/local/include,
 					/usr/X11/include,
 					/usr/local/include/SDL2,
@@ -1440,7 +1469,7 @@
 				);
 				INFOPLIST_FILE = ../../src/res/macosx/Contents/Info.plist;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

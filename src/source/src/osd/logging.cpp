@@ -29,14 +29,18 @@
 
 Logging::Logging()
 {
+#ifdef _LOG_FILE
 	fplog = NULL;
+#endif
 	recv = NULL;
 	mux = new CMutex();
 }
 
 Logging::Logging(const _TCHAR *path)
 {
+#ifdef _LOG_FILE
 	fplog = NULL;
+#endif
 	recv = NULL;
 	mux = new CMutex();
 
@@ -62,13 +66,16 @@ void Logging::open_logfile(const _TCHAR *path)
 #endif
 #ifdef _LOG_FILE
 	// get application path
+	m_log_path.Clear();
 	fplog = new FILEIO();
 	if (fplog) {
 		_TCHAR file_path[_MAX_PATH];
 		UTILITY::concat(file_path, _MAX_PATH, path, _T(CONFIG_NAME), _T(".log"), NULL);
-		if (!fplog->Fopen(file_path, FILEIO::WRITE_ASCII)) {
+		if (!fplog->Fopen(file_path, FILEIO::READ_WRITE_NEW_ASCII)) {
 			delete fplog;
 			fplog = NULL;
+		} else {
+			m_log_path.Set(file_path);
 		}
 	}
 #endif
@@ -86,7 +93,18 @@ void Logging::close_logfile()
 		delete fplog;
 		fplog = NULL;
 	}
+	m_log_path.Clear();
 	mux->unlock();
+#endif
+}
+
+/// path of log file
+const _TCHAR *Logging::get_log_path() const
+{
+#ifdef _LOG_FILE
+	return m_log_path.Get();
+#else
+	return NULL;
 #endif
 }
 
@@ -328,13 +346,13 @@ void Logging::out_debug(const char* msg)
 void Logging::out_syserrlog(int level, int err_num, const char* premsg)
 {
 	char msg[MESSAGE_BUFFER];
-	strcpy(msg, premsg);
+	UTILITY::strcpy(msg, MESSAGE_BUFFER, premsg);
 #if defined(USE_WIN)
-	strcat(msg, " ");
+	UTILITY::strcat(msg, MESSAGE_BUFFER, " ");
 	int len = (int)strlen(msg);
 	if (FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
 		err_num, LANGIDFROMLCID(clocale->GetLcid()), &msg[len], MESSAGE_BUFFER - len, NULL) == 0) {
-		sprintf(&msg[len], "%d", err_num);
+		UTILITY::sprintf(&msg[len], MESSAGE_BUFFER, "%d", err_num);
 	}
 	for(int i=(int)strlen(msg)-1; i>=0; i--) {
 		if (msg[i] != ' ' && msg[i] != '\t' && msg[i] != '\r' && msg[i] != '\n') break;
@@ -342,6 +360,66 @@ void Logging::out_syserrlog(int level, int err_num, const char* premsg)
 	}
 #endif
 	out_log_real(level, msg);
+}
+
+/// Get log to buffer
+///
+/// @param[out] buffer
+/// @param[in] buffer_size
+int Logging::get_log(char *buffer, int buffer_size)
+{
+	int line = 0;
+
+#ifdef _LOG_FILE
+	if(!fplog) return line;
+
+#if defined(_WIN32) || defined(__MINGW32__)
+	char smsg[MESSAGE_BUFFER + 2];
+#if defined(USE_SDL) || defined(USE_SDL2)
+	char dmsg[MESSAGE_BUFFER + 2];
+#else
+	char *dmsg = smsg;
+#endif
+#else
+	char smsg[MESSAGE_BUFFER + 2];
+	char *dmsg = smsg;
+#endif
+
+	mux->lock();
+
+	int pos = (int)fplog->Ftell();
+	if (pos < buffer_size) {
+		pos = 0;
+	} else {
+		pos -= buffer_size;
+	}
+
+	fplog->Fseek(pos, FILEIO::SEEKSET);
+	if (pos > 0) fplog->Fgets(smsg, MESSAGE_BUFFER);
+
+	for(line = 0; ; line++) {
+		if (!fplog->Fgets(smsg, MESSAGE_BUFFER)) {
+			break;
+		}
+		UTILITY::rtrim(smsg, "\r\n");
+
+#if defined(_WIN32) || defined(__MINGW32__)
+		UTILITY::strcat(smsg, MESSAGE_BUFFER + 2, "\r\n");
+#if defined(USE_SDL) || defined(USE_SDL2)
+		UTILITY::conv_utf8_to_mbs(smsg, MESSAGE_BUFFER + 2, dmsg, MESSAGE_BUFFER + 2); 
+#endif
+#else
+		UTILITY::strcat(smsg, MESSAGE_BUFFER + 2, "\n");
+#endif
+		UTILITY::strcat(buffer, buffer_size, dmsg);
+		line++;
+	}
+	fplog->Fseek(0, FILEIO::SEEKEND);
+
+	mux->unlock();
+#endif
+
+	return line;
 }
 
 #ifdef _UNICODE
@@ -556,6 +634,51 @@ void Logging::out_syserrlog(int level, int err_num, const wchar_t* premsg)
 	}
 #endif
 	out_log_real(level, msg);
+}
+
+/// Get log to buffer
+///
+/// @param[out] buffer
+/// @param[in] buffer_size
+int Logging::get_log(wchar_t *buffer, int buffer_size)
+{
+	int line = 0;
+
+#ifdef _LOG_FILE
+	if(!fplog) return line;
+
+	char smsg[MESSAGE_BUFFER + 2];
+	wchar_t dmsg[MESSAGE_BUFFER + 2];
+
+	mux->lock();
+
+	int pos = (int)fplog->Ftell();
+	if (pos < buffer_size) {
+		pos = 0;
+	} else {
+		pos -= buffer_size;
+	}
+
+	fplog->Fseek(pos, FILEIO::SEEKSET);
+	if (pos > 0) fplog->Fgets(smsg, MESSAGE_BUFFER);
+
+	for(line = 0; ; line++) {
+		if (!fplog->Fgets(smsg, MESSAGE_BUFFER)) {
+			break;
+		}
+		UTILITY::rtrim(smsg, "\r\n");
+
+		UTILITY::strcat(smsg, MESSAGE_BUFFER + 2, "\r\n");
+		UTILITY::conv_utf8_to_wcs(smsg, MESSAGE_BUFFER + 2, dmsg, MESSAGE_BUFFER + 2);
+		UTILITY::wcscat(buffer, buffer_size, dmsg);
+		line++;
+	}
+	fplog->Fseek(0, FILEIO::SEEKEND);
+
+	mux->unlock();
+#endif
+
+	return line;
 }
 #endif /* _UNICODE */
 

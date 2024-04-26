@@ -13,6 +13,7 @@
 #include "../../emu.h"
 #include "win_gui.h"
 #include "../../labels.h"
+#include "../../utility.h"
 
 namespace GUI_WIN
 {
@@ -22,45 +23,45 @@ VolumeBox::VolumeBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gu
 {
 	int i = 0;
 	memset(volumes, 0, sizeof(volumes));
-	volumes[i++] = &config.volume;
-	volumes[i++] = &config.beep_volume;
+	volumes[i++] = &pConfig->volume;
+	volumes[i++] = &pConfig->beep_volume;
 #if defined(_MBS1)
-	volumes[i++] = &config.psg_volume;
-	volumes[i++] = &config.psgexfm_volume;
-	volumes[i++] = &config.psgexssg_volume;
-	volumes[i++] = &config.psgexpcm_volume;
-	volumes[i++] = &config.psgexrhy_volume;
-	volumes[i++] = &config.opnfm_volume;
-	volumes[i++] = &config.opnssg_volume;
-	volumes[i++] = &config.opnpcm_volume;
-	volumes[i++] = &config.opnrhy_volume;
+	volumes[i++] = &pConfig->psg_volume;
+	volumes[i++] = &pConfig->psgexfm_volume;
+	volumes[i++] = &pConfig->psgexssg_volume;
+	volumes[i++] = &pConfig->psgexpcm_volume;
+	volumes[i++] = &pConfig->psgexrhy_volume;
+	volumes[i++] = &pConfig->opnfm_volume;
+	volumes[i++] = &pConfig->opnssg_volume;
+	volumes[i++] = &pConfig->opnpcm_volume;
+	volumes[i++] = &pConfig->opnrhy_volume;
 #endif
-	volumes[i++] = &config.psg6_volume;
-	volumes[i++] = &config.psg9_volume;
-	volumes[i++] = &config.relay_volume;
-	volumes[i++] = &config.cmt_volume;
-	volumes[i++] = &config.fdd_volume;
+	volumes[i++] = &pConfig->psg6_volume;
+	volumes[i++] = &pConfig->psg9_volume;
+	volumes[i++] = &pConfig->relay_volume;
+	volumes[i++] = &pConfig->cmt_volume;
+	volumes[i++] = &pConfig->fdd_volume;
 
 	i = 0;
 	memset(mutes, 0, sizeof(mutes));
-	mutes[i++] = &config.mute;
-	mutes[i++] = &config.beep_mute;
+	mutes[i++] = &pConfig->mute;
+	mutes[i++] = &pConfig->beep_mute;
 #if defined(_MBS1)
-	mutes[i++] = &config.psg_mute;
-	mutes[i++] = &config.psgexfm_mute;
-	mutes[i++] = &config.psgexssg_mute;
-	mutes[i++] = &config.psgexpcm_mute;
-	mutes[i++] = &config.psgexrhy_mute;
-	mutes[i++] = &config.opnfm_mute;
-	mutes[i++] = &config.opnssg_mute;
-	mutes[i++] = &config.opnpcm_mute;
-	mutes[i++] = &config.opnrhy_mute;
+	mutes[i++] = &pConfig->psg_mute;
+	mutes[i++] = &pConfig->psgexfm_mute;
+	mutes[i++] = &pConfig->psgexssg_mute;
+	mutes[i++] = &pConfig->psgexpcm_mute;
+	mutes[i++] = &pConfig->psgexrhy_mute;
+	mutes[i++] = &pConfig->opnfm_mute;
+	mutes[i++] = &pConfig->opnssg_mute;
+	mutes[i++] = &pConfig->opnpcm_mute;
+	mutes[i++] = &pConfig->opnrhy_mute;
 #endif
-	mutes[i++] = &config.psg6_mute;
-	mutes[i++] = &config.psg9_mute;
-	mutes[i++] = &config.relay_mute;
-	mutes[i++] = &config.cmt_mute;
-	mutes[i++] = &config.fdd_mute;
+	mutes[i++] = &pConfig->psg6_mute;
+	mutes[i++] = &pConfig->psg9_mute;
+	mutes[i++] = &pConfig->relay_mute;
+	mutes[i++] = &pConfig->cmt_mute;
+	mutes[i++] = &pConfig->fdd_mute;
 }
 
 VolumeBox::~VolumeBox()
@@ -172,7 +173,7 @@ void VolumeBox::SetVolume()
 void VolumeBox::SetVolumeText(int num)
 {
 	_TCHAR str[8];
-	_stprintf(str, _T("%02d"), *volumes[num]);
+	UTILITY::stprintf(str, 8, _T("%02d"), *volumes[num]);
 	SetDlgItemText(hDlg, IDC_STATIC_21+num, str);
 }
 

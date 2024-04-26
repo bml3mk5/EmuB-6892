@@ -18,38 +18,36 @@
 void COMM::initialize()
 {
 	// RS-232C
-	is_rs = (cfg_num ? 1 : 0);
-	dipswitch = 1;
-	through = false;
-//	receive_data = 1;
-	received = false;
+	m_is_rs = (m_cfg_num ? 1 : 0);
+	m_dipswitch = 1;
+	m_through = false;
+	m_received = false;
 
-	register_id = -1;
+	m_register_id = -1;
 
-	connect = 0;
-	client_ch = -1;
-	server_ch = -1;
-	uart_ch = -1;
+	m_connect = DISCONNECT;
+	m_client_ch = -1;
+	m_server_ch = -1;
+	m_uart_ch = -1;
 
-	send_telcmd_pos = -1;
+	m_send_telcmd_pos = -1;
 
 	register_frame_event(this);
 }
 
 void COMM::reset()
 {
-	is_rs = (cfg_num ? 1 : 0);
-	dipswitch = 1;
-	through = false;
-//	receive_data = 1;
-	received = false;
+	m_is_rs = (m_cfg_num ? 1 : 0);
+	m_dipswitch = 1;
+	m_through = false;
+	m_received = false;
 
-	memset(send_buff, 0, sizeof(send_buff));
-	send_buff_w_pos = 0;
-	send_buff_r_pos = 0;
-	memset(recv_buff, 0, sizeof(recv_buff));
-	recv_buff_w_pos = 0;
-	recv_buff_r_pos = 0;
+	memset(m_send_buff, 0, sizeof(m_send_buff));
+	m_send_buff_w_pos = 0;
+	m_send_buff_r_pos = 0;
+	memset(m_recv_buff, 0, sizeof(m_recv_buff));
+	m_recv_buff_w_pos = 0;
+	m_recv_buff_r_pos = 0;
 
 	cancel_my_event();
 }
@@ -62,8 +60,8 @@ void COMM::write_io8(uint32_t addr, uint32_t data)
 {
 	if (!(addr & 1)) {
 		// Write Control Register
-		cr = data & 0xff;
-		if ((cr & 3) != 3 && is_rs) {
+		m_cr = data & 0xff;
+		if ((m_cr & 3) != 3 && m_is_rs) {
 //			connect_socket();
 			cancel_my_event();
 			register_my_event();
@@ -78,10 +76,10 @@ void COMM::write_signal(int id, uint32_t data, uint32_t mask)
 		case SIG_COMM_RS:
 			// from memory
 			if (data & mask) {
-				is_rs = 1;
+				m_is_rs = 1;
 				register_my_event();
 			} else {
-				is_rs = 0;
+				m_is_rs = 0;
 				cancel_my_event();
 			}
 			break;
@@ -90,13 +88,13 @@ void COMM::write_signal(int id, uint32_t data, uint32_t mask)
 		case ACIA::SIG_ACIA_RXDATA:
 		case ACIA::SIG_ACIA_CTS:
 		case ACIA::SIG_ACIA_DCD:
-			if (is_rs == 0) {
+			if (m_is_rs == 0) {
 				// through cmt -> acia
 				d_ctrl->write_signal(id, data, mask);
 			}
 			break;
 		case ACIA::SIG_ACIA_TXDATA:
-			if (is_rs == 0) {
+			if (m_is_rs == 0) {
 				// through acia -> cmt
 				if (d_cmt) d_cmt->write_signal(id, data, mask);
 			} else {
@@ -105,17 +103,17 @@ void COMM::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case ACIA::SIG_ACIA_DTR:
 		case ACIA::SIG_ACIA_RTS:
-			if (is_rs == 0) {
+			if (m_is_rs == 0) {
 				// through acia -> cmt
 				if (d_cmt) d_cmt->write_signal(id, data, mask);
 			}
 			break;
 		case ACIA::SIG_ACIA_RESET:
 			// clear buffer
-			send_buff_w_pos = 0;
-			send_buff_r_pos = 0;
-			recv_buff_w_pos = 0;
-			recv_buff_r_pos = 0;
+			m_send_buff_w_pos = 0;
+			m_send_buff_r_pos = 0;
+			m_recv_buff_w_pos = 0;
+			m_recv_buff_r_pos = 0;
 			break;
 	}
 
@@ -123,23 +121,22 @@ void COMM::write_signal(int id, uint32_t data, uint32_t mask)
 
 void COMM::send_data(uint32_t data)
 {
-	if (send_buff_w_pos < COMM_MAX_BUFF) {
-		if (through) {
-			send_buff[send_buff_w_pos++] = (data & 0xff);
+	if (m_send_buff_w_pos < COMM_MAX_BUFF) {
+		if (m_through) {
+			m_send_buff[m_send_buff_w_pos++] = (data & 0xff);
 		} else {
-			send_buff[send_buff_w_pos++] = (data & 0xff) | 0x30;
+			m_send_buff[m_send_buff_w_pos++] = (data & 0xff) | 0x30;
 		}
 	}
-//	logging->out_logf(LOG_DEBUG, _T("comm send data=%d pos:%d"),data,send_buff_w_pos);
-	if (send_buff_r_pos < send_buff_w_pos) {
+	if (m_send_buff_r_pos < m_send_buff_w_pos) {
 #ifdef USE_SOCKET
-		if (client_ch >= 0) {
-			emu->send_data_tcp(client_ch);
+		if (m_client_ch >= 0) {
+			emu->send_data_tcp(m_client_ch);
 		}
 #endif
 #ifdef USE_UART
-		if (uart_ch >= 0) {
-			emu->send_uart_data(uart_ch);
+		if (m_uart_ch >= 0) {
+			emu->send_uart_data(m_uart_ch);
 		}
 #endif
 	}
@@ -161,12 +158,12 @@ void COMM::recv_data(uint8_t *data, size_t size)
 
 void COMM::register_my_event()
 {
-	if(register_id == -1) {
-		dipswitch = config.comm_dipswitch[cfg_num];
-		through = config.comm_through[cfg_num];
+	if(m_register_id == -1) {
+		m_dipswitch = pConfig->comm_dipswitch[m_cfg_num];
+		m_through = pConfig->comm_through[m_cfg_num];
 
-		int baud = (150 << dipswitch);	// 1 .. 4
-		switch(cr & 0x03) {
+		int baud = (150 << m_dipswitch);	// 1 .. 4
+		switch(m_cr & 0x03) {
 			case 0:
 				baud *= 16;
 				break;
@@ -175,8 +172,8 @@ void COMM::register_my_event()
 				break;
 		}
 		int bits = 1;
-		if (through) {
-			switch(cr & 0x1c) {
+		if (m_through) {
+			switch(m_cr & 0x1c) {
 				case 0x08:
 				case 0x0c:
 				case 0x14:
@@ -188,7 +185,7 @@ void COMM::register_my_event()
 			}
 		}
 		int period = (int)(CPU_CLOCKS / baud * bits);
-		register_event_by_clock(this, 0, period, true, &register_id);
+		register_event_by_clock(this, 0, period, true, &m_register_id);
 //		logging->out_debugf("COMM: event regist:%d speed: %d baud",register_id,baud);
 //	} else {
 //		logging->out_debugf("COMM: event already registed: %d",register_id);
@@ -197,13 +194,13 @@ void COMM::register_my_event()
 
 void COMM::cancel_my_event()
 {
-	if(register_id != -1) {
-		cancel_event(this, register_id);
+	if(m_register_id != -1) {
+		cancel_event(this, m_register_id);
 //		logging->out_debugf("COMM: event canceld: %d",register_id);
 //	} else {
 //		logging->out_debugf("COMM: event already canceld: %d",register_id);
 	}
-	register_id = -1;
+	m_register_id = -1;
 }
 
 
@@ -214,33 +211,28 @@ void COMM::cancel_my_event()
 void COMM::event_frame()
 {
 #if 0
-	if (send_buff_r_pos < send_buff_w_pos) {
-//		logging->out_logf(LOG_DEBUG, _T("event frame send_buff ch:%d w:%d r:%d") ,client_ch,send_buff_w_pos,send_buff_r_pos);
+	if (m_send_buff_r_pos < m_send_buff_w_pos) {
 #ifdef USE_SOCKET
-		if (client_ch >= 0) {
-			emu->send_data_tcp(client_ch);
+		if (m_client_ch >= 0) {
+			emu->send_data_tcp(m_client_ch);
 		}
 #endif
 #ifdef USE_UART
-		if (uart_ch >= 0) {
-			emu->send_uart_data(uart_ch);
+		if (m_uart_ch >= 0) {
+			emu->send_uart_data(m_uart_ch);
 		}
 #endif
-//		emu->send_comm_data(&send_buff[send_buff_r_pos], send_buff_w_pos - send_buff_r_pos);
-//		logging->out_debugf("comm sended size:%d",send_buff_w_pos - send_buff_r_pos);
-//		send_buff_w_pos = 0;
-//		send_buff_r_pos = 0;
 	}
 #endif
-	if (recv_buff_r_pos > 0 && recv_buff_r_pos < recv_buff_w_pos) {
+	if (m_recv_buff_r_pos > 0 && m_recv_buff_r_pos < m_recv_buff_w_pos) {
 //		logging->out_logf(LOG_DEBUG, _T("COMM::event_frame recv_buff num:%d ch:%d w:%d r:%d") ,cfg_num,client_ch,recv_buff_w_pos,recv_buff_r_pos);
-		memcpy(&recv_buff[0], &recv_buff[recv_buff_r_pos], recv_buff_w_pos - recv_buff_r_pos);
-		recv_buff_w_pos -= recv_buff_r_pos;
-		recv_buff_r_pos = 0;
+		memcpy(&m_recv_buff[0], &m_recv_buff[m_recv_buff_r_pos], m_recv_buff_w_pos - m_recv_buff_r_pos);
+		m_recv_buff_w_pos -= m_recv_buff_r_pos;
+		m_recv_buff_r_pos = 0;
 	}
 
 	// modified baud rate
-	if (register_id != -1 && (dipswitch != config.comm_dipswitch[cfg_num] || through != config.comm_through[cfg_num])) {
+	if (m_register_id != -1 && (m_dipswitch != pConfig->comm_dipswitch[m_cfg_num] || m_through != pConfig->comm_through[m_cfg_num])) {
 		cancel_my_event();
 		register_my_event();
 	}
@@ -253,15 +245,15 @@ void COMM::event_callback(int event_id, int err)
 		// full duplex?
 
 		// send to rxclk
-		if (received) {
+		if (m_received) {
 //			logging->out_logf(LOG_DEBUG, _T("comm send to acia data=%d pos:%d") ,recv_buff[recv_buff_r_pos],recv_buff_r_pos);
 
-			d_ctrl->write_signal(ACIA::SIG_ACIA_RXCLK, 1, through ? 0xff : 1);
+			d_ctrl->write_signal(ACIA::SIG_ACIA_RXCLK, 1, m_through ? 0xff : 1);
 			// send data to acia
-			d_ctrl->write_signal(ACIA::SIG_ACIA_RXDATA, recv_buff[recv_buff_r_pos], through ? 0xff : 1);
-			recv_buff_r_pos++;
-			if (recv_buff_r_pos >= recv_buff_w_pos) {
-				received = false;
+			d_ctrl->write_signal(ACIA::SIG_ACIA_RXDATA, m_recv_buff[m_recv_buff_r_pos], m_through ? 0xff : 1);
+			m_recv_buff_r_pos++;
+			if (m_recv_buff_r_pos >= m_recv_buff_w_pos) {
+				m_received = false;
 			}
 //		} else {
 //			// no received data yet
@@ -271,9 +263,9 @@ void COMM::event_callback(int event_id, int err)
 		}
 
 		// receive from acia
-		if (is_rs) {
+		if (m_is_rs) {
 //			logging->out_debug("COMM: event_callback: %d", event_id);
-			d_ctrl->write_signal(ACIA::SIG_ACIA_TXCLK, 1, through ? 0xff : 1);
+			d_ctrl->write_signal(ACIA::SIG_ACIA_TXCLK, 1, m_through ? 0xff : 1);
 		}
 	}
 }
@@ -283,40 +275,40 @@ void COMM::event_callback(int event_id, int err)
 void COMM::enable_server()
 {
 #ifdef USE_SOCKET
-	if (!config.comm_server[cfg_num]) {
+	if (!pConfig->comm_server[m_cfg_num]) {
 		// connection active as client
-		if (client_ch != -1) {
+		if (m_client_ch != -1) {
 			// error
 			logging->out_log(LOG_ERROR, _T("Already connecting to another comm server."));
 			return;
 		}
 		// get socket channel
-		server_ch = emu->get_socket_channel();
-		if (server_ch < 0) {
+		m_server_ch = emu->get_socket_channel();
+		if (m_server_ch < 0) {
 			return;
 		}
 		// start server
-		if (!emu->init_socket_tcp(server_ch, this, true)) {
-			server_ch = -1;
+		if (!emu->init_socket_tcp(m_server_ch, this, true)) {
+			m_server_ch = -1;
 			logging->out_log(LOG_ERROR, _T("Network socket initialize failed."));
 			return;
 		}
-		if (!emu->connect_socket(server_ch, config.comm_server_host[cfg_num], config.comm_server_port[cfg_num], true)) {
-			server_ch = -1;
+		if (!emu->connect_socket(m_server_ch, pConfig->comm_server_host[m_cfg_num].Get(), pConfig->comm_server_port[m_cfg_num], true)) {
+			m_server_ch = -1;
 			logging->out_log(LOG_ERROR, _T("Cannot start as comm server."));
 			return;
 		}
 //		logging->out_log(LOG_DEBUG, _T("Started comm server."));
-		config.comm_server[cfg_num] = true;
+		pConfig->comm_server[m_cfg_num] = true;
 	} else {
 		// stop server
-		if (client_ch != -1) {
+		if (m_client_ch != -1) {
 			// disconnect client
-			emu->disconnect_socket(client_ch);
+			emu->disconnect_socket(m_client_ch);
 		}
-		emu->disconnect_socket(server_ch);
+		emu->disconnect_socket(m_server_ch);
 //		logging->out_log(LOG_DEBUG, _T("Stopped comm server."));
-		config.comm_server[cfg_num] = false;
+		pConfig->comm_server[m_cfg_num] = false;
 	}
 #endif
 }
@@ -326,7 +318,7 @@ void COMM::enable_connect(int num)
 {
 	if (num == 0) {
 		// Ethernet
-		if (!emu->is_connecting_socket(client_ch)) {
+		if (!emu->is_connecting_socket(m_client_ch)) {
 			disconnect_all();
 			connect_socket();
 		} else {
@@ -350,7 +342,7 @@ bool COMM::now_connecting(int num)
 {
 	if (num == 0) {
 		// Ethernet
-		return emu->is_connecting_socket(client_ch);
+		return emu->is_connecting_socket(m_client_ch);
 #ifdef USE_UART
 	} else if(num > 0) {
 		// COM port on host
@@ -367,7 +359,7 @@ void COMM::send_telnet_command(int num)
 	char buf[8];
 	int len = 0;
 	buf[0]=0;
-	if (server_ch < 0 || client_ch < 0) {
+	if (m_server_ch < 0 || m_client_ch < 0) {
 		return;
 	}
 	switch(num) {
@@ -375,13 +367,13 @@ void COMM::send_telnet_command(int num)
 		// WILL/DO BINARY
 		len = 6;
 		memcpy(buf, "\xff\xfb\x00\xff\xfd\x00", len);
-		config.comm_binary[cfg_num] = true;
+		pConfig->comm_binary[m_cfg_num] = true;
 		break;
 	case 0x10:
 		// WON'T/DON'T BINARY
 		len = 6;
 		memcpy(buf, "\xff\xfc\x00\xff\xfe\x00", len);
-		config.comm_binary[cfg_num] = false;
+		pConfig->comm_binary[m_cfg_num] = false;
 		break;
 	case 1:
 		// WILL Suppress Go Ahead and WILL ECHO 
@@ -389,10 +381,10 @@ void COMM::send_telnet_command(int num)
 		memcpy(buf, "\xff\xfb\x03\xff\xfb\x01", len);
 		break;
 	}
-	if (len > 0 && send_buff_w_pos < (COMM_MAX_BUFF - len)) {
-		memcpy(&send_buff[send_buff_w_pos], buf, len);
-		send_buff_w_pos += len;
-		send_telcmd_pos = send_buff_w_pos;
+	if (len > 0 && m_send_buff_w_pos < (COMM_MAX_BUFF - len)) {
+		memcpy(&m_send_buff[m_send_buff_w_pos], buf, len);
+		m_send_buff_w_pos += len;
+		m_send_telcmd_pos = m_send_buff_w_pos;
 	}
 }
 
@@ -400,11 +392,11 @@ void COMM::send_telnet_command(int num)
 uint8_t* COMM::get_sendbuffer(int ch, int* size, int* flags)
 {
 //	logging->out_logf(LOG_DEBUG, _T("get_sendbuffer: ch:%d client_ch:%d"),ch,client_ch);
-	if (ch == client_ch || ch == uart_ch) {
-		*size = (send_buff_w_pos - send_buff_r_pos);
-		*flags = (config.comm_binary[cfg_num] && send_telcmd_pos < 0) ? 1 : 0;
+	if (ch == m_client_ch || ch == m_uart_ch) {
+		*size = (m_send_buff_w_pos - m_send_buff_r_pos);
+		*flags = (pConfig->comm_binary[m_cfg_num] && m_send_telcmd_pos < 0) ? 1 : 0;
 //		logging->out_logf(LOG_DEBUG, _T("Send buffer. w:%d r:%d size:%d"),send_buff_w_pos,send_buff_r_pos,*size);
-		return &send_buff[send_buff_r_pos];
+		return &m_send_buff[m_send_buff_r_pos];
 	} else {
 		*size = 0;
 		return NULL;
@@ -415,18 +407,17 @@ uint8_t* COMM::get_sendbuffer(int ch, int* size, int* flags)
 void COMM::inc_sendbuffer_ptr(int ch, int size)
 {
 //	logging->out_logf(LOG_DEBUG, _T("inc_sendbuffer_ptr: ch:%d client_ch:%d"),ch,client_ch);
-	if (ch == client_ch || ch == uart_ch) {
-		send_buff_r_pos += size;
+	if (ch == m_client_ch || ch == m_uart_ch) {
+		m_send_buff_r_pos += size;
 //		logging->out_logf(LOG_DEBUG, _T("Sent buffer. w:%d r:%d size:%d"),send_buff_w_pos,send_buff_r_pos,size);
-		if (send_buff_r_pos >= send_telcmd_pos) {
-			send_telcmd_pos = -1;
+		if (m_send_buff_r_pos >= m_send_telcmd_pos) {
+			m_send_telcmd_pos = -1;
 		}
-		if (send_buff_w_pos <= send_buff_r_pos) {
+		if (m_send_buff_w_pos <= m_send_buff_r_pos) {
 			// all data sent.
-			send_buff_w_pos = 0;
-			send_buff_r_pos = 0;
+			m_send_buff_w_pos = 0;
+			m_send_buff_r_pos = 0;
 		}
-		return;
 	}
 }
 
@@ -434,15 +425,15 @@ void COMM::inc_sendbuffer_ptr(int ch, int size)
 uint8_t* COMM::get_recvbuffer0(int ch, int* size0, int* size1, int* flags)
 {
 //	logging->out_logf(LOG_DEBUG, _T("get_recvbuffer0: ch:%d client_ch:%d"),ch,client_ch);
-	if (ch == client_ch || ch == uart_ch) {
-		*size0 = (COMM_MAX_BUFF - recv_buff_w_pos);
+	if (ch == m_client_ch || ch == m_uart_ch) {
+		*size0 = (COMM_MAX_BUFF - m_recv_buff_w_pos);
 		*size1 = 0;
-		*flags = config.comm_binary[cfg_num] ? 1 : 0;
+		*flags = pConfig->comm_binary[m_cfg_num] ? 1 : 0;
 //		logging->out_logf(LOG_DEBUG, _T("Recve buffer. w:%d size:%d"),recv_buff_w_pos,*size0);
 //		if (*size0 == 0) {
 //			if (d_ctrl) d_ctrl->write_signal(ACIA::SIG_ACIA_ERR_OVRN, 1, 1);
 //		}
-		return &recv_buff[recv_buff_w_pos];
+		return &m_recv_buff[m_recv_buff_w_pos];
 	} else {
 		*size0 = 0;
 		*size1 = 0;
@@ -453,8 +444,8 @@ uint8_t* COMM::get_recvbuffer0(int ch, int* size0, int* size1, int* flags)
 /// @note called by emu thread
 uint8_t* COMM::get_recvbuffer1(int ch)
 {
-	if (ch == client_ch || ch == uart_ch) {
-		return recv_buff;
+	if (ch == m_client_ch || ch == m_uart_ch) {
+		return m_recv_buff;
 	} else {
 		return NULL;
 	}
@@ -463,12 +454,10 @@ uint8_t* COMM::get_recvbuffer1(int ch)
 /// @note called by emu thread
 void COMM::inc_recvbuffer_ptr(int ch, int size)
 {
-//	logging->out_logf(LOG_DEBUG, _T("inc_recvbuffer_ptr: ch:%d client_ch:%d"),ch,client_ch);
-	if (ch == client_ch || ch == uart_ch) {
-//		logging->out_logf(LOG_DEBUG, _T("Recvd buffer. w:%d size:%d"),recv_buff_w_pos,size);
+	if (ch == m_client_ch || ch == m_uart_ch) {
 		if (size > 0) {
-			recv_buff_w_pos += size;
-			received = true;
+			m_recv_buff_w_pos += size;
+			m_received = true;
 		}
 	}
 }
@@ -477,24 +466,24 @@ void COMM::inc_recvbuffer_ptr(int ch, int size)
 bool COMM::connect_socket()
 {
 #ifdef USE_SOCKET
-	if (!config.comm_server[cfg_num] && client_ch == -1) {
+	if (!pConfig->comm_server[m_cfg_num] && m_client_ch == -1) {
 		// get socket channel
-		client_ch = emu->get_socket_channel();
-		if (client_ch < 0) {
+		m_client_ch = emu->get_socket_channel();
+		if (m_client_ch < 0) {
 			return false;
 		}
 		// connect
-		if (!emu->init_socket_tcp(client_ch, this)) {
-			client_ch = -1;
+		if (!emu->init_socket_tcp(m_client_ch, this)) {
+			m_client_ch = -1;
 			logging->out_log(LOG_ERROR, _T("Network socket initialize failed."));
 			return false;
 		}
-		if (!emu->connect_socket(client_ch, config.comm_server_host[cfg_num], config.comm_server_port[cfg_num])) {
-			client_ch = -1;
+		if (!emu->connect_socket(m_client_ch, pConfig->comm_server_host[m_cfg_num].Get(), pConfig->comm_server_port[m_cfg_num])) {
+			m_client_ch = -1;
 			logging->out_log(LOG_ERROR, _T("Cannot connect to comm server."));
 			return false;
 		}
-		connect = 1;
+		m_connect = CONNECTING;
 //		logging->out_log(LOG_DEBUG, _T("Connect comm client."));
 	}
 	return true;
@@ -507,9 +496,9 @@ bool COMM::connect_socket()
 void COMM::disconnect_socket()
 {
 #ifdef USE_SOCKET
-	if (client_ch != -1) {
+	if (m_client_ch != -1) {
 		// disconnect
-		emu->disconnect_socket(client_ch);
+		emu->disconnect_socket(m_client_ch);
 //		logging->out_log(LOG_DEBUG, _T("Disconnect comm client."));
 	}
 #endif
@@ -518,9 +507,9 @@ void COMM::disconnect_socket()
 /// called by EMU::socket_connected()
 void COMM::network_connected(int ch)
 {
-	if (ch == client_ch) {
-		connect = 2;
-//		config.comm_connect[cfg_num] = true;
+	if (ch == m_client_ch) {
+		m_connect = CONNECTED;
+//		pConfig->comm_connect[m_cfg_num] = true;
 //		logging->out_logf(LOG_DEBUG, _T("Connected comm. ch:%d"),ch);
 	}
 }
@@ -528,22 +517,22 @@ void COMM::network_connected(int ch)
 /// called by EMU::disconnect_socket()
 void COMM::network_disconnected(int ch)
 {
-	if (ch == client_ch) {
-		connect = 0;
-//		config.comm_connect[cfg_num] = false;
+	if (ch == m_client_ch) {
+		m_connect = DISCONNECT;
+//		pConfig->comm_connect[m_cfg_num] = false;
 //		logging->out_logf(LOG_DEBUG, _T("Disonnected comm. ch:%d"),ch);
-		client_ch = -1;
-	} else if (ch == server_ch) {
+		m_client_ch = -1;
+	} else if (ch == m_server_ch) {
 //		logging->out_logf(LOG_DEBUG, _T("Disonnected comm. ch:%d"),ch);
-		server_ch = -1;
+		m_server_ch = -1;
 	}
-	config.comm_binary[cfg_num] = false;
+	pConfig->comm_binary[m_cfg_num] = false;
 }
 void COMM::network_writeable(int ch)
 {
-	if (ch == client_ch) {
+	if (ch == m_client_ch) {
 //		logging->out_logf(LOG_DEBUG, _T("Writeable comm. ch:%d"),ch);
-		connect = 3;
+		m_connect = CONNWRITEABLE;
 	}
 }
 void COMM::network_readable(int ch)
@@ -552,16 +541,16 @@ void COMM::network_readable(int ch)
 void COMM::network_accepted(int ch, int new_ch)
 {
 #ifdef USE_SOCKET
-	if (ch == server_ch) {
+	if (ch == m_server_ch) {
 		// close serial port 
 		disconnect_uart();
 
-		if (client_ch != -1) {
+		if (m_client_ch != -1) {
 			// Another client is already connected on my server.
 			emu->disconnect_socket(new_ch);
 		}
-		client_ch = new_ch;
-//		config.comm_connect[cfg_num] = true;
+		m_client_ch = new_ch;
+//		pConfig->comm_connect[m_cfg_num] = true;
 	}
 #endif
 }
@@ -574,7 +563,7 @@ bool COMM::connect_uart(int ch)
 		return false;
 	}
 	emu->init_uart(ch, this);
-	uart_ch = ch;
+	m_uart_ch = ch;
 	return true;
 #else
 	return false;
@@ -584,9 +573,9 @@ bool COMM::connect_uart(int ch)
 void COMM::disconnect_uart()
 {
 #ifdef USE_UART
-	if (uart_ch != -1) {
-		emu->close_uart(uart_ch);
-		uart_ch = -1;
+	if (m_uart_ch != -1) {
+		emu->close_uart(m_uart_ch);
+		m_uart_ch = -1;
 	}
 #endif
 }
@@ -612,10 +601,10 @@ void COMM::save_state(FILEIO *fp)
 
 	// copy values
 	memset(&vm_state, 0, sizeof(vm_state));
-	vm_state.register_id = Int32_LE(register_id);
-	vm_state.is_rs = Int32_LE(is_rs);
-	vm_state.dipswitch = Uint16_LE(dipswitch);
-	vm_state.through = through ? 1 : 0;
+	vm_state.register_id = Int32_LE(m_register_id);
+	vm_state.is_rs = Int32_LE(m_is_rs);
+	vm_state.dipswitch = Uint16_LE(m_dipswitch);
+	vm_state.through = m_through ? 1 : 0;
 
 	fp->Fwrite(&vm_state_ident, sizeof(vm_state_ident), 1);
 	fp->Fwrite(&vm_state, sizeof(vm_state), 1);
@@ -629,15 +618,15 @@ bool COMM::load_state(FILEIO *fp)
 	READ_STATE_CHUNK(fp, vm_state_i, vm_state);
 
 	// copy values
-	register_id = Int32_LE(vm_state.register_id);
-	is_rs = Int32_LE(vm_state.is_rs);
+	m_register_id = Int32_LE(vm_state.register_id);
+	m_is_rs = Int32_LE(vm_state.is_rs);
 
 	if (vm_state_i.version >= 2) {
-		dipswitch = Uint16_LE(vm_state.dipswitch);
-		through = (vm_state.through != 0);
+		m_dipswitch = Uint16_LE(vm_state.dipswitch);
+		m_through = (vm_state.through != 0);
 	} else {
-		dipswitch = config.comm_dipswitch[cfg_num];
-		through = config.comm_through[cfg_num];
+		m_dipswitch = pConfig->comm_dipswitch[m_cfg_num];
+		m_through = pConfig->comm_through[m_cfg_num];
 	}
 
 	return true;

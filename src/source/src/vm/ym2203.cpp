@@ -418,7 +418,7 @@ void YM2203::initialize_sound(int rate, int clock, int samples, int decibel_fm, 
 #ifdef HAS_YM2608
 	if(is_ym2608) {
 		const _TCHAR *paths[] = {
-			config.rom_path.Get(), emu->application_path(), NULL
+			pConfig->rom_path.Get(), emu->application_path(), NULL
 		};
 		opna->Init(clock, rate, false, paths);
 		opna->SetVolumeFM(decibel_fm, decibel_fm);

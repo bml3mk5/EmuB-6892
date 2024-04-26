@@ -14,46 +14,23 @@
 #include "../../common.h"
 #include "../../cchar.h"
 #include "../../vm/vm_defs.h"
+#include "../parseopt.h"
 #include <windows.h>
 
-class GUI;
-
 /// @brief parse command line options
-class CParseOptions
+class CParseOptions : public CParseOptionsBase
 {
 private:
-	CTchar app_path;
-	CTchar app_name;
-	CTchar ini_path;
-	CTchar ini_file;
-
-	CTchar *tape_file;
-#ifdef USE_FD1
-	CTchar *disk_file[USE_DRIVE];
-#endif
-	CTchar *state_file;
-	CTchar *autokey_file;
-	CTchar *reckey_file;
-#ifdef USE_DEBUGGER
-	int debugger_imm_start;
-#endif
-
 	int get_options(LPTSTR szCmdLine);
 
-	CParseOptions() {}
-	CParseOptions(const CParseOptions &) {}
-	CParseOptions &operator=(const CParseOptions &) { return *this; }
+	bool get_module_file_name(_TCHAR *path, int size);
+
+	CParseOptions();
+	CParseOptions(const CParseOptions &);
 
 public:
 	CParseOptions(LPTSTR szCmdLine);
 	~CParseOptions();
-
-	void open_recent_file(GUI *gui);
-
-	const _TCHAR *get_app_path();
-	const _TCHAR *get_app_name();
-	const _TCHAR *get_ini_path();
-	const _TCHAR *get_ini_file();
 };
 
 #endif /* WIN_PARSE_OPT_H */

@@ -83,8 +83,8 @@ KEYRECORD::KEYRECORD(EMU* parent_emu)
 	fkro = new FILEIO();
 	fkri = new FILEIO();
 	m_end_of_file = false;
-	config.reckey_recording = false;
-	config.reckey_playing = false;
+	pConfig->reckey_recording = false;
+	pConfig->reckey_playing = false;
 	key_rec_sum_clock = 0;
 
 	clear_play_buffer();
@@ -125,6 +125,7 @@ void KEYRECORD::clear_play_buffer()
 #ifdef USE_LIGHTPEN
 	memset(lpen_recp_stat, 0, sizeof(lpen_recp_stat));
 #endif
+	emu->clear_vm_key_status(VM_KEY_STATUS_KEYREC);
 }
 
 void KEYRECORD::clear_record_buffer()
@@ -143,10 +144,10 @@ void KEYRECORD::clear_record_buffer()
 // ----------------------------------------------------------------------------
 void KEYRECORD::read_to_cache()
 {
-	if (!config.reckey_playing) return;
+	if (!pConfig->reckey_playing) return;
 
 	uint64_t limit_clk = d_event->get_current_clock() + (CPU_CLOCKS / 60);
-	uint64_t clk = 0;
+	unsigned long long int clk = 0;
 	int type = -1;
 	int code[5];
 	int rows = 0;
@@ -190,11 +191,11 @@ void KEYRECORD::read_to_cache()
 				if (cols == 2) {
 					if (code[0] < KEYBIND_KEYS) {
 						// normal key
-						m_key_cache.Set(clk, cols, code);
+						m_key_cache.Set((uint64_t)clk, cols, code);
 						rows++;
 					} else if (code[0] >= KEY_RECORD_SYSTEM_CODE && code[0] < KEY_RECORD_MAX) {
 						// system key
-						m_syskey_cache.Set(clk, cols, code);
+						m_syskey_cache.Set((uint64_t)clk, cols, code);
 						rows++;
 					}
 				}
@@ -204,7 +205,7 @@ void KEYRECORD::read_to_cache()
 				// lightpen
 				cols = sscanf(p, ":%d:%d:%x", &code[0], &code[1], &code[2]);
 				if (cols == 3) {
-					m_lpen_cache.Set(clk, cols, code);
+					m_lpen_cache.Set((uint64_t)clk, cols, code);
 					rows++;
 				}
 #endif
@@ -214,7 +215,7 @@ void KEYRECORD::read_to_cache()
 				// mouse
 				cols = sscanf(p, ":%d:%d:%d", &code[0], &code[1], &code[2]);
 				if (cols == 3) {
-					m_mouse_cache.Set(clk, cols, code);
+					m_mouse_cache.Set((uint64_t)clk, cols, code);
 					rows++;
 				}
 #endif
@@ -224,7 +225,7 @@ void KEYRECORD::read_to_cache()
 				// joystick
 				cols = sscanf(p, ":%x:%x", &code[0], &code[1]);
 				if (cols == 2) {
-					m_joypia_cache.Set(clk, cols, code);
+					m_joypia_cache.Set((uint64_t)clk, cols, code);
 					rows++;
 				}
 #endif
@@ -233,7 +234,7 @@ void KEYRECORD::read_to_cache()
 				break;
 			}
 
-			if (limit_clk < clk) {
+			if (limit_clk < (uint64_t)clk) {
 				// too far
 				break;
 			}
@@ -264,7 +265,7 @@ void KEYRECORD::read_to_cache()
 void KEYRECORD::reading_keys(int num)
 {
 #ifdef USE_KEY_RECORD
-	if (config.reckey_playing) {
+	if (pConfig->reckey_playing) {
 		uint64_t now_clk = d_event->get_current_clock();
 		int cols = -1;
 		uint64_t clk = 0;
@@ -272,13 +273,9 @@ void KEYRECORD::reading_keys(int num)
 		int code[3];
 		char *p = NULL;
 
-		while(config.reckey_playing) {
+		while(pConfig->reckey_playing) {
 			if (0x30 <= rec_key_rec_buff[0] && rec_key_rec_buff[0] <= 0x39) {
-//#ifndef __MINGW32__
 				cols = sscanf(rec_key_rec_buff,"%llu:%d:",&clk,&type);
-//#else
-//				cols = sscanf(rec_key_rec_buff,"%I64u:%d:",&clk,&type);
-//#endif
 				if ((int64_t)clk + key_rec_sum_clock < 0) {
 					clk = 0;
 				} else {
@@ -300,11 +297,7 @@ void KEYRECORD::reading_keys(int num)
 						if (cols == 2 && code[0] >= 0) {
 							int code0 = (code[0] << 1) + 1;
 #ifdef _DEBUG_KEYRECORD
-//#ifndef __MINGW32__
 							logging->out_logf(LOG_DEBUG, _T("RecKey%d %02x nc:%llu %c %llu ks:%02x nk:%d %c %d %s")
-//#else
-//							logging->out_logf(LOG_DEBUG, _T("RecKey%d %02x nc:%I64u %c %I64u ks:%02x nk:%d %c %d %s")
-//#endif
 								, num, code[0]
 								, now_clk, (now_clk == clk ? _T('=') : _T('!')), clk
 								, *key_scan_code_ptr
@@ -358,11 +351,7 @@ void KEYRECORD::reading_keys(int num)
 							,&code[0],&code[1]
 						);
 #ifdef _DEBUG_KEYRECORD
-//#ifndef __MINGW32__
 						logging->out_logf(LOG_DEBUG, _T("RecKey%d %llu %c %llu j0:%02x j1:%02x")
-//#else
-//						logging->out_logf(LOG_DEBUG, _T("RecKey%d %I64u %c %I64u j0:%02x j1:%02x")
-//#endif
 							, num
 							, now_clk, (now_clk == clk ? _T('=') : _T('!')), clk
 							, code[0], code[1]
@@ -387,13 +376,77 @@ void KEYRECORD::reading_keys(int num)
 }
 #endif
 
+#if 0
 bool KEYRECORD::processing_keys(int code, bool pressed)
 {
-	if (config.reckey_playing) pressed = playing_keys(code, pressed);
-	if (config.reckey_recording) recording_keys(code, pressed);
+	if (pConfig->reckey_playing) pressed = playing_keys(code, pressed);
+	if (pConfig->reckey_recording) recording_keys(code, pressed);
 	return pressed;
 }
+#endif
 
+void KEYRECORD::playing_key()
+{
+	if (!pConfig->reckey_playing) return;
+
+#ifdef USE_KEY_RECORD
+	// read from cahce
+	uint64_t now_clk = d_event->get_current_clock();
+	do {
+		struct KEYRECORD_CACHE::st_cache *p = m_key_cache.FindFirst(now_clk);
+		if (!p) {
+			break;
+		}
+		// normal key
+		int code = p->code[0];
+		vm_key_recp_stat[code] = ((vm_key_recp_stat[code] & 0xfe) | (p->code[1] & 1));
+
+		switch(vm_key_recp_stat[code] & 0x03) {
+		case 0x01:
+			emu->vm_key_down(code, VM_KEY_STATUS_KEYREC);
+			vm_key_recp_stat[code] |= 0x02;
+#ifdef _DEBUG_KEYRECORD
+			logging->out_logf(LOG_DEBUG, _T("   Key0 %02x  c:%llu kc:%d kr:%d ON")
+				, code, (unsigned long long int)d_event->get_current_clock(), *counter_ptr, *remain_count_ptr);
+#endif
+			break;
+		case 0x02:
+			emu->vm_key_up(code, VM_KEY_STATUS_KEYREC);
+			vm_key_recp_stat[code] &= ~0x02;
+#ifdef _DEBUG_KEYRECORD
+			logging->out_logf(LOG_DEBUG, _T("   Key0 %02x  c:%llu kc:%d kr:%d OFF")
+				, code, (unsigned long long int)d_event->get_current_clock(), *counter_ptr, *remain_count_ptr);
+#endif
+			break;
+		default:
+			break;
+		}
+	} while(0);
+#endif /* USE_KEY_RECORD */
+}
+
+void KEYRECORD::recording_key(int code, bool pressed)
+{
+	if (!pConfig->reckey_recording) return;
+
+#ifdef USE_KEY_RECORD
+	if (pressed && vm_key_recr_stat[code] == 0) {
+		UTILITY::sprintf(rec_key_tmp_buff,sizeof(rec_key_tmp_buff),"%llu:1:%04x:1\n"
+			, (unsigned long long int)d_event->get_current_clock(), code);
+		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
+		vm_key_recr_stat[code] = 1;
+
+	} else if (!pressed && vm_key_recr_stat[code] != 0) {
+		UTILITY::sprintf(rec_key_tmp_buff,sizeof(rec_key_tmp_buff),"%llu:1:%04x:0\n"
+			, (unsigned long long int)d_event->get_current_clock(), code);
+		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
+		vm_key_recr_stat[code] = 0;
+
+	}
+#endif /* USE_KEY_RECORD */
+}
+
+#if 0
 bool KEYRECORD::playing_keys(int code, bool pressed)
 {
 #ifdef USE_KEY_RECORD
@@ -418,11 +471,7 @@ bool KEYRECORD::playing_keys(int code, bool pressed)
 
 #ifdef _DEBUG_KEYRECORD
 	if ((vm_key_dbg_stat[code] != 0) != pressed) {
-//#ifndef __MINGW32__
 		logging->out_logf(LOG_DEBUG, _T("   Key0 %02x  c:%llu kc:%d kr:%d %s")
-//#else
-//		logging->out_logf(LOG_DEBUG, _T("   Key0 %02x  c:%I64u kc:%d kr:%d %s")
-//#endif
 			, code, d_event->get_current_clock()
 			, *counter_ptr, *remain_count_ptr, pressed ? _T("ON") : _T("OFF"));
 		vm_key_dbg_stat[code] = (pressed ? 1 : 0);
@@ -434,36 +483,33 @@ bool KEYRECORD::playing_keys(int code, bool pressed)
 	return false;
 #endif /* !USE_KEY_RECORD */
 }
+#endif
 
+#if 0
 void KEYRECORD::recording_keys(int code, bool pressed)
 {
 #ifdef USE_KEY_RECORD
 	if (pressed && vm_key_recr_stat[code] == 0) {
-//#ifndef __MINGW32__
 		sprintf(rec_key_tmp_buff,"%llu:1:%04x:1\n"
-//#else
-//		sprintf(rec_key_tmp_buff,"%I64u:1:%04x:1\n"
-//#endif
 			, d_event->get_current_clock(), code);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 		vm_key_recr_stat[code] = 1;
+
 	} else if (!pressed && vm_key_recr_stat[code] != 0) {
-//#ifndef __MINGW32__
 		sprintf(rec_key_tmp_buff,"%llu:1:%04x:0\n"
-//#else
-//		sprintf(rec_key_tmp_buff,"%I64u:1:%04x:0\n"
-//#endif
 			, d_event->get_current_clock(), code);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 		vm_key_recr_stat[code] = 0;
+
 	}
 #endif /* USE_KEY_RECORD */
 }
+#endif
 
 void KEYRECORD::playing_system_keys()
 {
 #ifdef USE_KEY_RECORD
-	if (!config.reckey_playing) return;
+	if (!pConfig->reckey_playing) return;
 
 	// read from cahce
 	uint64_t now_clk = d_event->get_current_clock();
@@ -474,10 +520,8 @@ void KEYRECORD::playing_system_keys()
 		}
 		if (p->code[1] & 1) {
 			// global key
-//			emu->system_key_down(p->code[0] & 0xfff);
 			emu->execute_global_keys(p->code[0] & 0x1ff, 2);
 		} else {
-//			emu->system_key_up(p->code[0] & 0xfff);
 			emu->release_global_keys(p->code[0] & 0x1ff, 2);
 		}
 	} while(0);
@@ -487,17 +531,15 @@ void KEYRECORD::playing_system_keys()
 void KEYRECORD::recording_system_keys(int code, bool pressed)
 {
 #ifdef USE_KEY_RECORD
-	if (!config.reckey_recording) return;
+	if (!pConfig->reckey_recording) return;
 
 	code |= KEY_RECORD_SYSTEM_CODE;
 	if (code < KEY_RECORD_MAX) {
-//#ifndef __MINGW32__
-		sprintf(rec_key_tmp_buff,"%llu:1:%04x:%d\n"
-//#else
-//		sprintf(rec_key_tmp_buff,"%I64u:1:%04x:%d\n"
-//#endif
-			, d_event->get_current_clock(), code, pressed ? 1 : 0);
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "%llu:1:%04x:%d\n"
+			, (unsigned long long int)d_event->get_current_clock()
+			, code, pressed ? 1 : 0);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
+
 	}
 #endif /* USE_KEY_RECORD */
 }
@@ -506,8 +548,8 @@ void KEYRECORD::recording_system_keys(int code, bool pressed)
 void KEYRECORD::processing_mouse_status(int *mstat)
 {
 #ifdef USE_KEY_RECORD
-	if (config.reckey_playing) playing_mouse_status(mstat);
-	if (config.reckey_recording) recording_mouse_status(mstat);
+	if (pConfig->reckey_playing) playing_mouse_status(mstat);
+	if (pConfig->reckey_recording) recording_mouse_status(mstat);
 #endif
 }
 
@@ -537,16 +579,13 @@ void KEYRECORD::recording_mouse_status(const int *mstat)
 {
 #ifdef USE_KEY_RECORD
 	if (memcmp(mstat, mouse_recr_stat, sizeof(mouse_recr_stat)) != 0) {
-//#ifndef __MINGW32__
-		sprintf(rec_key_tmp_buff,"%llu:3:%d:%d:%d\n"
-//#else
-//		sprintf(rec_key_tmp_buff,"%I64u:3:%x:%x:%x\n"
-//#endif
-			, d_event->get_current_clock()
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "%llu:3:%d:%d:%d\n"
+			, (unsigned long long int)d_event->get_current_clock()
 			,mstat[0], mstat[1], mstat[2]
 		);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 		memcpy(mouse_recr_stat, mstat, sizeof(mouse_recr_stat));
+
 	}
 #endif /* USE_KEY_RECORD */
 }
@@ -555,8 +594,8 @@ void KEYRECORD::recording_mouse_status(const int *mstat)
 void KEYRECORD::processing_joypia_status(uint8_t *joystat)
 {
 #ifdef USE_KEY_RECORD
-	if (config.reckey_playing) playing_joypia_status(joystat);
-	if (config.reckey_recording) recording_joypia_status(joystat);
+	if (pConfig->reckey_playing) playing_joypia_status(joystat);
+	if (pConfig->reckey_recording) recording_joypia_status(joystat);
 #endif
 }
 
@@ -584,16 +623,13 @@ void KEYRECORD::recording_joypia_status(const uint8_t *joystat)
 {
 #ifdef USE_KEY_RECORD
 	if (memcmp(joystat, joypia_recr_stat, sizeof(joypia_recr_stat)) != 0) {
-//#ifndef __MINGW32__
 		sprintf(rec_key_tmp_buff,"%llu:4:%02x:%02x\n"
-//#else
-//		sprintf(rec_key_tmp_buff,"%I64u:4:%02x:%02x\n"
-//#endif
-			, d_event->get_current_clock()
+			, (unsigned long long int)d_event->get_current_clock()
 			, joystat[0], joystat[1]
 		);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 		memcpy(joypia_recr_stat, joystat, sizeof(joypia_recr_stat));
+
 	}
 #endif /* USE_KEY_RECORD */
 }
@@ -602,8 +638,8 @@ void KEYRECORD::recording_joypia_status(const uint8_t *joystat)
 void KEYRECORD::processing_lightpen_status(int *mstat)
 {
 #ifdef USE_KEY_RECORD
-	if (config.reckey_playing) playing_lightpen_status(mstat);
-	if (config.reckey_recording) recording_lightpen_status(mstat);
+	if (pConfig->reckey_playing) playing_lightpen_status(mstat);
+	if (pConfig->reckey_recording) recording_lightpen_status(mstat);
 #endif
 }
 
@@ -631,12 +667,9 @@ void KEYRECORD::recording_lightpen_status(const int *mstat)
 {
 #ifdef USE_KEY_RECORD
 	if (memcmp(mstat, lpen_recr_stat, sizeof(lpen_recr_stat)) != 0) {
-//#ifndef __MINGW32__
 		sprintf(rec_key_tmp_buff,"%llu:2:%d:%d:%x\n"
-//#else
-//		sprintf(rec_key_tmp_buff,"%I64u:2:%d:%d:%x\n"
-//#endif
-			, d_event->get_current_clock(), mstat[0], mstat[1], mstat[2] & 3);
+			, (unsigned long long int)d_event->get_current_clock()
+			, mstat[0], mstat[1], mstat[2] & 3);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 		memcpy(lpen_recr_stat, mstat, sizeof(lpen_recr_stat));
 	}
@@ -653,7 +686,7 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 	char *p = NULL;
 	int cols;
 	int version;
-	uint64_t start_clock;
+	unsigned long long int start_clock;
 
 	fkri->Fopen(filename ,FILEIO::READ_ASCII);
 	if (fkri->IsOpened()) {
@@ -674,11 +707,7 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 			goto FIN;
 		}
 		p = fkri->Fgets(rec_key_tmp_buff, sizeof(rec_key_tmp_buff));
-//#ifndef __MINGW32__
 		cols = sscanf(rec_key_tmp_buff, "StartClock:%llu", &start_clock);
-//#else
-//		cols = sscanf(rec_key_tmp_buff, "StartClock:%I64u", &start_clock);
-//#endif
 		if (p == NULL || cols != 1) {
 			// error
 			logging->out_log_x(LOG_ERROR, CMsg::Record_key_file_has_invalid_parameter);
@@ -698,17 +727,27 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 		bool tape_playing = true;
 #endif
 #ifdef USE_FD1
-		_TCHAR *disk_file[MAX_DRIVE];
-		int disk_bank_num[MAX_DRIVE];
+		_TCHAR *disk_file[USE_FLOPPY_DISKS];
+		int disk_bank_num[USE_FLOPPY_DISKS];
+#endif
+#ifdef USE_HD1
+		_TCHAR *hard_disk_file[USE_HARD_DISKS];
 #endif
 		int drv = 0;
 		int major = 0;
 		int minor = 0;
 		int revision = 0;
 
-		for(drv = 0; drv < MAX_DRIVE; drv++) {
+#ifdef USE_FD1
+		for(drv = 0; drv < USE_FLOPPY_DISKS; drv++) {
 			disk_file[drv] = NULL;
 		}
+#endif
+#ifdef USE_HD1
+		for(drv = 0; drv < USE_HARD_DISKS; drv++) {
+			hard_disk_file[drv] = NULL;
+		}
+#endif
 
 		for(;;) {
 			p = fkri->Fgets(rec_key_tmp_buff, sizeof(rec_key_tmp_buff));
@@ -729,9 +768,16 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 #endif
 #ifdef USE_FD1
 			} else if (sscanf(rec_key_tmp_buff, "Disk%dFile:", &drv) == 1) {
-				if (0 <= drv && drv < MAX_DRIVE) {
+				if (0 <= drv && drv < USE_FLOPPY_DISKS) {
 					get_file_path(base_path, &disk_file[drv], &disk_bank_num[drv]);
 					logging->out_debugf(_T("Disk%dFile:%s:%d"),drv,disk_file[drv],disk_bank_num[drv]);
+				}
+#endif
+#ifdef USE_HD1
+			} else if (sscanf(rec_key_tmp_buff, "HardDisk%dFile:", &drv) == 1) {
+				if (0 <= drv && drv < USE_HARD_DISKS) {
+					get_file_path(base_path, &hard_disk_file[drv], NULL);
+					logging->out_debugf(_T("HardDisk%dFile:%s"),drv,hard_disk_file[drv]);
 				}
 #endif
 			} else if (sscanf(rec_key_tmp_buff, "EmulatorVersion:%d.%d.%d", &major, &minor, &revision) == 3) {
@@ -753,13 +799,24 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 		}
 #endif
 #ifdef USE_FD1
-		for(drv = 0; drv < MAX_DRIVE; drv++) {
+		for(drv = 0; drv < USE_FLOPPY_DISKS; drv++) {
 			if (disk_file[drv]) {
-				if (!emu->is_same_disk(drv, disk_file[drv], disk_bank_num[drv])) {
-					emu->open_disk_by_bank_num(drv, disk_file[drv], disk_bank_num[drv], OPEN_DISK_FLAGS_FORCELY, false);
+				if (!emu->is_same_floppy_disk(drv, disk_file[drv], disk_bank_num[drv])) {
+					emu->open_floppy_disk_by_bank_num(drv, disk_file[drv], disk_bank_num[drv], OPEN_DISK_FLAGS_FORCELY, false);
 				}
 			} else {
-				emu->close_disk(drv);
+				emu->close_floppy_disk(drv);
+			}
+		}
+#endif
+#ifdef USE_HD1
+		for(drv = 0; drv < USE_HARD_DISKS; drv++) {
+			if (hard_disk_file[drv]) {
+				if (!emu->is_same_hard_disk(drv, hard_disk_file[drv])) {
+					emu->open_hard_disk(drv, hard_disk_file[drv], OPEN_DISK_FLAGS_FORCELY);
+				}
+			} else {
+				emu->close_hard_disk(drv);
 			}
 		}
 #endif
@@ -769,15 +826,20 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 		delete [] tape_file;
 #endif
 #ifdef USE_FD1
-		for(drv = 0; drv < MAX_DRIVE; drv++) {
+		for(drv = 0; drv < USE_FLOPPY_DISKS; drv++) {
 			delete [] disk_file[drv];
+		}
+#endif
+#ifdef USE_HD1
+		for(drv = 0; drv < USE_HARD_DISKS; drv++) {
+			delete [] hard_disk_file[drv];
 		}
 #endif
 
 		// adjust start clock
-		key_rec_sum_clock = d_event->get_current_clock() - start_clock;
+		key_rec_sum_clock = d_event->get_current_clock() - (uint64_t)start_clock;
 		// check ok
-		config.reckey_playing = true;
+		pConfig->reckey_playing = true;
 
 		// clear buffer
 		clear_play_buffer();
@@ -787,15 +849,14 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 
 //		memset(rec_key_rec_buff, 0, sizeof(rec_key_rec_buff));
 //		fkri->Fgets(rec_key_rec_buff, sizeof(rec_key_rec_buff));
-//#ifndef __MINGW32__
-		logging->out_debugf(_T("RecKeyStart: c:%llu s:%llu"), d_event->get_current_clock(), start_clock);
-//#else
-//		logging->out_debugf(_T("RecKeyStart: c:%I64u s:%I64u"), d_event->get_current_clock(), start_clock);
-//#endif
+
+		logging->out_debugf(_T("RecKeyStart: c:%llu s:%llu")
+			, (unsigned long long int)d_event->get_current_clock()
+			, start_clock);
 	}
 FIN:
 #endif /* USE_KEY_RECORD */
-	return config.reckey_playing;
+	return pConfig->reckey_playing;
 }
 
 bool KEYRECORD::record_reckey(const _TCHAR* filename)
@@ -805,7 +866,7 @@ bool KEYRECORD::record_reckey(const _TCHAR* filename)
 
 	fkro->Fopen(filename ,FILEIO::WRITE_ASCII);
 	if (fkro->IsOpened()) {
-		config.reckey_recording = true;
+		pConfig->reckey_recording = true;
 
 		_TCHAR base_path[_MAX_PATH];
 		char keyname[128];
@@ -813,23 +874,20 @@ bool KEYRECORD::record_reckey(const _TCHAR* filename)
 		UTILITY::get_dir_and_basename(filename, base_path, NULL);
 
 		// write header
-		sprintf(rec_key_tmp_buff, "%s\n", KEY_RECORD_HEADER);
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "%s\n", KEY_RECORD_HEADER);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
-		sprintf(rec_key_tmp_buff, "Version:%d\n", 1);
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "Version:%d\n", 1);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
-//#ifndef __MINGW32__
-		sprintf(rec_key_tmp_buff, "StartClock:%llu\n", d_event->get_current_clock());
-//#else
-//		sprintf(rec_key_tmp_buff, "StartClock:%I64u\n", d_event->get_current_clock());
-//#endif
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "StartClock:%llu\n"
+			, (unsigned long long int)d_event->get_current_clock());
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
-		sprintf(rec_key_tmp_buff, "EmulatorVersion:%d.%d.%d\n", APP_VER_MAJOR, APP_VER_MINOR, APP_VER_REV);
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "EmulatorVersion:%d.%d.%d\n", APP_VER_MAJOR, APP_VER_MINOR, APP_VER_REV);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 
-		set_relative_path("StateFile", base_path, config.saved_state_path);
+		set_relative_path("StateFile", base_path, pConfig->GetSavedStatePath());
 
 #ifdef USE_DATAREC
-		if (set_relative_path("TapeFile", base_path, config.opened_datarec_path)) {
+		if (set_relative_path("TapeFile", base_path, pConfig->GetOpenedDataRecPath())) {
 			if (emu->datarec_opened(true)) {
 				sprintf(rec_key_tmp_buff, "TapeType:Play\n");
 				fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
@@ -840,19 +898,25 @@ bool KEYRECORD::record_reckey(const _TCHAR* filename)
 		}
 #endif
 #ifdef USE_FD1
-		for(int drv = 0; drv < MAX_DRIVE; drv++) {
-			sprintf(keyname, "Disk%dFile", drv);
-			set_relative_path(keyname, base_path, config.opened_disk_path[drv]);
+		for(int drv = 0; drv < USE_FLOPPY_DISKS; drv++) {
+			UTILITY::sprintf(keyname, sizeof(keyname), "Disk%dFile", drv);
+			set_relative_path(keyname, base_path, pConfig->GetOpenedFloppyDiskPath(drv));
 		}
 #endif
-		sprintf(rec_key_tmp_buff, "\n");
+#ifdef USE_HD1
+		for(int drv = 0; drv < USE_HARD_DISKS; drv++) {
+			UTILITY::sprintf(keyname, sizeof(keyname), "HardDisk%dFile", drv);
+			set_relative_path(keyname, base_path, pConfig->GetOpenedHardDiskPath(drv));
+		}
+#endif
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "\n");
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 
 		// clear buffer
 		clear_record_buffer();
 	}
 #endif /* USE_KEY_RECORD */
-	return config.reckey_recording;
+	return pConfig->reckey_recording;
 }
 
 void KEYRECORD::stop_reckey(bool stop_play, bool stop_record)
@@ -860,12 +924,12 @@ void KEYRECORD::stop_reckey(bool stop_play, bool stop_record)
 #ifdef USE_KEY_RECORD
 	if (stop_play && fkri) {
 		fkri->Fclose();
-		config.reckey_playing = false;
+		pConfig->reckey_playing = false;
 		clear_play_buffer();
 	}
 	if (stop_record && fkro) {
 		fkro->Fclose();
-		config.reckey_recording = false;
+		pConfig->reckey_recording = false;
 		clear_record_buffer();
 	}
 #endif /* USE_KEY_RECORD */
@@ -878,11 +942,11 @@ bool KEYRECORD::set_relative_path(const char *key, const _TCHAR *base_path, CRec
 	_TCHAR npath[_MAX_PATH];
 	char mpath[_MAX_PATH];
 
-	UTILITY::tcscpy(npath, _MAX_PATH, path.path);
+	UTILITY::tcscpy(npath, _MAX_PATH, path.path.Get());
 	UTILITY::make_relative_path(base_path, npath);
-	if (path.num > 0) config.set_number_in_path(npath, _MAX_PATH, path.num);
+	if (path.num > 0) pConfig->set_number_in_path(npath, _MAX_PATH, path.num);
 	UTILITY::cconv_from_native_path(npath, mpath, _MAX_PATH);
-	sprintf(rec_key_tmp_buff, "%s:%s\n", key, mpath);
+	UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "%s:%s\n", key, mpath);
 
 	fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 
@@ -897,7 +961,7 @@ void KEYRECORD::get_file_path(const _TCHAR *base_path, _TCHAR **file_path, int *
 	UTILITY::conv_to_native_path(ps, (*file_path), _MAX_PATH);
 	if (bank_num) {
 		(*bank_num) = 0;
-		config.get_number_in_path((*file_path), bank_num);
+		pConfig->get_number_in_path((*file_path), bank_num);
 	}
 	UTILITY::convert_path_separator(*file_path);
 	UTILITY::make_absolute_path(base_path, *file_path);

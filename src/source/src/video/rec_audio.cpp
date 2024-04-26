@@ -110,7 +110,7 @@ bool REC_AUDIO::Start(int type, int sample_rate, bool show_dialog)
 
 	rec_type = type;
 
-	CreateFileName(rec_path);
+	CreateFileName(rec_path, NULL);
 
 	switch(rec_type) {
 #ifdef USE_REC_AUDIO_WAVE
@@ -293,14 +293,16 @@ bool REC_AUDIO::Record(int32_t *buffer, int samples)
 	return now_recording;
 }
 
-void REC_AUDIO::CreateFileName(_TCHAR *file_path)
+void REC_AUDIO::CreateFileName(_TCHAR *file_path, const char *extension)
 {
-	int tim[8];
+//	int tim[8];
 	const _TCHAR *app_path;
 
-	app_path = config.snapshot_path.Length() > 0 ? config.snapshot_path : emu->application_path();
-	emu->get_timer(tim, 8);
-	UTILITY::stprintf(file_path, _MAX_PATH, _T("%s%04d-%02d-%02d_%02d-%02d-%02d"), app_path, tim[0], tim[1], tim[2], tim[4], tim[5], tim[6]);
+	app_path = pConfig->snapshot_path.Length() > 0 ? pConfig->snapshot_path.Get() : emu->application_path();
+	UTILITY::create_date_file_path(app_path, file_path, _MAX_PATH, extension);
+
+//	emu->get_timer(tim, 8);
+//	UTILITY::stprintf(file_path, _MAX_PATH, _T("%s%04d-%02d-%02d_%02d-%02d-%02d"), app_path, tim[0], tim[1], tim[2], tim[4], tim[5], tim[6]);
 }
 
 const _TCHAR **REC_AUDIO::GetCodecList(int type)

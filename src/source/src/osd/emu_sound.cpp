@@ -48,15 +48,15 @@ void EMU::initialize_sound()
 #endif
 	static int late_table[6] = {50, 75, 100, 200, 300, 400};	// ms
 
-	if(!(0 <= config.sound_frequency && config.sound_frequency < 8)) {
-		config.sound_frequency = 6;	// default: 48KHz
+	if(!(0 <= pConfig->sound_frequency && pConfig->sound_frequency < 8)) {
+		pConfig->sound_frequency = 6;	// default: 48KHz
 	}
-	if(!(0 <= config.sound_latency && config.sound_latency < 6)) {
-		config.sound_latency = 1;	// default: 75msec
+	if(!(0 <= pConfig->sound_latency && pConfig->sound_latency < 6)) {
+		pConfig->sound_latency = 1;	// default: 75msec
 	}
-	int frequency = freq_table[config.sound_frequency];
-	int samples = (int)((double)(frequency * late_table[config.sound_latency]) / 1000.0 + 0.5);
-	int latency = late_table[config.sound_latency];
+	int frequency = freq_table[pConfig->sound_frequency];
+	int samples = (int)((double)(frequency * late_table[pConfig->sound_latency]) / 1000.0 + 0.5);
+	int latency = late_table[pConfig->sound_latency];
 
 	initialize_sound(frequency, samples, latency);
 }

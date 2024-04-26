@@ -12,6 +12,7 @@
 #define GTK_X11_GUI_H
 
 #include <vector>
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
@@ -39,6 +40,8 @@ class KeybindBox;
 class RecVideoBox;
 class RecAudioBox;
 class FileBox;
+class JoySettingBox;
+class LoggingBox;
 }; /* namespace GUI_GTK_X11 */
 
 /**
@@ -79,9 +82,11 @@ private:
 	GUI_GTK_X11::VolumeBox *volumebox;
 	GUI_GTK_X11::ConfigBox *configbox;
 	GUI_GTK_X11::KeybindBox *keybindbox;
+	GUI_GTK_X11::JoySettingBox *joysetbox;
 	GUI_GTK_X11::RecVideoBox *recvidbox;
 	GUI_GTK_X11::RecAudioBox *recaudbox;
 	GUI_GTK_X11::FileBox *filebox;
+	GUI_GTK_X11::LoggingBox *loggingbox;
 	CB_PARAM filebox_param;
 	bool filebox_cont;
 
@@ -145,6 +150,7 @@ private:
 	static void OnSelectSaveRecKeyFileBox(GUI_GTK_X11::FileBox *fbox, bool rc, void *data);
 
 	//
+#ifdef USE_DATAREC
 	static void OnSelectLoadDataRec(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateLoadDataRec(GtkWidget *widget, gpointer user_data);
 	static void OnSelectSaveDataRec(GtkWidget *widget, gpointer user_data);
@@ -158,8 +164,10 @@ private:
 
 	static void OnSelectLoadDataRecFileBox(GUI_GTK_X11::FileBox *fbox, bool rc, void *data);
 	static void OnSelectSaveDataRecFileBox(GUI_GTK_X11::FileBox *fbox, bool rc, void *data);
+#endif
 
 	//
+#ifdef USE_FD1
 	static void OnSelectOpenFloppyDisk(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateOpenFloppyDisk(GtkWidget *widget, gpointer user_data);
 	static void OnSelectChangeSideFloppyDisk(GtkWidget *widget, gpointer user_data);
@@ -171,6 +179,18 @@ private:
 
 	static void OnSelectOpenFloppyFileBox(GUI_GTK_X11::FileBox *fbox, bool rc, void *data);
 	static void OnSelectOpenBlankFloppyFileBox(GUI_GTK_X11::FileBox *fbox, bool rc, void *data);
+#endif
+
+	//
+#ifdef USE_HD1
+	static void OnSelectOpenHardDisk(GtkWidget *widget, gpointer user_data);
+	static void OnUpdateOpenHardDisk(GtkWidget *widget, gpointer user_data);
+	static void OnSelectCloseHardDisk(GtkWidget *widget, gpointer user_data);
+	static void OnSelectOpenBlankHardDisk(GtkWidget *widget, gpointer user_data);
+
+	static void OnSelectOpenHardDiskFileBox(GUI_GTK_X11::FileBox *fbox, bool rc, void *data);
+	static void OnSelectOpenBlankHardDiskFileBox(GUI_GTK_X11::FileBox *fbox, bool rc, void *data);
+#endif
 
 	//
 	static void OnSelectFrameRate(GtkWidget *widget, gpointer user_data);
@@ -197,9 +217,10 @@ private:
 
 	static void OnSelectScanLine(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateScanLine(GtkWidget *widget, gpointer user_data);
-
+#ifdef USE_AFTERIMAGE
 	static void OnSelectAfterImage(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateAfterImage(GtkWidget *widget, gpointer user_data);
+#endif
 #ifdef _MBS1
 	static void OnSelectRGBType(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateRGBType(GtkWidget *widget, gpointer user_data);
@@ -264,6 +285,11 @@ private:
 #endif
 	static void OnSelectUseJoypad(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateUseJoypad(GtkWidget *widget, gpointer user_data);
+#ifdef USE_KEY2JOYSTICK
+	static void OnSelectEnableKey2Joypad(GtkWidget *widget, gpointer user_data);
+	static void OnUpdateEnableKey2Joypad(GtkWidget *widget, gpointer user_data);
+#endif
+	static void OnSelectJoySetting(GtkWidget *widget, gpointer user_data);
 #ifdef USE_LIGHTPEN
 	static void OnSelectEnableLightpen(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateEnableLightpen(GtkWidget *widget, gpointer user_data);
@@ -278,6 +304,8 @@ private:
 	static void OnSelectConfigureBox(GtkWidget *widget, gpointer user_data);
 	static void OnSelectVirtualKeyboard(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateVirtualKeyboard(GtkWidget *widget, gpointer user_data);
+	static void OnSelectLoggingBox(GtkWidget *widget, gpointer user_data);
+	static void OnUpdateLoggingBox(GtkWidget *widget, gpointer user_data);
 #ifdef USE_DEBUGGER
 	static void OnSelectOpenDebugger(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateOpenDebugger(GtkWidget *widget, gpointer user_data);
@@ -290,6 +318,8 @@ private:
 	static void OnUserCommand(GtkWidget *widget, gint id, gpointer user_data);
 #endif
 	static void OnModifyMenuOpenFlag(GtkWidget *widget, gpointer user_data);
+	static gboolean OnDragDrop(GtkWidget *widget, GdkDragContext *context, gint x, gint y, guint time_, gpointer user_data);
+	static void OnDragDataReceived(GtkWidget *widget, GdkDragContext *context, gint x, gint y, GtkSelectionData *data, guint info, guint time_, gpointer user_data);
 
 	//
 	GtkWidget *create_menu_item(GtkWidget *menu, const char *label, CbActivate cb_activate, CbShow cb_show = NULL, int drv = 0, int num = 0, guint key = 0);
@@ -307,6 +337,7 @@ private:
 	GtkWidget *create_multi_volume_menu_item(GtkWidget *menu, const char *label, int drv, int num);
 	GtkWidget *create_comm_connect_menu(GtkWidget *menu, int drv);
 	GtkWidget *create_comm_connect_menu_item(GtkWidget *menu, const char *label, int drv, int num);
+	inline void add_accelerator(GtkWidget *menu_item, guint key);
 
 	void modify_menu_open_flag(GtkWidget *menu, bool val);
 
@@ -352,9 +383,12 @@ public:
 	virtual bool ShowRecordAudioDialog();
 	virtual bool ShowRecordVideoAndAudioDialog(int fps_num);
 #ifdef USE_EMU_INHERENT_SPEC
+	virtual bool ShowJoySettingDialog();
 	virtual bool ShowConfigureDialog();
 	virtual bool ShowKeybindDialog();
 	virtual bool ShowVolumeDialog();
+	virtual bool ShowLoggingDialog();
+	virtual bool IsShownLoggingDialog();
 #endif
 #ifdef USE_DATAREC
 	virtual bool ShowLoadDataRecDialog();
@@ -369,6 +403,11 @@ public:
 #ifdef USE_EMU_INHERENT_SPEC
 	void set_disk_side_menu(uint32_t uItem, int drv);
 #endif
+#endif
+
+#ifdef USE_HD1
+	virtual bool ShowOpenHardDiskDialog(int drv);
+	virtual bool ShowOpenBlankHardDiskDialog(int drv, uint8_t type);
 #endif
 
 #ifdef USE_AUTO_KEY
@@ -397,6 +436,7 @@ public:
 	enum en_device_type {
 		DATAREC = 0,
 		FLOPPY,
+		HARDDISK,
 		STATE
 	};
 };

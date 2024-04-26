@@ -9,10 +9,6 @@
 
 	@note
 	If use this, get ffmpeg library from http://www.ffmpeg.org/.
-
-	To use on Windows:
-	Get FFmpeg "shared" package from http://ffmpeg.zeranoe.com/builds/
-	and put dll files on this application folder.
 */
 
 #ifndef FFM_RECORD_VIDEO_H
@@ -24,6 +20,7 @@
 
 #include "../../common.h"
 #include "ffm_loadlib.h"
+#include "ffm_rec_base.h"
 #include "../../msgs.h"
 
 class EMU;
@@ -33,29 +30,19 @@ class CSurface;
 /**
 	@brief Record video using ffmpeg
 */
-class FFM_REC_VIDEO
+class FFM_REC_VIDEO : public FFM_REC_BASE
 {
 private:
-	EMU *emu;
 	REC_VIDEO *vid;
 	int rec_fps;
 	VmRectWH rec_rect;
-	const _TCHAR *rec_path;
 
 	CSurface *rec_surface;
 
-	AVIOContext *avio;
-	AVFormatContext *fmtcont;
-	AVCodecContext *codcont;
-	AVFrame *frame;
 	AVFrame *srcframe;
 	SwsContext *sws_cont;
-	AVPacket *packet;
-
-	int write_error_count;
 
 	void Release();
-	void RemoveFile();
 
 	bool Encoding(AVFrame *frame, AVPacket *packet);
 

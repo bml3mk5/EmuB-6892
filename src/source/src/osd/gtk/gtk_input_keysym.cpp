@@ -52,6 +52,10 @@ uint8_t EMU_OSD::translate_keysym(uint8_t type, int code, short scan_code, int *
 
 //	out_debugf(_T("trans_key: code:%02x -> %02x scan:%02x"),code,n_code,scan_code);
 
+	if (n_code == KEYCODE_LSHIFT || n_code == KEYCODE_RSHIFT) {
+		BIT_ONOFF(key_mod, KEY_MOD_SHIFT_KEY, (type & 1) == 0);
+	}
+
 	if (new_code) *new_code = n_code;
 	if (new_keep_frames) *new_keep_frames = n_keep_frames;
 

@@ -18,11 +18,14 @@
 #include "gtk_filebox.h"
 #include "gtk_volumebox.h"
 #include "gtk_keybindbox.h"
+#include "gtk_joysetbox.h"
 #include "gtk_recvidbox.h"
 #include "gtk_recaudbox.h"
 #include "gtk_aboutbox.h"
+#include "gtk_loggingbox.h"
 #include "../../depend.h"
 #include "../../utility.h"
+#include "../../labels.h"
 #include "../../msgs.h"
 #include "../../res/resource.h"
 #ifdef USE_GTK
@@ -109,10 +112,12 @@ GUI::GUI(int argc, char **argv, EMU *new_emu)
 	volumebox = new VolumeBox(this);
 	configbox = new ConfigBox(this);
 	keybindbox = new KeybindBox(this);
+	joysetbox = new JoySettingBox(this);
 	recvidbox = new RecVideoBox(this);
 	recaudbox = new RecAudioBox(this);
 	filebox = new FileBox();
 	filebox_cont = false;
+	loggingbox = NULL;
 }
 
 GUI::~GUI()
@@ -122,9 +127,11 @@ GUI::~GUI()
 	delete volumebox;
 	delete configbox;
 	delete keybindbox;
+	delete joysetbox;
 	delete recvidbox;
 	delete recaudbox;
 	delete filebox;
+	delete loggingbox;
 }
 
 #if defined(USE_GTK)
@@ -493,7 +500,7 @@ int GUI::CreateMenu()
 			create_radio_menu_item(submenu, CMsg::CPU_x8, OnSelectCPUPower, OnUpdateCPUPower, 0, 4, GDK_KEY_4);
 			create_radio_menu_item(submenu, CMsg::CPU_x16, OnSelectCPUPower, OnUpdateCPUPower, 0, 5, GDK_KEY_5);
 			create_separator_menu(submenu);
-			create_check_menu_item(submenu, CMsg::Sync_With_CPU_Speed, OnSelectSyncIRQ, OnUpdateSyncIRQ, 0, 0, GDK_KEY_0);
+			create_check_menu_item(submenu, CMsg::Sync_Devices_With_CPU_Speed, OnSelectSyncIRQ, OnUpdateSyncIRQ, 0, 0, GDK_KEY_0);
 		}
 #ifdef _MBS1
 //		create_separator_menu(menu);
@@ -523,6 +530,7 @@ int GUI::CreateMenu()
 		create_separator_menu(menu);
 		create_menu_item(menu, CMsg::Exit_, OnExit, NULL, 0, 0, GDK_KEY_F4);
 	}
+#ifdef USE_DATAREC
 	menu = create_sub_menu(menubar, CMsg::Tape);
 	{
 		create_check_menu_item(menu, CMsg::Play_, OnSelectLoadDataRec, OnUpdateLoadDataRec, 0, 0, GDK_KEY_F7);
@@ -537,7 +545,8 @@ int GUI::CreateMenu()
 		create_separator_menu(menu);
 		create_recent_menu(menu, DATAREC, 0);
 	}
-	for(int drv=0; drv<USE_DRIVE; drv++) {
+#endif
+	for(int drv=0; drv<USE_FLOPPY_DISKS; drv++) {
 		sprintf(name,CMSG(FDDVDIGIT),drv);
 		menu = create_sub_menu(menubar, name);
 		{
@@ -713,30 +722,41 @@ int GUI::CreateMenu()
 		create_check_menu_item(menu, CMsg::Inside_LED, OnSelectInsideLed, OnUpdateInsideLed, 0, 0, GDK_KEY_L);
 #endif
 		create_check_menu_item(menu, CMsg::Show_Message, OnSelectMsgBoard, OnUpdateMsgBoard, 0, 0, GDK_KEY_Z);
+		create_check_menu_item(menu, CMsg::Log_, OnSelectLoggingBox, OnUpdateLoggingBox, 0, 0, 0);
 #ifdef USE_PERFORMANCE_METER
 		create_check_menu_item(menu, CMsg::Show_Performance_Meter, OnSelectPMeter, OnUpdatePMeter, 0, 0, 0);
 #endif
+#ifdef USE_LIGHTPEN
+		create_separator_menu(menu);
+		create_check_menu_item(menu, CMsg::Enable_Lightpen, OnSelectEnableLightpen, OnUpdateEnableLightpen, 0, 0, GDK_KEY_Control_L);
+#endif
+#ifdef USE_MOUSE
+		create_separator_menu(menu);
+		create_check_menu_item(menu, CMsg::Enable_Mouse, OnSelectEnableMouse, OnUpdateEnableMouse, 0, 0, GDK_KEY_Control_L);
+#endif
+#ifdef USE_JOYSTICK
 		create_separator_menu(menu);
 		create_check_menu_item(menu, CMsg::Use_Joypad_Key_Assigned, OnSelectUseJoypad, OnUpdateUseJoypad, 0, 1, GDK_KEY_J);
 #ifdef USE_PIAJOYSTICK
 		create_check_menu_item(menu, CMsg::Use_Joypad_PIA_Type, OnSelectUseJoypad, OnUpdateUseJoypad, 0, 2, GDK_KEY_J);
 #endif
-#ifdef USE_LIGHTPEN
-		create_check_menu_item(menu, CMsg::Enable_Lightpen, OnSelectEnableLightpen, OnUpdateEnableLightpen, 0, 0, GDK_KEY_Control_L);
+#ifdef USE_KEY2JOYSTICK
+		create_check_menu_item(menu, CMsg::Enable_Key_to_Joypad, OnSelectEnableKey2Joypad, OnUpdateEnableKey2Joypad, 0, 0, 0);
 #endif
-#ifdef USE_MOUSE
-		create_check_menu_item(menu, CMsg::Enable_Mouse, OnSelectEnableMouse, OnUpdateEnableMouse, 0, 0, GDK_KEY_Control_L);
 #endif
-		create_check_menu_item(menu, CMsg::Loosen_Key_Stroke_Game, OnSelectLoosenKeyStroke, OnUpdateLoosenKeyStroke, 0, 0, 0);
 		create_separator_menu(menu);
-		create_menu_item(menu, CMsg::Keybind_, OnSelectKeybindBox, NULL, 0, 0, GDK_KEY_K);
-		create_check_menu_item(menu, CMsg::Virtual_Keyboard, OnSelectVirtualKeyboard, OnUpdateVirtualKeyboard, 0, 0, 0);
+		create_check_menu_item(menu, CMsg::Loosen_Key_Stroke_Game, OnSelectLoosenKeyStroke, OnUpdateLoosenKeyStroke, 0, 0, 0);
+		create_check_menu_item(menu, CMsg::Virtual_Keyboard_, OnSelectVirtualKeyboard, OnUpdateVirtualKeyboard, 0, 0, 0);
 #ifdef USE_DEBUGGER
 		create_separator_menu(menu);
 		create_menu_item(menu, CMsg::Start_Debugger, OnSelectOpenDebugger, OnUpdateOpenDebugger, 0, 0, GDK_KEY_D);
 		create_menu_item(menu, CMsg::Stop_Debugger, OnSelectCloseDebugger, NULL);
 #endif
 		create_separator_menu(menu);
+#ifdef USE_JOYSTICK
+		create_menu_item(menu, CMsg::Joypad_Setting_, OnSelectJoySetting, NULL, 0, 0, 0);
+#endif
+		create_menu_item(menu, CMsg::Keybind_, OnSelectKeybindBox, NULL, 0, 0, GDK_KEY_K);
 		create_menu_item(menu, CMsg::Configure_, OnSelectConfigureBox, NULL, 0, 0, GDK_KEY_C);
 	}
 	menu = create_sub_menu(menubar, CMsg::Help);
@@ -751,6 +771,22 @@ int GUI::CreateMenu()
 	GtkWidget *screen = ((EMU_OSD *)emu)->get_screen();
 	gtk_box_pack_start(GTK_BOX(vbox), screen, TRUE, TRUE, 0);
 	g_object_ref(G_OBJECT(screen));
+
+//	const GtkTargetEntry targets[] = {
+//			{ "text/uri-list", 0, 0 },
+//			{ "text/plain", 0, 1 }
+//	};
+
+	// connect drop signal
+	g_signal_connect(G_OBJECT(widget_window), "drag-drop",
+		G_CALLBACK(OnDragDrop), (gpointer)this);
+	g_signal_connect(G_OBJECT(widget_window), "drag-data-received",
+		G_CALLBACK(OnDragDataReceived), (gpointer)this);
+	// enable drop on window
+	gtk_drag_dest_set(widget_window, GTK_DEST_DEFAULT_ALL,
+			NULL, 0, (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK));
+	gtk_drag_dest_add_uri_targets(widget_window);
+//	gtk_drag_dest_add_text_targets(widget_window);
 #endif
 
 //#if !defined(GUI_USE_FOREIGN_WINDOW)
@@ -859,6 +895,13 @@ void GUI::PostCommandMessage(int id, void *data1, void *data2)
 #endif
 
 #ifdef USE_EMU_INHERENT_SPEC
+bool GUI::ShowJoySettingDialog()
+{
+	// create joypad setting dialog
+	joysetbox->Show(widget_window);
+	return true;
+}
+
 bool GUI::ShowConfigureDialog()
 {
 	// create configure dialog
@@ -879,6 +922,25 @@ bool GUI::ShowVolumeDialog()
 	volumebox->Show(widget_window);
 	return true;
 }
+
+bool GUI::ShowLoggingDialog()
+{
+	if (!loggingbox) {
+		loggingbox = new LoggingBox(this);
+	}
+	if (!IsShownLoggingDialog()) {
+		loggingbox->Show(widget_window);
+	} else {
+		loggingbox->Hide();
+	}
+	return true;
+}
+
+bool GUI::IsShownLoggingDialog()
+{
+	return loggingbox ? loggingbox->IsVisible() : false;
+}
+
 #endif
 bool GUI::ShowRecordVideoDialog(int fps_num)
 {
@@ -918,27 +980,13 @@ bool GUI::ShowAboutDialog()
 #ifdef USE_DATAREC
 bool GUI::ShowLoadDataRecDialog()
 {
-	const CMsg::Id filter[] =
-#if defined(DATAREC_PC8801)
-		{ CMsg::Supported_Files_cas_cmt_t88, CMsg::All_Files_, CMsg::End };
-#elif defined(DATAREC_BINARY_ONLY)
-		{ CMsg::Supported_Files_cas_cmt, CMsg::All_Files_, CMsg::End };
-#elif defined(DATAREC_TAP)
-		{ CMsg::Supported_Files_wav_cas_tap, CMsg::All_Files_, CMsg::End };
-#elif defined(DATAREC_MZT)
-		{ CMsg::Supported_Files_wav_cas_mzt_m12, CMsg::All_Files_, CMsg::End };
-#elif defined(USE_EMU_INHERENT_SPEC)
-		{ CMsg::Supported_Files_l3_l3b_l3c_wav_t9x, CMsg::All_Files_, CMsg::End };
-#else
-		{ CMsg::Supported_Files_wav_cas),CMsg::All_Files_, CMsg::End };
-#endif
+	const char *filter = LABELS::datarec_exts;
 
 	SystemPause(true);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Play_Data_Recorder_Tape,
-		config.initial_datarec_path,
-		_T("l3"),
+		pConfig->GetInitialDataRecPath(),
 		false,
 		NULL,
 		OnSelectLoadDataRecFileBox,
@@ -958,27 +1006,13 @@ void GUI::OnSelectLoadDataRecFileBox(FileBox *fbox, bool rc, void *data)
 
 bool GUI::ShowSaveDataRecDialog()
 {
-	const CMsg::Id filter[] =
-#if defined(DATAREC_PC8801)
-		{ CMsg::Supported_Files_cas_cmt, CMsg::All_Files_, CMsg::End };
-#elif defined(DATAREC_BINARY_ONLY)
-		{ CMsg::Supported_Files_cas_cmt, CMsg::All_Files_, CMsg::End };
-#elif defined(DATAREC_TAP)
-		{ CMsg::Supported_Files_wav_cas, CMsg::All_Files_, CMsg::End };
-#elif defined(DATAREC_MZT)
-		{ CMsg::Supported_Files_wav_cas, CMsg::All_Files_, CMsg::End };
-#elif defined(USE_EMU_INHERENT_SPEC)
-		{ CMsg::L3_File_l3, CMsg::L3B_File_l3b, CMsg::L3C_File_l3c, CMsg::Wave_File_wav, CMsg::T9X_File_t9x, CMsg::All_Files_, CMsg::End };
-#else
-		{ CMsg::Supported_Files_wav_cas, CMsg::All_Files_, CMsg::End };
-#endif
+		const char *filter = LABELS::datarec_exts;
 
 	SystemPause(true);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Record_Data_Recorder_Tape,
-		config.initial_datarec_path,
-		_T("l3"),
+		pConfig->GetInitialDataRecPath(),
 		true,
 		NULL,
 		OnSelectSaveDataRecFileBox,
@@ -1004,12 +1038,7 @@ void GUI::set_datarec_file_menu(uint32_t uItem)
 #ifdef USE_FD1
 bool GUI::ShowOpenFloppyDiskDialog(int drv)
 {
-	const CMsg::Id filter[] =
-#ifndef USE_EMU_INHERENT_SPEC
-		{ CMsg::Supported_Files_d88_d77_td0_imd_dsk_fdi_hdm_tfd_xdf_2d_sf7, CMsg::All_Files_, CMsg::End };
-#else
-		{ CMsg::Supported_Files_d88_td0_imd_dsk_fdi_hdm_tfd_xdf_2d_sf7, CMsg::All_Files_, CMsg::End };
-#endif
+	const char *filter = LABELS::floppy_disk_exts;
 
 	_TCHAR title[128];
 	_stprintf(title, CMSG(Open_Floppy_Disk_VDIGIT), drv);
@@ -1019,8 +1048,8 @@ bool GUI::ShowOpenFloppyDiskDialog(int drv)
 	bool rc = filebox->Show(widget_window,
 		filter,
 		title,
-		config.initial_disk_path,
-		_T("d88"),
+		pConfig->GetInitialFloppyDiskPath(),
+//		_T("d88"),
 		false,
 		NULL,
 		OnSelectOpenFloppyFileBox,
@@ -1046,26 +1075,21 @@ void GUI::set_disk_file_menu(uint32_t uItem, int drv)
 
 bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 {
-	const CMsg::Id filter[] =
-#ifndef USE_EMU_INHERENT_SPEC
-		{ CMsg::Supported_Files_d88_d77, CMsg::All_Files_, CMsg::End };
-#else
-		{ CMsg::Supported_Files_d88, CMsg::All_Files_, CMsg::End };
-#endif
+	const char *filter = LABELS::blank_floppy_disk_exts;
 
 	_TCHAR title[128];
 	_stprintf(title, CMSG(New_Floppy_Disk_VDIGIT), drv);
 
 	_TCHAR file_name[_MAX_PATH];
-	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, "d88");
+	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, _T("d88"));
 
 	SystemPause(true);
 	filebox_param.Set(emu, this, 0, drv, type);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		title,
-		config.initial_disk_path,	
-		_T("d88"),
+		pConfig->GetInitialFloppyDiskPath(),	
+//		_T("d88"),
 		true,
 		file_name,
 		OnSelectOpenBlankFloppyFileBox,
@@ -1098,18 +1122,89 @@ void GUI::set_disk_side_menu(uint32_t uItem, int drv)
 
 #endif	// USE_FD1
 
+#ifdef USE_HD1
+bool GUI::ShowOpenHardDiskDialog(int drv)
+{
+	const char *filter = LABELS::hard_disk_exts;
+	_TCHAR title[128];
+	_stprintf(title, CMSG(Open_Hard_Disk_VDIGIT), drv);
+
+	SystemPause(true);
+	filebox_param.Set(emu, this, 0, drv, 0);
+	bool rc = filebox->Show(widget_window,
+		filter,
+		title,
+		pConfig->GetInitialHardDiskPath(),
+//		_T("hdf"),
+		false,
+		NULL,
+		OnSelectOpenHardDiskFileBox,
+		(void *)&filebox_param
+	);
+	return rc;
+}
+void GUI::OnSelectOpenHardDiskFileBox(FileBox *fbox, bool rc, void *data)
+{
+	CB_PARAM *param = (CB_PARAM *)data;
+	GUI *gui = param->gui;
+	int drv = param->drv;
+	if (rc) {
+		gui->PostEtOpenHardDiskMessage(drv, fbox->GetPath(), 0);
+	} else {
+		gui->SystemPause(false);
+	}
+}
+bool GUI::ShowOpenBlankHardDiskDialog(int drv, uint8_t type)
+{
+	const char *filter = LABELS::blank_hard_disk_exts;
+	_TCHAR title[128];
+	_stprintf(title, CMSG(New_Hard_Disk_VDIGIT), drv);
+
+	_TCHAR file_name[_MAX_PATH];
+	UTILITY::create_date_file_path(NULL, file_name, _MAX_PATH, _T("hdf"));
+
+	SystemPause(true);
+	filebox_param.Set(emu, this, 0, drv, type);
+	bool rc = filebox->Show(widget_window,
+		filter,
+		title,
+		pConfig->GetInitialHardDiskPath(),	
+//		_T("hdf"),
+		true,
+		file_name,
+		OnSelectOpenBlankHardDiskFileBox,
+		(void *)&filebox_param
+	);
+	return rc;
+}
+void GUI::OnSelectOpenBlankHardDiskFileBox(FileBox *fbox, bool rc, void *data)
+{
+	CB_PARAM *param = (CB_PARAM *)data;
+	EMU *emu = param->emu;
+	GUI *gui = param->gui;
+	int drv = param->drv;
+	int num = param->num;
+	if(rc) {
+		rc = emu->create_blank_hard_disk(fbox->GetPath(), (uint8_t)num);
+	}
+	if (rc) {
+		gui->PostEtOpenHardDiskMessage(drv, fbox->GetPath(), 0);
+	} else {
+		gui->SystemPause(false);
+	}
+}
+#endif	// USE_HD1
+
 #ifdef USE_AUTO_KEY
 bool GUI::ShowOpenAutoKeyDialog()
 {
-	const CMsg::Id filter[] =
-		{ CMsg::Supported_Files_txt_bas_lpt, CMsg::All_Files_, CMsg::End };
+	const char *filter = LABELS::autokey_file_exts;
 
 	SystemPause(true);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Open_Text_File,
-		config.initial_autokey_path,
-		_T("txt"),
+		pConfig->GetInitialAutoKeyPath(),
 		false,
 		NULL,
 		OnSelectOpenAutoKeyFileBox,
@@ -1131,16 +1226,14 @@ void GUI::OnSelectOpenAutoKeyFileBox(FileBox *fbox, bool rc, void *data)
 #ifdef USE_EMU_INHERENT_SPEC
 bool GUI::ShowSaveStateDialog()
 {
-	const CMsg::Id filter[] =
-		{ CMsg::Supported_Files_l3r, CMsg::All_Files_, CMsg::End };
+	const char *filter = LABELS::state_file_exts;
 
 	SystemPause(true);
-	config.saved_state_path.Clear();
+	pConfig->ClearSavedStatePath();
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Save_Status_Data,
-		config.initial_state_path,
-		_T("l3r"),
+		pConfig->GetInitialStatePath(),
 		true,
 		NULL,
 		OnSelectSaveStateFileBox,
@@ -1165,15 +1258,13 @@ void GUI::OnSelectSaveStateFileBox(FileBox *fbox, bool rc, void *data)
 
 bool GUI::ShowLoadStateDialog()
 {
-	const CMsg::Id filter[] =
-		{ CMsg::Supported_Files_l3r, CMsg::All_Files_, CMsg::End };
+	const char *filter = LABELS::state_file_exts;
 
 	SystemPause(true);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Load_Status_Data,
-		config.initial_state_path,
-		_T("l3r"),
+		pConfig->GetInitialStatePath(),
 		false,
 		NULL,
 		OnSelectLoadStateFileBox,
@@ -1194,15 +1285,13 @@ void GUI::OnSelectLoadStateFileBox(FileBox *fbox, bool rc, void *data)
 #ifdef USE_KEY_RECORD
 bool GUI::ShowPlayRecKeyDialog()
 {
-	const CMsg::Id filter[] =
-		{ CMsg::Supported_Files_l3k, CMsg::All_Files_, CMsg::End };
+	const char *filter = LABELS::key_rec_file_exts;
 
 	SystemPause(true);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Play_Recorded_Keys,
-		config.initial_state_path,
-		_T("l3k"),
+		pConfig->GetInitialStatePath(),
 		false,
 		NULL,
 		OnSelectLoadRecKeyFileBox,
@@ -1222,15 +1311,13 @@ void GUI::OnSelectLoadRecKeyFileBox(FileBox *fbox, bool rc, void *data)
 
 bool GUI::ShowRecordRecKeyDialog()
 {
-	const CMsg::Id filter[] =
-		{ CMsg::Supported_Files_l3k, CMsg::All_Files_, CMsg::End };
+	const char *filter = LABELS::key_rec_file_exts;
 
 	SystemPause(true);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Record_Input_Keys,
-		config.initial_state_path,
-		_T("l3k"),
+		pConfig->GetInitialStatePath(),
 		true,
 		NULL,
 		OnSelectSaveRecKeyFileBox,
@@ -1261,16 +1348,14 @@ bool GUI::ShowRecordStateAndRecKeyDialog()
 #ifdef USE_PRINTER
 bool GUI::ShowSavePrinterDialog(int drv)
 {
-	const CMsg::Id filter[] =
-		{ CMsg::Supported_Files_lpt, CMsg::All_Files_, CMsg::End };
+	const char *filter = LABELS::printing_file_exts;
 
 	SystemPause(true);
 	filebox_param.Set(emu, this, 0, drv, 0);
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Save_Printing_Data,
-		config.initial_printer_path,
-		_T("lpt"),
+		pConfig->GetInitialPrinterPath(),
 		true,
 		NULL,
 		OnSelectSavePrinterFileBox,
@@ -1309,10 +1394,10 @@ void open_cart_dialog()
 #else
 		CMsg::Game_Cartridge,
 #endif
-		config.initial_cart_path
+		pConfig->initial_cart_path
 	);
 	if(rc) {
-		UPDATE_HISTORY(path, config.recent_cart_path);
+		UPDATE_HISTORY(path, pConfig->recent_cart_path);
 		emu->open_cart(filebox->GetPath());
 	}
 	SystemPause(false);
@@ -1329,10 +1414,10 @@ void open_quickdisk_dialog()
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Quick_Disk,
-		config.initial_quickdisk_path
+		pConfig->initial_quickdisk_path
 	);
 	if(rc) {
-		UPDATE_HISTORY(path, config.recent_quickdisk_path);
+		UPDATE_HISTORY(path, pConfig->recent_quickdisk_path);
 		emu->open_quickdisk(filebox->GetPath());
 	}
 	SystemPause(false);
@@ -1349,10 +1434,10 @@ void open_media_dialog()
 	bool rc = filebox->Show(widget_window,
 		filter,
 		CMsg::Sound_Cassette_Tape,
-		config.initial_media_path
+		pConfig->initial_media_path
 	);
 	if(rc) {
-		UPDATE_HISTORY(path, config.recent_media_path);
+		UPDATE_HISTORY(path, pConfig->recent_media_path);
 		emu->open_media(filebox->GetPath());
 	}
 	SystemPause(false);
@@ -1373,10 +1458,10 @@ void open_binary_dialog(int drv, bool load)
 #else
 		CMsg::Memory_Dump,
 #endif
-		config.initial_binary_path
+		pConfig->initial_binary_path
 	);
 	if(rc) {
-		UPDATE_HISTORY(path, config.recent_binary_path[drv]);
+		UPDATE_HISTORY(path, pConfig->recent_binary_path[drv]);
 		if(load) {
 			emu->load_binary(drv, filebox->GetPath());
 		}
@@ -1393,48 +1478,14 @@ void open_binary_dialog(int drv, bool load)
  */
 bool GUI::OpenDroppedFile(void *param)
 {
-#if 0
 	_TCHAR dropped_file[_MAX_PATH];
-
-	HDROP hDrop=(HDROP)param;
-	// get first filename
-	DragQueryFile(hDrop, 0, dropped_file, _MAX_PATH);
-    DragFinish(hDrop);
-	if (_tcslen(dropped_file) == 0) {
-		return false;
+	const gchar *file_path = g_filename_from_uri((const char *)param, NULL, NULL);
+	if (file_path) {
+		UTILITY::strcpy(dropped_file, sizeof(dropped_file), file_path);
+	} else {
+		dropped_file[0] = _T('\0');
 	}
-
-	int rc = check_supported_file(dropped_file);
-	switch(rc) {
-	case 1:
-		// maybe tape image file
-		PostEtLoadDataRecMessage(dropped_file);
-		break;
-#ifdef USE_FD1
-	case 2:
-		// maybe disk image file
-		PostEtOpenFloppyMessage(0, dropped_file, 0, 0);
-		break;
-#endif
-#ifdef USE_EMU_INHERENT_SPEC
-	case 3:
-		// maybe state file
-		PostEtLoadStatusMessage(dropped_file);
-		break;
-	case 4:
-		// maybe text file (for autokey)
-		PostEtLoadAutoKeyMessage(dropped_file);
-		break;
-	case 6:
-		// maybe record key file
-		PostEtLoadRecKeyMessage(dropped_file);
-		break;
-#endif
-	default:
-		return false;
-	}
-#endif
-	return true;
+	return OpenFileByExtention(dropped_file);
 }
 
 void GUI::cb_realize(GtkWidget *widget, gpointer user_data)
@@ -1518,9 +1569,8 @@ GtkWidget *GUI::create_menu_item(GtkWidget *menu, const char *label, CbActivate 
 	GtkWidget *item;
 	item = gtk_menu_item_new_with_mnemonic(label);
 	gtk_container_add(GTK_CONTAINER(menu), item);
-	if (key != 0) {
-		gtk_widget_add_accelerator(item, "activate", accel_group, key, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-	}
+	add_accelerator(item, key);
+
 	if (cb_activate != NULL) {
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(cb_activate), (gpointer)this);
 	}
@@ -1544,9 +1594,8 @@ GtkWidget *GUI::create_check_menu_item(GtkWidget *menu, const char *label, CbAct
 	GtkWidget *item;
 	item = gtk_check_menu_item_new_with_mnemonic(label);
 	gtk_container_add(GTK_CONTAINER(menu), item);
-	if (key != 0) {
-		gtk_widget_add_accelerator(item, "activate", accel_group, key, GDK_MOD1_MASK, GTK_ACCEL_VISIBLE);
-	}
+	add_accelerator(item, key);
+
 	if (cb_activate != NULL) {
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(cb_activate), (gpointer)this);
 	}
@@ -1669,6 +1718,17 @@ GtkWidget *GUI::create_comm_connect_menu_item(GtkWidget *menu, const char *label
 	gtk_widget_show(item);
 	return item;
 }
+void GUI::add_accelerator(GtkWidget *menu_item, guint key)
+{
+	if (key != 0) {
+		int mod = GDK_MOD1_MASK;
+		if (key >= 0x100 && key < 0x200) {
+			key -= 0x100;
+			mod |= GDK_SHIFT_MASK;
+		}
+		gtk_widget_add_accelerator(menu_item, "activate", accel_group, key, (GdkModifierType)mod, GTK_ACCEL_VISIBLE);
+	}
+}
 void GUI::modify_menu_open_flag(GtkWidget *menu, bool val)
 {
 	gtk_container_foreach(GTK_CONTAINER(menu), OnModifyMenuOpenFlag, (gpointer)val);
@@ -1709,14 +1769,23 @@ void GUI::OnSelectRecentFile(GtkWidget *widget, gpointer user_data)
 
 	SKIP_WHEN_MENU_OPENING(widget);
 	switch(type) {
+#ifdef USE_DATAREC
 		case DATAREC:
-			gui->PostEtLoadDataRecMessage(config.recent_datarec_path[num]->path);
+			gui->PostEtLoadDataRecMessage(pConfig->GetRecentDataRecPathString(num));
 			break;
+#endif
+#ifdef USE_FD1
 		case FLOPPY:
-			gui->PostEtOpenFloppyMessage(drv, config.recent_disk_path[drv][num]->path, 0, 0, true);
+			gui->PostEtOpenFloppyMessage(drv, pConfig->GetRecentFloppyDiskPathString(drv, num), 0, 0, true);
 			break;
+#endif
+#ifdef USE_HD1
+		case HARDDISK:
+			gui->PostEtOpenHardDiskMessage(drv, pConfig->GetRecentHardDiskPathString(drv, num), 0);
+			break;
+#endif
 		case STATE:
-			gui->PostEtLoadStatusMessage(config.recent_state_path[num]->path);
+			gui->PostEtLoadStatusMessage(pConfig->GetRecentStatePathString(num));
 			break;
 	}
 }
@@ -1735,29 +1804,47 @@ void GUI::OnUpdateRecentFile(GtkWidget *widget, gpointer user_data)
 	int bank_num = 0;
 	int max_history = 0;
 	switch(type) {
+#ifdef USE_DATAREC
 	case DATAREC:
-		max_history = config.recent_datarec_path.Count();
+		max_history = pConfig->GetRecentDataRecPathCount();
 		break;
+#endif
+#ifdef USE_FD1
 	case FLOPPY:
-		max_history = config.recent_disk_path[drv].Count();
+		max_history = pConfig->GetRecentFloppyDiskPathCount(drv);
 		break;
+#endif
+#ifdef USE_HD1
+	case HARDDISK:
+		max_history = pConfig->GetRecentHardDiskPathCount(drv);
+		break;
+#endif
 	case STATE:
-		max_history = config.recent_state_path.Count();
+		max_history = pConfig->GetRecentStatePathCount();
 		break;
 	}
 
 	RemoveAllItems(submenu);
 	for(int num=0; num<max_history; num++) {
 		switch(type) {
+#ifdef USE_DATAREC
 		case DATAREC:
-			file = config.recent_datarec_path[num]->path;
+			file = pConfig->GetRecentDataRecPathString(num);
 			break;
+#endif
+#ifdef USE_FD1
 		case FLOPPY:
-			file = config.recent_disk_path[drv][num]->path;
-			bank_num = config.recent_disk_path[drv][num]->num;
+			file = pConfig->GetRecentFloppyDiskPathString(drv, num);
+			bank_num = pConfig->GetRecentFloppyDiskPathNumber(drv, num);
 			break;
+#endif
+#ifdef USE_HD1
+		case HARDDISK:
+			file = pConfig->GetRecentHardDiskPathString(drv, num);
+			break;
+#endif
 		case STATE:
-			file = config.recent_state_path[num]->path;
+			file = pConfig->GetRecentStatePathString(num);
 			break;
 		}
 		if (file == NULL || file[0] == '\0') break;
@@ -1953,7 +2040,7 @@ void GUI::OnUpdateCPUPower(GtkWidget *widget, gpointer user_data)
 	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
 
 //printf("OnUpdateCPUPower %d\n",num);
-	gtk_check_menu_item_set_active(item, config.cpu_power == num);
+	gtk_check_menu_item_set_active(item, pConfig->cpu_power == num);
 }
 void GUI::OnSelectSyncIRQ(GtkWidget *widget, gpointer user_data)
 {
@@ -2077,6 +2164,7 @@ void GUI::OnSelectSaveState(GtkWidget *widget, gpointer user_data)
 }
 
 //
+#ifdef USE_DATAREC
 void GUI::OnSelectLoadDataRec(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
@@ -2147,8 +2235,10 @@ void GUI::OnUpdateRealModeDataRec(GtkWidget *widget, gpointer user_data)
 
 	gtk_check_menu_item_set_active(item, gui->NowRealModeDataRec());
 }
+#endif /* USE_DATAREC */
 
 //
+#ifdef USE_FD1
 void GUI::OnSelectOpenFloppyDisk(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
@@ -2220,6 +2310,44 @@ void GUI::OnUpdateWriteProtectFloppyDisk(GtkWidget *widget, gpointer user_data)
 	gtk_check_menu_item_set_active(item, gui->WriteProtectedFloppyDisk(drv));
 	gtk_widget_set_sensitive(GTK_WIDGET(item), gui->InsertedFloppyDisk(drv));
 }
+#endif /* USE_FD1 */
+
+//
+#ifdef USE_HD1
+void GUI::OnSelectOpenHardDisk(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+	int drv = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"drv");
+
+	SKIP_WHEN_MENU_OPENING(widget);
+	gui->ShowOpenHardDiskDialog(drv);
+}
+void GUI::OnUpdateOpenHardDisk(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+	int drv = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"drv");
+	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
+
+	gtk_check_menu_item_set_active(item, gui->MountedHardDisk(drv));
+}
+void GUI::OnSelectCloseHardDisk(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+	int drv = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"drv");
+
+	SKIP_WHEN_MENU_OPENING(widget);
+	gui->PostEtCloseHardDiskMessage(drv);
+}
+void GUI::OnSelectOpenBlankHardDisk(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+	int drv = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"drv");
+	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
+
+	SKIP_WHEN_MENU_OPENING(widget);
+	gui->ShowOpenBlankHardDiskDialog(drv, (uint8_t)num);
+}
+#endif /* USE_HD1 */
 
 //
 void GUI::OnSelectFrameRate(GtkWidget *widget, gpointer user_data)
@@ -2381,6 +2509,7 @@ void GUI::OnUpdateScanLine(GtkWidget *widget, gpointer user_data)
 
 	gtk_check_menu_item_set_active(item, gui->GetDrawMode() == num);
 }
+#ifdef USE_AFTERIMAGE
 void GUI::OnSelectAfterImage(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
@@ -2397,6 +2526,7 @@ void GUI::OnUpdateAfterImage(GtkWidget *widget, gpointer user_data)
 
 	gtk_check_menu_item_set_active(item, gui->GetAfterImageMode() == num);
 }
+#endif
 #ifdef _MBS1
 void GUI::OnSelectRGBType(GtkWidget *widget, gpointer user_data)
 {
@@ -2782,6 +2912,29 @@ void GUI::OnUpdateUseJoypad(GtkWidget *widget, gpointer user_data)
 
 	gtk_check_menu_item_set_active(item, gui->IsEnableJoypad(num));
 }
+#ifdef USE_KEY2JOYSTICK
+void GUI::OnSelectEnableKey2Joypad(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+
+	SKIP_WHEN_MENU_OPENING(widget);
+	gui->ToggleEnableKey2Joypad();
+}
+void GUI::OnUpdateEnableKey2Joypad(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
+
+	gtk_check_menu_item_set_active(item, gui->IsEnableKey2Joypad());
+}
+#endif
+void GUI::OnSelectJoySetting(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+
+	SKIP_WHEN_MENU_OPENING(widget);
+	gui->ShowJoySettingDialog();
+}
 #ifdef USE_LIGHTPEN
 void GUI::OnSelectEnableLightpen(GtkWidget *widget, gpointer user_data)
 {
@@ -2858,6 +3011,22 @@ void GUI::OnUpdateVirtualKeyboard(GtkWidget *widget, gpointer user_data)
 	gtk_check_menu_item_set_active(item, gui->IsShownVirtualKeyboard());
 }
 
+void GUI::OnSelectLoggingBox(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+
+	SKIP_WHEN_MENU_OPENING(widget);
+	gui->ShowLoggingDialog();
+}
+
+void GUI::OnUpdateLoggingBox(GtkWidget *widget, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
+
+	gtk_check_menu_item_set_active(item, gui->IsShownLoggingDialog());
+}
+
 void GUI::OnSelectAbout(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
@@ -2901,6 +3070,32 @@ void GUI::OnUserCommand(GtkWidget *widget, gint id, gpointer user_data)
 	gui->ProcessCommand(id, NULL, NULL);
 }
 #endif
+
+gboolean GUI::OnDragDrop(GtkWidget *widget, GdkDragContext *context, gint x, gint y, guint time_, gpointer user_data)
+{
+	GtkTargetList *list = gtk_drag_dest_get_target_list(widget);
+	GdkAtom atom = gtk_drag_dest_find_target(widget, context, list);
+	if (atom == GDK_NONE) {
+		// out of target
+		gtk_drag_finish(context, FALSE, FALSE, time_);
+		return FALSE;
+	}
+	gtk_drag_get_data(widget, context, atom, time_);
+	return TRUE;
+}
+
+void GUI::OnDragDataReceived(GtkWidget *widget, GdkDragContext *context, gint x, gint y, GtkSelectionData *data, guint info, guint time_, gpointer user_data)
+{
+	GUI *gui = (GUI *)user_data;
+	gchar **list = gtk_selection_data_get_uris(data);
+	if (!list) {
+		gtk_drag_finish(context, FALSE, FALSE, time_);
+		return;
+	}
+	gui->OpenDroppedFile(list[0]);
+	g_strfreev(list);
+	gtk_drag_finish(context, TRUE, FALSE, time_);
+}
 
 #endif /* GUI_TYPE_GTK_X11 */
 

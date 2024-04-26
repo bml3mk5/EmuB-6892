@@ -47,6 +47,9 @@ extern const CMsg::Id led_pos[];
 
 extern const _TCHAR *capture_fmt[];
 
+extern const CMsg::Id sound_samples[];
+extern const CMsg::Id sound_late[];
+
 extern const CMsg::Id comm_baud[];
 
 extern const _TCHAR *comm_uart_baudrate[];
@@ -87,6 +90,8 @@ extern const CMsg::Id keybind_col[][2];
 extern const CMsg::Id keybind_tab[];
 extern const CMsg::Id keybind_btn[];
 extern const CMsg::Id keybind_combi[];
+
+extern const CMsg::Id joypad_axis[];
 
 }; /* namespace LABELS */
 
