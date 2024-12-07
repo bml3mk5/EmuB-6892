@@ -525,7 +525,7 @@ int EmuMsg::Process()
 			if (emu) {
 				gui->SystemPause(true);
 				if (emu->start_rec_video(emu->get_parami(VM::ParamRecVideoType), item->GetNum(), true)) {
-					emu->start_rec_sound(emu->get_parami(VM::ParamRecAudioType));
+					emu->start_rec_sound(emu->get_parami(VM::ParamRecAudioType), true);
 				}
 				gui->SystemPause(false);
 			}
@@ -549,7 +549,7 @@ int EmuMsg::Process()
 		case EMUMSG_ID_SOUND_START_RECORD:
 			if (emu) {
 				gui->SystemPause(true);
-				emu->start_rec_sound(emu->get_parami(VM::ParamRecAudioType));
+				emu->start_rec_sound(emu->get_parami(VM::ParamRecAudioType), false);
 				gui->SystemPause(false);
 			}
 			break;

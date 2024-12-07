@@ -16,7 +16,9 @@
 #include "../gui_keybinddata.h"
 #include <vector>
 
+class QLayout;
 class QTimer;
+class MyCheckBox;
 
 /**
 	@brief Keybind table
@@ -32,6 +34,9 @@ public:
 	void setData();
 	void loadPreset(int num);
 	void savePreset(int num);
+	MyCheckBox *addCombiCheckButton(QLayout *layout);
+	void setCombiCheckData();
+	void updateCombiCheckButton();
 
 protected:
 	void keyPressEvent(QKeyEvent *event);
@@ -42,6 +47,7 @@ private:
 	int m_tab_num;
 
 	QTimer *timer;
+	MyCheckBox *chkCombi;
 
 	void clearCellByVkCode(int code);
 	void clearCell(QTableWidgetItem *itm);

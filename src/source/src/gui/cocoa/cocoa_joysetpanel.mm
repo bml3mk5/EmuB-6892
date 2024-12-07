@@ -44,9 +44,9 @@ extern EMU *emu;
 
 	int tx = 80;
 	int sx = 140;
-	int sy = 32;
+	int sy = 24;
 
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		CocoaLayout *vbox = [box_hall addBox:VerticalBox];
 
@@ -116,15 +116,15 @@ extern EMU *emu;
 	CocoaLayout *box_sep;
 	CocoaLayout *box_one;
 
-	CocoaTabView *tabView = [CocoaTabView create:box_tab width:370 height:260];
-	CocoaView *tab_view;
+	tabView = [CocoaTabView create:box_tab width:370 height:260];
+	CocoaView *view_in_tab;
 
 	CocoaButton *btn;
 	NSTabViewItem *tab;
-	int tab_offset = KeybindData::TAB_JOY2JOY;
+	int tab_offset = KeybindData::JS_TABS_MIN;
 
 	tableViews = [NSMutableArray array];
-	for(int tab_num=tab_offset; tab_num<KeybindData::TABS_MAX; tab_num++) {
+	for(int tab_num=tab_offset; tab_num<KeybindData::JS_TABS_MAX; tab_num++) {
 		CocoaTableView *tableView = [CocoaTableView createW:370 height:260 tabnum:tab_num cellWidth:100];
 		[tableView setJoyMask:&enable_axes];
 		[tableViews addObject:tableView];
@@ -132,9 +132,9 @@ extern EMU *emu;
 
 	// create an item in the tab
 	for(int tab_num=0; tab_num<[tableViews count]; tab_num++) {
-		tab = [tabView addTabItemI:LABELS::keybind_tab[tab_num+tab_offset]];
-		tab_view = (CocoaView *)[tab view];
-		[box_tab setContentView:tab_view];
+		tab = [tabView addTabItemI:LABELS::joysetting_tab[tab_num]];
+		view_in_tab = (CocoaView *)[tab view];
+		[box_tab setContentView:view_in_tab];
 
 		// table
 		box_sep = [box_tab addBox:VerticalBox :0 :0];
@@ -142,35 +142,44 @@ extern EMU *emu;
 		CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
 		[box_sep addControl:tv width:370 height:260];
 
-		// checkbox
 #if 0
-		if (LABELS::keybind_combi[tab_num] != CMsg::Null) {
-			CocoaCheckBox *chk = [CocoaCheckBox createI:box_one title:LABELS::keybind_combi[tab_num] action:nil value:[[tv data] combi]];
-			[tv setChkCombi:chk];
+		// checkbox
+		if (![tv addCombiCheckButton:box_sep tabnum:tab_num+tab_offset]) {
+			[CocoaLabel createT:box_sep title:""];
 		}
 #endif
-		// button (lower)
+	}
 
-		btn = [CocoaButton createI:box_sep title:CMsg::Load_Default action:@selector(loadDefaultPreset:) width:160];
-		[btn setRelatedObject:[[CocoaButtonAttr alloc]initWithValue:tab_num:-1]];
+#ifdef USE_PIAJOYSTICKBIT
+	// check box
 
-		CocoaLayout *box_hbtn = [box_sep addBox:HorizontalBox :0 :0];
-		box_one = [box_hbtn addBox:VerticalBox :0 :0];
+	chkPiaJoyNeg = [CocoaCheckBox createI:box_vall title:CMsg::Signals_are_negative_logic action:nil value:FLG_PIAJOY_NEGATIVE != 0];
+	chkPiaJoyConn = [CocoaCheckBox createI:box_vall title:CMsg::Connect_to_standard_PIA_A_port action:nil value:pConfig->piajoy_conn_to != 0];
+#else
+	chkPiaJoyNoIrq = [CocoaCheckBox createI:box_vall title:CMsg::No_interrupt_caused_by_pressing_the_button action:nil value:FLG_PIAJOY_NOIRQ != 0];
+#endif
 
-		for(int i=0; i<KEYBIND_PRESETS; i++) {
-			UTILITY::sprintf(label, sizeof(label), CMSG(Load_Preset_VDIGIT), i+1);
-			btn = [CocoaButton createT:box_one title:label action:@selector(loadPreset:) width:160];
-			[btn setRelatedObject:[[CocoaButtonAttr alloc]initWithValue:tab_num:i]];
+	// button (lower)
 
-		}
+	btn = [CocoaButton createI:box_vall title:CMsg::Load_Default action:@selector(loadDefaultPreset:) width:160];
+	[btn setRelatedObject:[[CocoaButtonAttr alloc]initWithValue:0:-1]];
 
-		box_one = [box_hbtn addBox:VerticalBox :0 :0];
+	CocoaLayout *box_hbtn = [box_vall addBox:HorizontalBox :0 :0];
+	box_one = [box_hbtn addBox:VerticalBox :0 :0];
 
-		for(int i=0; i<KEYBIND_PRESETS; i++) {
-			UTILITY::sprintf(label, sizeof(label), CMSG(Save_Preset_VDIGIT), i+1);
-			btn = [CocoaButton createT:box_one title:label action:@selector(savePreset:) width:160];
-			[btn setRelatedObject:[[CocoaButtonAttr alloc]initWithValue:tab_num:i]];
-		}
+	for(int i=0; i<KEYBIND_PRESETS; i++) {
+		UTILITY::sprintf(label, sizeof(label), CMSG(Load_Preset_VDIGIT), i+1);
+		btn = [CocoaButton createT:box_one title:label action:@selector(loadPreset:) width:160];
+		[btn setRelatedObject:[[CocoaButtonAttr alloc]initWithValue:0:i]];
+
+	}
+
+	box_one = [box_hbtn addBox:VerticalBox :0 :0];
+
+	for(int i=0; i<KEYBIND_PRESETS; i++) {
+		UTILITY::sprintf(label, sizeof(label), CMSG(Save_Preset_VDIGIT), i+1);
+		btn = [CocoaButton createT:box_one title:label action:@selector(savePreset:) width:160];
+		[btn setRelatedObject:[[CocoaButtonAttr alloc]initWithValue:0:i]];
 	}
 
 	// axes of joypad
@@ -209,14 +218,7 @@ extern EMU *emu;
 	// OK button is pushed
 	for(int tab=0; tab<[tableViews count]; tab++) {
 		CocoaTableView *tv = [tableViews objectAtIndex:tab];
-		CocoaTableData *data = [tv data];
-		[data SetData];
-#if 0
-		CocoaCheckBox *chk = [tv chkCombi];
-		if (chk) {
-			[data setCombi:[chk state] == NSControlStateValueOn ? 1 : 0];
-		}
-#endif
+		[tv SetData];
 	}
 
 	emu->save_keybind();
@@ -235,46 +237,34 @@ extern EMU *emu;
 
 - (void)loadDefaultPreset:(id)sender
 {
-	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	CocoaTableView *tv = [tableViews objectAtIndex:[attr tabNum]];
+//	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
+	int tab_num = [tabView selectedTabViewItemIndex];
+	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
 	NSTableView *view = [tv documentView];
-	CocoaTableData *data = [view dataSource];
 	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[data loadDefaultPreset];
-	CocoaCheckBox *chk = [tv chkCombi];
-	if (chk) {
-		[chk setState:[data combi]];
-	}
+	[tv LoadDefaultPresetData];
 	[view reloadData];
 }
 
 - (void)loadPreset:(id)sender
 {
 	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	CocoaTableView *tv = [tableViews objectAtIndex:[attr tabNum]];
+	int tab_num = [tabView selectedTabViewItemIndex];
+	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
 	NSTableView *view = [tv documentView];
-	CocoaTableData *data = [view dataSource];
 	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[data loadPreset:attr.idx];
-	CocoaCheckBox *chk = [tv chkCombi];
-	if (chk) {
-		[chk setState:[data combi]];
-	}
+	[tv LoadPresetData:attr.idx];
 	[view reloadData];
 }
 
 - (void)savePreset:(id)sender
 {
 	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	CocoaTableView *tv = [tableViews objectAtIndex:[attr tabNum]];
+	int tab_num = [tabView selectedTabViewItemIndex];
+	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
 	NSTableView *view = [tv documentView];
-	CocoaTableData *data = [view dataSource];
 	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	CocoaCheckBox *chk = [tv chkCombi];
-	if (chk) {
-		[data setCombi:[chk state] == NSControlStateValueOn ? 1 : 0];
-	}
-	[data savePreset:attr.idx];
+	[tv SavePresetData:attr.idx];
 	[view reloadData];
 }
 
@@ -301,7 +291,7 @@ extern EMU *emu;
 
 - (void)setData
 {
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
 #ifdef USE_JOYSTICK_TYPE
 		pConfig->joy_type[i] = (int)[pop[i] indexOfSelectedItem];
@@ -318,6 +308,12 @@ extern EMU *emu;
 #ifdef USE_JOYSTICK_TYPE
 	// will change joypad type in emu thread
 	emumsg.Send(EMUMSG_ID_MODIFY_JOYTYPE);
+#endif
+#ifdef USE_PIAJOYSTICKBIT
+	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, [chkPiaJoyNeg state] != NSControlStateValueOff);
+	pConfig->piajoy_conn_to = [chkPiaJoyConn state] != NSControlStateValueOff ? 1 : 0;
+#else
+	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, [chkPiaJoyNoIrq state] != NSControlStateValueOff);
 #endif
 #endif
 }

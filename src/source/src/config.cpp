@@ -483,6 +483,9 @@ void Config::initialize()
 			joy_axis_threshold[i][k] = 5;
 		}
 	}
+#ifdef USE_PIAJOYSTICKBIT
+	piajoy_conn_to = 0;
+#endif
 #endif
 
 #ifdef USE_PERFORMANCE_METER
@@ -852,6 +855,18 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 			}
 		}
 	}
+#ifdef USE_PIAJOYSTICKBIT
+	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("PIAJoystickSigsNegative"), FLG_PIAJOY_NEGATIVE ? true : false);
+	BIT_ONOFF(misc_flags, MSK_PIAJOY_NEGATIVE, valueb);
+
+	valuel = ini->GetLongValue(SECTION_CONTROL, _T("PIAJoystickConnectTo"), piajoy_conn_to);
+	if (0 <= valuel && valuel <= 1) {
+		piajoy_conn_to = (int)valuel;
+	}
+#else
+	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("PIAJoystickNoInterrupt"), FLG_PIAJOY_NOIRQ ? true : false);
+	BIT_ONOFF(misc_flags, MSK_PIAJOY_NOIRQ, valueb);
+#endif
 #endif
 
 #ifdef USE_KEY2JOYSTICK
@@ -1364,6 +1379,13 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 			ini->SetLongValue(SECTION_CONTROL, key, joy_axis_threshold[i][k]);
 		}
 	}
+#ifdef USE_PIAJOYSTICKBIT
+	ini->SetBoolValue(SECTION_CONTROL, _T("PIAJoystickSigsNegative"), FLG_PIAJOY_NEGATIVE ? true : false);
+
+	ini->SetLongValue(SECTION_CONTROL, _T("PIAJoystickConnectTo"), piajoy_conn_to);
+#else
+	ini->SetBoolValue(SECTION_CONTROL, _T("PIAJoystickNoInterrupt"), FLG_PIAJOY_NOIRQ ? true : false);
+#endif
 #endif
 
 #ifdef USE_KEY2JOYSTICK

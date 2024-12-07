@@ -285,9 +285,14 @@ const CLocaleRegion *CLocale::FindRegionByLocale(const wxString &locale)
 	return (match ? itm : NULL);
 }
 
-const _TCHAR *CLocale::GetText(const _TCHAR *str)
+const char *CLocale::GetText(const char *str)
 {
-	return wxGetTranslation(str).t_str();
+	return wxGetTranslation(str).c_str();
+}
+
+const wchar_t *CLocale::GetText(const wchar_t *str)
+{
+	return wxGetTranslation(str).wc_str();
 }
 
 const _TCHAR *CLocale::GetLocaleName() const

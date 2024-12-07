@@ -134,7 +134,11 @@ scrntype *CSurface::GetBuffer(int y)
 
 int CSurface::GetBufferSize()
 {
+#if QT_VERSION >= 0x050a00
+	return static_cast<int>(suf->sizeInBytes());
+#else
 	return suf->byteCount();
+#endif
 }
 
 bool CSurface::IsEnable()

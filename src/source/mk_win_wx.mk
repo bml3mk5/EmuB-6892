@@ -173,9 +173,15 @@ GUIOBJSWX:=$(SRCGUIWX)/wx_dlg.o \
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
 VIDOBJSVFW:=$(SRCVIDVFW)/vfw_rec_video.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o \
+	$(SRCVIDFFM)/ffm_rec_base.o \
+	$(SRCVIDFFM)/ffm_rec_audio.o \
+	$(SRCVIDFFM)/ffm_rec_video.o
 
-VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSVFW) $(VIDOBJSFFM) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o
+VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSVFW) $(VIDOBJSFFM) \
+	$(SRCVID)/rec_audio.o \
+	$(SRCVID)/rec_common.o \
+	$(SRCVID)/rec_video.o
 
 ifeq ($(GUI_TYPE),GUI_TYPE_WXWIDGETS)
 	GUIOBJS:=$(GUIOBJSWX)

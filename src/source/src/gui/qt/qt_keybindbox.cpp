@@ -26,11 +26,10 @@ MyKeybindBox::MyKeybindBox(QWidget *parent) :
 {
 	setWindowTitle(CMSG(Keybind));
 
-	int tab_num;
-
 //	ui->setupUi(this);
 
-	for(tab_num=0; tab_num<KeybindData::TABS_MAX; tab_num++) {
+	int tab_offset = KeybindData::KB_TABS_MIN;
+	for(int tab_num=tab_offset; tab_num<KeybindData::KB_TABS_MAX; tab_num++) {
 		tables.push_back(new MyTableWidget(tab_num));
 	}
 
@@ -42,19 +41,21 @@ MyKeybindBox::MyKeybindBox(QWidget *parent) :
 	QVBoxLayout *vbox_btn = new QVBoxLayout();
 	hbox->addLayout(vbox_btn);
 
-	MyTabWidget *tabWidget = new MyTabWidget();
+	tabWidget = new MyTabWidget();
 	vbox_tab->addWidget(tabWidget);
 
 
-	curr_tab = 0;
-	for(tab_num=0; tab_num<(int)tables.size(); tab_num++) {
+//	curr_tab = 0;
+	for(int tab_num=0; tab_num<(int)tables.size(); tab_num++) {
 		QWidget *titmWidget = new QWidget();
 		QVBoxLayout *vbox = new QVBoxLayout(titmWidget);
 		tables[tab_num]->setMinimumSize(400, 400);
 		vbox->addWidget(tables[tab_num]);
 		tabWidget->addTab(titmWidget, LABELS::keybind_tab[tab_num]);
+
+		tables[tab_num]->addCombiCheckButton(vbox);
 	}
-	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+//	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
 	// right button
 	char label[128];
@@ -141,17 +142,19 @@ void MyKeybindBox::accept()
 
 void MyKeybindBox::update()
 {
-	if (tables[curr_tab]) {
-		tables[curr_tab]->update();
-	}
-
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
+	tables[curr_tab]->update();
 	QDialog::update();
 }
 
 void MyKeybindBox::loadPreset()
 {
 	int num = sender()->property("num").toInt();
-
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
 	tables[curr_tab]->loadPreset(num);
 	update();
 }
@@ -159,16 +162,19 @@ void MyKeybindBox::loadPreset()
 void MyKeybindBox::savePreset()
 {
 	int num = sender()->property("num").toInt();
-
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
 	tables[curr_tab]->savePreset(num);
-
 	update();
 }
 
+#if 0
 void MyKeybindBox::tabChanged(int index)
 {
 	curr_tab = index;
 }
+#endif
 
 void MyKeybindBox::toggleAxis(bool checked)
 {

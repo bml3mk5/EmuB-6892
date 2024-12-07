@@ -39,6 +39,8 @@ private:
 //	uint32_t tm1;
 	uint32_t joy_mask;
 
+	MyNotebook *notebook;
+
 	bool get_vmkeylabel(int code, wxString &label);
 	bool get_vkkeylabel(uint32_t code, wxString &label);
 	bool get_vkjoylabel(uint32_t code, wxString &label);
@@ -51,7 +53,7 @@ private:
 	void load_data(int tab, int num);
 	void save_data(int tab, int num);
 
-	wxWindow *CreateBook(wxWindow *parent, int tab);
+	wxWindow *CreateBook(wxWindow *parent, int tab, int tab_offset);
 //	wxWindow *CreateList(wxWindow *parent);
 #if 0
 	void update_key(AG_Table *, int, int, uint32_t);

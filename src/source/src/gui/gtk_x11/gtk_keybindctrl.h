@@ -11,6 +11,7 @@
 #ifndef GUI_GTK_KEYBINDCTRL_H
 #define GUI_GTK_KEYBINDCTRL_H
 
+#include "../../common.h"
 #include <gtk/gtk.h>
 #include "gtk_dialogbox.h"
 #include "../gui_keybinddata.h"
@@ -39,6 +40,7 @@ public:
 
 	void Update();
 	void SetData();
+	GtkWidget *AddCheckBox(GtkWidget *box, int tab_num);
 
 	static int TranslateCode(int code, int scancode);
 	bool ClearKeyCellByCode(int code, int scancode);
@@ -58,6 +60,7 @@ class KeybindControlBox : public DialogBox
 protected:
 	CPtrList<KeybindDataControl> ctrls;
 	guint m_timeout_id;
+	GtkWidget *notebook;
 	GtkWidget *selected_cell;
 	uint32_t enable_axes;
 
@@ -80,12 +83,19 @@ protected:
 //	virtual void SavePreset(int tab, int idx);
 	virtual void ToggleAxis(GtkWidget *widget);
 
+	void LoadDefault();
+	void LoadPreset(int idx);
+	void SavePreset(int idx);
+
 	static gboolean OnKeyDown(GtkWidget *widget, GdkEvent  *event, gpointer user_data);
 	static gboolean OnDoubleClick(GtkWidget *widget, GdkEvent  *event, gpointer user_data);
 	static gboolean OnFocusIn(GtkWidget *widget, GdkEvent  *event, gpointer user_data);
 	static void OnClickLoadDefault(GtkButton *button, gpointer user_data);
 	static void OnClickLoadPreset(GtkButton *button, gpointer user_data);
 	static void OnClickSavePreset(GtkButton *button, gpointer user_data);
+	static void OnClickLoadDefaultJ(GtkButton *button, gpointer user_data);
+	static void OnClickLoadPresetJ(GtkButton *button, gpointer user_data);
+	static void OnClickSavePresetJ(GtkButton *button, gpointer user_data);
 	static void OnClickAxis(GtkToggleButton *button, gpointer user_data);
 	static void OnResponse(GtkWidget *widget, gint response_id, gpointer user_data);
 	static gboolean OnTimeout(gpointer user_data);

@@ -1172,15 +1172,17 @@ void MyFrame::CreateMenu(wxMenuBar *mb)
 	menuOptions->AppendSeparator();
 	menuOptions->AppendCheckItemById(ID_OPTIONS_MOUSE, CMsg::Enable_Mouse);
 #endif
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	menuOptions->AppendSeparator();
+#endif
+#ifdef USE_JOYSTICK
 	menuOptions->AppendCheckItemById(ID_OPTIONS_JOYPAD0, CMsg::Use_Joypad_Key_Assigned);
 #ifdef USE_PIAJOYSTICK
 	menuOptions->AppendCheckItemById(ID_OPTIONS_JOYPAD1, CMsg::Use_Joypad_PIA_Type);
 #endif
+#endif
 #ifdef USE_KEY2JOYSTICK
 	menuOptions->AppendCheckItemById(ID_OPTIONS_KEY2JOYPAD, CMsg::Enable_Key_to_Joypad);
-#endif
 #endif
 	menuOptions->AppendSeparator();
 	menuOptions->AppendCheckItemById(ID_OPTIONS_LOOSEN_KEY, CMsg::Loosen_Key_Stroke_Game);
@@ -1191,7 +1193,7 @@ void MyFrame::CreateMenu(wxMenuBar *mb)
 	menuOptions->AppendById(ID_CLOSE_DEBUGGER, CMsg::Stop_Debugger);
 #endif
 	menuOptions->AppendSeparator();
-#ifdef USE_JOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	menuOptions->AppendById(ID_OPTIONS_JOYSETTING, CMsg::Joypad_Setting_);
 #endif
 	menuOptions->AppendById(ID_OPTIONS_KEYBIND, CMsg::Keybind_);

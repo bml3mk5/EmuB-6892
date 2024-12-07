@@ -13,7 +13,9 @@
 
 #include "qt_ledbox.h"
 #include <QApplication>
+#if QT_VERSION < 0x060000
 #include <QDesktopWidget>
+#endif
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QPainter>

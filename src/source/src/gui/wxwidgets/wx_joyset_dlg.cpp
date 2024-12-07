@@ -21,6 +21,7 @@
 // Attach Event
 BEGIN_EVENT_TABLE(MyJoySettingDlg, wxDialog)
 //	EVT_COMMAND_RANGE(IDC_SLIDER_0, IDC_SLIDER_99, wxEVT_SLIDER , MyJoySettingDlg::OnChangeValue)
+//	EVT_NOTEBOOK_PAGE_CHANGED(IDC_NOTEBOOK, MyJoySettingDlg::OnPageChanged)
 	EVT_COMMAND_RANGE(IDC_BUTTON_LOAD_DEFAULT0, IDC_BUTTON_LOAD_DEFAULT4, wxEVT_BUTTON, MyJoySettingDlg::OnLoadDefault)
 	EVT_COMMAND_RANGE(IDC_BUTTON_LOAD_PRESET00, IDC_BUTTON_LOAD_PRESET44, wxEVT_BUTTON, MyJoySettingDlg::OnLoadPreset)
 	EVT_COMMAND_RANGE(IDC_BUTTON_SAVE_PRESET00, IDC_BUTTON_SAVE_PRESET44, wxEVT_BUTTON, MyJoySettingDlg::OnSavePreset)
@@ -107,19 +108,53 @@ void MyJoySettingDlg::InitDialog()
 
 	//
 
-	int tab_offset = KeybindData::TAB_JOY2JOY;
+	int tab_offset = KeybindData::JS_TABS_MIN;
 
 	vbox = new wxBoxSizer(wxVERTICAL);
 
-	MyNotebook *book = new MyNotebook(this, IDC_NOTEBOOK, wxDefaultPosition, wxDefaultSize);
-	for(int tab_num=tab_offset; tab_num<KeybindData::TABS_MAX; tab_num++) {
-		book->AddPageById(CreateBook(book, tab_num), LABELS::keybind_tab[tab_num]);
+	notebook = new MyNotebook(this, IDC_NOTEBOOK, wxDefaultPosition, wxDefaultSize);
+	for(int tab_num=tab_offset; tab_num<KeybindData::JS_TABS_MAX; tab_num++) {
+		notebook->AddPageById(CreateBook(notebook, tab_num, tab_offset), LABELS::joysetting_tab[tab_num-tab_offset]);
 	}
-	vbox->Add(book, flags);
+	vbox->Add(notebook, flags);
+
+	MyCheckBox *chk;
+
+#ifdef USE_PIAJOYSTICKBIT
+	// check button
+	chk = new MyCheckBox(this, IDC_CHK_PIAJOY_NEGATIVE, CMsg::Signals_are_negative_logic);
+	chk->SetValue(FLG_PIAJOY_NEGATIVE != 0);
+	vbox->Add(chk, flags);
+	chk = new MyCheckBox(this, IDC_COMBO_PIAJOY_CONNTO, CMsg::Connect_to_standard_PIA_A_port);
+	chk->SetValue(pConfig->piajoy_conn_to != 0);
+	vbox->Add(chk, flags);
+#else
+	chk = new MyCheckBox(this, IDC_CHK_PIAJOY_NOIRQ, CMsg::No_interrupt_caused_by_pressing_the_button);
+	chk->SetValue(FLG_PIAJOY_NOIRQ != 0);
+	vbox->Add(chk, flags);
+#endif
+
+	// load and save buttons
+	hbox = new wxBoxSizer(wxHORIZONTAL);
+	wxButton *btn;
+	btn = new MyButton(this, IDC_BUTTON_LOAD_DEFAULT0, CMsg::Load_Default);
+	hbox->Add(btn, flags);
+	vbox->Add(hbox, flags);
+
+	wxString wstr;
+	for(int i=0; i<KEYBIND_PRESETS; i++) {
+		hbox = new wxBoxSizer(wxHORIZONTAL);
+		wstr = wxString::Format(CMSG(Load_Preset_VDIGIT), i + 1);
+		btn = new wxButton(this, IDC_BUTTON_LOAD_PRESET00 + i, wstr);
+		hbox->Add(btn, flags);
+		wstr = wxString::Format(CMSG(Save_Preset_VDIGIT), i + 1);
+		btn = new wxButton(this, IDC_BUTTON_SAVE_PRESET00 + i, wstr);
+		hbox->Add(btn, flags);
+		vbox->Add(hbox, flags);
+	}
 
 	// axes of joypad
 	hbox = new wxBoxSizer(wxHORIZONTAL);
-	MyCheckBox *chk;
 	chk = new MyCheckBox(this, IDC_CHK_AXIS1, CMsg::Enable_Z_axis);
 	chk->SetValue((joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0);
 	hbox->Add(chk, flags);
@@ -145,13 +180,13 @@ void MyJoySettingDlg::InitDialog()
 	SetSizerAndFit(szrAll);
 }
 
-wxWindow *MyJoySettingDlg::CreateBook(wxWindow *parent, int tab)
+wxWindow *MyJoySettingDlg::CreateBook(wxWindow *parent, int tab, int)
 {
 	wxSizerFlags flags = wxSizerFlags().Expand().Border(wxALL, 2);
 
 	wxPanel *page = new wxPanel(parent);
 
-	wxBoxSizer *szrAll    = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *szrAll = new wxBoxSizer(wxVERTICAL);
 
 	// table
 	MyKeybindListWindow *ctrl = new MyKeybindListWindow(tab, page, IDC_LIST_0 + tab, wxDefaultPosition, wxSize(-1,260), wxBORDER_SIMPLE | wxVSCROLL);
@@ -159,27 +194,15 @@ wxWindow *MyJoySettingDlg::CreateBook(wxWindow *parent, int tab)
 	ctrls.push_back(ctrl);
 	szrAll->Add(ctrl, flags);
 
-	// load and save buttons
-	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
-	wxButton *btn;
-	btn = new MyButton(page, IDC_BUTTON_LOAD_DEFAULT0 + tab, CMsg::Load_Default);
-	hbox->Add(btn, flags);
-	szrAll->Add(hbox, flags);
-
-	wxString str;
-	for(int i=0; i<KEYBIND_PRESETS; i++) {
-		hbox = new wxBoxSizer(wxHORIZONTAL);
-		str = wxString::Format(CMSG(Load_Preset_VDIGIT), i + 1);
-		btn = new wxButton(page, IDC_BUTTON_LOAD_PRESET00 + tab + i * KeybindData::TABS_MAX, str);
-		hbox->Add(btn, flags);
-		str = wxString::Format(CMSG(Save_Preset_VDIGIT), i + 1);
-		btn = new wxButton(page, IDC_BUTTON_SAVE_PRESET00 + tab + i * KeybindData::TABS_MAX, str);
-		hbox->Add(btn, flags);
-		szrAll->Add(hbox, flags);
-	}
-
+#if 0
+	// checkbox
 	wxCheckBox *chk = ctrl->GetCombi();
-	if (chk) szrAll->Add(chk, flags);
+	if (chk) {
+		szrAll->Add(chk, flags);
+	} else {
+		szrAll->Add(new wxStaticText(page, wxID_ANY, wxEmptyString), flags);
+	}
+#endif
 
     page->SetSizer(szrAll);
 
@@ -197,6 +220,7 @@ int MyJoySettingDlg::ShowModal()
 
 void MyJoySettingDlg::SetData()
 {
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	for(int i=0; i<MAX_JOYSTICKS ; i++) {
 		for(int k=0; k<KEYBIND_JOY_BUTTONS; k++) {
 			int id = IDC_SLIDER_JOY1 + i * KEYBIND_JOY_BUTTONS + k;
@@ -215,6 +239,25 @@ void MyJoySettingDlg::SetData()
 	for(int tab=0; tab<(int)ctrls.size(); tab++) {
 		ctrls[tab]->SetKeybindData();
 	}
+#endif
+#ifdef USE_PIAJOYSTICKBIT
+	// check button
+	MyCheckBox *chk;
+	chk = (MyCheckBox *)FindWindowById(IDC_CHK_PIAJOY_NEGATIVE);
+	if (chk) {
+		BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, chk->GetValue());
+	}
+	chk = (MyCheckBox *)FindWindowById(IDC_COMBO_PIAJOY_CONNTO);
+	if (chk) {
+		pConfig->piajoy_conn_to = chk->GetValue() ? 1 : 0;
+	}
+#else
+	MyCheckBox *chk;
+	chk = (MyCheckBox *)FindWindowById(IDC_CHK_PIAJOY_NOIRQ);
+	if (chk) {
+		BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, chk->GetValue());
+	}
+#endif
 }
 
 /*
@@ -278,24 +321,27 @@ bool MyJoySettingDlg::get_vkjoylabel(uint32_t code, wxString &label)
 /*
  * Event Handler
  */
+//void MyJoySettingDlg::OnPageChanged(wxBookCtrlEvent &event) {
+//	current_tab_num = event.GetSelection();
+//}
 void MyJoySettingDlg::OnLoadDefault(wxCommandEvent &event) {
 	int id = event.GetId() - IDC_BUTTON_LOAD_DEFAULT0;
-	int tab = id % ctrls.size();
-
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
 	load_data(tab, -1);
 }
 void MyJoySettingDlg::OnLoadPreset(wxCommandEvent &event) {
 	int id = event.GetId() - IDC_BUTTON_LOAD_PRESET00;
-	int num = id / ctrls.size();
-	int tab = id % ctrls.size();
-
+	int num = id % KeybindData::TABS_MAX;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
 	load_data(tab, num);
 }
 void MyJoySettingDlg::OnSavePreset(wxCommandEvent &event) {
 	int id = event.GetId() - IDC_BUTTON_SAVE_PRESET00;
-	int num = id / ctrls.size();
-	int tab = id % ctrls.size();
-
+	int num = id % KeybindData::TABS_MAX;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
 	save_data(tab, num);
 }
 void MyJoySettingDlg::OnClickAxis(wxCommandEvent &event) {

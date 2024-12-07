@@ -326,27 +326,15 @@ const CMsg::Id keybind_col[][2] = {
 #ifdef _MBS1
 	// _MBS1
 	{ CMsg::S1_Key,		CMsg::BindVDIGIT },
-#ifdef USE_JOYSTICK
 	{ CMsg::S1_Key,		CMsg::JoypadVDIGIT },
-#ifdef USE_PIAJOYSTICK
 	{ CMsg::PIA_on_S1,	CMsg::JoypadVDIGIT },
-#endif
-#endif
-#ifdef USE_KEY2JOYSTICK
 	{ CMsg::PIA_on_S1,  CMsg::BindVDIGIT },
-#endif
 #else
 	// _BML3MK5
 	{ CMsg::Level3_Key,	CMsg::BindVDIGIT },
-#ifdef USE_JOYSTICK
 	{ CMsg::Level3_Key,	CMsg::JoypadVDIGIT },
-#ifdef USE_PIAJOYSTICK
 	{ CMsg::PIA_on_L3,	CMsg::JoypadVDIGIT },
-#endif
-#endif
-#ifdef USE_KEY2JOYSTICK
 	{ CMsg::PIA_on_L3,  CMsg::BindVDIGIT },
-#endif
 #endif
 	{ CMsg::End, CMsg::End }
 };
@@ -354,13 +342,18 @@ const CMsg::Id keybind_col[][2] = {
 /// Keybind tabs
 const CMsg::Id keybind_tab[] = {
 	CMsg::Keyboard,
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK)
 	CMsg::Joypad_Key_Assigned,
-#ifdef USE_PIAJOYSTICK
+#endif
+	CMsg::End
+};
+
+/// Joysetting tabs
+const CMsg::Id joysetting_tab[] = {
+#if defined(USE_PIAJOYSTICK)
 	CMsg::Joypad_PIA_Type,
 #endif
-#endif
-#ifdef USE_KEY2JOYSTICK
+#if defined(USE_KEY2JOYSTICK)
 	CMsg::Key_to_Joypad,
 #endif
 	CMsg::End
@@ -385,19 +378,9 @@ const CMsg::Id keybind_btn[] = {
 /// Keybind options
 const CMsg::Id keybind_combi[] = {
 	CMsg::Null,
-#ifdef USE_JOYSTICK
 	CMsg::Recognize_as_another_key_when_pressed_two_buttons,
-#ifdef USE_PIAJOYSTICK
-# ifndef USE_PIAJOYSTICKBIT
 	CMsg::Null,
-# else
-	CMsg::Signals_are_negative_logic,
-# endif
-#endif
-#endif
-#ifdef USE_KEY2JOYSTICK
 	CMsg::Null,
-#endif
 	CMsg::End
 };
 

@@ -554,7 +554,11 @@ void EMU::modify_joy_mashing()
 
 				int nn = 1 << (4 - pConfig->joy_mashing[i][k]);
 				if (n & nn) {
+#ifndef USE_PIAJOYSTICKBIT
 					joy_mashing_mask[i][n] &= ~(0x10000 << k);
+#else
+					joy_mashing_mask[i][n] &= ~(1 << k);
+#endif
 				}
 			}
 		}
@@ -706,7 +710,7 @@ void EMU::set_key2joy_map(uint32_t key_code, int num, uint32_t joy_code)
 		} else {
 			joy_code = (1 << joy_code);
 		}
-		key2joy_map[key_code] = joy_code;
+		key2joy_map[key_code] |= joy_code;
 #endif
 	}
 #endif

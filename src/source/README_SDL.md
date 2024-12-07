@@ -53,7 +53,15 @@
         sdl_linux/ ......... SDL linux用
         sdl_win/ ........... SDL Pleiades(Eclipse日本語版)用
       VC++2010/
-        bml3mk5_sdl.vcxproj .. SDL版 VC++2010用プロジェクトファイル
+        bml3mk5_sdl.vcxproj .. SDL版 Visual Studio プロジェクトファイル
+      VC++2013/
+        bml3mk5_sdl.vcxproj .. SDL版 Visual Studio プロジェクトファイル
+      VC++2015/
+        bml3mk5_sdl.vcxproj .. SDL版 Visual Studio プロジェクトファイル
+      VC++2017/
+        bml3mk5_sdl.vcxproj .. SDL版 Visual Studio プロジェクトファイル
+      VC++2019/
+        bml3mk5_sdl.vcxproj .. SDL版 Visual Studio プロジェクトファイル
       Xcode/ ............... Xcode用プロジェクトファイル
       Makefile.xxx ......... 各OSごとのmakeファイル
       README_SDL.md ........ このファイル
@@ -334,10 +342,10 @@
 
 ==============================================================================
 
-連絡先：
-  Sasaji (sasaji@s-sasaji.ddo.jp)
-  http://s-sasaji.ddo.jp/bml3mk5/
-  (Twitter: http://twitter.com/bml3mk5)
+連絡先：Sasaji (sasaji@s-sasaji.ddo.jp)
+ * My WebPage: http://s-sasaji.ddo.jp/bml3mk5/
+ * GitHub:     https://github.com/bml3mk5/EmuB-6892
+ * X(Twitter): https://x.com/bml3mk5
 
 ==============================================================================
 

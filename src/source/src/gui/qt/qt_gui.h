@@ -356,9 +356,11 @@ private:
 #endif
 #ifdef USE_JOYSTICK
 	QAction *actionUseJoypad[2];
+#endif
 #ifdef USE_KEY2JOYSTICK
 	QAction *actionKey2Joypad;
 #endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	QAction *actionJoySetting;
 #endif
 #ifdef USE_LIGHTPEN

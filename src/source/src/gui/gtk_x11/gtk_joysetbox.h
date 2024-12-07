@@ -12,6 +12,7 @@
 #ifndef GUI_GTK_JOYSETBOX_H
 #define GUI_GTK_JOYSETBOX_H
 
+#include "../../common.h"
 #include <gtk/gtk.h>
 #include "gtk_dialogbox.h"
 #include "../../vm/vm_defs.h"
@@ -27,9 +28,17 @@ namespace GUI_GTK_X11
 class JoySettingBox : public KeybindControlBox
 {
 private:
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	GtkWidget *com[MAX_JOYSTICKS];
 	GtkWidget *scale[MAX_JOYSTICKS][KEYBIND_JOY_BUTTONS];
 	GtkWidget *axis[MAX_JOYSTICKS][6];
+#endif
+#ifdef USE_PIAJOYSTICKBIT
+	GtkWidget *chkPiaJoyNeg;
+	GtkWidget *chkPiaJoyConn;
+#else
+	GtkWidget *chkPiaJoyNoIrq;
+#endif
 
 	bool SetData();
 

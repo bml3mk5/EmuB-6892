@@ -111,25 +111,41 @@ MyJoySettingBox::MyJoySettingBox(QWidget *parent) :
 
 	//
 
-	int tab_offset = KeybindData::TAB_JOY2JOY;
-	for(int tab_num=tab_offset; tab_num<KeybindData::TABS_MAX; tab_num++) {
+	int tab_offset = KeybindData::JS_TABS_MIN;
+	for(int tab_num=tab_offset; tab_num<KeybindData::JS_TABS_MAX; tab_num++) {
 		tables.push_back(new MyTableWidget(tab_num));
 	}
 
 	QVBoxLayout *vbox_tab = new QVBoxLayout(this);
 	hbox_all->addLayout(vbox_tab);
-	MyTabWidget *tabWidget = new MyTabWidget();
+	tabWidget = new MyTabWidget();
 	vbox_tab->addWidget(tabWidget);
 
-	curr_tab = 0;
-	for(int tab=0; tab<(int)tables.size(); tab++) {
+//	curr_tab = 0;
+	for(int tab_num=0; tab_num<(int)tables.size(); tab_num++) {
 		QWidget *titmWidget = new QWidget();
 		QVBoxLayout *vbox = new QVBoxLayout(titmWidget);
-		tables[tab]->setMinimumSize(300, 300);
-		vbox->addWidget(tables[tab]);
-		tabWidget->addTab(titmWidget, LABELS::keybind_tab[tab + tab_offset]);
+		tables[tab_num]->setMinimumSize(300, 300);
+		vbox->addWidget(tables[tab_num]);
+		tabWidget->addTab(titmWidget, LABELS::joysetting_tab[tab_num]);
+
+		tables[tab_num]->addCombiCheckButton(vbox);
 	}
-	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+//	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+
+#ifdef USE_PIAJOYSTICKBIT
+	// check box
+	chkPiaJoyNeg = new MyCheckBox(CMsg::Signals_are_negative_logic);
+	chkPiaJoyNeg->setChecked(FLG_PIAJOY_NEGATIVE != 0);
+	vbox_tab->addWidget(chkPiaJoyNeg);
+	chkPiaJoyConn = new MyCheckBox(CMsg::Connect_to_standard_PIA_A_port);
+	chkPiaJoyConn->setChecked(pConfig->piajoy_conn_to != 0);
+	vbox_tab->addWidget(chkPiaJoyConn);
+#else
+	chkPiaJoyNoIrq = new MyCheckBox(CMsg::No_interrupt_caused_by_pressing_the_button);
+	chkPiaJoyNoIrq->setChecked(FLG_PIAJOY_NOIRQ != 0);
+	vbox_tab->addWidget(chkPiaJoyNoIrq);
+#endif
 
 	// right button
 	char label[128];
@@ -198,6 +214,7 @@ MyJoySettingBox::~MyJoySettingBox()
 
 void MyJoySettingBox::SetData()
 {
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		for(int k=0; k<KEYBIND_JOY_BUTTONS; k++) {
 			if (!mash[i][k]) continue;
@@ -216,6 +233,13 @@ void MyJoySettingBox::SetData()
 	}
 
 	emu->save_keybind();
+#endif
+#ifdef USE_PIAJOYSTICKBIT
+	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, chkPiaJoyNeg->isChecked());
+	pConfig->piajoy_conn_to = chkPiaJoyConn->isChecked() ? 1 : 0;
+#else
+	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, chkPiaJoyNoIrq->isChecked());
+#endif
 }
 
 void MyJoySettingBox::accept()
@@ -226,17 +250,19 @@ void MyJoySettingBox::accept()
 
 void MyJoySettingBox::update()
 {
-	if (tables[curr_tab]) {
-		tables[curr_tab]->update();
-	}
-
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
+	tables[curr_tab]->update();
 	QDialog::update();
 }
 
 void MyJoySettingBox::loadPreset()
 {
 	int num = sender()->property("num").toInt();
-
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
 	tables[curr_tab]->loadPreset(num);
 	update();
 }
@@ -244,16 +270,19 @@ void MyJoySettingBox::loadPreset()
 void MyJoySettingBox::savePreset()
 {
 	int num = sender()->property("num").toInt();
-
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
 	tables[curr_tab]->savePreset(num);
-
 	update();
 }
 
+#if 0
 void MyJoySettingBox::tabChanged(int index)
 {
 	curr_tab = index;
 }
+#endif
 
 void MyJoySettingBox::toggleAxis(bool checked)
 {

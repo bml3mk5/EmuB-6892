@@ -307,6 +307,7 @@
 #ifdef COCOA_USE_OLDSTYLE_LAYOUT
 - (NSRect)adjustFrameSize:(NSRect)re;
 #endif
+- (int)selectedTabViewItemIndex;
 @end
 
 /**

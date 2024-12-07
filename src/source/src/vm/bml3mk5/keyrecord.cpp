@@ -102,7 +102,9 @@ KEYRECORD::KEYRECORD(EMU* parent_emu)
 #ifdef USE_MOUSE
 	m_mouse_cache.SetType(3);
 #endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	m_joypia_cache.SetType(4);
+#endif
 }
 
 KEYRECORD::~KEYRECORD()
@@ -602,6 +604,7 @@ void KEYRECORD::processing_joypia_status(uint8_t *joystat)
 void KEYRECORD::playing_joypia_status(uint8_t *joystat)
 {
 #ifdef USE_KEY_RECORD
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	// read from cahce
 	uint64_t now_clk = d_event->get_current_clock();
 	do {
@@ -616,6 +619,7 @@ void KEYRECORD::playing_joypia_status(uint8_t *joystat)
 
 	joystat[0] = joypia_recp_stat[0];
 	joystat[1] = joypia_recp_stat[1];
+#endif
 #endif
 }
 

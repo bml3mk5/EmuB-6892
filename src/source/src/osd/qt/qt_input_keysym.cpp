@@ -69,12 +69,12 @@ uint8_t EMU_OSD::translate_keysym_(uint8_t type, int code, uint32_t vk_key, uint
 	}
 #elif defined(Q_OS_MACX)
     // MacOS X
-    if (scan_code) {
+//  if (scan_code) {
         // vk key exist
         if (vk_key < 128) {
             n_code = vkcode2keycode[vk_key];
         }
-    }
+//  }
 #elif defined(Q_OS_UNIX)
     // linu etc. (use X11)
     if (scan_code < 144) {

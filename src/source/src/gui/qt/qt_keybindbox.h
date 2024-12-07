@@ -16,6 +16,8 @@
 #include "qt_keybindctrl.h"
 #include <vector>
 
+class MyTabWidget;
+
 namespace Ui {
 class MyKeybindBox;
 }
@@ -34,7 +36,7 @@ public:
 private:
 //	Ui::MyKeybindBox *ui;
 	std::vector<MyTableWidget *> tables;
-	int curr_tab;
+	MyTabWidget *tabWidget;
 	uint32_t joy_mask;
 
 	void setData();
@@ -44,7 +46,7 @@ private slots:
 	void savePreset();
 	void accept();
 	void update();
-	void tabChanged(int index);
+//	void tabChanged(int index);
 	void toggleAxis(bool checked);
 };
 

@@ -225,7 +225,7 @@ bool GUI::ShowOpenFloppyDiskDialog(int drv)
 		return false;
 	}
 	QTChar path(dlg.selectedFiles().at(0));
-	uint32_t flags = dlg.isReadOnly() ? 1 : 0;
+	uint32_t flags = dlg.IsReadOnly() ? 1 : 0;
 	PostEtOpenFloppyMessage(drv, path.toTChar(), 0, flags, true);
 	return true;
 }
@@ -249,7 +249,7 @@ bool GUI::ShowOpenBlankFloppyDiskDialog(int drv, uint8_t type)
 	 }
 	if (rc) {
 		QTChar path(dlg.selectedFiles().at(0));
-		uint32_t flags = dlg.isReadOnly() ? 1 : 0;
+		uint32_t flags = dlg.IsReadOnly() ? 1 : 0;
 		PostEtOpenFloppyMessage(drv, path.toTChar(), 0, flags, true);
 	} else {
 		PostEtSystemPause(false);
@@ -893,18 +893,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	actionMouse->setCheckable(true);
 #endif
 
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	mn->addSeparator();
+#endif
+#ifdef USE_JOYSTICK
 	actionUseJoypad[0] = mn->addAction(CMSG(Use_Joypad_Key_Assigned), this, SLOT(selectUseJoypadSlot()));
 	actionUseJoypad[0]->setCheckable(true);
 #ifdef USE_PIAJOYSTICK
-	actionUseJoypad[1] = mn->addAction(CMSG(Use_Joypad_PIA_Type), this, SLOT(selectUseJoypadSlot()));
+	actionUseJoypad[1] = mn->addAction(CMSG(Use_Joypad_PIA_Type), this, SLOT(selectUsePIAJoypadSlot()));
 	actionUseJoypad[1]->setCheckable(true);
 #endif
-#ifdef USE_KEY2JOYSTICK
-	actionKey2Joypad = mn->addAction(CMSG(Enable_Key_to_Joypad), this, SLOT(selectKeyToJoypadSlot()));
-	actionKey2Joypad->setCheckable(true);
 #endif
+#ifdef USE_KEY2JOYSTICK
+	actionKey2Joypad = mn->addAction(CMSG(Enable_Key_to_Joypad), this, SLOT(selectKey2JoypadSlot()));
+	actionKey2Joypad->setCheckable(true);
 #endif
 
 	mn->addSeparator();
@@ -919,7 +921,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 	mn->addSeparator();
-#ifdef USE_JOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	actionJoySetting = mn->addAction(CMSG(Joypad_Setting_), this, SLOT(selectJoySettingSlot()));
 #endif
 	actionKeybind = mn->addAction(CMSG(Keybind_), this, SLOT(selectKeybindSlot()));
@@ -1781,8 +1783,14 @@ void MainWindow::updateMenuOptionsSlot()
 	show = gui->IsShownPMeter();
 	actionShowPMeter->setChecked(show);
 #endif
+#ifdef USE_JOYSTICK
 	show = gui->IsEnableJoypad(1);
 	actionUseJoypad[0]->setChecked(show);
+#ifdef USE_PIAJOYSTICK
+	show = gui->IsEnableJoypad(2);
+	actionUseJoypad[1]->setChecked(show);
+#endif
+#endif
 #ifdef USE_KEY2JOYSTICK
 	show = gui->IsEnableKey2Joypad();
 	actionKey2Joypad->setChecked(show);

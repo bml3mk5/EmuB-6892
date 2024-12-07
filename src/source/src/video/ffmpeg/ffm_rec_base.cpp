@@ -100,6 +100,11 @@ int FFM_REC_BASE::AddStream(enOutputType type, AVCodecID codec_id, const char *c
 		ret = -1;
 		return ret;
 	}
+
+// AVOutputFormat is defined as FFOutputFormat in private class,
+// and has some private members on the version more than 60.
+// So, cannot allocate a new instance as AVOutputFormat.
+#if LIBAVFORMAT_VERSION_MAJOR < 60
 	// alloc and copy
 	if (!oformat) {
 		oformat = (AVOutputFormat *)f_av_malloc(sizeof(AVOutputFormat));
@@ -123,6 +128,12 @@ int FFM_REC_BASE::AddStream(enOutputType type, AVCodecID codec_id, const char *c
 
 	// alloc format context using output codec
 	ret = f_avformat_alloc_output_context2(&fmtcont, oformat, NULL, NULL);
+
+#else
+	// alloc format context using output codec
+	ret = f_avformat_alloc_output_context2(&fmtcont, ofmttmp, NULL, NULL);
+#endif
+
 	if (ret < 0) {
 		logging->out_logf(LOG_ERROR, _T("avformat_alloc_output_context2 failed: %d"), ret);
 		return ret;

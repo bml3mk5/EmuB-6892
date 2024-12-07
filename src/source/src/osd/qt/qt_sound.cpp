@@ -17,13 +17,74 @@
 #include "../../vm/vm.h"
 #include "../../config.h"
 #include "../../video/rec_audio.h"
-#include <QAudioOutput>
-#include <QAudioFormat>
-#include <QThread>
 #include "qt_sound.h"
 #include "qt_main.h"
 
 
+#if QT_VERSION >= 0x060000
+MyAudioOutput::MyAudioOutput(const QAudioFormat &format, QObject *parent, EMU *new_emu, int samples, int latency) :
+	QAudioSink(format, parent),
+	emu(new_emu)
+{
+	io = nullptr;
+	timer = new QTimer();
+
+	timer->setInterval(latency / 2);
+
+	setBufferSize(samples * format.bytesPerSample() * format.channelCount() * 2);
+	setVolume(1.0);
+
+	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(notifySlot()));
+	QObject::connect(this, SIGNAL(stateChanged(QAudio::State)), this, SLOT(stateChangedSlot(QAudio::State)));
+
+//	th = new QThread();
+//	moveToThread(th);
+}
+MyAudioOutput::~MyAudioOutput()
+{
+//	th->exit();
+//	th->wait();
+//	delete th;
+	delete timer;
+}
+void MyAudioOutput::notifySlot()
+{
+	EMU_OSD *emu_osd = dynamic_cast<EMU_OSD *>(emu);
+	emu_osd->update_sound();
+}
+void MyAudioOutput::stateChangedSlot(QAudio::State state)
+{
+	logging->out_debugf("MyAudioOutput::stateChanged: %d", state);
+	if (state == QAudio::IdleState) {
+		EMU_OSD *emu_osd = dynamic_cast<EMU_OSD *>(emu);
+		emu_osd->update_sound();
+		timer->start();	// restart
+	}
+}
+void MyAudioOutput::start()
+{
+//	if (!th->isRunning()) th->start();
+
+	io = QAudioSink::start();
+	QAudioSink::suspend();
+	QAudioSink::resume();
+	timer->start();
+}
+void MyAudioOutput::stop()
+{
+	timer->stop();
+	QAudioSink::stop();
+	io = nullptr;
+}
+int MyAudioOutput::BytesFree() const
+{
+	return bytesFree();
+}
+void MyAudioOutput::WriteTo(const char *buffer, qint64 len)
+{
+	if (io) io->write(buffer, len);
+}
+#else
 MyAudioOutput::MyAudioOutput(const QAudioFormat &format, QObject *parent, EMU *new_emu, int samples, int latency) :
 	QAudioOutput(format, parent),
 	emu(new_emu)
@@ -31,7 +92,7 @@ MyAudioOutput::MyAudioOutput(const QAudioFormat &format, QObject *parent, EMU *n
 	io = nullptr;
 
 	setBufferSize(samples * format.channelCount() * format.sampleSize() / 8 * 2);
-	setNotifyInterval(latency);
+	setNotifyInterval(latency / 2);
 	setVolume(1.0);
 
 	QObject::connect(this, SIGNAL(notify()), this, SLOT(notifySlot()));
@@ -82,13 +143,24 @@ QIODevice *MyAudioOutput::getIODevice()
 	return io;
 }
 
+int MyAudioOutput::BytesFree() const
+{
+	return bytesFree();
+}
+
+void MyAudioOutput::WriteTo(const char *buffer, qint64 len)
+{
+	if (io) io->write(buffer, len);
+}
+#endif
+
 //
 //
 //
 
 void EMU_OSD::EMU_SOUND()
 {
-	sound_prev_time = 0;
+//	sound_prev_time = 0;
 
 	rec_audio = new REC_AUDIO(this);
 }
@@ -99,11 +171,16 @@ void EMU_OSD::initialize_sound(int rate, int samples, int latency)
 
 	QAudioFormat fmt;
 	fmt.setSampleRate(rate);
-	fmt.setSampleType(QAudioFormat::SignedInt);
+#if QT_VERSION >= 0x060000
+	fmt.setSampleFormat(QAudioFormat::Int16);
 	fmt.setChannelCount(2);
+#else
+	fmt.setSampleType(QAudioFormat::SignedInt);
 	fmt.setSampleSize(16);
 	fmt.setByteOrder(QAudioFormat::LittleEndian);
 	fmt.setCodec("audio/pcm"); // Linear PCM
+	fmt.setChannelCount(2);
+#endif
 
 	sound = new MyAudioOutput(fmt, Q_NULLPTR, this, samples, latency);
 	if (!sound) {
@@ -158,19 +235,19 @@ void EMU_OSD::end_sound()
 void EMU_OSD::update_sound()
 {
 	int extra_frames = 0;
-	int samples = (sound->bytesFree() >> 2);
+	int samples = (sound->BytesFree() >> 2);
 	if (samples > sound_samples) samples = sound_samples;
 
-//	out_debugf(_T("EMU_OSD::update_sound st sz:%d period:%d free:%d"), sound->bufferSize(), sound->periodSize(), sound->bytesFree());
-	QIODevice *io = sound->getIODevice();
-	if(io != nullptr && samples > 0) {
+//	logging->out_debugf(_T("EMU_OSD::update_sound st sz:%d free:%d samples:%d"), sound->bufferSize(), sound->bytesFree(), samples);
+//	QIODevice *io = sound->getIODevice();
+	if(samples > 0) {
 		// sound buffer must be updated
 		int16_t* sound_buffer = vm->create_sound(&extra_frames, samples);
 #ifndef SOUND_RECORD_IN_MIXER
 		record_sound(sound_buffer, samples);
 #endif
 		if(sound_buffer) {
-			io->write(reinterpret_cast<const char *>(sound_buffer), samples << 2);
+			sound->WriteTo(reinterpret_cast<const char *>(sound_buffer), samples << 2);
 		}
 //		out_debugf(_T("EMU_OSD::update_sound ed f:%d sz:%d period:%d free:%d"), extra_frames, sound->bufferSize(), sound->periodSize(), sound->bytesFree());
 //	} else {
@@ -202,10 +279,10 @@ void EMU_OSD::set_volume(int UNUSED_PARAM(volume))
 	}
 }
 
-void EMU_OSD::start_rec_sound(int type)
+void EMU_OSD::start_rec_sound(int type, bool with_video)
 {
 #ifdef USE_REC_AUDIO
-	rec_audio->Start(type, sound_rate, false);
+	rec_audio->Start(type, sound_rate, with_video);
 #endif
 }
 

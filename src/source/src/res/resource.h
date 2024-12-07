@@ -1099,6 +1099,9 @@
 #define IDC_CHK_AXIS10                          22057
 #define IDC_CHK_AXIS11                          22058
 #define IDC_CHK_AXIS12                          22059
+#define IDC_CHK_PIAJOY_NEGATIVE                 22060
+#define IDC_COMBO_PIAJOY_CONNTO                 22061
+#define IDC_CHK_PIAJOY_NOIRQ                    22062
 #define IDD_VOLUME                              115
 #define IDC_SLIDER_VOL1                         22045
 #define IDC_SLIDER_VOL2                         22046

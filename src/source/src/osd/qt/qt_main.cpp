@@ -18,7 +18,11 @@
 #include <QPainter>
 #include <QScreen>
 #include <QThread>
+#if QT_VERSION >= 0x060000
+#include <QElapsedTimer>
+#else
 #include <QTime>
+#endif
 
 #include "../../common.h"
 #include "../../config.h"
@@ -60,7 +64,11 @@ t_frame_count frames_result;
 /// timing control
 #define MAX_SKIP_FRAMES 10
 
+#if QT_VERSION >= 0x060000
+static QElapsedTimer *timer = nullptr;
+#else
 static QTime *timer = nullptr;
+#endif
 static EmuThread *emu_thread = nullptr;
 
 //
@@ -76,7 +84,11 @@ int main(int argc, char *argv[])
 
 	QApplication app(argc, argv);
 
+#if QT_VERSION >= 0x060000
+	timer = new QElapsedTimer();
+#else
 	timer = new QTime();
+#endif
 	timer->start();
 
 	QString app_path = app.applicationDirPath();

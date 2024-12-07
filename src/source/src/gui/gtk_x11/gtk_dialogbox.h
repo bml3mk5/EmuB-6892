@@ -11,6 +11,7 @@
 #ifndef GUI_GTK_DIALOGBOX_H
 #define GUI_GTK_DIALOGBOX_H
 
+#include "../../common.h"
 #include <gtk/gtk.h>
 #include "../../cchar.h"
 #include "../../cptrlist.h"
@@ -124,6 +125,9 @@ public:
 	DialogBox(GUI *new_gui);
 	virtual ~DialogBox();
 	virtual bool Show(GtkWidget *parent_window);
+	virtual bool Show(GtkWidget *parent_window, int);
+	virtual bool Show(GtkWidget *parent_window, int, bool);
+	virtual bool ShowModal(GtkWidget *parent_window);
 	virtual void Hide();
 	virtual bool IsVisible() const;
 };

@@ -161,6 +161,7 @@
 		D9F141F5233CD5ED0025638D /* simple_ini.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F141F3233CD5ED0025638D /* simple_ini.cpp */; };
 		D9F1421B233CEE4C0025638D /* wx_recaud_dlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F14219233CEE4C0025638D /* wx_recaud_dlg.cpp */; };
 		D9F18DB626564BFD00765805 /* labels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F18DB426564BFD00765805 /* labels.cpp */; };
+		D9F429A22CF1AE2100D90AA7 /* rec_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F429A02CF1AE2100D90AA7 /* rec_common.cpp */; };
 		D9F7DD6023F03C4200CB00ED /* wxw_ccolor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F7DD5A23F03C4200CB00ED /* wxw_ccolor.cpp */; };
 		D9F7DD6123F03C4200CB00ED /* wxw_debugger_console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F7DD5C23F03C4200CB00ED /* wxw_debugger_console.cpp */; };
 		D9F7DD6223F03C4200CB00ED /* wxw_screenmode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F7DD5E23F03C4200CB00ED /* wxw_screenmode.cpp */; };
@@ -507,6 +508,8 @@
 		D9F1421A233CEE4C0025638D /* wx_recaud_dlg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wx_recaud_dlg.h; sourceTree = "<group>"; };
 		D9F18DB426564BFD00765805 /* labels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = labels.cpp; sourceTree = "<group>"; };
 		D9F18DB526564BFD00765805 /* labels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = labels.h; sourceTree = "<group>"; };
+		D9F429A02CF1AE2100D90AA7 /* rec_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rec_common.cpp; sourceTree = "<group>"; };
+		D9F429A12CF1AE2100D90AA7 /* rec_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rec_common.h; sourceTree = "<group>"; };
 		D9F7DD5A23F03C4200CB00ED /* wxw_ccolor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wxw_ccolor.cpp; sourceTree = "<group>"; };
 		D9F7DD5B23F03C4200CB00ED /* wxw_ccolor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wxw_ccolor.h; sourceTree = "<group>"; };
 		D9F7DD5C23F03C4200CB00ED /* wxw_debugger_console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wxw_debugger_console.cpp; sourceTree = "<group>"; };
@@ -949,6 +952,8 @@
 				D94A74191B0F571F003DAF01 /* qtkit */,
 				D9388ACE1DEEC68200222B43 /* rec_audio.cpp */,
 				D9388ACF1DEEC68200222B43 /* rec_audio.h */,
+				D9F429A02CF1AE2100D90AA7 /* rec_common.cpp */,
+				D9F429A12CF1AE2100D90AA7 /* rec_common.h */,
 				D94A741C1B0F571F003DAF01 /* rec_video.cpp */,
 				D94A741D1B0F571F003DAF01 /* rec_video.h */,
 				D948234C222E8BE100FC45C4 /* vfw */,
@@ -1328,6 +1333,7 @@
 				D9F141F5233CD5ED0025638D /* simple_ini.cpp in Sources */,
 				D9F1421B233CEE4C0025638D /* wx_recaud_dlg.cpp in Sources */,
 				D9F18DB626564BFD00765805 /* labels.cpp in Sources */,
+				D9F429A22CF1AE2100D90AA7 /* rec_common.cpp in Sources */,
 				D9F7DD6023F03C4200CB00ED /* wxw_ccolor.cpp in Sources */,
 				D9F7DD6123F03C4200CB00ED /* wxw_debugger_console.cpp in Sources */,
 				D9F7DD6223F03C4200CB00ED /* wxw_screenmode.cpp in Sources */,

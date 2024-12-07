@@ -120,21 +120,23 @@ enum IOPORT_POS {
 /// @ingroup Enums
 /// @brief bit mask of Config::misc_flags
 enum MISC_FLAG_MASKS {
-	MSK_SHOWLEDBOX		= 0x001,	///< bit0: show led
-	MSK_SHOWMSGBOARD	= 0x002,	///< bit1: show msg
-	MSK_USEJOYSTICK		= 0x004,	///< bit2: use joystick
-	MSK_INSIDELEDBOX	= 0x008,	///< bit3: inside led
-	MSK_LEDBOX_ALL		= 0x009,
-	MSK_USELIGHTPEN		= 0x010,	///< bit4: enable lightpen
-	MSK_USEMOUSE		= 0x020,	///< bit5: enable mouse
-	MSK_USEPIAJOYSTICK	= 0x040,	///< bit6: use pia joystick
-	MSK_USEJOYSTICK_ALL	= 0x044,
-	MSK_SHOWMSG_UNDEFOP	= 0x080,	///< bit7: show msg when undef opcode
-	MSK_SHOWMSG_ADDRERR	= 0x100,	///< bit8: show msg when address error
-	MSK_USEKEY2JOYSTICK	= 0x400,	///< bit10: use key to joystick
-	MSK_PIAJOY_ALL		= 0x440,
-	MSK_SHOWDLG_ALL		= 0x5ff,
-	MSK_CLEAR_CPUREG	= 0x800,	///< bit11: clear CPU registers at power on
+	MSK_SHOWLEDBOX		= 0x0001,	///< bit0: show led
+	MSK_SHOWMSGBOARD	= 0x0002,	///< bit1: show msg
+	MSK_USEJOYSTICK		= 0x0004,	///< bit2: use joystick
+	MSK_INSIDELEDBOX	= 0x0008,	///< bit3: inside led
+	MSK_LEDBOX_ALL		= 0x0009,
+	MSK_USELIGHTPEN		= 0x0010,	///< bit4: enable lightpen
+	MSK_USEMOUSE		= 0x0020,	///< bit5: enable mouse
+	MSK_USEPIAJOYSTICK	= 0x0040,	///< bit6: use pia joystick
+	MSK_USEJOYSTICK_ALL	= 0x0044,
+	MSK_SHOWMSG_UNDEFOP	= 0x0080,	///< bit7: show msg when undef opcode
+	MSK_SHOWMSG_ADDRERR	= 0x0100,	///< bit8: show msg when address error
+	MSK_USEKEY2JOYSTICK	= 0x0400,	///< bit10: use key to joystick
+	MSK_PIAJOY_ALL		= 0x0440,
+	MSK_SHOWDLG_ALL		= 0x05ff,
+	MSK_CLEAR_CPUREG	= 0x0800,	///< bit11: clear CPU registers at power on
+	MSK_PIAJOY_NOIRQ	= 0x2000,	///< bit13: no irq when pressed buttons (for mbs1)
+	MSK_PIAJOY_NEGATIVE = 0x4000,	///< bit14: pia joy signals are negative (for bml3mk5)
 };
 
 /// @ingroup Macros
@@ -153,6 +155,8 @@ enum MISC_FLAG_MASKS {
 #define FLG_USEKEY2JOYSTICK (pConfig->misc_flags & MSK_USEKEY2JOYSTICK)
 #define FLG_PIAJOY_ALL		(pConfig->misc_flags & MSK_PIAJOY_ALL)
 #define FLG_CLEAR_CPUREG	(pConfig->misc_flags & MSK_CLEAR_CPUREG)
+#define FLG_PIAJOY_NOIRQ	(pConfig->misc_flags & MSK_PIAJOY_NOIRQ)
+#define FLG_PIAJOY_NEGATIVE	(pConfig->misc_flags & MSK_PIAJOY_NEGATIVE)
 ///@}
 
 /// @ingroup Enums
@@ -660,6 +664,9 @@ public:
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	int    joy_mashing[MAX_JOYSTICKS][KEYBIND_JOY_BUTTONS];
 	int    joy_axis_threshold[MAX_JOYSTICKS][6];
+#endif
+#ifdef USE_PIAJOYSTICKBIT
+	int    piajoy_conn_to;
 #endif
 
 #ifdef USE_PERFORMANCE_METER

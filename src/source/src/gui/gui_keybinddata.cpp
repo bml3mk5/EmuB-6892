@@ -15,22 +15,16 @@
 
 const struct KeybindData::st_type KeybindData::cTypes[] = {
 	{ DEVTYPE_KEYBOARD,	VM_TYPE_KEYASSIGN,	FLAG_DENY_DUPLICATE },
-#if defined(USE_JOYSTICK)
 	{ DEVTYPE_JOYPAD,	VM_TYPE_KEYASSIGN,	0 },
-#if defined(USE_PIAJOYSTICK)
-# if !defined(USE_PIAJOYSTICKBIT)
+#if !defined(USE_PIAJOYSTICKBIT)
 	{ DEVTYPE_JOYPAD,	VM_TYPE_PIOJOYASSIGN,	0 },
 #else
 	{ DEVTYPE_JOYPAD,	VM_TYPE_PIOBITASSIGN,	0 },
-# endif
 #endif
-#endif
-#ifdef USE_KEY2JOYSTICK
-# if !defined(USE_PIAJOYSTICKBIT)
+#if !defined(USE_PIAJOYSTICKBIT)
 	{ DEVTYPE_KEYBOARD,	VM_TYPE_PIOJOYASSIGN,	0 },
 #else
 	{ DEVTYPE_KEYBOARD,	VM_TYPE_PIOBITASSIGN,	0 },
-# endif
 #endif
 	{ -1, -1, 0 },
 }; 
@@ -899,6 +893,10 @@ const key_labels_t cVmJoyLabels[] = {
 	{ CMsg::YA_up_left,    _T("YA up+left") },
 	{ CMsg::Null,       _T("?") },
 #ifdef _BML3MK5
+	{ CMsg::bit_0,		_T("bit 0") },
+	{ CMsg::bit_1,		_T("bit 1") },
+	{ CMsg::bit_2,		_T("bit 2") },
+	{ CMsg::bit_3,		_T("bit 3") },
 	{ CMsg::bit_4,		_T("bit 4") },
 	{ CMsg::bit_5,		_T("bit 5") },
 	{ CMsg::bit_6,		_T("bit 6") },

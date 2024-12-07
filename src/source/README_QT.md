@@ -42,14 +42,15 @@
   Qt Ver5.7以上 + QT Gamepad [1]
 
   [1] QT GamepadはQt5.9から標準コンポーネントに含まれるようです。
-  [2] Qt6では動作しません。
+  [2] Qt6ではQGamepadがサポート外になったため、ゲームパッドは
+      使用できません。
 
 
 ## QT Creatorを使用したコンパイル方法
 
  * QT Creator で .proファイルを読み込んでください。
  * ビルドステップを追加。
-  + makeターゲット"install"を追加してください。
+  + makeを選択 Makeの引数に"install"と入力。
    * installを実行すると、リソースなどをビルドディレクトリにコピーします。
      システムディレクトリ(/usr/localなど)にインストールはしません。
 
@@ -115,10 +116,10 @@
 
 ==============================================================================
 
-連絡先：
-  Sasaji (sasaji@s-sasaji.ddo.jp)
-  http://s-sasaji.ddo.jp/bml3mk5/
-  (Twitter: http://twitter.com/bml3mk5)
+連絡先：Sasaji (sasaji@s-sasaji.ddo.jp)
+ * My WebPage: http://s-sasaji.ddo.jp/bml3mk5/
+ * GitHub:     https://github.com/bml3mk5/EmuB-6892
+ * X(Twitter): https://x.com/bml3mk5
 
 ==============================================================================
 

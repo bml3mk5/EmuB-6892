@@ -255,6 +255,10 @@ bool AVK_REC_VIDEO::Restart()
 /// @attention must call this method from emu thread
 bool AVK_REC_VIDEO::Record()
 {
+	if ([input isReadyForMoreMediaData] != YES) {
+		return true;
+	}
+	
 	rec_surface->Lock();
 
 	void *buffer = rec_surface->GetBuffer();

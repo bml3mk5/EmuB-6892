@@ -436,8 +436,10 @@ void GUI::set_menu_item(AG_Menu *menu)
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Mouse_Alt)), NULL, OnSelectEnableMouse, "%Cp", this);
 			 AG_MenuSetPollFn(mi, OnUpdateEnableMouse, "%Cp", this);
 #endif
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 		AG_MenuSeparator(mt_options);
+#endif
+#ifdef USE_JOYSTICK
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_Key_Assigned_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, 1);
 			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, 1);
 #ifdef USE_PIAJOYSTICK
@@ -461,7 +463,9 @@ void GUI::set_menu_item(AG_Menu *menu)
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Stop_Debugger)), NULL, OnSelectCloseDebugger, "%Cp", this);
 #endif
 		AG_MenuSeparator(mt_options);
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Joypad_Setting_)), NULL, OnSelectJoypadSetting, "%Cp", this);
+#endif
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Keybind_Alt)), NULL, OnSelectKeybindBox, "%Cp", this);
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Configure_Alt)), NULL, OnSelectConfigureBox, "%Cp", this);
 	}
@@ -1006,17 +1010,21 @@ void GUI::OnUpdateUseJoypad(AG_Event *event)
 // Change EnableKey2Joy
 void GUI::OnSelectEnableKey2Joy(AG_Event *event)
 {
+#ifdef USE_KEY2JOYSTICK
 	GUI *gui = (GUI *)AG_PTR(1);
 
 	gui->ToggleEnableKey2Joypad();
+#endif
 }
 // update EnableKey2Joy
 void GUI::OnUpdateEnableKey2Joy(AG_Event *event)
 {
+#ifdef USE_KEY2JOYSTICK
 	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
 	GUI *gui = (GUI *)AG_PTR(1);
 
 	AG_GUI_MENU_CHECK(mi, gui->IsEnableKey2Joypad());
+#endif
 }
 
 #ifdef USE_LIGHTPEN

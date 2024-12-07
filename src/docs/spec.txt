@@ -20,6 +20,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
 ・フルスクリーンモードは正常に表示されないことがあります。
 ・フレームレートが60fpsにならないことがあります。
 ・OpenGLを使用すると画面が表示されないことがあります。
+・Qt6ではジョイパッドがサポート外になります。
 
 
 ● デバイスの対応状況
@@ -82,7 +83,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
 
   $FF75 - $FF76 KANJI           ○対応
 
-  $FFC0 - $FFC1 PIA A BANK      ○対応
+  $FFC0 - $FFC1 PIA A BANK      ○対応 ジョイパッド不可
   $FFC2 - $FFC3 PIA B(PRINTER)  ○対応
   $FFC4 - $FFC5 ACIA            ○対応
   $FFC6 - $FFC7 CRTC            ○対応

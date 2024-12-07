@@ -30,19 +30,19 @@
           windows/ ......... windows関連ソース
         vm/ ................ VMメインプログラムソース
       VC++2010/
-        bml3mk5.vcxproj ...... VC++2010用プロジェクトファイル
+        bml3mk5.vcxproj ...... Visual Studio プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2013/
-        bml3mk5.vcxproj ...... VC++2013用プロジェクトファイル
+        bml3mk5.vcxproj ...... Visual Studio プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2015/
-        bml3mk5.vcxproj ...... VC++2015用プロジェクトファイル
+        bml3mk5.vcxproj ...... Visual Studio プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2017/
-        bml3mk5.vcxproj ...... VC++2017用プロジェクトファイル
+        bml3mk5.vcxproj ...... Visual Studio プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       VC++2019/
-        bml3mk5.vcxproj ...... VC++2019用プロジェクトファイル
+        bml3mk5.vcxproj ...... Visual Studio プロジェクトファイル
         mmf_loader.vcxproj ... Media Foundationを動的にロードするためのDLL作成
       README_WIN.md ........ このファイル
 
@@ -83,10 +83,10 @@
 
 ==============================================================================
 
-連絡先：
-  Sasaji (sasaji@s-sasaji.ddo.jp)
-  http://s-sasaji.ddo.jp/bml3mk5/
-  (Twitter: http://twitter.com/bml3mk5)
+連絡先：Sasaji (sasaji@s-sasaji.ddo.jp)
+ * My WebPage: http://s-sasaji.ddo.jp/bml3mk5/
+ * GitHub:     https://github.com/bml3mk5/EmuB-6892
+ * X(Twitter): https://x.com/bml3mk5
 
 ==============================================================================
 

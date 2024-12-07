@@ -51,6 +51,7 @@ private:
 	KEYRECORD *reckey;
 #endif
 	DEVICE *d_pia;
+	DEVICE *d_pia_ex2;
 
 	uint8_t* p_key_stat;
 	uint8_t  m_scan_code;
@@ -67,13 +68,13 @@ private:
 	uint8_t	lpen_flg_prev;
 	bool	lpen_bl;
 
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	uint32_t *p_joy_stat[MAX_JOYSTICKS];
 	uint32_t *p_joy_real_stat[MAX_JOYSTICKS];
-#ifdef USE_PIAJOYSTICK
+#endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	int		joy_pia_sel;
 	uint8_t joy_pia[MAX_JOYSTICKS];
-#endif
 #endif
 
 	int	m_counter;	// keyboard counter
@@ -129,6 +130,7 @@ private:
 	void update_light_pen();
 #endif
 	void update_keyboard();
+	void reset_joy_pia();
 	void update_joy_pia();
 
 	inline bool pressing_key(int);
@@ -175,6 +177,9 @@ public:
 #endif
 	void set_context_pia(DEVICE* device) {
 		d_pia = device;
+	}
+	void set_context_pia_ex2(DEVICE* device) {
+		d_pia_ex2 = device;
 	}
 	uint8_t get_kb_mode();
 	void update_system_key();

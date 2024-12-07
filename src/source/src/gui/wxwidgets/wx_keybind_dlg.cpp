@@ -48,13 +48,37 @@ void MyKeybindDlg::InitDialog()
 {
 	wxSizerFlags flags = wxSizerFlags().Expand().Border(wxALL, 4);
 
-	wxBoxSizer *szrAll = new wxBoxSizer(wxVERTICAL);
+	int tab_offset = KeybindData::KB_TABS_MIN;
 
-	MyNotebook *book = new MyNotebook(this, IDC_NOTEBOOK, wxDefaultPosition, wxDefaultSize);
-	for(int tab=0; tab<KeybindData::TABS_MAX; tab++) {
-		book->AddPageById(CreateBook(book, tab), LABELS::keybind_tab[tab]);
+	wxBoxSizer *szrAll = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *szrMain = new wxBoxSizer(wxHORIZONTAL);
+
+	notebook = new MyNotebook(this, IDC_NOTEBOOK, wxDefaultPosition, wxDefaultSize);
+	for(int tab_num=tab_offset; tab_num<KeybindData::KB_TABS_MAX; tab_num++) {
+		notebook->AddPageById(CreateBook(notebook, tab_num, tab_offset), LABELS::keybind_tab[tab_num-tab_offset]);
 	}
-	szrAll->Add(book, flags);
+	szrMain->Add(notebook, flags);
+
+	// load and save buttons
+	wxBoxSizer *vbox = new wxBoxSizer(wxVERTICAL);
+	wxButton *btn;
+	btn = new MyButton(this, IDC_BUTTON_LOAD_DEFAULT0, CMsg::Load_Default);
+	vbox->Add(btn, flags);
+	vbox->Add(new wxStaticText(this, wxID_ANY, wxT(" ")), flags);
+	for(int i=0; i<KEYBIND_PRESETS; i++) {
+		wxString str = wxString::Format(CMSG(Load_Preset_VDIGIT), i + 1);
+		btn = new wxButton(this, IDC_BUTTON_LOAD_PRESET00 + i, str);
+		vbox->Add(btn, flags);
+	}
+	vbox->Add(new wxStaticText(this, wxID_ANY, wxT(" ")), flags);
+	for(int i=0; i<KEYBIND_PRESETS; i++) {
+		wxString str = wxString::Format(CMSG(Save_Preset_VDIGIT), i + 1);
+		btn = new wxButton(this, IDC_BUTTON_SAVE_PRESET00 + i, str);
+		vbox->Add(btn, flags);
+	}
+	szrMain->Add(vbox, flags);
+
+	szrAll->Add(szrMain, flags);
 
 	// axes of joypad
 	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
@@ -80,41 +104,20 @@ void MyKeybindDlg::InitDialog()
 	SetSizerAndFit(szrAll);
 }
 
-wxWindow *MyKeybindDlg::CreateBook(wxWindow *parent, int tab)
+wxWindow *MyKeybindDlg::CreateBook(wxWindow *parent, int tab, int)
 {
 	wxSizerFlags flags = wxSizerFlags().Expand().Border(wxALL, 2);
 
 	wxPanel *page = new wxPanel(parent);
 
-	wxBoxSizer *szrRight  = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer *szrMain   = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer *szrAll    = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *szrAll = new wxBoxSizer(wxVERTICAL);
 
 	// table
 	MyKeybindListWindow *ctrl = new MyKeybindListWindow(tab, page, IDC_LIST_0 + tab, wxDefaultPosition, wxSize(-1,400), wxBORDER_SIMPLE | wxVSCROLL);
 	ctrl->SetJoyMaskPtr(&joy_mask);
 	ctrls.push_back(ctrl);
+	szrAll->Add(ctrl, flags);
 
-	// load and save buttons
-	wxButton *btn;
-	btn = new MyButton(page, IDC_BUTTON_LOAD_DEFAULT0 + tab, CMsg::Load_Default);
-	szrRight->Add(btn, flags);
-	szrRight->Add(new wxStaticText(page, wxID_ANY, wxT(" ")), flags);
-	for(int i=0; i<KEYBIND_PRESETS; i++) {
-		wxString str = wxString::Format(CMSG(Load_Preset_VDIGIT), i + 1);
-		btn = new wxButton(page, IDC_BUTTON_LOAD_PRESET00 + tab + i * KeybindData::TABS_MAX, str);
-		szrRight->Add(btn, flags);
-	}
-	szrRight->Add(new wxStaticText(page, wxID_ANY, wxT(" ")), flags);
-	for(int i=0; i<KEYBIND_PRESETS; i++) {
-		wxString str = wxString::Format(CMSG(Save_Preset_VDIGIT), i + 1);
-		btn = new wxButton(page, IDC_BUTTON_SAVE_PRESET00 + tab + i * KeybindData::TABS_MAX, str);
-		szrRight->Add(btn, flags);
-	}
-
-	szrMain->Add(ctrl, flags);
-	szrMain->Add(szrRight, flags);
-	szrAll->Add(szrMain, flags);
 	wxCheckBox *chk = ctrl->GetCombi();
 	if (chk) szrAll->Add(chk, flags);
 
@@ -193,23 +196,24 @@ bool MyKeybindDlg::get_vkjoylabel(uint32_t code, wxString &label)
  * Event Handler
  */
 void MyKeybindDlg::OnLoadDefault(wxCommandEvent &event) {
-	int id = event.GetId() - IDC_BUTTON_LOAD_DEFAULT0;
-	int tab = id % ctrls.size();
-
+//	int id = event.GetId() - IDC_BUTTON_LOAD_DEFAULT0;
+//	int num = id % KeybindData::TABS_MAX;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
 	load_data(tab, -1);
 }
 void MyKeybindDlg::OnLoadPreset(wxCommandEvent &event) {
 	int id = event.GetId() - IDC_BUTTON_LOAD_PRESET00;
-	int num = id / ctrls.size();
-	int tab = id % ctrls.size();
-
+	int num = id % KeybindData::TABS_MAX;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
 	load_data(tab, num);
 }
 void MyKeybindDlg::OnSavePreset(wxCommandEvent &event) {
 	int id = event.GetId() - IDC_BUTTON_SAVE_PRESET00;
-	int num = id / ctrls.size();
-	int tab = id % ctrls.size();
-
+	int num = id % KeybindData::TABS_MAX;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
 	save_data(tab, num);
 }
 void MyKeybindDlg::OnClickAxis(wxCommandEvent &event) {

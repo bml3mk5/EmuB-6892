@@ -922,6 +922,7 @@
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_base.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_video.cpp" />
     <ClCompile Include="..\src\video\rec_audio.cpp" />
+    <ClCompile Include="..\src\video\rec_common.cpp" />
     <ClCompile Include="..\src\video\rec_video.cpp" />
     <ClCompile Include="..\src\video\vfw\vfw_rec_video.cpp" />
     <ClCompile Include="..\src\video\wave\wav_rec_audio.cpp" />
@@ -1072,6 +1073,7 @@
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_base.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_video.h" />
     <ClInclude Include="..\src\video\rec_audio.h" />
+    <ClInclude Include="..\src\video\rec_common.h" />
     <ClInclude Include="..\src\video\rec_video.h" />
     <ClInclude Include="..\src\video\vfw\vfw_rec_video.h" />
     <ClInclude Include="..\src\video\wave\wav_rec_audio.h" />

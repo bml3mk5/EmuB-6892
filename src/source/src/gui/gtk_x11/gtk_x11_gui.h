@@ -11,6 +11,7 @@
 #ifndef GTK_X11_GUI_H
 #define GTK_X11_GUI_H
 
+#include "../../common.h"
 #include <vector>
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -19,7 +20,6 @@
 #include "gtk_keysym_compat.h"
 #include "../gui_base.h"
 #include "gtk_dialogbox.h"
-#include "../../common.h"
 #include "../../rec_video_defs.h"
 #ifdef USE_GTK
 #include <cairo/cairo.h>

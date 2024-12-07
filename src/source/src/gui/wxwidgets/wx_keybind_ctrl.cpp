@@ -59,11 +59,7 @@ MyKeybindListWindow::MyKeybindListWindow(int tab_no, wxWindow *parent, wxWindowI
 
 	// joypad 
 	chkCombi = NULL;
-	if (LABELS::keybind_combi[m_tab_num] != CMsg::Null) {
-		chkCombi = new MyCheckBox(parent, wxID_ANY, LABELS::keybind_combi[m_tab_num]);
-		int combi1 = (int)kbdata->GetCombi();
-		chkCombi->SetValue(combi1 != 0);
-	}
+	AddCombiCheckButton(parent);
 
 	ctrl->Show(true);
 }
@@ -104,16 +100,43 @@ void MyKeybindListWindow::OnKeyDown(wxKeyEvent &event)
 #endif
 void MyKeybindListWindow::SetKeybindData()
 {
+	SetCombiCheckData();
 	kbdata->SetData();
 }
 void MyKeybindListWindow::LoadPreset(int num)
 {
 	kbdata->LoadPreset(num);
 	ctrl->UpdateItems();
+	UpdateCombiCheckButton();
 }
 void MyKeybindListWindow::SavePreset(int num)
 {
+	SetCombiCheckData();
 	kbdata->SavePreset(num);
+}
+
+wxCheckBox *MyKeybindListWindow::AddCombiCheckButton(wxWindow *parent)
+{
+	if (LABELS::keybind_combi[m_tab_num] != CMsg::Null) {
+		chkCombi = new MyCheckBox(parent, wxID_ANY, LABELS::keybind_combi[m_tab_num]);
+		int combi1 = (int)kbdata->GetCombi();
+		chkCombi->SetValue(combi1 != 0);
+	}
+	return chkCombi;
+}
+
+void MyKeybindListWindow::SetCombiCheckData()
+{
+	if (chkCombi) {
+		kbdata->SetCombi(chkCombi->GetValue());
+	}
+}
+
+void MyKeybindListWindow::UpdateCombiCheckButton()
+{
+	if (chkCombi) {
+		chkCombi->SetValue(kbdata->GetCombi() != 0);
+	}
 }
 
 //
@@ -332,21 +355,23 @@ void MyKeybindListEdit::ClearLabel()
 }
 void MyKeybindListEdit::ClearCellByCode(uint32_t code)
 {
-	_TCHAR clabel[128];
-	int nrow;
-	int ncol;
-	bool rc = kbdata->ClearCellByVkKeyCode(code, clabel, &nrow, &ncol);
-	if (rc) {
-		MyKeybindListEdit *item = owner->GetCell(nrow, ncol);
-		if (item) {
-			item->SetValue(wxString(clabel));
+	if (kbdata->m_flags == KeybindData::FLAG_DENY_DUPLICATE) {
+		_TCHAR clabel[128];
+		int nrow;
+		int ncol;
+		bool rc = kbdata->ClearCellByVkKeyCode(code, clabel, &nrow, &ncol);
+		if (rc) {
+			MyKeybindListEdit *item = owner->GetCell(nrow, ncol);
+			if (item) {
+				item->SetValue(wxString(clabel));
+			}
 		}
 	}
 }
 void MyKeybindListEdit::OnCharHook(wxKeyEvent &event)
 {
 	if (kbdata->m_devtype == KeybindData::DEVTYPE_JOYPAD) return;
-
+	ClearLabel();
 	int code = event.GetKeyCode();
 //	int unicode = (int)event.GetUnicodeKey();
 	short rawcode = (short)event.GetRawKeyCode();

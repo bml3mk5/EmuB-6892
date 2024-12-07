@@ -36,6 +36,15 @@ MyFileBox::~MyFileBox()
 {
 }
 
+bool MyFileBox::IsReadOnly() const
+{
+#if QT_VERSION >= 0x060000
+	return options().testFlag(ReadOnly);
+#else
+	return isReadOnly();
+#endif
+}
+
 void MyFileBox::setFilterTypes(const char *filter_str, bool save)
 {
 	QStringList filters;

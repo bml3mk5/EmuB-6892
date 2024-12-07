@@ -65,10 +65,13 @@
 #define MAX_PRINTER		3
 #define USE_LIGHTPEN
 #define USE_JOYSTICK
+#ifdef USE_JOYSTICK
 #define USE_PIAJOYSTICK
-#define USE_PIAJOYSTICKBIT
+#endif
 #define USE_KEY2JOYSTICK
-
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+#define USE_PIAJOYSTICKBIT
+#endif
 
 #define USE_FD1
 #define USE_FD2
@@ -109,7 +112,7 @@
 #define KEYBIND_ASSIGN	2
 #define KEYBIND_PRESETS	4
 
-#define KEYBIND_JOY_BUTTONS	4
+#define KEYBIND_JOY_BUTTONS	8
 
 /// @ingroup Enums
 /// @brief device masks of NMI signal

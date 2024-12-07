@@ -444,6 +444,7 @@
     <ClCompile Include="..\src\gui\agar\ag_gui_base.cpp" />
     <ClCompile Include="..\src\gui\agar\ag_gui_config.cpp" />
     <ClCompile Include="..\src\gui\agar\ag_joyset_dlg.cpp" />
+    <ClCompile Include="..\src\gui\agar\ag_keybind_ctrl.cpp" />
     <ClCompile Include="..\src\gui\agar\ag_keybind_dlg.cpp" />
     <ClCompile Include="..\src\gui\agar\ag_recaud_dlg.cpp" />
     <ClCompile Include="..\src\gui\agar\ag_recvid_dlg.cpp" />
@@ -497,6 +498,7 @@
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_base.cpp" />
     <ClCompile Include="..\src\video\ffmpeg\ffm_rec_video.cpp" />
     <ClCompile Include="..\src\video\rec_audio.cpp" />
+    <ClCompile Include="..\src\video\rec_common.cpp" />
     <ClCompile Include="..\src\video\rec_video.cpp" />
     <ClCompile Include="..\src\video\vfw\vfw_rec_video.cpp" />
     <ClCompile Include="..\src\video\wave\wav_rec_audio.cpp" />
@@ -584,6 +586,7 @@
     <ClInclude Include="..\src\gui\agar\ag_gui.h" />
     <ClInclude Include="..\src\gui\agar\ag_gui_base.h" />
     <ClInclude Include="..\src\gui\agar\ag_joyset_dlg.h" />
+    <ClInclude Include="..\src\gui\agar\ag_keybind_ctrl.h" />
     <ClInclude Include="..\src\gui\agar\ag_keybind_dlg.h" />
     <ClInclude Include="..\src\gui\agar\ag_recaud_dlg.h" />
     <ClInclude Include="..\src\gui\agar\ag_recvid_dlg.h" />
@@ -642,6 +645,7 @@
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_base.h" />
     <ClInclude Include="..\src\video\ffmpeg\ffm_rec_video.h" />
     <ClInclude Include="..\src\video\rec_audio.h" />
+    <ClInclude Include="..\src\video\rec_common.h" />
     <ClInclude Include="..\src\video\rec_video.h" />
     <ClInclude Include="..\src\video\vfw\vfw_rec_video.h" />
     <ClInclude Include="..\src\video\wave\wav_rec_audio.h" />

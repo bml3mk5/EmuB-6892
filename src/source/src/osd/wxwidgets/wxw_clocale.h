@@ -77,7 +77,8 @@ public:
 	bool SetLocale(const wxString &new_locale);
 	bool UnsetLocale();
 
-	const _TCHAR *GetText(const _TCHAR *str);
+	const char    *GetText(const char *str);
+	const wchar_t *GetText(const wchar_t *str);
 
 	const _TCHAR *GetLocaleName() const;
 	const _TCHAR *GetLanguageName() const;

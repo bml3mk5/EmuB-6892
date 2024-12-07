@@ -39,6 +39,10 @@ private:
 	wxCheckBox *chkCombi;
 	uint32_t *joy_mask;
 
+	wxCheckBox *AddCombiCheckButton(wxWindow *parent);
+	void SetCombiCheckData();
+	void UpdateCombiCheckButton();
+
 //	void OnKeyDown(wxKeyEvent &);
 public:
 	MyKeybindListWindow(int tab_no, wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, int style);

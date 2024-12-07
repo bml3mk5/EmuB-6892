@@ -1099,11 +1099,13 @@ static NSWindow *get_main_window()
 			state = NSControlStateValueOn;
 		}
 #endif
+#ifdef USE_JOYSTICK
 	} else if (act == @selector(ChangeUseJoypad:)) {
 		int num = [menuItem num];
 		if (gui->IsEnableJoypad(num)) {
 			state = NSControlStateValueOn;
 		}
+#endif
 #ifdef USE_KEY2JOYSTICK
 	} else if (act == @selector(ToggleEnableKey2Joypad:)) {
 		if (gui->IsEnableKey2Joypad()) {
@@ -1744,15 +1746,17 @@ void GUI::setup_menu(void)
 	[optionMenu addItem:[NSMenuItem separatorItem]];
 	[optionMenu add_menu_item_by_id:CMsg::Enable_Mouse:recv:@selector(ToggleUseMouse:):0:0:0];
 #endif
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	[optionMenu addItem:[NSMenuItem separatorItem]];
+#endif
+#ifdef USE_JOYSTICK
 	[optionMenu add_menu_item_by_id:CMsg::Use_Joypad_Key_Assigned:recv:@selector(ChangeUseJoypad:):0:1:'j'];
 #ifdef USE_PIAJOYSTICK
 	[optionMenu add_menu_item_by_id:CMsg::Use_Joypad_PIA_Type:recv:@selector(ChangeUseJoypad:):0:2:'j'];
 #endif
+#endif
 #ifdef USE_KEY2JOYSTICK
 	[optionMenu add_menu_item_by_id:CMsg::Enable_Key_to_Joypad:recv:@selector(ToggleEnableKey2Joypad:):0:0:0];
-#endif
 #endif
 	[optionMenu addItem:[NSMenuItem separatorItem]];
 	[optionMenu add_menu_item_by_id:CMsg::Loosen_Key_Stroke_Game:recv:@selector(ToggleLoosenKeyStroke:):0:0:0];
@@ -1763,7 +1767,7 @@ void GUI::setup_menu(void)
 	[optionMenu add_menu_item_by_id:CMsg::Stop_Debugger:recv:@selector(CloseDebugger:):0:0:0];
 #endif
 	[optionMenu addItem:[NSMenuItem separatorItem]];
-#ifdef USE_JOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	[optionMenu add_menu_item_by_id:CMsg::Joypad_Setting_:recv:@selector(ShowJoySettingDialog:):0:0:0];
 #endif
 	[optionMenu add_menu_item_by_id:CMsg::Keybind_:recv:@selector(ShowKeybindDialog:):0:0:'k'];

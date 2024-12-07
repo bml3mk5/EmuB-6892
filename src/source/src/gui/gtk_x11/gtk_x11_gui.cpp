@@ -734,15 +734,17 @@ int GUI::CreateMenu()
 		create_separator_menu(menu);
 		create_check_menu_item(menu, CMsg::Enable_Mouse, OnSelectEnableMouse, OnUpdateEnableMouse, 0, 0, GDK_KEY_Control_L);
 #endif
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 		create_separator_menu(menu);
+#endif
+#ifdef USE_JOYSTICK
 		create_check_menu_item(menu, CMsg::Use_Joypad_Key_Assigned, OnSelectUseJoypad, OnUpdateUseJoypad, 0, 1, GDK_KEY_J);
 #ifdef USE_PIAJOYSTICK
 		create_check_menu_item(menu, CMsg::Use_Joypad_PIA_Type, OnSelectUseJoypad, OnUpdateUseJoypad, 0, 2, GDK_KEY_J);
 #endif
+#endif
 #ifdef USE_KEY2JOYSTICK
 		create_check_menu_item(menu, CMsg::Enable_Key_to_Joypad, OnSelectEnableKey2Joypad, OnUpdateEnableKey2Joypad, 0, 0, 0);
-#endif
 #endif
 		create_separator_menu(menu);
 		create_check_menu_item(menu, CMsg::Loosen_Key_Stroke_Game, OnSelectLoosenKeyStroke, OnUpdateLoosenKeyStroke, 0, 0, 0);
@@ -753,7 +755,7 @@ int GUI::CreateMenu()
 		create_menu_item(menu, CMsg::Stop_Debugger, OnSelectCloseDebugger, NULL);
 #endif
 		create_separator_menu(menu);
-#ifdef USE_JOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 		create_menu_item(menu, CMsg::Joypad_Setting_, OnSelectJoySetting, NULL, 0, 0, 0);
 #endif
 		create_menu_item(menu, CMsg::Keybind_, OnSelectKeybindBox, NULL, 0, 0, GDK_KEY_K);
@@ -2898,19 +2900,23 @@ void GUI::OnUpdatePMeter(GtkWidget *widget, gpointer user_data)
 #endif
 void GUI::OnSelectUseJoypad(GtkWidget *widget, gpointer user_data)
 {
+#ifdef USE_JOYSTICK
 	GUI *gui = (GUI *)user_data;
 	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 
 	SKIP_WHEN_MENU_OPENING(widget);
 	gui->ChangeUseJoypad(num);
+#endif
 }
 void GUI::OnUpdateUseJoypad(GtkWidget *widget, gpointer user_data)
 {
+#ifdef USE_JOYSTICK
 	GUI *gui = (GUI *)user_data;
 	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
 	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 
 	gtk_check_menu_item_set_active(item, gui->IsEnableJoypad(num));
+#endif
 }
 #ifdef USE_KEY2JOYSTICK
 void GUI::OnSelectEnableKey2Joypad(GtkWidget *widget, gpointer user_data)
@@ -2930,10 +2936,12 @@ void GUI::OnUpdateEnableKey2Joypad(GtkWidget *widget, gpointer user_data)
 #endif
 void GUI::OnSelectJoySetting(GtkWidget *widget, gpointer user_data)
 {
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	GUI *gui = (GUI *)user_data;
 
 	SKIP_WHEN_MENU_OPENING(widget);
 	gui->ShowJoySettingDialog();
+#endif
 }
 #ifdef USE_LIGHTPEN
 void GUI::OnSelectEnableLightpen(GtkWidget *widget, gpointer user_data)

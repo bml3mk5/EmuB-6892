@@ -181,11 +181,19 @@ GUIOBJSWX:=$(SRCGUIWX)/wx_dlg.o \
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
 VIDOBJSQTKIT:=$(SRCVIDQTKIT)/qt_rec_video.o
-VIDOBJSAVKIT:=$(SRCVIDAVKIT)/avk_rec_common.o $(SRCVIDAVKIT)/avk_rec_audio.o $(SRCVIDAVKIT)/avk_rec_video.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSAVKIT:=$(SRCVIDAVKIT)/avk_rec_common.o \
+	$(SRCVIDAVKIT)/avk_rec_audio.o \
+	$(SRCVIDAVKIT)/avk_rec_video.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o \
+	$(SRCVIDFFM)/ffm_rec_base.o \
+	$(SRCVIDFFM)/ffm_rec_audio.o \
+	$(SRCVIDFFM)/ffm_rec_video.o
 # VIDOBJSWX:=$(SRCVIDWX)/wx_bitmap.o
 
-VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSQTKIT) $(VIDOBJSAVKIT) $(VIDOBJSFFM) $(VIDOBJSWX) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o
+VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSQTKIT) $(VIDOBJSAVKIT) $(VIDOBJSFFM) $(VIDOBJSWX) \
+	$(SRCVID)/rec_audio.o \
+	$(SRCVID)/rec_common.o \
+	$(SRCVID)/rec_video.o
 
 ifeq ($(GUI_TYPE),GUI_TYPE_WXWIDGETS)
 	GUIOBJS:=$(GUIOBJSWX)

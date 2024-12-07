@@ -158,7 +158,8 @@ VM::VM(EMU* parent_emu) : emu(parent_emu)
 	key->set_keyrecord(reckey);
 //	reckey->set_context(key);
 #endif
-	key->set_context_pia(pia_ex2);
+	key->set_context_pia(pia);
+	key->set_context_pia_ex2(pia_ex2);
 
 	// memory
 	memory->set_context_cpu(cpu);

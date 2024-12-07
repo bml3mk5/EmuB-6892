@@ -7,6 +7,7 @@
 QT       += core gui multimedia opengl serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += openglwidgets
 lessThan(QT_MAJOR_VERSION, 6): QT += gamepad
 
 TARGET = bml3mk5_qt
@@ -112,6 +113,7 @@ SOURCES +=\
 	../src/video/qt/qt_bitmap.cpp \
 	../src/video/wave/wav_rec_audio.cpp \
 	../src/video/rec_audio.cpp \
+	../src/video/rec_common.cpp \
 	../src/video/rec_video.cpp \
 	../src/vm/acia.cpp \
 	../src/vm/ay38910.cpp \
@@ -260,6 +262,7 @@ HEADERS  +=\
 	../src/video/wave/wav_rec_audio.h \
 	../src/video/qt/qt_bitmap.h \
 	../src/video/rec_audio.h \
+	../src/video/rec_common.h \
 	../src/video/rec_video.h \
 	../src/vm/acia.h \
 	../src/vm/ay38910.h \

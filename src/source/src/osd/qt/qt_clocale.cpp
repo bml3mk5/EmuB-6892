@@ -30,25 +30,6 @@ static const _TCHAR *sub_dir[] = {
 	nullptr
 };
 
-#if defined(_UNICODE)
-
-#include <QChar>
-
-const wchar_t *_tgettext(const wchar_t *str)
-{
-	return str;
-}
-
-#else
-
-const char *_tgettext(const char *str)
-{
-	return str;
-	// QObject::tr(str).toUtf8().data();
-}
-
-#endif
-
 //
 
 CLocale::CLocale()
@@ -169,7 +150,7 @@ bool CLocale::FindLocalePath(const QString &new_app_path)
 		sdir += sub_dir[i];
 		sdir += _T("locale");
 
-		new_locale_path = sdir;
+		new_locale_path = QFileInfo(sdir);
 
 		if (new_locale_path.isDir()) {
 			exist = true;
@@ -388,6 +369,20 @@ void CLocale::ChooseLocaleName(const CPtrList<CTchar> &arr, int selidx, CTchar &
 		name.Set(arr.Item(selidx)->Get());
 	}
 }
+
+#if defined(_UNICODE)
+#include <QChar>
+const wchar_t *CLocale::WGgetText(const wchar_t *str)
+{
+    return str;
+}
+#else
+const char *CLocale::GetText(const char *str)
+{
+    return str;
+    // QObject::tr(str).toUtf8().data();
+}
+#endif
 
 //
 

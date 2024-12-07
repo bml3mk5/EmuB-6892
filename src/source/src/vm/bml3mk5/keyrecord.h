@@ -103,7 +103,7 @@ private:
 #ifdef USE_MOUSE
 	KEYRECORD_CACHE m_mouse_cache;
 #endif
-#ifdef USE_PIAJOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	KEYRECORD_CACHE m_joypia_cache;
 #endif
 #ifdef _DEBUG

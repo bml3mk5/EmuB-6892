@@ -25,6 +25,8 @@
 #endif
 //#include "../csurface.h"
 
+#define D88_BLANK_TITLE "BLANK"
+
 #ifdef USE_PERFORMANCE_METER
 int gdPMvalue = 0;
 #endif
@@ -873,7 +875,7 @@ bool EMU::create_blank_floppy_disk(const _TCHAR* file_path, uint8_t type)
 	} d88_hdr;
 
 	memset(&d88_hdr, 0, sizeof(d88_hdr));
-	UTILITY::strcpy(d88_hdr.title, sizeof(d88_hdr.title) / sizeof(d88_hdr.title[0]), "BLANK");
+	memcpy(d88_hdr.title, D88_BLANK_TITLE, strlen(D88_BLANK_TITLE));
 	d88_hdr.type = type;
 	d88_hdr.size = sizeof(d88_hdr);
 
@@ -1382,7 +1384,7 @@ void EMU::change_use_joypad(int num)
 {
 #if defined(USE_JOYSTICK)
 	if (num < 0) {
-#ifdef USE_PIAJOYSTICK
+#if defined(USE_PIAJOYSTICK)
 		num = (FLG_USEJOYSTICK ? 1 : (FLG_USEPIAJOYSTICK ? 2 : 0));
 		num = (num + 1) % 3;
 #else

@@ -507,8 +507,10 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Enable Lightpen\tAlt+Ctrl",   ID_OPTIONS_LIGHTPEN
 #endif
-#ifdef USE_JOYSTICK
+#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
         MENUITEM SEPARATOR
+#endif
+#ifdef USE_JOYSTICK
         MENUITEM "Use Joypad (Key Assigned)\tAlt+J",ID_OPTIONS_JOYPAD0
 #ifdef USE_PIAJOYSTICK
         MENUITEM "Use Joypad (PIA Type)\tAlt+J",ID_OPTIONS_JOYPAD1
@@ -529,7 +531,7 @@ BEGIN
         MENUITEM "Stop Debugger",               ID_CLOSE_DEBUGGER
 #endif
         MENUITEM SEPARATOR
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
         MENUITEM "Joypad Setting...",           ID_OPTIONS_JOYSETTING
 #endif
         MENUITEM "Keybind...\tAlt+K",           ID_OPTIONS_KEYBIND

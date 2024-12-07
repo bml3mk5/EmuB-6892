@@ -18,18 +18,15 @@
 #include "../../cchar.h"
 #include "../../cptrlist.h"
 
-const char *gettext(const char *str);
-const wchar_t *wgettext(const wchar_t *str);
-
 /// Specify a text that xgettext should get and translate.
 /// (When use xgettext, set --keyword=_TX.)
 
 #if defined(_UNICODE)
-#define _tgettext wgettext
+#define _tgettext CLocale::WGetText
 #define _(text) L##text
 #define _TX(text) L##text
 #else
-#define _tgettext gettext
+#define _tgettext CLocale::GetText
 #define _(text) text
 #define _TX(text) text
 #endif
@@ -85,6 +82,12 @@ public:
 	bool GetLocaleNamesWithDefault(CPtrList<CTchar> &arr) const;
 	int  SelectLocaleNameIndex(const CPtrList<CTchar> &arr, const CTchar &name) const;
 	void ChooseLocaleName(const CPtrList<CTchar> &arr, int selidx, CTchar &name) const;
+
+#if defined(_UNICODE)
+    static const wchar_t *WGetText(const wchar_t *str);
+#else
+    static const char *GetText(const char *str);
+#endif
 };
 
 /**

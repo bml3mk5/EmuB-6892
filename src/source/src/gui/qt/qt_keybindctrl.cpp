@@ -9,10 +9,12 @@
 */
 
 #include "qt_keybindctrl.h"
+#include "qt_dialog.h"
 #include "../../emu_osd.h"
 #include "../../labels.h"
 #include "../../utility.h"
 //#include "../../keycode.h"
+#include <QLayout>
 #include <QKeyEvent>
 #include <QTimer>
 
@@ -24,6 +26,7 @@ MyTableWidget::MyTableWidget(int tab_num, QWidget *parent)
 	m_tab_num = tab_num;
 
 	timer = nullptr;
+	chkCombi = nullptr;
 	kbdata = new KeybindData();
 	kbdata->Init(emu, m_tab_num);
 
@@ -72,16 +75,19 @@ MyTableWidget::~MyTableWidget()
 
 void MyTableWidget::setData()
 {
+	setCombiCheckData();
 	kbdata->SetData();
 }
 
 void MyTableWidget::loadPreset(int num)
 {
 	kbdata->LoadPreset(num);
+	updateCombiCheckButton();
 }
 
 void MyTableWidget::savePreset(int num)
 {
+	setCombiCheckData();
 	kbdata->SavePreset(num);
 }
 
@@ -119,16 +125,42 @@ void MyTableWidget::updateJoy()
 	}
 }
 
+MyCheckBox *MyTableWidget::addCombiCheckButton(QLayout *layout)
+{
+	if (LABELS::keybind_combi[m_tab_num] != CMsg::Null) {
+		chkCombi = new MyCheckBox(LABELS::keybind_combi[m_tab_num]);
+		layout->addWidget(chkCombi);
+		chkCombi->setChecked(kbdata->GetCombi() != 0);
+	}
+	return chkCombi;
+}
+
+void MyTableWidget::setCombiCheckData()
+{
+	if (chkCombi) {
+		kbdata->SetCombi(chkCombi->isChecked() ? 1 : 0);
+	}
+}
+
+void MyTableWidget::updateCombiCheckButton()
+{
+	if (chkCombi) {
+		chkCombi->setChecked(kbdata->GetCombi() != 0);
+	}
+}
+
 void MyTableWidget::clearCellByVkCode(int code)
 {
-	_TCHAR label[128];
-	int row;
-	int col;
-	bool rc = kbdata->ClearCellByVkKeyCode(code, label, &row, &col);
-	if (rc) {
-		QTableWidgetItem *itm = item(row, col);
-		if (itm) {
-			itm->setText(label);
+	if (kbdata->m_flags == KeybindData::FLAG_DENY_DUPLICATE) {
+		_TCHAR label[128];
+		int row;
+		int col;
+		bool rc = kbdata->ClearCellByVkKeyCode(code, label, &row, &col);
+		if (rc) {
+			QTableWidgetItem *itm = item(row, col);
+			if (itm) {
+				itm->setText(label);
+			}
 		}
 	}
 }
@@ -175,7 +207,7 @@ void MyTableWidget::keyPressEvent(QKeyEvent *event)
 	QTableWidgetItem *itm = currentItem();
 	if (!itm) return;
 	if (itm->row() < 0 || itm->column() < 0) return;
-
+	clearCell(itm);
 	clearCellByVkCode(code);
 	setKeyCell(itm, code);
 }

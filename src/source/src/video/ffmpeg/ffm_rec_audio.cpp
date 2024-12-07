@@ -195,9 +195,13 @@ bool FFM_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 		goto FIN;
 	}
 
+#if LIBAVCODEC_VERSION_MAJOR < 59
 	//	codcont->bits_per_raw_sample = RECORD_AUDIO_BITS_PER_SAMPLE;
 	codcont->channel_layout = AV_CH_LAYOUT_STEREO;	// stereo
 	codcont->channels = f_av_get_channel_layout_nb_channels(codcont->channel_layout); // maybe 2
+#else
+	f_av_channel_layout_from_mask(&codcont->ch_layout, AV_CH_LAYOUT_STEREO);
+#endif
 
 	if (fmtcont->oformat->flags & AVFMT_GLOBALHEADER) {
 		codcont->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
@@ -225,7 +229,11 @@ bool FFM_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 	frame->format = codcont->sample_fmt;
 	frame->sample_rate = rec_rate;
 	frame->nb_samples = codcont->frame_size;
+#if LIBAVCODEC_VERSION_MAJOR < 59
 	frame->channel_layout = codcont->channel_layout;
+#else
+	f_av_channel_layout_copy(&frame->ch_layout, &codcont->ch_layout);
+#endif
 	frame->pts = 0;
 
 	// allocate data buffer

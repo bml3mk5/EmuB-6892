@@ -425,6 +425,7 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Sound chip");
 	msgs[i++] = _TX("** This is the common setting both FM synthesis card and extended PSG port.");
 	msgs[i++] = _TX("Connect interrupt signal of Z80B Card to (*)");
+	msgs[i++] = _TX("Use double buffering when method is default.");
 	msgs[i++] = _TX("MsgBoard: OK");
 	msgs[i++] = _TX("MsgBoard: Failed");
 	msgs[i++] = _TX("MsgBoard: Use \"%s\" for %s.");
@@ -582,6 +583,10 @@ CMsg::CMsg()
 	msgs[i++] = _TX("trigger A");
 	msgs[i++] = _TX("trigger B");
 	msgs[i++] = _TX("trigger %c");
+	msgs[i++] = _TX("bit 0");
+	msgs[i++] = _TX("bit 1");
+	msgs[i++] = _TX("bit 2");
+	msgs[i++] = _TX("bit 3");
 	msgs[i++] = _TX("bit 4");
 	msgs[i++] = _TX("bit 5");
 	msgs[i++] = _TX("bit 6");
@@ -651,6 +656,8 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Joypad%d");
 	msgs[i++] = _TX("Signals are negative logic");
 	msgs[i++] = _TX("Recognize as another key when pressed two buttons");
+	msgs[i++] = _TX("Connect to standard PIA A port");
+	msgs[i++] = _TX("No interrupt caused by pressing the button");
 	msgs[i++] = _TX("Load Default");
 	msgs[i++] = _TX("Load Preset 1");
 	msgs[i++] = _TX("Load Preset 2");

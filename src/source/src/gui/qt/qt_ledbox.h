@@ -12,8 +12,8 @@
 #ifndef QT_LEDBOX_H
 #define QT_LEDBOX_H
 
-#include "../ledbox.h"
 #include <QDialog>
+#include "../ledbox.h"
 
 #define NO_TITLEBAR
 

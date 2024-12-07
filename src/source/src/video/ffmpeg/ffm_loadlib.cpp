@@ -143,11 +143,17 @@ void (*f_av_freep)(void *ptr) = NULL;
 void (*f_av_log_set_callback)(void (*callback)(void*, int, const char*, va_list)) = NULL;
 const char* (*f_av_default_item_name)(void* ctx) = NULL;
 void (*f_av_log_set_level)(int level) = NULL;
+#if LIBAVUTIL_VERSION_MAJOR < 57
 int (*f_av_get_channel_layout_nb_channels)(uint64_t channel_layout) = NULL;
+#endif
 //int (*f_av_samples_get_buffer_size)(int *linesize, int nb_channels, int nb_samples,
 //				enum AVSampleFormat sample_fmt, int align) = NULL;
 int (*f_av_frame_get_buffer)(AVFrame *frame, int align) = NULL;
 unsigned (*f_avutil_version)(void) = NULL;
+#if LIBAVUTIL_VERSION_MAJOR >= 57
+int (*f_av_channel_layout_from_mask)(AVChannelLayout *channel_layout, uint64_t mask) = NULL;
+int (*f_av_channel_layout_copy)(AVChannelLayout *dst, const AVChannelLayout *src) = NULL;
+#endif
 
 #else
 
@@ -238,11 +244,17 @@ void (*f_av_freep)(void *ptr) = av_freep;
 void (*f_av_log_set_callback)(void (*callback)(void*, int, const char*, va_list)) = av_log_set_callback;
 const char* (*f_av_default_item_name)(void* ctx) = av_default_item_name;
 void (*f_av_log_set_level)(int level) = av_log_set_level;
+#if LIBAVUTIL_VERSION_MAJOR < 57
 int (*f_av_get_channel_layout_nb_channels)(uint64_t channel_layout) = av_get_channel_layout_nb_channels;
+#endif
 //int (*f_av_samples_get_buffer_size)(int *linesize, int nb_channels, int nb_samples,
 //				enum AVSampleFormat sample_fmt, int align) = av_samples_get_buffer_size;
 int (*f_av_frame_get_buffer)(AVFrame *frame, int align) = av_frame_get_buffer;
 unsigned (*f_avutil_version)(void) = avutil_version;
+#if LIBAVUTIL_VERSION_MAJOR >= 57
+int (*f_av_channel_layout_from_mask)(AVChannelLayout *channel_layout, uint64_t mask) = av_channel_layout_from_mask;
+int (*f_av_channel_layout_copy)(AVChannelLayout *dst, const AVChannelLayout *src) = av_channel_layout_copy;
+#endif
 
 #endif
 
@@ -291,10 +303,12 @@ static const struct {
 	int		avformat;
 	int		swscale;
 } dllvers[] = {
-//	{ false, 57, 4, 59, 59, 6 },	// Ver. 5.0.1
+	{ false, LIBAVUTIL_VERSION_MAJOR, LIBSWRESAMPLE_VERSION_MAJOR, LIBAVCODEC_VERSION_MAJOR, LIBAVFORMAT_VERSION_MAJOR, LIBSWSCALE_VERSION_MAJOR },
+//	{ false, 59, 5, 61, 61, 8 },	// Ver. 7.1
+//	{ false, 58, 4, 60, 60, 7 },	// Ver. 6.1.1
+//	{ false, 57, 4, 59, 59, 6 },	// Ver. 5.1.2
 //	{ false, 56, 3, 58, 58, 5 },	// Ver. 4.4.1
 //	{ false, 55, 2, 57, 57, 4 },	// Ver. 3.4.1
-	{ false, LIBAVUTIL_VERSION_MAJOR, LIBSWRESAMPLE_VERSION_MAJOR, LIBAVCODEC_VERSION_MAJOR, LIBAVFORMAT_VERSION_MAJOR, LIBSWSCALE_VERSION_MAJOR },
 	{ false, 0, 0, 0, 0, 0 },
 	{ true,  0, 0, 0, 0, 0 },
 };
@@ -322,10 +336,16 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		GET_ADDR(f_av_log_set_callback, void (*)(void (*callback)(void*, int, const char*, va_list)), hAVUtil, "av_log_set_callback");
 		GET_ADDR_OPTIONAL(f_av_default_item_name, const char* (*)(void*), hAVUtil, "av_default_item_name");
 		GET_ADDR_OPTIONAL(f_av_log_set_level, void (*)(int), hAVUtil, "av_log_set_level");
+#if LIBAVUTIL_VERSION_MAJOR < 57
 		GET_ADDR(f_av_get_channel_layout_nb_channels, int(*)(uint64_t), hAVUtil, "av_get_channel_layout_nb_channels");
+#endif
 //		GET_ADDR(f_av_samples_get_buffer_size, int (*)(int *, int, int,	enum AVSampleFormat, int), hAVUtil, "av_samples_get_buffer_size");
 		GET_ADDR(f_av_frame_get_buffer, int (*)(AVFrame *, int), hAVUtil, "av_frame_get_buffer");
 		GET_ADDR(f_avutil_version, unsigned (*)(void), hAVUtil, "avutil_version");
+#if LIBAVUTIL_VERSION_MAJOR >= 57
+		GET_ADDR(f_av_channel_layout_from_mask, int (*)(AVChannelLayout *, uint64_t), hAVUtil, "av_channel_layout_from_mask");
+		GET_ADDR(f_av_channel_layout_copy, int (*)(AVChannelLayout *, const AVChannelLayout *), hAVUtil, "av_channel_layout_copy");
+#endif
 
 		CHECK_VERSION(AV_VERSION_MAJOR(f_avutil_version()), LIBAVUTIL_VERSION_MAJOR_MIN, "avutil");
 

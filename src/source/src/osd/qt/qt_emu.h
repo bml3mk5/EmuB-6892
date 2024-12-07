@@ -24,6 +24,11 @@
 #include "qt_screenmode.h"
 #include <QDateTime>
 #ifdef USE_JOYSTICK
+#if QT_VERSION < 0x060000
+#define USE_QGAMEPAD
+#endif
+#endif
+#ifdef USE_QGAMEPAD
 #include <QtGamepad/QGamepad>
 #endif
 
@@ -85,7 +90,7 @@ private:
 	//@{
 	bool pressed_global_key;
 
-#ifdef USE_JOYSTICK
+#ifdef USE_QGAMEPAD
 	QGamepadManager *joymgr;
 	QGamepad *joy[MAX_JOYSTICKS];
 #endif
@@ -168,7 +173,7 @@ private:
 	MyAudioOutput *sound;
 
 	// direct sound
-	uint32_t sound_prev_time;
+//	uint32_t sound_prev_time;
 	//@}
 
 	// ----------------------------------------

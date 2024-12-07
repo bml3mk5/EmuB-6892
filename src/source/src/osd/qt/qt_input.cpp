@@ -26,7 +26,7 @@
 
 void EMU_OSD::EMU_INPUT()
 {
-#ifdef USE_JOYSTICK
+#ifdef USE_QGAMEPAD
 	joymgr = nullptr;
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		joy[i] = nullptr;
@@ -46,7 +46,7 @@ void EMU_OSD::initialize_input()
 
 void EMU_OSD::initialize_joystick()
 {
-#ifdef USE_JOYSTICK
+#ifdef USE_QGAMEPAD
 	joymgr = QGamepadManager::instance();
 	for(int i = 0; i < MAX_JOYSTICKS; i++) {
 		memset(&joy_prm[i], 0, sizeof(joy_prm[i]));
@@ -58,7 +58,7 @@ void EMU_OSD::initialize_joystick()
 
 void EMU_OSD::reset_joystick()
 {
-#ifdef USE_JOYSTICK
+#ifdef USE_QGAMEPAD
 	if (!use_joystick) return;
 
 	const QList<int> pads = joymgr->connectedGamepads();
@@ -88,7 +88,7 @@ void EMU_OSD::release_joystick()
 {
 	EMU::release_joystick();
 
-#ifdef USE_JOYSTICK
+#ifdef USE_QGAMEPAD
 	// release joystick
 	for(int i = 0; i < 2; i++) {
 		delete joy[i];
@@ -218,6 +218,7 @@ void EMU_OSD::update_joystick()
 	memset(joy2joy_status, 0, sizeof(joy2joy_status));
 	if (use_joystick) {
 		// update joystick status
+#ifdef USE_QGAMEPAD
 		for(int i = 0; i < MAX_JOYSTICKS; i++) {
 			uint32_t joy_stat = 0;
 			if(joy_enabled[i]) {
@@ -256,6 +257,7 @@ void EMU_OSD::update_joystick()
 				convert_joy_status(i);
 			}
 		}
+#endif
 	}
 #endif
 #ifdef USE_KEY2JOYSTICK

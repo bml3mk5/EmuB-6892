@@ -20,6 +20,7 @@
 #include "../../emumsg.h"
 #include "keyrecord.h"
 #include "keyboard_bind.h"
+#include "../../gui/gui_keybinddata.h"
 #include "../../config.h"
 #include "../../labels.h"
 #include "../../utility.h"
@@ -47,13 +48,13 @@ void KEYBOARD::initialize()
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
 		p_joy_stat[i] = emu->joy_buffer(i);
 		p_joy_real_stat[i] = emu->joy_real_buffer(i);
-#ifdef USE_PIAJOYSTICK
-		joy_pia[i] = 0;
-#endif
 	}
-#ifdef USE_PIAJOYSTICK
-	joy_pia_sel = 0;
 #endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
+		joy_pia[i] = 0;
+	}
+	joy_pia_sel = 0;
 #endif
 
 	p_key_mod = emu->get_key_mod_ptr();
@@ -122,96 +123,96 @@ void KEYBOARD::initialize()
 	int max_tabs = 0;
 	for(; max_tabs < 4 && LABELS::keybind_tab[max_tabs] != CMsg::End; max_tabs++) {}
 
-	int idx = 0;
-	gKeybind.SetVmKeyMap(idx, kb_scan2key_map, (int)(sizeof(kb_scan2key_map) / sizeof(kb_scan2key_map[0])));
+//	int idx = 0;
+	gKeybind.SetVmKeyMap(KeybindData::TAB_KEY2KEY, kb_scan2key_map, (int)(sizeof(kb_scan2key_map) / sizeof(kb_scan2key_map[0])));
 #ifdef USE_JOYSTICK
-	idx++;
-	gKeybind.SetVmKeyMap(idx, kb_scan2key_map, (int)(sizeof(kb_scan2key_map) / sizeof(kb_scan2key_map[0])));
+//	idx++;
+	gKeybind.SetVmKeyMap(KeybindData::TAB_JOY2KEY, kb_scan2key_map, (int)(sizeof(kb_scan2key_map) / sizeof(kb_scan2key_map[0])));
 #ifdef USE_PIAJOYSTICK
-	idx++;
+//	idx++;
 # ifdef USE_PIAJOYSTICKBIT
-	gKeybind.SetVmKeyMap(idx, kb_sjoy2joybit_map, (int)(sizeof(kb_sjoy2joybit_map) / sizeof(kb_sjoy2joybit_map[0])));
+	gKeybind.SetVmKeyMap(KeybindData::TAB_JOY2JOY, kb_sjoy2joybit_map, (int)(sizeof(kb_sjoy2joybit_map) / sizeof(kb_sjoy2joybit_map[0])));
 # else
-	gKeybind.SetVmKeyMap(idx, kb_sjoy2joy_map, (int)(sizeof(kb_sjoy2joy_map) / sizeof(kb_sjoy2joy_map[0])));
+	gKeybind.SetVmKeyMap(KeybindData::TAB_JOY2JOY, kb_sjoy2joy_map, (int)(sizeof(kb_sjoy2joy_map) / sizeof(kb_sjoy2joy_map[0])));
 # endif
 #endif
 #endif
 #ifdef USE_KEY2JOYSTICK
-	idx++;
+//	idx++;
 # ifdef USE_PIAJOYSTICKBIT
-	gKeybind.SetVmKeyMap(idx, kb_sjoy2joybit_map, (int)(sizeof(kb_sjoy2joybit_map) / sizeof(kb_sjoy2joybit_map[0])));
+	gKeybind.SetVmKeyMap(KeybindData::TAB_KEY2JOY, kb_sjoy2joybit_map, (int)(sizeof(kb_sjoy2joybit_map) / sizeof(kb_sjoy2joybit_map[0])));
 # else
-	gKeybind.SetVmKeyMap(idx, kb_scan2joy_map, (int)(sizeof(kb_scan2joy_map) / sizeof(kb_scan2joy_map[0])));
-# endif
-#endif
-
-	idx = 0;
-	gKeybind.SetVkKeySize(idx, KEYBIND_KEYS);
-#ifdef USE_JOYSTICK
-	idx++;
-	gKeybind.SetVkKeySize(idx, KEYBIND_KEYS);
-#ifdef USE_PIAJOYSTICK
-	idx++;
-	gKeybind.SetVkKeySize(idx, KEYBIND_JOYS);
-#endif
-#endif
-#ifdef USE_KEY2JOYSTICK
-	idx++;
-	gKeybind.SetVkKeySize(idx, KEYBIND_JOYS);
-#endif
-
-	idx = 0;
-	gKeybind.SetVkKeyDefMap(idx, scan2key_defmap);
-#ifdef USE_JOYSTICK
-	idx++;
-	gKeybind.SetVkKeyDefMap(idx, joy2key_defmap);
-#ifdef USE_PIAJOYSTICK
-	idx++;
-# ifdef USE_PIAJOYSTICKBIT
-	gKeybind.SetVkKeyDefMap(idx, sjoy2joybit_defmap);
-# else
-	gKeybind.SetVkKeyDefMap(idx, sjoy2joy_defmap);
-# endif
-#endif
-#endif
-#ifdef USE_KEY2JOYSTICK
-	idx++;
-# ifdef USE_PIAJOYSTICKBIT
-	gKeybind.SetVkKeyDefMap(idx, scan2joybit_defmap);
-# else
-	gKeybind.SetVkKeyDefMap(idx, scan2joy_defmap);
+	gKeybind.SetVmKeyMap(KeybindData::TAB_KEY2JOY, kb_scan2joy_map, (int)(sizeof(kb_scan2joy_map) / sizeof(kb_scan2joy_map[0])));
 # endif
 #endif
 
-	idx = 0;
-	gKeybind.SetVkKeyMap(idx, scan2key_map);
+//	idx = 0;
+	gKeybind.SetVkKeySize(KeybindData::TAB_KEY2KEY, KEYBIND_KEYS);
 #ifdef USE_JOYSTICK
-	idx++;
-	gKeybind.SetVkKeyMap(idx, joy2key_map);
+//	idx++;
+	gKeybind.SetVkKeySize(KeybindData::TAB_JOY2KEY, KEYBIND_KEYS);
 #ifdef USE_PIAJOYSTICK
-	idx++;
-	gKeybind.SetVkKeyMap(idx, sjoy2joy_map);
+//	idx++;
+	gKeybind.SetVkKeySize(KeybindData::TAB_JOY2JOY, KEYBIND_JOYS);
 #endif
 #endif
 #ifdef USE_KEY2JOYSTICK
-	idx++;
-	gKeybind.SetVkKeyMap(idx, scan2joy_map);
+//	idx++;
+	gKeybind.SetVkKeySize(KeybindData::TAB_KEY2JOY, KEYBIND_JOYS);
+#endif
+
+//	idx = 0;
+	gKeybind.SetVkKeyDefMap(KeybindData::TAB_KEY2KEY, scan2key_defmap);
+#ifdef USE_JOYSTICK
+//	idx++;
+	gKeybind.SetVkKeyDefMap(KeybindData::TAB_JOY2KEY, joy2key_defmap);
+#ifdef USE_PIAJOYSTICK
+//	idx++;
+# ifdef USE_PIAJOYSTICKBIT
+	gKeybind.SetVkKeyDefMap(KeybindData::TAB_JOY2JOY, sjoy2joybit_defmap);
+# else
+	gKeybind.SetVkKeyDefMap(KeybindData::TAB_JOY2JOY, sjoy2joy_defmap);
+# endif
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+//	idx++;
+# ifdef USE_PIAJOYSTICKBIT
+	gKeybind.SetVkKeyDefMap(KeybindData::TAB_KEY2JOY, scan2joybit_defmap);
+# else
+	gKeybind.SetVkKeyDefMap(KeybindData::TAB_KEY2JOY, scan2joy_defmap);
+# endif
+#endif
+
+//	idx = 0;
+	gKeybind.SetVkKeyMap(KeybindData::TAB_KEY2KEY, scan2key_map);
+#ifdef USE_JOYSTICK
+//	idx++;
+	gKeybind.SetVkKeyMap(KeybindData::TAB_JOY2KEY, joy2key_map);
+#ifdef USE_PIAJOYSTICK
+//	idx++;
+	gKeybind.SetVkKeyMap(KeybindData::TAB_JOY2JOY, sjoy2joy_map);
+#endif
+#endif
+#ifdef USE_KEY2JOYSTICK
+//	idx++;
+	gKeybind.SetVkKeyMap(KeybindData::TAB_KEY2JOY, scan2joy_map);
 #endif
 
 	for(int i=0; i<KEYBIND_PRESETS; i++) {
-		idx = 0;
-		gKeybind.SetVkKeyPresetMap(idx, i, scan2key_preset_map[i]);
+//		idx = 0;
+		gKeybind.SetVkKeyPresetMap(KeybindData::TAB_KEY2KEY, i, scan2key_preset_map[i]);
 #ifdef USE_JOYSTICK
-		idx++;
-		gKeybind.SetVkKeyPresetMap(idx, i, joy2key_preset_map[i]);
+//		idx++;
+		gKeybind.SetVkKeyPresetMap(KeybindData::TAB_JOY2KEY, i, joy2key_preset_map[i]);
 #ifdef USE_PIAJOYSTICK
-		idx++;
-		gKeybind.SetVkKeyPresetMap(idx, i, sjoy2joy_preset_map[i]);
+//		idx++;
+		gKeybind.SetVkKeyPresetMap(KeybindData::TAB_JOY2JOY, i, sjoy2joy_preset_map[i]);
 #endif
 #endif
 #ifdef USE_KEY2JOYSTICK
-		idx++;
-		gKeybind.SetVkKeyPresetMap(idx, i, scan2joy_preset_map[i]);
+//		idx++;
+		gKeybind.SetVkKeyPresetMap(KeybindData::TAB_KEY2JOY, i, scan2joy_preset_map[i]);
 #endif
 	}
 
@@ -221,6 +222,9 @@ void KEYBOARD::initialize()
 	reckey->set_remain_count_ptr(&remain_count);
 	reckey->set_kb_mode_ptr(&kb_mode);
 #endif
+
+	// clear PIA port
+	reset_joy_pia();
 
 	// event
 	register_frame_event(this);
@@ -240,7 +244,7 @@ void KEYBOARD::convert_map()
 #ifndef USE_PIAJOYSTICKBIT
 		emu->set_joy2joy_idx(k, sjoy2joy_defmap[k].d[0]);
 #else
-		emu->set_joy2joy_idx(k, sjoy2joybit_defmap[k].d[0]);
+		emu->set_joy2joy_idx(k, 1 << k);
 #endif
 	}
 	emu->clear_joy2joy_map();
@@ -263,13 +267,8 @@ void KEYBOARD::convert_map()
 				emu->set_key2joy_map(scan2joy_map[k].d[i], i, k);
 			}
 #else
-			if (k >= 4) {
-				// buttons
-				emu->set_key2joy_map(scan2joy_map[k].d[i], i, (k - 4) | 0x80000000);
-			} else {
-				// allows
-				emu->set_key2joy_map(scan2joy_map[k].d[i], i, k);
-			}
+			// each bits
+			emu->set_key2joy_map(scan2joy_map[k].d[i], i, k);
 #endif
 		}
 	}
@@ -292,7 +291,7 @@ void KEYBOARD::reset()
 	remain_count = -1;
 	remain_count_max = FLG_ORIG_LIMKEY ? (KEYBOARD_COUNTER_MAX << 3) - 2 : -1;
 
-#ifdef USE_PIAJOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	joy_pia_sel = 0;
 	joy_pia[0] = 0;
 	joy_pia[1] = 0;
@@ -301,6 +300,8 @@ void KEYBOARD::reset()
 	frame_counter = 0;
 	event_counter = 0;
 #endif
+	// clear PIA port
+	reset_joy_pia();
 }
 
 void KEYBOARD::release()
@@ -796,6 +797,32 @@ void KEYBOARD::update_system_key()
 	}
 }
 
+void KEYBOARD::reset_joy_pia()
+{
+	uint8_t pia_a, pia_b;
+
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+	pia_a = FLG_PIAJOY_NEGATIVE != 0 ? ~joy_pia[0] : joy_pia[0];
+#else
+	pia_a = 0xff;
+#endif
+	pia_b = pia_a;
+
+#ifdef USE_PIAJOYSTICKBIT
+	switch(pConfig->piajoy_conn_to) {
+	case 1:
+		pia_b = 0xff;
+		break;
+	default:
+		pia_a = 0xff;
+		break;
+	}
+#endif
+
+	d_pia->write_signal(PIA::SIG_PIA_PA, pia_a, 0xff);
+	d_pia_ex2->write_signal(PIA::SIG_PIA_PB, pia_b, 0xff);
+}
+
 void KEYBOARD::update_joy_pia()
 {
 #if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
@@ -813,7 +840,7 @@ void KEYBOARD::update_joy_pia()
 		}
 #else
 		uint32_t stat = (p_joy_stat[0][0] | p_joy_stat[1][0]);
-		joy_pia[0] =((stat & 0xf) | ((stat >> 12) & 0xf0)) & 0xff;
+		joy_pia[0] =(stat & 0xff);
 #endif
 	}
 
@@ -825,7 +852,7 @@ void KEYBOARD::update_joy_pia()
 #ifndef USE_PIAJOYSTICKBIT
 		for(int i=0; i<2; i++) {
 			// irq
-			if (joy_pia[i] & ~0xf) {
+			if ((joy_pia[i] & ~0xf) != 0 && FLG_PIAJOY_NOIRQ == 0) {
 				d_pia->write_signal(i == 0 ? PIA::SIG_PIA_CA1 : PIA::SIG_PIA_CA2, 0, 1);
 			} else {
 				d_pia->write_signal(i == 0 ? PIA::SIG_PIA_CA1 : PIA::SIG_PIA_CA2, 1, 1);
@@ -833,7 +860,14 @@ void KEYBOARD::update_joy_pia()
 		}
 		d_pia->write_signal(PIA::SIG_PIA_PA, ~joy_pia[joy_pia_sel], 0x3f);	// negative
 #else
-		d_pia->write_signal(PIA::SIG_PIA_PB, sjoy2joy_map[0x17].d[0] ? ~joy_pia[0] : joy_pia[0], 0xff);
+		switch(pConfig->piajoy_conn_to) {
+		case 1:
+			d_pia->write_signal(PIA::SIG_PIA_PA, FLG_PIAJOY_NEGATIVE != 0 ? ~joy_pia[0] : joy_pia[0], 0xff);
+			break;
+		default:
+			d_pia_ex2->write_signal(PIA::SIG_PIA_PB, FLG_PIAJOY_NEGATIVE != 0 ? ~joy_pia[0] : joy_pia[0], 0xff);
+			break;
+		}
 #endif
 	}
 #endif /* USE_PIAJOYSTICK || USE_KEY2JOYSTICK */
@@ -1063,7 +1097,7 @@ bool KEYBOARD::load_state(FILEIO *fio)
 		pConfig->misc_flags = (vm_state.lpen_bl & 2) ? (pConfig->misc_flags | MSK_USELIGHTPEN) : (pConfig->misc_flags & ~MSK_USELIGHTPEN);
 	}
 	m_key_scan_code = 0;
-#ifdef USE_PIAJOYSTICK
+#ifndef USE_PIAJOYSTICKBIT
 	if (FLG_USEPIAJOYSTICK) {
 		// set pia a port for joystick
 		d_pia->write_io8(1,0);

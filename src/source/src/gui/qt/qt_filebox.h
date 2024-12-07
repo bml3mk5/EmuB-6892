@@ -27,6 +27,8 @@ public:
 	explicit MyFileBox(QWidget *parent, CMsg::Id caption, bool save, const _TCHAR *directory, const char *filter);
 	~MyFileBox();
 
+	bool IsReadOnly() const;
+
 private:
 	void setFilterTypes(const char *filter_str, bool save);
 

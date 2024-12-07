@@ -25,6 +25,8 @@ private:
 
 	uint32_t joy_mask;
 
+	MyNotebook *notebook;
+
 	void InitDialog();
 
 	void SetData();
@@ -38,7 +40,7 @@ private:
 	void load_data(int tab, int num);
 	void save_data(int tab, int num);
 
-	wxWindow *CreateBook(wxWindow *parent, int tab);
+	wxWindow *CreateBook(wxWindow *parent, int tab, int tab_offset);
 
 public:
 	MyJoySettingDlg(wxWindow *, wxWindowID, EMU *, GUI_BASE *);
@@ -59,6 +61,8 @@ public:
 		IDC_BUTTON_SAVE_PRESET00 = 200,
 		IDC_BUTTON_SAVE_PRESET44 = 244,
 	};
+
+//	void OnPageChanged(wxBookCtrlEvent &);
 
 	void OnLoadDefault(wxCommandEvent &);
 	void OnLoadPreset(wxCommandEvent &);

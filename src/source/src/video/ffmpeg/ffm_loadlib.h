@@ -119,10 +119,16 @@ extern void (*f_av_freep)(void *ptr);
 extern void (*f_av_log_set_callback)(void (*callback)(void*, int, const char*, va_list));
 extern const char* (*f_av_default_item_name)(void* ctx);
 extern void (*f_av_log_set_level)(int level);
+#if LIBAVUTIL_VERSION_MAJOR < 57
 extern int (*f_av_get_channel_layout_nb_channels)(uint64_t channel_layout);
+#endif
 //extern int (*f_av_samples_get_buffer_size)(int *linesize, int nb_channels, int nb_samples,
 //				enum AVSampleFormat sample_fmt, int align);
 extern int (*f_av_frame_get_buffer)(AVFrame *frame, int align);
+#if LIBAVUTIL_VERSION_MAJOR >= 57
+extern int (*f_av_channel_layout_from_mask)(AVChannelLayout *channel_layout, uint64_t mask);
+extern int (*f_av_channel_layout_copy)(AVChannelLayout *dst, const AVChannelLayout *src);
+#endif
 
 bool FFMPEG_LoadLibrary(int reffer_num);
 void FFMPEG_UnloadLibrary(int reffer_num);

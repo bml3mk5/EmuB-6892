@@ -9,7 +9,6 @@
 */
 
 #include "gtk_dialogbox.h"
-#include "../../common.h"
 #include "gtk_x11_gui.h"
 #include "../../utility.h"
 
@@ -572,6 +571,24 @@ bool DialogBox::Show(GtkWidget *parent_window)
 {
 	window = parent_window;
 	return true;
+}
+
+bool DialogBox::Show(GtkWidget *parent_window, int)
+{
+	return Show(parent_window);
+}
+
+bool DialogBox::Show(GtkWidget *parent_window, int, bool)
+{
+	return Show(parent_window);
+}
+
+bool DialogBox::ShowModal(GtkWidget *parent_window)
+{
+	bool rc = Show(parent_window);
+	if (!rc) return rc;
+	gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+	return (response == GTK_RESPONSE_ACCEPT);
 }
 
 void DialogBox::Hide()

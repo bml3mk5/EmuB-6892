@@ -16,7 +16,9 @@
 #include "../../emu.h"
 #include "qt_keybindctrl.h"
 
+class MyTabWidget;
 class MySlider;
+class MyCheckBox;
 
 /**
 	@brief Volume dialog box
@@ -29,11 +31,19 @@ private:
 	void SetData();
 
 	std::vector<MyTableWidget *> tables;
-	int curr_tab;
+	MyTabWidget *tabWidget;
 	uint32_t joy_mask;
 
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	MySlider *mash[MAX_JOYSTICKS][KEYBIND_JOY_BUTTONS];
 	MySlider *axis[MAX_JOYSTICKS][6];
+#endif
+#ifdef USE_PIAJOYSTICKBIT
+	MyCheckBox *chkPiaJoyNeg;
+	MyCheckBox *chkPiaJoyConn;
+#else
+	MyCheckBox *chkPiaJoyNoIrq;
+#endif
 
 public:
 	explicit MyJoySettingBox(QWidget *parent = nullptr);
@@ -44,7 +54,7 @@ private slots:
 	void loadPreset();
 	void savePreset();
 	void update();
-	void tabChanged(int index);
+//	void tabChanged(int index);
 	void toggleAxis(bool checked);
 //	void moveSlider1(int num);
 };

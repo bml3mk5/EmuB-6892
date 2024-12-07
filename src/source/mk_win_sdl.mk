@@ -168,7 +168,9 @@ GUIOBJSAGAR:=$(SRCGUIAGAR)/ag_gui_base.o \
 	$(SRCGUIAGAR)/ag_file_dlg.o \
 	$(SRCGUIAGAR)/ag_volume_dlg.o \
 	$(SRCGUIAGAR)/ag_config_dlg.o \
+	$(SRCGUIAGAR)/ag_keybind_ctrl.o \
 	$(SRCGUIAGAR)/ag_keybind_dlg.o \
+	$(SRCGUIAGAR)/ag_joyset_dlg.o \
 	$(SRCGUIAGAR)/ag_recaud_dlg.o \
 	$(SRCGUIAGAR)/ag_recvid_dlg.o \
 	$(SRCGUIAGAR)/ag_seldrv_dlg.o \
@@ -200,10 +202,17 @@ GUIOBJSWIN:=$(SRCGUIWIN)/win_dialogbox.o \
 
 VIDOBJSWAV:=$(SRCVIDWAV)/wav_rec_audio.o
 VIDOBJSVFW:=$(SRCVIDVFW)/vfw_rec_video.o
-VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o $(SRCVIDFFM)/ffm_rec_base.o $(SRCVIDFFM)/ffm_rec_audio.o $(SRCVIDFFM)/ffm_rec_video.o
-VIDOBJSWIN:=$(SRCVIDWIN)/win_rec_video.o $(SRCVIDWIN)/win_bitmap.o
+VIDOBJSFFM:=$(SRCVIDFFM)/ffm_loadlib.o \
+	$(SRCVIDFFM)/ffm_rec_base.o \
+	$(SRCVIDFFM)/ffm_rec_audio.o \
+	$(SRCVIDFFM)/ffm_rec_video.o
+VIDOBJSWIN:=$(SRCVIDWIN)/win_rec_video.o \
+	$(SRCVIDWIN)/win_bitmap.o
 
-VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSVFW) $(VIDOBJSFFM) $(VIDOBJSWIN) $(SRCVID)/rec_audio.o $(SRCVID)/rec_video.o
+VIDOBJS:=$(VIDOBJSWAV) $(VIDOBJSVFW) $(VIDOBJSFFM) $(VIDOBJSWIN) \
+	$(SRCVID)/rec_audio.o \
+	$(SRCVID)/rec_common.o \
+	$(SRCVID)/rec_video.o
 
 ifeq ($(GUI_TYPE),GUI_TYPE_AGAR)
 	GUIOBJS:=$(GUIOBJSAGAR)
