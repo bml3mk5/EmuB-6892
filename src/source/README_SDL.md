@@ -1,12 +1,13 @@
 # HITACHI BASIC MASTER LEVEL3 MARK5 Emulator SDL edition
 
-#### Copyright(C) Common Source Code Project, Sasaji 2012-2024 All Rights Reserved.
+#### Copyright(C) Common Source Code Project, Sasaji 2012-2025 All Rights Reserved.
 
 ## ファイル構成
 
     docs/ .................. ドキュメント
-    font/ .................. 画面フォント作成perlスクリプト
-      kanji/ ............... 擬似漢字ROM作成プログラム
+    font/ .................. 画面フォント作成スクリプト
+      kanji/ ............... 擬似漢字ROM作成ツール
+        SDL/ ............... 擬似漢字ROM作成プログラム(SDL使用)
     source/
       data/ ................ データファイル
       include/ ............. インクルードファイル
@@ -71,11 +72,11 @@
 
 
 ----------------------------------------
-### MacOSX版 ###
+### MacOS版 ###
 
 * 以下のバージョンがあります。
 
- + SDL2 + Cocoa版 -> Makefile.mac_cocoa2, Makefile.mac_cocoa2_dbgr
+  + SDL2 + Cocoa版 -> Makefile.mac_cocoa2, Makefile.mac_cocoa2_dbgr
 
   * 上記以外のMakefileは現在メンテナンスしていません。
 
@@ -87,41 +88,41 @@
  * コンパイルに必要なライブラリをインストールします。
    ターミナル上で行います。(Xcodeは使用しません。)
 
-  + ソースコードからビルドする場合
+   + ソースコードからビルドする場合
 
-   - SDL2-2.26.5
+     - SDL2-2.26.5
 
-    1. パッチを適用します。
+     1. パッチを適用します。
 
-           patch -p 1 < SDL2-2.26.5-mac-keyboard.patch
+            patch -p 1 < SDL2-2.26.5-mac-keyboard.patch
 
-    2. ビルド＆インストール
+     2. ビルド＆インストール
+
+            ./configure
+            make
+            make install
+
+     - SDL2_ttf-2.20.2
 
            ./configure
            make
            make install
 
-   - SDL2_ttf-2.20.2
+     - FFmpeg-4.x (https://ffmpeg.org/)
 
-        ./configure
-        make
-        make install
+       (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+       コメントアウトする。)
 
-   - FFmpeg-4.x (https://ffmpeg.org/)
+       * ヘッダファイルが必要です。
+         includeフォルダにヘッダファイルを入れてください。
 
-    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
-    コメントアウトする。)
-
-    * ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
-
-    * ビルド方法は以下を参考：
-     [CompilationGuide/MacOSX - FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
+       * ビルド方法は以下を参考：
+         [CompilationGuide/MacOSX - FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
 
 
-  + Homebrewを使用する場合
+   + Homebrewを使用する場合
 
-   - sdl2, sdl2_ttf, ffmpeg@4 をインストールしてください。
+     - sdl2, sdl2_ttf, ffmpeg@4 をインストールしてください。
 
 
 #### 2. コンパイル（コマンドラインを使用する場合）
@@ -130,9 +131,9 @@
 
  * Homebrewからインストールした場合、Makefile中にある変数を変更してください。
 
-  + SDLPATH を /opt/homebrew に変更
+   + SDLPATH を /opt/homebrew に変更
 
-  + SDL_CFLAGS に -I/opt/homebrew/opt/ffmpeg@4/include を追加
+   + SDL_CFLAGS に -I/opt/homebrew/opt/ffmpeg@4/include を追加
 
 
  * sharedなバイナリを作成する場合
@@ -140,10 +141,10 @@
        make -f Makefile.xxx clean
        make -f Makefile.xxx install
 
-  + installは、makeを実行したディレクトリの上にReleaseSHディレクトリを作成し、
-  そこに必要なファイルをコピーします。
-  (/usr/localにコピーはしません。)
-  + インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
+   + installは、makeを実行したディレクトリの上にReleaseSHディレクトリを作成し、
+     そこに必要なファイルをコピーします。
+     (/usr/localにコピーはしません。)
+   + インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
      してください。
 
  * staticなバイナリを作成する場合
@@ -151,8 +152,8 @@
        make -f Makefile.xxx st_clean
        make -f Makefile.xxx st_install
 
-  + インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
-    してください。
+   + インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
+     してください。
 
 
 
@@ -170,7 +171,7 @@
 
 * 以下のバージョンがあります。
 
- + GTK+3 + SDL2版 -> Makefile.linux_gtk_sdl2, Makefile.linux_gtk_sdl2_dbgr
+  + GTK+3 + SDL2版 -> Makefile.linux_gtk_sdl2, Makefile.linux_gtk_sdl2_dbgr
 
   * 上記以外のMakefileは現在メンテナンスしていません。
 
@@ -178,38 +179,38 @@
 
  * ディストリビューションに付属する開発用ライブラリをインストール。
 
-  + DebianやUbuntu: Synapticパッケージマネージャもしくはapt-getでインストール
-  + RedhatやFedora: Yumなどでインストール
+   + DebianやUbuntu: Synapticパッケージマネージャもしくはapt-getでインストール
+   + RedhatやFedora: Yumなどでインストール
 
-  + 必要なライブラリ
-   - コンパイラ: gcc, g++, make
-   - 画面系: gtk-3.0-dev, libsdl2-dev, libsdl2-ttf-dev
-   - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
-     (これらはffmpeg4のライブラリ)
+   + 必要なライブラリ
+     - コンパイラ: gcc, g++, make
+     - 画面系: gtk-3.0-dev, libsdl2-dev, libsdl2-ttf-dev
+     - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
+       (これらはffmpeg4のライブラリ)
 
 #### 2. コンパイル
 
  ターミナル(端末)上で行います。
 
  * sharedなバイナリを作成する場合
-  - ライブラリをパッケージからインストールしている場合はこちらでビルド。
+   - ライブラリをパッケージからインストールしている場合はこちらでビルド。
 
          make -f Makefile.xxx clean
          make -f Makefile.xxx install
 
-  * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
-    そこに必要なファイルをコピーします。
-  (/usr/localにコピーはしません。)
-  * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
-    してください。
+   * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
+     そこに必要なファイルをコピーします。
+     (/usr/localにコピーはしません。)
+   * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
+     してください。
 
  * staticなバイナリを作成する場合
 
-         make -f Makefile.xxx st_clean
-         make -f Makefile.xxx st_install
+       make -f Makefile.xxx st_clean
+       make -f Makefile.xxx st_install
 
-  * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
-    してください。
+   * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
+     してください。
 
 
 ----------------------------------------
@@ -217,7 +218,7 @@
 
 * 以下のバージョンがあります。
 
- + SDL2 + Win GUI版 -> Makefile.win_gui2, Makefile.win_gui2_dbgr
+  + SDL2 + Win GUI版 -> Makefile.win_gui2, Makefile.win_gui2_dbgr
 
   * 上記以外のMakefileは現在メンテナンスしていません。
 
@@ -225,16 +226,16 @@
 
  * MSYS2をインストール
 
-  + インストーラに従ってインストールします。
+   + インストーラに従ってインストールします。
 
  * MinGW64シェルを起動してコンパイルに必要なライブラリをインストールします。
 
-  + pacmanを使用して以下をインストール
-   - mingw-w64-x86_64-gcc
-   - mingw-w64-x86_64-make
-   - mingw-w64-x86_64-SDL2
-   - mingw-w64-x86_64-SDL2_ttf
-   - mingw-w64-x86_64-ffmpeg4.4
+   + pacmanを使用して以下をインストール
+     - mingw-w64-x86_64-gcc
+     - mingw-w64-x86_64-make
+     - mingw-w64-x86_64-SDL2
+     - mingw-w64-x86_64-SDL2_ttf
+     - mingw-w64-x86_64-ffmpeg4.4
 
 #### 2. コンパイル
 
@@ -242,33 +243,33 @@
 
  * 必要に応じてMakefile.xxxを変更します。
 
-  * MinGWのバージョンが異なる場合、GCCLIBDIRを修正。
-  * SH_LOCALDIR、ST_LOCALDIRのパスを修正。
-    SDL, SDL_ttfなどをバイナリパッケージでインストールした場合、
-    インストール先が/mingw64/lib/配下になるため
+   * MinGWのバージョンが異なる場合、GCCLIBDIRを修正。
+   * SH_LOCALDIR、ST_LOCALDIRのパスを修正。
+     SDL, SDL_ttfなどをバイナリパッケージでインストールした場合、
+     インストール先が/mingw64/lib/配下になるため
 
  * sharedなバイナリを作成する場合
 
        make -f Makefile.xxx clean
        make -f Makefile.xxx install
 
-  * installは、makeを実行したディレクトリの上にReleaseSHディレクトリを作成し、
-  そこに必要なファイルをコピーします。
-  (/usr/localにコピーはしません。)
-  * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
+   * installは、makeを実行したディレクトリの上にReleaseSHディレクトリを作成し、
+     そこに必要なファイルをコピーします。
+     (/usr/localにコピーはしません。)
+   * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
      してください。
 
  * staticなバイナリを作成する場合
 
-  * LOCALLIBSに必要なライブラリをすべて記述してください。
+   * LOCALLIBSに必要なライブラリをすべて記述してください。
 
-       make -f Makefile.xxx st_clean
-       make -f Makefile.xxx st_install
+         make -f Makefile.xxx st_clean
+         make -f Makefile.xxx st_install
 
-  * installは、makeを実行したディレクトリの上にReleaseSTディレクトリを作成し、
-  そこに必要なファイルをコピーします。
-  (/usr/localにコピーはしません。)
-  * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
+   * installは、makeを実行したディレクトリの上にReleaseSTディレクトリを作成し、
+     そこに必要なファイルをコピーします。
+     (/usr/localにコピーはしません。)
+   * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
      してください。
 
 
@@ -279,18 +280,18 @@
 
 * 必要なライブラリをVC++でビルドします。
 
- + SDL2-2.26.5
+  + SDL2-2.26.5
 
-    ソースからインストール
+    - ソースからインストール
       VisualCフォルダにあるSDL.slnを使用してビルド。
       出来たdll,libはlib/Release/x86にコピーしておく。
 
- + SDL2_ttf-2.20.2
+  + SDL2_ttf-2.20.2
 
-    ソースからインストール
+    - ソースからインストール
       VisualCフォルダにあるSDL_ttf.slnを使用してビルド。
 
- + FFmpeg-4.x (https://ffmpeg.org/)
+  + FFmpeg-4.x (https://ffmpeg.org/)
 
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
@@ -308,25 +309,8 @@
 #### 2. コンパイル
 
  * プロジェクトファイル(*_sdl.vcxproj)を使用してビルド。
-  + 表示→プロパティマネージャを開き、Release下を開く。
-  + ユーザーマクロに設定しているパスを変更する。
-
-
-----------------------------------------
-### FreeBSD版 ###
-
-#### 1. 開発環境の構築
-
-  Xorg, GNOMEなどをpackageやportsからインストールしておきます。
-
-  インストールはlinux版を参考にして下さい。
-
-#### 2. コンパイル
-
-  GNU make (gmake) を使用してください。
-
-  make方法はlinux版を参考にして下さい。
-
+   + 表示→プロパティマネージャを開き、Release下を開く。
+   + ユーザーマクロに設定しているパスを変更する。
 
 
 ----------------------------------------
@@ -340,12 +324,12 @@
 * 雑誌やネットなどに転載される場合、不特定多数の方に再配布を行う場合でも
   承諾の必要はありませんが、転載の旨をご連絡いただけたら幸いです。
 
-==============================================================================
+------------------------------------------------------------------------------
 
 連絡先：Sasaji (sasaji@s-sasaji.ddo.jp)
  * My WebPage: http://s-sasaji.ddo.jp/bml3mk5/
  * GitHub:     https://github.com/bml3mk5/EmuB-6892
  * X(Twitter): https://x.com/bml3mk5
 
-==============================================================================
+------------------------------------------------------------------------------
 

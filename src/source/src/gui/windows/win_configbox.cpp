@@ -666,43 +666,54 @@ INT_PTR ConfigBox::onCommand(UINT message, WPARAM wParam, LPARAM lParam)
 		return (INT_PTR)FALSE;
 	}
 #endif
-	else if (wId == IDC_CHK_IOPORT6)
+	else if (wId == IDC_CHK_IOPORT1 + IOPORT_POS_PSG9)
 	{
-		if (IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT6)) {
-			CheckDlgButton(hDlg, IDC_CHK_IOPORT7, 0);
+		// psg 9
+		if (IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_PSG9)) {
+			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_KANJI, 0);
 #if defined(_MBS1)
-			CheckDlgButton(hDlg, IDC_CHK_IOPORT10, 0);
+			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_CM01, 0);
+			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_KANJI2, 0);
 #endif
 		}
 		return (INT_PTR)FALSE;
 	}
-	else if (wId == IDC_CHK_IOPORT7)
+	else if (wId == IDC_CHK_IOPORT1 + IOPORT_POS_KANJI)
 	{
-		if (IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT7)) {
-			CheckDlgButton(hDlg, IDC_CHK_IOPORT6, 0);
+		// kanji rom
+		if (IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_KANJI)) {
+			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_PSG9, 0);
 		}
 		return (INT_PTR)FALSE;
 	}
 #if defined(_MBS1)
-	else if (wId == IDC_CHK_IOPORT8)
+	else if (wId == IDC_CHK_IOPORT1 + IOPORT_POS_EXPSG)
 	{
 		// ex psg
-		CheckDlgButton(hDlg, IDC_CHK_EN_EXPSG, IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT8) ? 1 : 0);
+		CheckDlgButton(hDlg, IDC_CHK_EN_EXPSG, IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_EXPSG) ? 1 : 0);
 		return (INT_PTR)FALSE;
 	}
-	else if (wId == IDC_CHK_IOPORT10)
+	else if (wId == IDC_CHK_IOPORT1 + IOPORT_POS_CM01)
 	{
 		// cm01
-		if (IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT10)) {
-			CheckDlgButton(hDlg, IDC_CHK_IOPORT6, 0);
-			CheckDlgButton(hDlg, IDC_CHK_IOPORT7, 1);
+		if (IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_CM01)) {
+			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_PSG9, 0);
+			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_KANJI, 1);
 		}
 		return (INT_PTR)FALSE;
 	}
-	else if (wId == IDC_CHK_IOPORT13)
+	else if (wId == IDC_CHK_IOPORT1 + IOPORT_POS_FMOPN)
 	{
 		// fm opn
-		CheckDlgButton(hDlg, IDC_CHK_EN_FMOPN, IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT13) ? 1 : 0);
+		CheckDlgButton(hDlg, IDC_CHK_EN_FMOPN, IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_FMOPN) ? 1 : 0);
+		return (INT_PTR)FALSE;
+	}
+	else if (wId == IDC_CHK_IOPORT1 + IOPORT_POS_KANJI2)
+	{
+		// kanji 2 rom
+		if (IsDlgButtonChecked(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_KANJI2)) {
+			CheckDlgButton(hDlg, IDC_CHK_IOPORT1 + IOPORT_POS_PSG9, 0);
+		}
 		return (INT_PTR)FALSE;
 	}
 	else if (wId == IDC_CHK_EN_EXPSG)

@@ -314,6 +314,22 @@ private:
 		TP_MEMRD_PH = 0x19,
 		TP_MEMWR_PH = 0x1a,
 		TP_BASIC = 0x1f,
+
+		BREAKPOINT_MASK = 0x0f,
+		TRACEPOINT_SHIFT = 4,
+	};
+	enum enDebugBasicType {
+		BAS_TYPE_NONE = 0,
+		BAS_TYPE_VAR,
+		BAS_TYPE_LIST,
+		BAS_TYPE_BP,
+		BAS_TYPE_BCDE,
+		BAS_TYPE_TP,
+		BAS_TYPE_TCDE,
+		BAS_TYPE_TB,
+		BAS_TYPE_TRONOFF,
+		BAS_TYPE_COMMAND,
+		BAS_TYPE_ERROR,
 	};
 
 private:

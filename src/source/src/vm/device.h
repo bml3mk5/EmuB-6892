@@ -405,6 +405,7 @@ public:
 
 //	virtual void debug_basic_set_break_point(uint32_t &addr);
 	virtual bool debug_basic_check_break_point(uint32_t line, int len);
+	virtual void debug_basic_post_checked_break_point();
 	///@}
 #endif /* USE_DEBUGGER */
 

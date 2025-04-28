@@ -350,6 +350,7 @@ CMsg::CMsg()
 	msgs[i++] = _TX("9voice PSG  $FF70 - $FF7F");
 	msgs[i++] = _TX("9voice PSG (for L3)  $FF70 - $FF7F");
 	msgs[i++] = _TX("KANJI ROM  $FF75 - $FF76");
+	msgs[i++] = _TX("KANJI ROM (JIS2)  $FF72 - $FF74");
 	msgs[i++] = _TX("Ex PSG (for S1)  $FFE6,E7 ($FFEE,EF)");
 	msgs[i++] = _TX("OS-9 Ex Card  $FE11");
 	msgs[i++] = _TX("Communication Card  $FF77");

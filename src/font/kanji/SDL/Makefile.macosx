@@ -14,8 +14,8 @@ SDLDIR=/usr/local
 
 MACMINVER=-mmacosx-version-min=10.9
 
-CFLAGS=$(ARCH) -Wall -O2 $(shell $(SDLDIR)/bin/sdl2-config --cflags)
-DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(shell $(SDLDIR)/bin/sdl2-config --cflags)
+CFLAGS=$(ARCH) $(MACMINVER) -Wall -O2 $(shell $(SDLDIR)/bin/sdl2-config --cflags)
+DBG_CFLAGS=$(ARCH) $(MACMINVER) -g -Wall -O0 $(shell $(SDLDIR)/bin/sdl2-config --cflags)
 
 LD=gcc
 
@@ -23,8 +23,8 @@ LIBDIR=/usr/lib
 SDLLIBDIR=$(SDLDIR)/lib
 SDLLIBS=$(SDLLIBDIR)/libSDL2main.a $(SDLLIBDIR)/libSDL2.a $(SDLLIBDIR)/libSDL2_ttf.a
 
-SH_LDFLAGS=$(ARCH) $(shell $(SDLDIR)/bin/sdl2-config --libs) -lSDL2_ttf -liconv
-ST_LDFLAGS=$(ARCH) $(shell $(SDLDIR)/bin/sdl2-config --static-libs) -L/usr/X11/lib -liconv
+SH_LDFLAGS=$(ARCH) $(MACMINVER) $(shell $(SDLDIR)/bin/sdl2-config --libs) -lSDL2_ttf
+ST_LDFLAGS=$(ARCH) $(MACMINVER) $(shell $(SDLDIR)/bin/sdl2-config --static-libs)
 DBG_LDFLAGS=$(ST_LDFLAGS)
 
 EXEFILE=mkkanji

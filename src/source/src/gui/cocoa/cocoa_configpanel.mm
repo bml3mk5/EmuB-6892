@@ -951,6 +951,7 @@ extern GUI *gui;
 				[chkIOPort[IOPORT_POS_KANJI] setState:NSControlStateValueOff];
 #if defined(_MBS1)
 				[chkIOPort[IOPORT_POS_CM01] setState:NSControlStateValueOff];
+				[chkIOPort[IOPORT_POS_KANJI2] setState:NSControlStateValueOff];
 #endif
 			}
 			break;
@@ -966,6 +967,12 @@ extern GUI *gui;
 			if ([sender state] == NSControlStateValueOn) {
 				[chkIOPort[IOPORT_POS_PSG9] setState:NSControlStateValueOff];
 				[chkIOPort[IOPORT_POS_KANJI] setState:NSControlStateValueOn];
+			}
+			break;
+		case IOPORT_POS_KANJI2:
+			// Kanji 2
+			if ([sender state] == NSControlStateValueOn) {
+				[chkIOPort[IOPORT_POS_PSG9] setState:NSControlStateValueOff];
 			}
 			break;
 		case IOPORT_POS_FMOPN:

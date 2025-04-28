@@ -979,6 +979,7 @@
 #define IDC_CHK_IOPORT16                        22056
 #define IDC_CHK_IOPORT17                        22057
 #define IDC_CHK_IOPORT18                        22058
+#define IDC_CHK_IOPORT19                        22059
 
 #define IDC_STATIC_IOPORT1                      22061
 #define IDC_STATIC_IOPORT2                      22062
@@ -998,6 +999,7 @@
 #define IDC_STATIC_IOPORT16                     22076
 #define IDC_STATIC_IOPORT17                     22077
 #define IDC_STATIC_IOPORT18                     22078
+#define IDC_STATIC_IOPORT19                     22079
 
 #define IDC_COMBO_DISPTMG                       22081
 #define IDC_COMBO_CURDISP                       22082

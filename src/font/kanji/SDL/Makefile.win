@@ -16,9 +16,9 @@ LD=gcc
 
 LIBDIR=/usr/lib
 SDLLIBDIR=/usr/local/lib
-SDLLIBS=$(SDLLIBDIR)/libSDL2main.a $(SDLLIBDIR)/libSDL2.a $(SDLLIBDIR)/libSDL2_ttf.a $(SDLLIBDIR)/libfreetype.a /MinGW/lib/libiconv.a
+SDLLIBS=$(SDLLIBDIR)/libSDL2main.a $(SDLLIBDIR)/libSDL2.a $(SDLLIBDIR)/libSDL2_ttf.a $(SDLLIBDIR)/libfreetype.a
 
-SH_LDFLAGS=-s $(shell sdl2-config --libs) -lSDL2_ttf -liconv
+SH_LDFLAGS=-s $(shell sdl2-config --libs) -lSDL2_ttf
 ST_LDFLAGS=-s $(shell sdl2-config --libs) -lwinmm -ldxguid
 DBG_LDFLAGS=$(ST_LDFLAGS)
 

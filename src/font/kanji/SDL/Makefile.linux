@@ -18,7 +18,7 @@ LIBDIR=/usr/lib
 SDLLIBDIR=/usr/local/lib
 SDLLIBS=$(SDLLIBDIR)/libSDL2main.a $(SDLLIBDIR)/libSDL2.a $(SDLLIBDIR)/libSDL2_ttf.a
 
-SH_LDFLAGS=-s $(shell sdl2-config --libs) -lSDL_ttf
+SH_LDFLAGS=-s $(shell sdl2-config --libs) -lSDL2_ttf
 ST_LDFLAGS=-s $(shell sdl2-config --static-libs) -lfreetype
 DBG_LDFLAGS=$(ST_LDFLAGS)
 

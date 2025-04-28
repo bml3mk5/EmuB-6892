@@ -739,11 +739,12 @@ uint32_t L3Basic::GetLineNumberPtr()
 bool L3Basic::IsCurrentLine(uint32_t st_line, uint32_t ed_line)
 {
 	uint32_t line = GetLineNumber();
-	bool match = (trace_line_num != line && st_line <= line && line <= ed_line);
-	if (match) {
-		trace_line_num = line;
-	}
-	return match;
+	return (trace_line_num != line && st_line <= line && line <= ed_line);
+}
+
+void L3Basic::UpdateCurrentLine()
+{
+	trace_line_num = GetLineNumber();
 }
 
 void L3Basic::SetTraceBack(uint32_t addr)

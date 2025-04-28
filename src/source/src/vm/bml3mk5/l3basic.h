@@ -100,6 +100,7 @@ public:
 
 	void PrintCurrentTrace();
 	bool IsCurrentLine(uint32_t st_line, uint32_t ed_line);
+	void UpdateCurrentLine();
 	void SetTraceBack(uint32_t addr);
 	void PrintCurrentLine(int num);
 	void PrintTraceBack(int num);

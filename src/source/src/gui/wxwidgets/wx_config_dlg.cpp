@@ -908,6 +908,7 @@ void MyConfigDlg::change_fdd_type(int index)
 
 void MyConfigDlg::change_io_port(int index)
 {
+#ifdef USE_IOPORT_FDD
 	if (index == 0) {
 		chkIOPort[0]->SetValue(true);
 		chkIOPort[1]->SetValue(false);
@@ -915,12 +916,26 @@ void MyConfigDlg::change_io_port(int index)
 		chkIOPort[0]->SetValue(false);
 		chkIOPort[1]->SetValue(true);
 	}
-	if (index == 5) {
-		chkIOPort[5]->SetValue(true);
-		chkIOPort[6]->SetValue(false);
-	} else if (index == 6) {
-		chkIOPort[5]->SetValue(false);
-		chkIOPort[6]->SetValue(true);
+#endif
+	if (index == IOPORT_POS_PSG9) {
+//		chkIOPort[IOPORT_POS_PSG9]->SetValue(true);
+		chkIOPort[IOPORT_POS_KANJI]->SetValue(false);
+#if defined(_MBS1)
+		chkIOPort[IOPORT_POS_CM01]->SetValue(false);
+		chkIOPort[IOPORT_POS_KANJI2]->SetValue(false);
+#endif
+	} else if (index == IOPORT_POS_KANJI) {
+		chkIOPort[IOPORT_POS_PSG9]->SetValue(false);
+//		chkIOPort[IOPORT_POS_KANJI]->SetValue(true);
+#if defined(_MBS1)
+	} else if (index == IOPORT_POS_CM01) {
+		chkIOPort[IOPORT_POS_PSG9]->SetValue(false);
+//		chkIOPort[IOPORT_POS_CM01]->SetValue(true);
+		chkIOPort[IOPORT_POS_KANJI]->SetValue(true);
+	} else if (index == IOPORT_POS_KANJI2) {
+		chkIOPort[IOPORT_POS_PSG9]->SetValue(false);
+//		chkIOPort[IOPORT_POS_KANJI2]->SetValue(true);
+#endif
 	}
 }
 

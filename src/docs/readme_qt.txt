@@ -1,10 +1,10 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         Qt edition
-                                                             Version 2.0.1
-                                                                2024/12/08
+                                                             Version 2.0.5
+                                                                2025/04/29
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ==============================================================================
 
   Qtエディションはβ版です。いくつかの不具合や制限があります。
@@ -113,7 +113,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
                   ROM。アドレス$F800 - $FFFF のイメージ。
 
   (4) 漢字ROM（任意）
-      KANJI.ROM : MP-9740を想定。
+      KANJI.ROM : MP-9740を想定。JIS第一水準(128KB)
                   toolフォルダに擬似漢字ROMイメージを作成するソフトがあります。
 
   (5) リレー音、FDDシーク音、FDDモータ音ファイル（任意）
@@ -166,11 +166,12 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
               ja/
                 LC_MESSAGES/
                   bml3mk5.mo  ... 日本語用翻訳ファイル
-      tool/
+      tool/           ... ツール
         FONT.ROM      ... フォントファイル
-        mkkanji       ... KANJI.ROMファイル作成ソフト
-        kanji.txt     ... 上記ソフトで使用する漢字マッピングファイル
-        readme.txt    ... KANJI.ROMの作り方の説明。
+        kanji/        ... 疑似漢字ROMイメージ作成
+          mkkanji     ... 作成プログラム
+          kanji.txt   ... 上記で使用する漢字マッピングファイル(JIS第一水準)
+          readme.txt  ... 疑似漢字ROMイメージ作り方の説明
 
   Linux版:
 
@@ -184,11 +185,12 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
       readme.txt      ... このファイル
       history.txt     ... 変更履歴
       spec.txt        ... 本ソフトの詳細仕様
-    tool/
+    tool/             ... ツール
       FONT.ROM        ... フォントファイル
-      mkkanji         ... KANJI.ROMファイル作成ソフト
-      kanji.txt       ... 上記ソフトで使用する漢字マッピングファイル
-      readme.txt      ... KANJI.ROMの作り方の説明。
+      kanji/          ... 疑似漢字ROMイメージ作成
+        mkkanji       ... 作成プログラム
+        kanji.txt     ... 上記で使用する漢字マッピングファイル(JIS第一水準)
+        readme.txt    ... 疑似漢字ROMイメージ作り方の説明
 
   Windows版:
 
@@ -202,12 +204,12 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
       readme.txt      ... このファイル
       history.txt     ... 変更履歴
       spec.txt        ... 本ソフトの詳細仕様
-    tool\
+    tool\             ... ツール
       FONT.ROM        ... フォントファイル
-      mkkanji.exe     ... KANJI.ROMファイル作成ソフト
-      kanji.txt       ... 上記ソフトで使用する漢字マッピングファイル
-      readme.txt      ... KANJI.ROMの作り方の説明。
-
+      kanji\          ... 疑似漢字ROMイメージ作成
+        mkkanji.exe   ... 作成プログラム
+        kanji.txt     ... 上記で使用する漢字マッピングファイル(JIS第一水準)
+        readme.txt    ... 疑似漢字ROMイメージ作り方の説明
 
 ------------------------------------------------------------------------------
 ● インストール
@@ -224,7 +226,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
 
    ・キャラクターフォントROMイメージがない場合は、toolフォルダにあるFONT.ROM
      ファイルで代用できます。
-   ・漢字のROMイメージがない場合は、toolフォルダにあるkanji.exeを実行して、
+   ・漢字のROMイメージがない場合は、toolフォルダにあるmkkanjiを実行して、
      KANJI.ROMファイルを作成できます。
 
   3. ジョイスティックを使用する場合、予め接続しておいてください。
@@ -890,7 +892,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
       9重和音PSGカード
       ・KANJI ROMとはアドレスが重複するため同時に使用出来ません。
      ◆漢字ROM(KANJI ROM)        $FF75 - $FF76 ...
-      漢字ROMカード
+      漢字ROMカード(JIS第一水準)
       ・9voice PSGとはアドレスが重複するため同時に使用出来ません。
      ◆IG無効(Disable IG)        $FFE9 ...
       チェックを入れるとIGによるキャラクタ表示が無効になります。
@@ -1290,9 +1292,18 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
   --------------------------------------------------------------------------
  ○ 漢字ROM
 
-    toolフォルダにあるmkkanjiは指定したフォントを使用して擬似ROMイメージを
-    作成します。
-    詳細はtoolフォルダにあるreadme.txtを参照してください。
+  ■擬似漢字ROMイメージの作成
+    toolフォルダ内のkanjiフォルダにあるmkkanjiは指定したフォントを使用して
+   擬似漢字ROMイメージを作成します。
+    詳細は各フォルダ内のreadme.txtを参照してください。
+
+  ■漢字ROMイメージのフォーマット
+   JIS第一水準の漢字イメージは以下のようになります。
+    1,2バイト目がIOポート$FF75,$FF76に$0000を書き込んだ時の$FF75,$FF76の値
+    3,4バイト目がIOポート$FF75,$FF76に$0001を書き込んだ時の$FF75,$FF76の値
+    5,6バイト目がIOポート$FF75,$FF76に$0002を書き込んだ時の$FF75,$FF76の値
+     ………
+   漢字ROM ICそのものから取り出したものと構成が異なる場合があります。
 
 
   --------------------------------------------------------------------------

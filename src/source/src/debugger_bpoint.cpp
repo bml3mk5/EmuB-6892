@@ -617,14 +617,15 @@ const BreakPoint *BreakPoints::FindException(uint32_t addr, uint32_t vector)
 const BreakPoint *BreakPoints::FindBASIC(DEVICE *d_mem, uint32_t addr)
 {
 	const BreakPoint *found = NULL;
+	if (addr != d_mem->debug_basic_get_line_number_ptr()) {
+		return found;
+	}
 	for(int i = 0; i < tbl_ena_count; i++) {
 		const BreakPoint *bp = EnableItem(i);
-		if(addr == bp->Addr()) {
-			if (d_mem->debug_basic_check_break_point(bp->Mask(), bp->Len())) {
-				Hit(bp);
-				found = bp;
-				break;
-			}
+		if (d_mem->debug_basic_check_break_point(bp->Mask(), bp->Len())) {
+			Hit(bp);
+			found = bp;
+			break;
 		}
 	}
 	return found;
@@ -718,6 +719,7 @@ void DEBUGGER_BPOINTS::find_basic_break_trace_points(DEBUGGER_BUS_BASE *dbg, Bre
 		m_now_suspended = m_now_basicreason = m_now_tracepoint = true;
 		d_detected = dbg;
 	}
+	d_mem->debug_basic_post_checked_break_point();
 }
 
 void DEBUGGER_BPOINTS::store_break_points(uint32_t addr, uint32_t mask, int len, int *add_index)

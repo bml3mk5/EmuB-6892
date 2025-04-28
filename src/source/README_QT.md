@@ -1,12 +1,14 @@
 # HITACHI BASIC MASTER LEVEL3 MARK5 Emulator Qt edition
 
-#### Copyright(C) Common Source Code Project, Sasaji 2012-2024 All Rights Reserved.
+#### Copyright(C) Common Source Code Project, Sasaji 2012-2025 All Rights Reserved.
 
 ## ファイル構成
 
     docs/ .................. ドキュメント
-    font/ .................. 画面フォント作成perlスクリプト
-      kanji/ ............... 擬似漢字ROM作成プログラム
+    font/ .................. 画面フォント作成スクリプト
+      kanji/ ............... 擬似漢字ROM作成ツール
+        SDL/ ............... 擬似漢字ROM作成プログラム(SDL使用)
+        Win/ ............... 擬似漢字ROM作成プログラム(WinAPI使用)
     source/
       data/ ................ データファイル
       include/ ............. インクルードファイル
@@ -50,41 +52,41 @@
 
  * QT Creator で .proファイルを読み込んでください。
  * ビルドステップを追加。
-  + makeを選択 Makeの引数に"install"と入力。
-   * installを実行すると、リソースなどをビルドディレクトリにコピーします。
-     システムディレクトリ(/usr/localなど)にインストールはしません。
+   + makeを選択 Makeの引数に"install"と入力。
+     * installを実行すると、リソースなどをビルドディレクトリにコピーします。
+       システムディレクトリ(/usr/localなど)にインストールはしません。
 
  * FFmpeg-4.x (https://ffmpeg.org/)
 
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
 
-  + ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
+   + ヘッダファイルが必要です。
+     includeフォルダにヘッダファイルを入れてください。
 
-  + Ubuntuならパッケージから以下をインストール:
-    libavcodec-dev, libavformat-dev, libswscale-dev
+   + Ubuntuならパッケージから以下をインストール:
+     libavcodec-dev, libavformat-dev, libswscale-dev
 
 
 ## QT Creatorを使用しないでコンパイルする方法
 
  * Ubuntu19.04の例：
-  1. パッケージのインストール(sudo apt install xxxxx)
-     libqt5opengl5-dev, libqt5gamepad5-dev, qtmultimedia5-dev
-   * ffmpegを使用する場合
-     libavcodec-dev, libavformat-dev, libswscale-devも必要。
+   1. パッケージのインストール(sudo apt install xxxxx)
+      libqt5opengl5-dev, libqt5gamepad5-dev, qtmultimedia5-dev
+    * ffmpegを使用する場合
+      libavcodec-dev, libavformat-dev, libswscale-devも必要。
 
-  2. source/Qt配下にビルド用のサブディレクトリを作成し、そこにcdする。
+   2. source/Qt配下にビルド用のサブディレクトリを作成し、そこにcdする。
 
-  3. qtchooser -run-tool=qmake -qt=5 ../bml3mk5_qt.pro
-     正常ならMakefileができるはず
-   * デバッガ付きの場合
-     qtchooser -run-tool=qmake -qt=5 ../bml3mk5_qt.pro "CONFIG+=debugger"
+   3. qtchooser -run-tool=qmake -qt=5 ../bml3mk5_qt.pro
+      正常ならMakefileができるはず
+    * デバッガ付きの場合
+      qtchooser -run-tool=qmake -qt=5 ../bml3mk5_qt.pro "CONFIG+=debugger"
 
-  4. makeとmake installを実行。
-     正常なら実行ファイルができるはず。
-   * installを実行すると、リソースなどをこのディレクトリにコピーします。
-     システムディレクトリ(/usr/localなど)にインストールはしません。
+   4. makeとmake installを実行。
+      正常なら実行ファイルができるはず。
+    * installを実行すると、リソースなどをこのディレクトリにコピーします。
+      システムディレクトリ(/usr/localなど)にインストールはしません。
 
 
 ## 翻訳ファイル作成方法
@@ -104,6 +106,7 @@
   4. ツール -> 外部 -> lreleaseで翻訳ファイルをリリース。
 
 
+----------------------------------------
 ## 免責事項
 
 * このソフトはフリーウェアです。ただし、著作権は放棄しておりません。
@@ -114,12 +117,12 @@
 * 雑誌やネットなどに転載される場合、不特定多数の方に再配布を行う場合でも
   承諾の必要はありませんが、転載の旨をご連絡いただけたら幸いです。
 
-==============================================================================
+------------------------------------------------------------------------------
 
 連絡先：Sasaji (sasaji@s-sasaji.ddo.jp)
  * My WebPage: http://s-sasaji.ddo.jp/bml3mk5/
  * GitHub:     https://github.com/bml3mk5/EmuB-6892
  * X(Twitter): https://x.com/bml3mk5
 
-==============================================================================
+------------------------------------------------------------------------------
 

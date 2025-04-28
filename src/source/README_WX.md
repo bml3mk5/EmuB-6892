@@ -1,12 +1,14 @@
 # HITACHI BASIC MASTER LEVEL3 MARK5 Emulator wxWidgets edition
 
-#### Copyright(C) Common Source Code Project, Sasaji 2012-2024 All Rights Reserved.
+#### Copyright(C) Common Source Code Project, Sasaji 2012-2025 All Rights Reserved.
 
 ## ファイル構成
 
     docs/ .................. ドキュメント
-    font/ .................. 画面フォント作成perlスクリプト
-      kanji/ ............... 擬似漢字ROM作成プログラム
+    font/ .................. 画面フォント作成スクリプト
+      kanji/ ............... 擬似漢字ROM作成ツール
+        SDL/ ............... 擬似漢字ROM作成プログラム(SDL使用)
+        Win/ ............... 擬似漢字ROM作成プログラム(WinAPI使用)
     source/
       data/ ................ データファイル
       locale/ .............. 翻訳用(gettext)
@@ -58,11 +60,11 @@
 
 
 ----------------------------------------
-### MacOSX版 ###
+### MacOS版 ###
 
 * 以下のバージョンがあります。
 
- + wxWidgets3 + SDL2版 -> Makefile.mac_wx2, kefile.mac_wx2_dbgr
+  + wxWidgets3 + SDL2版 -> Makefile.mac_wx2, kefile.mac_wx2_dbgr
 
   * 上記以外のMakefileは現在メンテナンスしていません。
   * SDLはサウンド処理で使用します。
@@ -76,39 +78,45 @@
  * コンパイルに必要なライブラリをインストールします。
    ターミナル上で行います。(Xcodeは使用しません。)
 
-  + wxWidgets-3.1.0
+   + ソースコードからビルドする場合
 
-   * staticライブラリにする場合
+     - wxWidgets-3.1.0
 
-          mkdir build_release_static_unicode
-          cd build_release_static_unicode
-          ../configure --with-osx_cocoa --disable-debug --disable-shared --enable-unicode
-          make
+       * staticライブラリにする場合
 
-   * sharedライブラリにする場合
+             mkdir build_release_static_unicode
+             cd build_release_static_unicode
+             ../configure --with-osx_cocoa --disable-debug --disable-shared --enable-unicode
+             make
 
-          mkdir build_release_shared_unicode
-          cd build_release_shared_unicode
-          ../configure --with-osx_cocoa --disable-debug --enable-shared --enable-unicode
-          make
+       * sharedライブラリにする場合
 
-  + SDL2-2.0.8
+             mkdir build_release_shared_unicode
+             cd build_release_shared_unicode
+             ../configure --with-osx_cocoa --disable-debug --enable-shared --enable-unicode
+             make
 
-        ./configure
-        make
-        make install
+     - SDL2-2.0.8
 
-  + FFmpeg-4.x (https://ffmpeg.org/)
+           ./configure
+           make
+           make install
 
-    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
-    コメントアウトする。)
+     - FFmpeg-4.x (https://ffmpeg.org/)
 
-    * ヘッダファイルが必要です。
-    includeフォルダにヘッダファイルを入れてください。
+       (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+       コメントアウトする。)
 
-    * ビルド方法は以下を参考：
-     [CompilationGuide/MacOSX - FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
+       * ヘッダファイルが必要です。
+         includeフォルダにヘッダファイルを入れてください。
 
+       * ビルド方法は以下を参考：
+         [CompilationGuide/MacOSX - FFmpeg](http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/)
+
+
+   + Homebrewを使用する場合
+
+     - sdl2, wxwidgets, ffmpeg@4 をインストールしてください。
 
 #### 2. コンパイル（コマンドラインを使用する場合）
 
@@ -119,10 +127,10 @@
        make -f Makefile.xxx clean
        make -f Makefile.xxx install
 
-  + installは、makeを実行したディレクトリの上にReleaseSHディレクトリを作成し、
-  そこに必要なファイルをコピーします。
-  (/usr/localにコピーはしません。)
-  + インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
+   + installは、makeを実行したディレクトリの上にReleaseSHディレクトリを作成し、
+     そこに必要なファイルをコピーします。
+     (/usr/localにコピーはしません。)
+   + インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
      してください。
 
  * staticなバイナリを作成する場合
@@ -130,8 +138,8 @@
        make -f Makefile.xxx st_clean
        make -f Makefile.xxx st_install
 
-  + インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
-    してください。
+   + インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
+     してください。
 
 
 #### 3. コンパイル（Xcodeを使用する場合）
@@ -148,7 +156,7 @@
 
 * 以下のバージョンがあります。
 
- + wxWidgets3 + SDL2版 -> Makefile.linux_wx2, Makefile.linux_wx2_dbgr
+  + wxWidgets3 + SDL2版 -> Makefile.linux_wx2, Makefile.linux_wx2_dbgr
 
   * 上記以外のMakefileは現在メンテナンスしていません。
   * SDLはサウンド処理で使用します。
@@ -158,58 +166,58 @@
 
  * ディストリビューションに付属する開発用ライブラリをインストール。
 
-  + DebianやUbuntu: Synapticパッケージマネージャもしくはapt-getでインストール
-  + RedhatやFedora: Yumなどでインストール
+   + DebianやUbuntu: Synapticパッケージマネージャもしくはapt-getでインストール
+   + RedhatやFedora: Yumなどでインストール
 
-  + 必要なライブラリ
-   - コンパイラ: gcc, g++, make
-   - 画面系: libwxbase3.1-dev, libwxgtk3.1-gtk3-dev, libsdl2-dev
-   - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
+   + 必要なライブラリ
+     - コンパイラ: gcc, g++, make
+     - 画面系: libwxbase3.1-dev, libwxgtk3.1-gtk3-dev, libsdl2-dev
+     - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
 
  * コンパイルに必要なライブラリをインストールします。
 
-  + wxWidgets-3.0.x or -3.1.x
+   + wxWidgets-3.0.x or -3.1.x
   
-   - パッケージから：libwxgtk3-dev
+     - パッケージから：libwxgtk3-dev
 
-   - ソースからインストールする場合
+     - ソースからインストールする場合
 
-    * staticライブラリにする場合
+       * staticライブラリにする場合
 
-           mkdir build_release_static_unicode
-           cd build_release_static_unicode
-           ../configure --with-gtk --disable-debug --disable-shared --enable-unicode
+             mkdir build_release_static_unicode
+             cd build_release_static_unicode
+             ../configure --with-gtk --disable-debug --disable-shared --enable-unicode
+             make
+
+       * sharedライブラリにする場合
+
+             mkdir build_release_shared_unicode
+             cd build_release_shared_unicode
+             ../configure --with-gtk --disable-debug --enable-shared --enable-unicode
+             make
+
+   + SDL2-2.0.8
+     - 付属のパッケージからインストール。
+
+     - ソースからインストールする場合
+
+           ./configure
            make
+           make install
 
-    * sharedライブラリにする場合
+   + FFmpeg-4.x (https://ffmpeg.org/)
 
-           mkdir build_release_shared_unicode
-           cd build_release_shared_unicode
-           ../configure --with-gtk --disable-debug --enable-shared --enable-unicode
+     (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+     コメントアウトする。)
+
+     * ヘッダファイルが必要です。
+     * 付属のパッケージからインストール。ただし、バージョンが古いと使用できない。
+
+     * ソースからインストールする場合
+
+           ./configure --disable-static --enable-shared --disable-programs --disable-doc
            make
-
-  + SDL2-2.0.8
-   - 付属のパッケージからインストール。
-
-   - ソースからインストールする場合
-
-          ./configure
-          make
-          make install
-
-  + FFmpeg-4.x (https://ffmpeg.org/)
-
-    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
-    コメントアウトする。)
-
-    * ヘッダファイルが必要です。
-    * 付属のパッケージからインストール。ただし、バージョンが古いと使用できない。
-
-    * ソースからインストールする場合
-
-          ./configure --disable-static --enable-shared --disable-programs --disable-doc
-          make
-          make install
+           make install
 
 
 #### 2. コンパイル
@@ -217,26 +225,26 @@
  ターミナル(端末)上で行います。
 
  * sharedなバイナリを作成する場合
-  - ライブラリをパッケージからインストールしている場合はこちらでビルド。
+   - ライブラリをパッケージからインストールしている場合はこちらでビルド。
 
          make -f Makefile.xxx clean
          make -f Makefile.xxx install
 
-  * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
-    そこに必要なファイルをコピーします。
-  (/usr/localにコピーはしません。)
-  * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
-    してください。
+   * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
+     そこに必要なファイルをコピーします。
+     (/usr/localにコピーはしません。)
+   * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
+     してください。
 
  * staticなバイナリを作成する場合
 
-  - Makefile内のWXDIRをwxWidgets3.1をビルドしたディレクトリにして下さい。
+   - Makefile内のWXDIRをwxWidgets3.1をビルドしたディレクトリにして下さい。
 
          make -f Makefile.xxx st_clean
          make -f Makefile.xxx st_install
 
-  * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
-    してください。
+   * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
+     してください。
 
 
 ----------------------------------------
@@ -244,7 +252,7 @@
 
 * 以下のバージョンがあります。
 
- + wxWidgets3 + SDL2版 -> Makefile.win_wx2, Makefile.win_wx2_dbgr
+  + wxWidgets3 + SDL2版 -> Makefile.win_wx2, Makefile.win_wx2_dbgr
 
   * 上記以外のMakefileは現在メンテナンスしていません。
   * SDLはサウンド処理で使用します。
@@ -253,49 +261,49 @@
 
  * MinGWをインストール
 
-  + インストーラに従ってインストールします。
+   + インストーラに従ってインストールします。
 
-  + C Compiler, C++ Compiler, MSYS Basic SYSTEM, MSYS Developer Toolkit
-  をチェックしてインストール。
-    インターネットから必要なモジュールがダウンロードされる。
+   + C Compiler, C++ Compiler, MSYS Basic SYSTEM, MSYS Developer Toolkit
+     をチェックしてインストール。
+     インターネットから必要なモジュールがダウンロードされる。
 
  * MinGW Shellを起動してコンパイルに必要なライブラリをインストールします。
 
-  + wxWidgets-3.1.0
+   + wxWidgets-3.1.0
 
-   - ソースからインストールする場合
+     - ソースからインストールする場合
 
-    * staticライブラリにする場合
+       * staticライブラリにする場合
 
-          mkdir build_release_static_unicode
-          cd build_release_static_unicode
-          ../configure --with-msw --disable-debug --disable-shared --enable-unicode
-          make
+             mkdir build_release_static_unicode
+             cd build_release_static_unicode
+             ../configure --with-msw --disable-debug --disable-shared --enable-unicode
+             make
 
-    * sharedライブラリにする場合
+       * sharedライブラリにする場合
 
-          mkdir build_release_shared_unicode
-          cd build_release_shared_unicode
-          ../configure --with-msw --disable-debug --enable-shared --enable-unicode
-          make 
+             mkdir build_release_shared_unicode
+             cd build_release_shared_unicode
+             ../configure --with-msw --disable-debug --enable-shared --enable-unicode
+             make 
 
-  + SDL2-2.0.x
+   + SDL2-2.0.x
 
-   - Development Librariesかソースからインストール
+     - Development Librariesかソースからインストール
 
-   - ソースからインストールする場合
+     - ソースからインストールする場合
 
-          ./configure
-          make
-          make install
+           ./configure
+           make
+           make install
 
-  + FFmpeg-4.x (https://ffmpeg.org/)
+   + FFmpeg-4.x (https://ffmpeg.org/)
 
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
-    コメントアウトする。)
+     (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+     コメントアウトする。)
 
-   * ヘッダファイルが必要です。
-     includeフォルダにヘッダファイルを入れてください。
+     * ヘッダファイルが必要です。
+       includeフォルダにヘッダファイルを入れてください。
 
 
 #### 2. コンパイル
@@ -304,21 +312,21 @@
 
  * 必要に応じてMakefile.xxxを変更します。
 
-  * MinGWのバージョンが異なる場合、GCCLIBDIRを修正。
-  * WXDIRを編集。
-  * SDLLIBSのパスを修正。
-    SDL, SDL_ttfなどをバイナリパッケージでインストールした場合、
-    インストール先が/usr/local/cross-tools/i386-mingw32/配下になるため
+   * MinGWのバージョンが異なる場合、GCCLIBDIRを修正。
+   * WXDIRを編集。
+   * SDLLIBSのパスを修正。
+     SDL, SDL_ttfなどをバイナリパッケージでインストールした場合、
+     インストール先が/usr/local/cross-tools/i386-mingw32/配下になるため
 
  * sharedなバイナリを作成する場合
 
        make -f Makefile.xxx clean
        make -f Makefile.xxx install
 
-  * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
-  そこに必要なファイルをコピーします。
-  (/usr/localにコピーはしません。)
-  * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
+   * installは、makeを実行したディレクトリの上にReleaseディレクトリを作成し、
+     そこに必要なファイルをコピーします。
+     (/usr/localにコピーはしません。)
+   * インストール先を変更するには、Makefile中にある、SH_INSTALLDIRを変更
      してください。
 
  * staticなバイナリを作成する場合
@@ -326,7 +334,7 @@
        make -f Makefile.xxx st_clean
        make -f Makefile.xxx st_install
 
-  * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
+   * インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
      してください。
 
 
@@ -337,20 +345,20 @@
 
 * 必要なライブラリをVC++でビルドします。
 
- + wxWidgets-3.1.0
+  + wxWidgets-3.1.0
 
-  - wxWidgets-3.1.0.zipをダウンロードして適当なフォルダに展開。
-  - build\mswにあるwx_vc??.slnをVC++で開く。
-  - Debug/Releaseでソリューションをビルドすると、lib\vc_lib\に
-    ライブラリが生成される。
+    - wxWidgets-3.1.0.zipをダウンロードして適当なフォルダに展開。
+    - build\mswにあるwx_vc??.slnをVC++で開く。
+    - Debug/Releaseでソリューションをビルドすると、lib\vc_lib\に
+      ライブラリが生成される。
 
- + SDL2-2.0.x
+  + SDL2-2.0.x
 
     ソースからインストール
       VisualCフォルダにあるSDL.slnを使用してビルド。
       出来たdll,libはlib/Release/x86にコピーしておく。
 
- + FFmpeg-4.x (https://ffmpeg.org/)
+  + FFmpeg-4.x (https://ffmpeg.org/)
 
    (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
@@ -368,9 +376,8 @@
 #### 2. コンパイル
 
  * プロジェクトファイル(*_wx.vcxproj)を使用してビルド。
-  + 表示→プロパティマネージャを開き、Release下を開く。
-  + ユーザーマクロに設定しているパスを変更する。
-
+   + 表示→プロパティマネージャを開き、Release下を開く。
+   + ユーザーマクロに設定しているパスを変更する。
 
 
 ----------------------------------------
@@ -384,12 +391,12 @@
 * 雑誌やネットなどに転載される場合、不特定多数の方に再配布を行う場合でも
   承諾の必要はありませんが、転載の旨をご連絡いただけたら幸いです。
 
-==============================================================================
+------------------------------------------------------------------------------
 
 連絡先：Sasaji (sasaji@s-sasaji.ddo.jp)
  * My WebPage: http://s-sasaji.ddo.jp/bml3mk5/
  * GitHub:     https://github.com/bml3mk5/EmuB-6892
  * X(Twitter): https://x.com/bml3mk5
 
-==============================================================================
+------------------------------------------------------------------------------
 

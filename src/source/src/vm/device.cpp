@@ -1240,6 +1240,7 @@ bool DEVICE::debug_basic_check_break_point(uint32_t line, int len)
 {
 	return false;
 }
+void DEVICE::debug_basic_post_checked_break_point() {}
 
 #endif /* USE_DEBUGGER */
 

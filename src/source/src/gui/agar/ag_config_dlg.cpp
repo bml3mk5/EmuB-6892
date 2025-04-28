@@ -639,17 +639,20 @@ void AG_CONFIG_DLG::change_io_port(int index, int status)
 		paramtmp->io_port &= ~(1 << 0);
 	}
 #endif
-	if (index == 5 && status & (1 << 5)) {
-		paramtmp->io_port &= ~(1 << 6);
+	if (index == IOPORT_POS_PSG9 && status & (1 << IOPORT_POS_PSG9)) {
+		paramtmp->io_port &= ~(1 << IOPORT_POS_KANJI);
 #if defined(_MBS1)
-		paramtmp->io_port &= ~(1 << 9);
+		paramtmp->io_port &= ~(1 << IOPORT_POS_CM01);
+		paramtmp->io_port &= ~(1 << IOPORT_POS_KANJI2);
 #endif
-	} else if (index == 6 && status & (1 << 6)) {
-		paramtmp->io_port &= ~(1 << 5);
+	} else if (index == IOPORT_POS_KANJI && status & (1 << IOPORT_POS_KANJI)) {
+		paramtmp->io_port &= ~(1 << IOPORT_POS_PSG9);
 #if defined(_MBS1)
-	} else if (index == 9 && status & (1 << 9)) {
-		paramtmp->io_port &= ~(1 << 5);
-		paramtmp->io_port |= (1 << 6);
+	} else if (index == IOPORT_POS_CM01 && status & (1 << IOPORT_POS_CM01)) {
+		paramtmp->io_port &= ~(1 << IOPORT_POS_PSG9);
+		paramtmp->io_port |= (1 << IOPORT_POS_KANJI);
+	} else if (index == IOPORT_POS_KANJI2 && status & (1 << IOPORT_POS_KANJI2)) {
+		paramtmp->io_port &= ~(1 << IOPORT_POS_PSG9);
 #endif
 	}
 }

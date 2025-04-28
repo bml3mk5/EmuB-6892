@@ -1,7 +1,7 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ==============================================================================
 
 
@@ -444,6 +444,11 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
   コマンドオプションを指定しない場合、現在登録しているポイントの一覧を表示
   します。
 
+  【注意】ブレークポイント、トレースポイントを設定すると自動的にトレースがONに
+          なります。
+  【注意】同じ行をループする場合はこの行に入った一度だけ対象となりループ中は
+          対象になりません。
+
 
   ◆ BAS BC, BAS BD, BAS BE
   ◆ BAS TC, BAS TD, BAS TE
@@ -464,6 +469,10 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2024 All Rights Reserved.
 
   ◆ BAS TRON  - ブレークポイント、トレースポイントでリストを表示する。
   ◆ BAS TROFF - ブレークポイント、トレースポイントでリストを表示しない。
+
+  ブレークポイントやトレースポイントに一致した時、また一時停止した時に実行して
+  いる行のBASICプログラムリストを表示します。
+  ブレークポイント、トレースポイントを設定したとき自動的にONになります。
 
 
   ◆ BAS COMMAND - BASIC予約語の一覧を表示する。

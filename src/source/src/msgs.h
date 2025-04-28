@@ -362,6 +362,7 @@ public:
 		PSG9__FF70,
 		PSG9L_FF70,
 		KANJI_FF75,
+		KANJI2_FF72,
 		ExPSG_FFE6,
 		OS9Ex_FE11,
 		Comm__FF77,

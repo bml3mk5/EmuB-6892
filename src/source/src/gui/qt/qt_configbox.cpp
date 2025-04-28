@@ -143,11 +143,12 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 		if ((1 << pos) & IOPORT_MSK_ALL) {
 			lblIOPorts[pos] = new QLabel(">");
 			lblIOPorts[pos]->setMinimumSize(16, 0);
-			griIOPort->addWidget(lblIOPorts[pos], pos, 0);
+			griIOPort->addWidget(lblIOPorts[pos], i, 0);
 			lblIOPorts[pos]->setVisible(val & (1 << pos));
 			chkIOPorts[pos] = new MyCheckBox(LABELS::io_port[i]);
-			griIOPort->addWidget(chkIOPorts[pos], pos, 1);
+			griIOPort->addWidget(chkIOPorts[pos], i, 1);
 			chkIOPorts[pos]->setChecked(io_port & (1 << pos));
+			connect(chkIOPorts[pos], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
 		}
 	}
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
@@ -157,12 +158,12 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	vbox0r->addSpacerItem(spc);
 
 	// exclusive ioports
-	connect(chkIOPorts[5], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
-	connect(chkIOPorts[6], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
-#if defined(_MBS1)
-	connect(chkIOPorts[IOPORT_POS_EXPSG], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
-	connect(chkIOPorts[IOPORT_POS_FMOPN], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
-#endif
+//	connect(chkIOPorts[5], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
+//	connect(chkIOPorts[6], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
+//#if defined(_MBS1)
+//	connect(chkIOPorts[IOPORT_POS_EXPSG], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
+//	connect(chkIOPorts[IOPORT_POS_FMOPN], SIGNAL(toggled(bool)), this, SLOT(toggledIOPort(bool)));
+//#endif
 
 	lbl = new MyLabel(CMsg::Need_restart_program_or_PowerOn);
 	vbox0->addWidget(lbl);
@@ -799,10 +800,21 @@ void MyConfigBox::toggledIOPort(bool checked)
 	QCheckBox *chk = dynamic_cast<QCheckBox *>(sender());
 	if (checked) {
 		// 9PSG and KANJI are exclusive.
-		if (chk == chkIOPorts[5]) {
-			chkIOPorts[6]->setChecked(false);
-		} else if (chk == chkIOPorts[6]) {
-			chkIOPorts[5]->setChecked(false);
+		if (chk == chkIOPorts[IOPORT_POS_PSG9]) {
+			chkIOPorts[IOPORT_POS_KANJI]->setChecked(false);
+#if defined(_MBS1)
+			chkIOPorts[IOPORT_POS_CM01]->setChecked(false);
+			chkIOPorts[IOPORT_POS_KANJI2]->setChecked(false);
+#endif
+		} else if (chk == chkIOPorts[IOPORT_POS_KANJI]) {
+			chkIOPorts[IOPORT_POS_PSG9]->setChecked(false);
+#if defined(_MBS1)
+		} else if (chk == chkIOPorts[IOPORT_POS_CM01]) {
+			chkIOPorts[IOPORT_POS_PSG9]->setChecked(false);
+			chkIOPorts[IOPORT_POS_KANJI]->setChecked(true);
+		} else if (chk == chkIOPorts[IOPORT_POS_KANJI2]) {
+			chkIOPorts[IOPORT_POS_PSG9]->setChecked(false);
+#endif
 		}
 	}
 #if defined(_MBS1)

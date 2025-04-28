@@ -26,19 +26,35 @@ private:
 	uint16_t code;
 	uint8_t  offset;
 
-	uint8_t font[0x20000];
+	uint8_t font[0x20000];	// 128KB
 
 	int  font_enable;
+
+#ifdef USE_KANJI_JIS2
+	uint8_t font2[0x20000];	// 128KB
+
+	int  font2_enable;
+
+	uint8_t en_jis2;
+#endif
 
 	//for resume
 #pragma pack(1)
 	struct vm_state_st {
 		uint16_t code;
 		uint8_t  offset;
-
-		char  reserved[13];
+#ifdef USE_KANJI_JIS2
+		uint8_t	 en_jis2;
+#else
+		char  reserved0;
+#endif
+		char  reserved[12];
 	};
 #pragma pack()
+
+	void init_kanji_rom(uint8_t *rom, size_t size);
+
+	static const uint8_t krom[32];
 
 public:
 	KANJI(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier)

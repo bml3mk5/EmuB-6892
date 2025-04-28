@@ -1052,4 +1052,9 @@ bool MEMORY::debug_basic_check_break_point(uint32_t line, int len)
 	return bas->IsCurrentLine(line, line + len);
 }
 
+void MEMORY::debug_basic_post_checked_break_point()
+{
+	bas->UpdateCurrentLine();
+}
+
 #endif

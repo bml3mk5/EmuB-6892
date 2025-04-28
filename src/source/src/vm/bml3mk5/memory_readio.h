@@ -139,7 +139,7 @@
 			}
 			// kanji rom
 			if (IOPORT_USE_KANJI) {
-				data = d_kanji->READ_IO8(addr - 0xff75);
+				data = d_kanji->READ_IO8(addr - 0xff70);
 //				logging->out_debugf("kanjir a:%04x d:%02x",addr,data);
 			}
 			break;

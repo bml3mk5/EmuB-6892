@@ -666,24 +666,27 @@ void ConfigBox::ChangeIOPort(int index)
 	}
 #endif
 #if defined(_MBS1)
-	if (index == 5 && status) {
-		set_check_state(chkIO[6],false);
-		set_check_state(chkIO[9],false);
-	} else if (index == 6 && status) {
-		set_check_state(chkIO[5],false);
-	} else if (index == 9 && status) {
-		set_check_state(chkIO[5],false);
-		set_check_state(chkIO[6],true);
+	if (index == IOPORT_POS_PSG9 && status) {
+		set_check_state(chkIO[IOPORT_POS_KANJI],false);
+		set_check_state(chkIO[IOPORT_POS_CM01],false);
+		set_check_state(chkIO[IOPORT_POS_KANJI2],false);
+	} else if (index == IOPORT_POS_KANJI && status) {
+		set_check_state(chkIO[IOPORT_POS_PSG9],false);
+	} else if (index == IOPORT_POS_CM01 && status) {
+		set_check_state(chkIO[IOPORT_POS_PSG9],false);
+		set_check_state(chkIO[IOPORT_POS_KANJI],true);
+	} else if (index == IOPORT_POS_KANJI2 && status) {
+		set_check_state(chkIO[IOPORT_POS_PSG9],false);
 	} else if (index == IOPORT_POS_EXPSG) {
 		set_check_state(chkExPsgEn, status);
 	} else if (index == IOPORT_POS_FMOPN) {
 		set_check_state(chkFmOpnEn, status);
 	}
 #else
-	if (index == 5 && status) {
-		set_check_state(chkIO[index+1],false);
-	} else if (index == 6 && status) {
-		set_check_state(chkIO[index-1],false);
+	if (index == IOPORT_POS_PSG9 && status) {
+		set_check_state(chkIO[IOPORT_POS_KANJI],false);
+	} else if (index == IOPORT_POS_KANJI && status) {
+		set_check_state(chkIO[IOPORT_POS_PSG9],false);
 	}
 #endif
 }

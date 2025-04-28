@@ -8,6 +8,7 @@
 
 ### このソフトは、日立ベーシックマスターレベル3マーク5(MB-6892)のエミュレータです。
 
+![screenshot](bml3mk5_scr11.png)
 
 ### [Downloads ダウンロード](https://github.com/bml3mk5/EmuB-6892/releases)
 

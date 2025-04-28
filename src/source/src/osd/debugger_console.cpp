@@ -5400,7 +5400,7 @@ void DebuggerConsole::CommandDebugBasicVariables(int pn, _TCHAR **ps)
 {
 	if(pn >= 2 && *ps[1] == _T('?')) {
 		Cr();
-		UsageDebugBasic(false, 1);
+		UsageDebugBasic(false, BAS_TYPE_VAR);
 		return;
 	}
 	current_dev->mem->debug_basic_variables(this, pn - 1, (const _TCHAR **)&ps[1]);
@@ -5410,7 +5410,7 @@ void DebuggerConsole::CommandDebugBasicList(int pn, _TCHAR **ps)
 {
 	if((pn >= 2 && *ps[1] == _T('?')) || pn >= 3) {
 		Cr();
-		UsageDebugBasic(false, 2);
+		UsageDebugBasic(false, BAS_TYPE_LIST);
 		return;
 	}
 	int st_line = 0;
@@ -5431,7 +5431,7 @@ void DebuggerConsole::CommandDebugBasicTraceOnOff(int pn, _TCHAR **ps, bool en)
 {
 	if(pn != 1) {
 		Cr();
-		UsageDebugBasic(false, 3);
+		UsageDebugBasic(false, BAS_TYPE_TRONOFF);
 		return;
 	}
 	current_dev->mem->debug_basic_trace_onoff(this, en);
@@ -5441,7 +5441,7 @@ void DebuggerConsole::CommandDebugBasicCommand(int pn, _TCHAR **ps)
 {
 	if(pn != 1) {
 		Cr();
-		UsageDebugBasic(false, 6);
+		UsageDebugBasic(false, BAS_TYPE_COMMAND);
 		return;
 	}
 	current_dev->mem->debug_basic_command(this);
@@ -5451,7 +5451,7 @@ void DebuggerConsole::CommandDebugBasicError(int pn, _TCHAR **ps)
 {
 	if((pn >= 2 && *ps[1] == _T('?')) || pn >= 3) {
 		Cr();
-		UsageDebugBasic(false, 7);
+		UsageDebugBasic(false, BAS_TYPE_ERROR);
 		return;
 	}
 	int num = -1;
@@ -5465,18 +5465,18 @@ void DebuggerConsole::CommandDebugBasicSetBreakPoint(int pn, _TCHAR **ps, int nu
 {
 	if((pn >= 2 && *ps[1] == _T('?')) || pn >= 3) {
 		Cr();
-		UsageDebugBasic(false, num);
+		UsageDebugBasic(false, num & TRACEPOINT ? BAS_TYPE_TP : BAS_TYPE_BP);
 		return;
 	}
 
-	BreakPoints *bps = (num & 8 ? current_dev->debugger->get_tps(BreakPoints::BP_BASIC_NUMBER) : current_dev->debugger->get_bps(BreakPoints::BP_BASIC_NUMBER));
+	BreakPoints *bps = (num & TRACEPOINT ? current_dev->debugger->get_tps(BreakPoints::BP_BASIC_NUMBER) : current_dev->debugger->get_bps(BreakPoints::BP_BASIC_NUMBER));
 
 	if (pn >= 2) {
-		if (!SetBreakPoint(bps, num >> 3, num & 7, ps, pn)) {
+		if (!SetBreakPoint(bps, num & TRACEPOINT, num & BREAKPOINT_MASK, ps, pn)) {
 			current_dev->mem->debug_basic_trace_onoff(this, true);
 		}
 	} else {
-		ListBreakPoint(bps, num & 8, num & 7);
+		ListBreakPoint(bps, num & TRACEPOINT, num & BREAKPOINT_MASK);
 	}
 }
 
@@ -5484,16 +5484,16 @@ void DebuggerConsole::CommandDebugBasicClearBreakPoint(int pn, _TCHAR **ps, int 
 {
 	if((pn >= 2 && *ps[1] == _T('?'))) {
 		Cr();
-		UsageDebugBasic(false, num + 1);
+		UsageDebugBasic(false, num & TRACEPOINT ? BAS_TYPE_TCDE : BAS_TYPE_BCDE);
 		return;
 	}
 
-	BreakPoints *bps = (num & 8 ? current_dev->debugger->get_tps(BreakPoints::BP_BASIC_NUMBER) : current_dev->debugger->get_bps(BreakPoints::BP_BASIC_NUMBER));
+	BreakPoints *bps = (num & TRACEPOINT ? current_dev->debugger->get_tps(BreakPoints::BP_BASIC_NUMBER) : current_dev->debugger->get_bps(BreakPoints::BP_BASIC_NUMBER));
 
-	if (ClearBreakPoint(bps, num & 8, num & 7, pn, ps)) {
+	if (ClearBreakPoint(bps, num & TRACEPOINT, num & BREAKPOINT_MASK, pn, ps)) {
 		PrintError(_T("Invalid number of parameter(s)."));
 		Cr();
-		UsageDebugBasic(false, num + 1);
+		UsageDebugBasic(false, num & TRACEPOINT ? BAS_TYPE_TCDE : BAS_TYPE_BCDE);
 	}
 }
 
@@ -5501,16 +5501,16 @@ void DebuggerConsole::CommandDebugBasicChangeBreakPoint(int pn, _TCHAR **ps, int
 {
 	if((pn >= 2 && *ps[1] == _T('?'))) {
 		Cr();
-		UsageDebugBasic(false, num + 1);
+		UsageDebugBasic(false, num & TRACEPOINT ? BAS_TYPE_TCDE : BAS_TYPE_BCDE);
 		return;
 	}
 
-	BreakPoints *bps = (num & 8 ? current_dev->debugger->get_tps(BreakPoints::BP_BASIC_NUMBER) : current_dev->debugger->get_bps(BreakPoints::BP_BASIC_NUMBER));
+	BreakPoints *bps = (num & TRACEPOINT ? current_dev->debugger->get_tps(BreakPoints::BP_BASIC_NUMBER) : current_dev->debugger->get_bps(BreakPoints::BP_BASIC_NUMBER));
 
-	if (ChangeBreakPoint(bps, num & 8, num & 7, pn, ps)) {
+	if (ChangeBreakPoint(bps, num & TRACEPOINT, num & BREAKPOINT_MASK, pn, ps)) {
 		PrintError(_T("Invalid number of parameter(s)."));
 		Cr();
-		UsageDebugBasic(false, num + 1);
+		UsageDebugBasic(false, num & TRACEPOINT ? BAS_TYPE_TCDE : BAS_TYPE_BCDE);
 	}
 }
 
@@ -5534,51 +5534,51 @@ void DebuggerConsole::UsageDebugBasic(bool s, int num)
 		return;
 	}
 
-	if(num < 0 || num == 1) {
+	if(num < 0 || num == BAS_TYPE_VAR) {
 		cnt = SetStr1(cnt, cmds, _T("BAS VAR"), _T("[<name(s)> ...]"), _T("Show variable list or value on BASIC."));
 	}
-	if(num < 0 || num == 2) {
+	if(num < 0 || num == BAS_TYPE_LIST) {
 		cnt = SetStr1(cnt, cmds, _T("BAS LIST"), _T("[<line number(s)>]"), _T("Show program list on BASIC."));
 	}
-	if(num < 0 || num == 4) {
+	if(num < 0 || num == BAS_TYPE_BP) {
 		cnt = SetStr1(cnt, cmds, _T("BAS BP"), _T("[<line number(s)>]"), _T("Set/Show breakpoint for BASIC."));
 	}
-	if(num < 0 || num == 5) {
+	if(num < 0 || num == BAS_TYPE_BCDE) {
 		cnt = SetStr1(cnt, cmds,  _T("BAS B{C,D,E}"), _T("{*,ALL,<list>}"), _T("Clear/Disable/Enable breakpoint(s) for BASIC."));
 	}
-	if(num < 0 || num == 12) {
+	if(num < 0 || num == BAS_TYPE_TP) {
 		cnt = SetStr1(cnt, cmds, _T("BAS TP"), _T("[<line number(s)>]"), _T("Set/Show tracepoint for BASIC."));
 	}
-	if(num < 0 || num == 13) {
+	if(num < 0 || num == BAS_TYPE_TCDE) {
 		cnt = SetStr1(cnt, cmds,  _T("BAS T{C,D,E}"), _T("{*,ALL,<list>}"), _T("Clear/Disable/Enable tracepoint(s) for BASIC."));
 	}
-	if(num < 0 || num == 8) {
+	if(num < 0 || num == BAS_TYPE_TB) {
 		cnt = SetStr1(cnt, cmds, _T("BAS TB"), _T(""), _T("Trace back program list on BASIC."));
 	}
-	if(num < 0 || num == 3) {
+	if(num < 0 || num == BAS_TYPE_TRONOFF) {
 		cnt = SetStr1(cnt, cmds, _T("BAS TRON/TROFF"), _T(""), _T("Trace on/off program list when hit breakpoint/tracepoint."));
 	}
-	if(num < 0 || num == 6) {
+	if(num < 0 || num == BAS_TYPE_COMMAND) {
 		cnt = SetStr1(cnt, cmds, _T("BAS COMMAND"), _T(""), _T("Show command and function list on BASIC."));
 	}
-	if(num < 0 || num == 7) {
+	if(num < 0 || num == BAS_TYPE_ERROR) {
 		cnt = SetStr1(cnt, cmds, _T("BAS ERROR"), _T("[<error number>]"), _T("Show latest or specified error on BASIC."));
 	}
 	cmds[cnt] = NULL;
 	UsageCmdStr(s, cnt, cmds);
 
-	if(num < 0 || num == 1) {
+	if(num < 0 || num == BAS_TYPE_VAR) {
 		Print(_T("  <name(s)> - show value(s) matching with variable name."));
 	}
-	if(num < 0 || num == 2 || num == 4 || num == 12) {
+	if(num < 0 || num == BAS_TYPE_LIST || num == BAS_TYPE_BP || num == BAS_TYPE_TP) {
 		Print(_T("  <line number(s)> - set one decimal <number> or set range <start>-<end>."));
 		Print(_T("  set current line number if specify \".\"(period)."));
 	}
-	if(num < 0 || num == 5 || num == 13) {
+	if(num < 0 || num == BAS_TYPE_BCDE || num == BAS_TYPE_TCDE) {
 		Print(_T("  <list> - specify number."));
 		Print(_T("  * or ALL - perform it about all breakpoints."));
 	}
-	if(num < 0 || num == 7) {
+	if(num < 0 || num == BAS_TYPE_ERROR) {
 		Print(_T("  <error number> - set one decimal <number>."));
 	}
 }

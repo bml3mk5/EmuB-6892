@@ -145,7 +145,7 @@
 			}
 			// kanji rom
 			if (IOPORT_USE_KANJI) {
-				d_kanji->WRITE_IO8(addr - 0xff75, data);
+				d_kanji->WRITE_IO8(addr - 0xff70, data);
 //				logging->out_debugf("kanjiw a:%04x d:%02x",addr,data);
 			}
 			break;

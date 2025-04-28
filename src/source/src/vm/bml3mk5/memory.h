@@ -265,6 +265,7 @@ public:
 	void debug_basic_error(DebuggerConsole *dc, int num);
 
 	bool debug_basic_check_break_point(uint32_t line, int len);
+	void debug_basic_post_checked_break_point();
 
 #endif
 

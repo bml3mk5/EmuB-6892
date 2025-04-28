@@ -57,13 +57,14 @@ enum IOPORT_MASKS {
 	IOPORT_MSK_RTC		= 0x08000,	///< bit15: use rtc
 	IOPORT_MSK_Z80BCARD	= 0x10000,	///< bit16: use Z80B card (for mbs1)
 	IOPORT_MSK_MPC68008	= 0x20000,	///< bit17: use 68008 card (for mbs1)
+	IOPORT_MSK_KANJI2	= 0x40000,	///< bit18: use kanji rom (jis 2)
 #if defined(_MBS1)
 #if defined(USE_Z80B_CARD)
-	IOPORT_MSK_ALL		= 0x1ffff,
+	IOPORT_MSK_ALL		= 0x5ffff,
 #elif defined(USE_MPC_68008)
-	IOPORT_MSK_ALL		= 0x2ffff,
+	IOPORT_MSK_ALL		= 0x6ffff,
 #else
-	IOPORT_MSK_ALL		= 0x0ffff,
+	IOPORT_MSK_ALL		= 0x4ffff,
 #endif
 #else
 	IOPORT_MSK_ALL		= 0x0c07f,
@@ -91,6 +92,7 @@ enum IOPORT_MASKS {
 #define IOPORT_USE_RTC		(pConfig->io_port & IOPORT_MSK_RTC)
 #define IOPORT_USE_Z80BCARD	(pConfig->io_port & IOPORT_MSK_Z80BCARD)	/* for mbs1 */
 #define IOPORT_USE_MPC68008	(pConfig->io_port & IOPORT_MSK_MPC68008)	/* for mbs1 */
+#define IOPORT_USE_KANJI2	(pConfig->io_port & IOPORT_MSK_KANJI2)
 ///@}
 
 /// @ingroup Enums
@@ -114,6 +116,7 @@ enum IOPORT_POS {
 	IOPORT_POS_RTC,
 	IOPORT_POS_Z80BCARD, /* for mbs1 */
 	IOPORT_POS_MPC68008, /* for mbs1 */
+	IOPORT_POS_KANJI2,
 	IOPORT_NUMS
 };
 
@@ -459,6 +462,7 @@ public:
 	// bit15: use rtc
 	// bit16: use Z80B card
 	// bit17: use 68008 card
+	// bit18: use kanji jis2
 	int io_port;
 	// bit0: show led  bit1: show msg  bit2: use joystick  bit3: inside led
 	// bit4: enable lightpen bit5: enable mouse bit6: use pia joystick
