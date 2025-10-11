@@ -35,7 +35,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
     モノクロ表示                ×未対応
   サウンド
     ビープ音                    ○対応
-    PSG 6音 カード              ○対応
+    PSG 6音 カード              ○対応 ジョイパッドはPSG1側に接続
     PSG 9音 カード              ○対応
   カセットテープ
     ロードセーブ                ○対応
@@ -46,7 +46,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
     5インチ2D                   ○対応
     8インチ2D                   未テスト
   ライトペン                    ○対応 マウスを使ってエミュレート
-  ジョイパッド                  サウンドボードの汎用I/Oポートにつなぐタイプには未対応
+  ジョイパッド                  ○対応
   拡張メモリ(64KB)              ○対応
   プリンタ                      ○対応
     増設プリンタカード          ○対応
@@ -54,7 +54,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
     CHIPSW1,2切替(ボーレート)   ○対応
     増設RS-232Cカード           ○対応
   その他
-    拡張PIAカード               △一部対応 ジョイパッド専用
+    拡張PIAカード               △一部対応 ジョイパッド専用(Bポートに接続)
     16ビットカード              ×未対応
     Z80カード(Hu-Engine)        ×未対応
 
@@ -67,7 +67,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
   $FF18 - $FF1F FDC(3inch)      ○対応
   $FF20         FDC(3inch)UNIT  ○対応
 
-  $FF30 - $FF33 6PSG            ○対応
+  $FF30 - $FF33 6PSG            ○対応 ジョイパッド使用可能
 
   $FF38 - $FF3A RTC             △一部対応
 

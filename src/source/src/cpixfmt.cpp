@@ -210,7 +210,7 @@ void CPixelFormat::Get(uint32_t *r_mask, uint32_t *g_mask, uint32_t *b_mask, uin
 	if (b_shift) *b_shift = Bshift;
 	if (a_shift) *a_shift = Ashift;
 
-	// calcrate alpha channel
+	// calculate alpha channel
 	if (Amask == 0) {
 		uint32_t am = ~(Rmask | Gmask | Bmask);
 		if (a_mask) {

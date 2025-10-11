@@ -102,8 +102,11 @@ KEYRECORD::KEYRECORD(EMU* parent_emu)
 #ifdef USE_MOUSE
 	m_mouse_cache.SetType(3);
 #endif
-#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 	m_joypia_cache.SetType(4);
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	m_joypsg_cache.SetType(5);
 #endif
 }
 
@@ -163,8 +166,11 @@ void KEYRECORD::read_to_cache()
 #ifdef USE_MOUSE
 		is_full |= m_mouse_cache.IsFull();
 #endif
-#ifdef USE_PIAJOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 		is_full |= m_joypia_cache.IsFull();
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+		is_full |= m_joypsg_cache.IsFull();
 #endif
 		while(!is_full && rows < 128) {
 			if (fkri->Fgets(rec_key_rec_buff, sizeof(rec_key_rec_buff)) == NULL) {
@@ -223,11 +229,21 @@ void KEYRECORD::read_to_cache()
 #endif
 				break;
 			case 4:
-#ifdef USE_PIAJOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 				// joystick
 				cols = sscanf(p, ":%x:%x", &code[0], &code[1]);
 				if (cols == 2) {
 					m_joypia_cache.Set((uint64_t)clk, cols, code);
+					rows++;
+				}
+#endif
+				break;
+			case 5:
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+				// joystick
+				cols = sscanf(p, ":%x:%x", &code[0], &code[1]);
+				if (cols == 2) {
+					m_joypsg_cache.Set((uint64_t)clk, cols, code);
 					rows++;
 				}
 #endif
@@ -252,8 +268,11 @@ void KEYRECORD::read_to_cache()
 #ifdef USE_MOUSE
 		end_of_data &= m_mouse_cache.IsEmpty();
 #endif
-#ifdef USE_PIAJOYSTICK
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 		end_of_data &= m_joypia_cache.IsEmpty();
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+		end_of_data &= m_joypsg_cache.IsEmpty();
 #endif
 		if (end_of_data) {
 			// end of play
@@ -263,130 +282,6 @@ void KEYRECORD::read_to_cache()
 }
 
 // ----------------------------------------------------------------------------
-#if 0
-void KEYRECORD::reading_keys(int num)
-{
-#ifdef USE_KEY_RECORD
-	if (pConfig->reckey_playing) {
-		uint64_t now_clk = d_event->get_current_clock();
-		int cols = -1;
-		uint64_t clk = 0;
-		int type = -1;
-		int code[3];
-		char *p = NULL;
-
-		while(pConfig->reckey_playing) {
-			if (0x30 <= rec_key_rec_buff[0] && rec_key_rec_buff[0] <= 0x39) {
-				cols = sscanf(rec_key_rec_buff,"%llu:%d:",&clk,&type);
-				if ((int64_t)clk + key_rec_sum_clock < 0) {
-					clk = 0;
-				} else {
-					clk += key_rec_sum_clock;
-				}
-//				logging->out_logf(LOG_DEBUG,_T("RecKey:n:%llu:%llu"),now_clk,clk);
-				if ((now_clk + 1) < clk) {
-					break;
-				}
-//				logging->out_logf(LOG_DEBUG,_T("RecKey:keyin"));
-
-				if (cols == 2 && clk > 0) {
-					p = strchr(rec_key_rec_buff, ':');
-					p = strchr(p+1, ':');
-					switch(type) {
-					case 1:
-						// key
-						cols = sscanf(p,":%x:%d",&code[0],&code[1]);
-						if (cols == 2 && code[0] >= 0) {
-							int code0 = (code[0] << 1) + 1;
-#ifdef _DEBUG_KEYRECORD
-							logging->out_logf(LOG_DEBUG, _T("RecKey%d %02x nc:%llu %c %llu ks:%02x nk:%d %c %d %s")
-								, num, code[0]
-								, now_clk, (now_clk == clk ? _T('=') : _T('!')), clk
-								, *key_scan_code_ptr
-								, *counter_ptr, (*counter_ptr == code0 ? _T('=') : _T('!')), code0
-								, (code[1] & 1) ? _T("ON") : _T("OFF"));
-#endif
-							if (code[0] < KEYBIND_KEYS) {
-								// normal key
-								vm_key_recp_stat[code[0]]=(code[1] & 1);
-								if (num == 0 && (clk < now_clk || code0 < (*counter_ptr))) {
-									// adjust timing
-									*counter_ptr = code0;
-									*key_scan_code_ptr = ((code0 >> 1) & ((*kb_mode_ptr & 0x08) ? 0x07 : 0x7f));
-
-									logging->out_debugf(_T("RecKey%d %02x adjust k:%d ks:%02x"), num, code[0], *counter_ptr, *key_scan_code_ptr);
-								}
-							} else if (code[0] >= KEY_RECORD_SYSTEM_CODE && code[0] < KEY_RECORD_MAX) {
-								if (code[1] & 1) {
-									// global key
-									emu->system_key_down(code[0] & 0xfff);
-									emu->execute_global_keys(code[0] & 0xfff, 2);
-								}
-							}
-						}
-						break;
-					case 2:
-#ifdef USE_LIGHTPEN
-						// lightpen
-						cols = sscanf(p,":%d:%d:%x",&code[0],&code[1],&code[2]);
-						if (cols == 3) {
-							memcpy(lpen_recp_stat, code, sizeof(lpen_recp_stat));
-						}
-#endif
-						break;
-#ifdef USE_MOUSE
-					case 3:
-						// mouse
-						cols = sscanf(p, ":%d:%d:%d"
-							,&code[0],&code[1],&code[2]
-						);
-						if (cols == 3) {
-							mouse_recp_stat[0] = code[0];
-							mouse_recp_stat[1] = code[1];
-							mouse_recp_stat[2] = code[2];
-						}
-						break;
-#endif
-					case 4:
-						// joystick on PIA
-						cols = sscanf(p, ":%x:%x"
-							,&code[0],&code[1]
-						);
-#ifdef _DEBUG_KEYRECORD
-						logging->out_logf(LOG_DEBUG, _T("RecKey%d %llu %c %llu j0:%02x j1:%02x")
-							, num
-							, now_clk, (now_clk == clk ? _T('=') : _T('!')), clk
-							, code[0], code[1]
-						);
-#endif
-						if (cols == 2) {
-							joypia_recp_stat[0] = (uint8_t)code[0];
-							joypia_recp_stat[1] = (uint8_t)code[1];
-						}
-						break;
-					}
-				}
-			}
-			// read next data
-			if (fkri->Fgets(rec_key_rec_buff, sizeof(rec_key_rec_buff)) == NULL) {
-				stop_reckey(true, false);
-				break;
-			}
-		}
-	}
-#endif /* USE_KEY_RECORD */
-}
-#endif
-
-#if 0
-bool KEYRECORD::processing_keys(int code, bool pressed)
-{
-	if (pConfig->reckey_playing) pressed = playing_keys(code, pressed);
-	if (pConfig->reckey_recording) recording_keys(code, pressed);
-	return pressed;
-}
-#endif
-
 void KEYRECORD::playing_key()
 {
 	if (!pConfig->reckey_playing) return;
@@ -447,66 +342,6 @@ void KEYRECORD::recording_key(int code, bool pressed)
 	}
 #endif /* USE_KEY_RECORD */
 }
-
-#if 0
-bool KEYRECORD::playing_keys(int code, bool pressed)
-{
-#ifdef USE_KEY_RECORD
-	// read from cahce
-	uint64_t now_clk = d_event->get_current_clock();
-	do {
-		struct KEYRECORD_CACHE::st_cache *p = m_key_cache.FindFirst(now_clk);
-		if (!p) {
-			break;
-		}
-		// normal key
-		vm_key_recp_stat[p->code[0]]=(p->code[1] & 1);
-
-	} while(0);
-
-	if (pressed != true) {
-		// record key pressed ?
-		if (vm_key_recp_stat[code]) {
-			pressed = true;
-		}
-	}
-
-#ifdef _DEBUG_KEYRECORD
-	if ((vm_key_dbg_stat[code] != 0) != pressed) {
-		logging->out_logf(LOG_DEBUG, _T("   Key0 %02x  c:%llu kc:%d kr:%d %s")
-			, code, d_event->get_current_clock()
-			, *counter_ptr, *remain_count_ptr, pressed ? _T("ON") : _T("OFF"));
-		vm_key_dbg_stat[code] = (pressed ? 1 : 0);
-	}
-#endif
-
-	return pressed;
-#else /* USE_KEY_RECORD */
-	return false;
-#endif /* !USE_KEY_RECORD */
-}
-#endif
-
-#if 0
-void KEYRECORD::recording_keys(int code, bool pressed)
-{
-#ifdef USE_KEY_RECORD
-	if (pressed && vm_key_recr_stat[code] == 0) {
-		sprintf(rec_key_tmp_buff,"%llu:1:%04x:1\n"
-			, d_event->get_current_clock(), code);
-		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
-		vm_key_recr_stat[code] = 1;
-
-	} else if (!pressed && vm_key_recr_stat[code] != 0) {
-		sprintf(rec_key_tmp_buff,"%llu:1:%04x:0\n"
-			, d_event->get_current_clock(), code);
-		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
-		vm_key_recr_stat[code] = 0;
-
-	}
-#endif /* USE_KEY_RECORD */
-}
-#endif
 
 void KEYRECORD::playing_system_keys()
 {
@@ -604,7 +439,7 @@ void KEYRECORD::processing_joypia_status(uint8_t *joystat)
 void KEYRECORD::playing_joypia_status(uint8_t *joystat)
 {
 #ifdef USE_KEY_RECORD
-#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 	// read from cahce
 	uint64_t now_clk = d_event->get_current_clock();
 	do {
@@ -620,14 +455,15 @@ void KEYRECORD::playing_joypia_status(uint8_t *joystat)
 	joystat[0] = joypia_recp_stat[0];
 	joystat[1] = joypia_recp_stat[1];
 #endif
-#endif
+#endif /* USE_KEY_RECORD */
 }
 
 void KEYRECORD::recording_joypia_status(const uint8_t *joystat)
 {
 #ifdef USE_KEY_RECORD
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 	if (memcmp(joystat, joypia_recr_stat, sizeof(joypia_recr_stat)) != 0) {
-		sprintf(rec_key_tmp_buff,"%llu:4:%02x:%02x\n"
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "%llu:4:%02x:%02x\n"
 			, (unsigned long long int)d_event->get_current_clock()
 			, joystat[0], joystat[1]
 		);
@@ -635,6 +471,54 @@ void KEYRECORD::recording_joypia_status(const uint8_t *joystat)
 		memcpy(joypia_recr_stat, joystat, sizeof(joypia_recr_stat));
 
 	}
+#endif
+#endif /* USE_KEY_RECORD */
+}
+
+void KEYRECORD::processing_joypsg_status(uint8_t *joystat)
+{
+#ifdef USE_KEY_RECORD
+	if (pConfig->reckey_playing) playing_joypsg_status(joystat);
+	if (pConfig->reckey_recording) recording_joypsg_status(joystat);
+#endif /* USE_KEY_RECORD */
+}
+
+void KEYRECORD::playing_joypsg_status(uint8_t *joystat)
+{
+#ifdef USE_KEY_RECORD
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	// read from cahce
+	uint64_t now_clk = d_event->get_current_clock();
+	do {
+		struct KEYRECORD_CACHE::st_cache *p = m_joypsg_cache.FindFirst(now_clk);
+		if (!p) {
+			break;
+		}
+		joypsg_recp_stat[0] = p->code[0];
+		joypsg_recp_stat[1] = p->code[1];
+
+	} while(0);
+
+	joystat[0] = joypsg_recp_stat[0];
+	joystat[1] = joypsg_recp_stat[1];
+#endif
+#endif /* USE_KEY_RECORD */
+}
+
+void KEYRECORD::recording_joypsg_status(const uint8_t *joystat)
+{
+#ifdef USE_KEY_RECORD
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	if (memcmp(joystat, joypsg_recr_stat, sizeof(joypsg_recr_stat)) != 0) {
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "%llu:5:%02x:%02x\n"
+			, (unsigned long long int)d_event->get_current_clock()
+			, joystat[0], joystat[1]
+		);
+		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
+		memcpy(joypsg_recr_stat, joystat, sizeof(joypsg_recr_stat));
+
+	}
+#endif
 #endif /* USE_KEY_RECORD */
 }
 
@@ -671,7 +555,7 @@ void KEYRECORD::recording_lightpen_status(const int *mstat)
 {
 #ifdef USE_KEY_RECORD
 	if (memcmp(mstat, lpen_recr_stat, sizeof(lpen_recr_stat)) != 0) {
-		sprintf(rec_key_tmp_buff,"%llu:2:%d:%d:%x\n"
+		UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "%llu:2:%d:%d:%x\n"
 			, (unsigned long long int)d_event->get_current_clock()
 			, mstat[0], mstat[1], mstat[2] & 3);
 		fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
@@ -790,9 +674,6 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 		}
 
 		// open files
-		if (state_file) {
-			emu->load_state(state_file);
-		}
 #ifdef USE_DATAREC
 		if (tape_file) {
 			if (tape_playing) {
@@ -824,6 +705,9 @@ bool KEYRECORD::play_reckey(const _TCHAR* filename)
 			}
 		}
 #endif
+		if (state_file) {
+			emu->load_state(state_file);
+		}
 
 		delete [] state_file;
 #ifdef USE_DATAREC
@@ -893,10 +777,10 @@ bool KEYRECORD::record_reckey(const _TCHAR* filename)
 #ifdef USE_DATAREC
 		if (set_relative_path("TapeFile", base_path, pConfig->GetOpenedDataRecPath())) {
 			if (emu->datarec_opened(true)) {
-				sprintf(rec_key_tmp_buff, "TapeType:Play\n");
+				UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "TapeType:Play\n");
 				fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 			} else if (emu->datarec_opened(false)) {
-				sprintf(rec_key_tmp_buff, "TapeType:Rec\n");
+				UTILITY::sprintf(rec_key_tmp_buff, sizeof(rec_key_tmp_buff), "TapeType:Rec\n");
 				fkro->Fwrite(rec_key_tmp_buff, strlen(rec_key_tmp_buff), 1);
 			}
 		}

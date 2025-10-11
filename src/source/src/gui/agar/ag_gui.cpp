@@ -38,10 +38,12 @@ GUI::GUI(int argc, char **argv, EMU *new_emu) : AG_GUI_BASE(argc, argv, new_emu)
 #endif
 	configbox = NULL;
 	keybindbox = NULL;
+	joysetbox = NULL;
 }
 
 GUI::~GUI()
 {
+	delete joysetbox;
 	delete keybindbox;
 	delete configbox;
 }
@@ -333,18 +335,25 @@ void GUI::set_menu_item(AG_Menu *menu)
 		mi = AG_MenuAction(mt_screen, menu_str(CMSG(Analog_RGB)), NULL, OnSelectRGBType, "%Cp %i", this, 1);
 			 AG_MenuSetPollFn(mi, OnUpdateRGBType, "%Cp %i", this, 1);
 #endif
-#ifdef USE_OPENGL
 		AG_MenuSeparator(mt_screen);
-		mi = AG_MenuAction(mt_screen, menu_str(CMSG(Use_OpenGL_Sync_Alt)), NULL, OnSelectUseOpenGL, "%Cp %i", this, 1);
-			 AG_MenuSetPollFn(mi, OnUpdateUseOpenGL, "%Cp %i", this, 1);
-		mi = AG_MenuAction(mt_screen, menu_str(CMSG(Use_OpenGL_Async_Alt)), NULL, OnSelectUseOpenGL, "%Cp %i", this, 2);
-			 AG_MenuSetPollFn(mi, OnUpdateUseOpenGL, "%Cp %i", this, 2);
-		mi = AG_MenuNode(mt_screen,   menu_str(CMSG(OpenGL_Filter)), NULL);
-			ms = AG_MenuAction(mi, menu_str(CMSG(Nearest_Neighbour_Alt)), NULL, OnSelectOpenGLFilter, "%Cp %i", this, 0);
-				 AG_MenuSetPollFn(ms, OnUpdateOpenGLFilter, "%Cp %i", this, 0);
-			ms = AG_MenuAction(mi, menu_str(CMSG(Linear_Alt)), NULL, OnSelectOpenGLFilter, "%Cp %i", this, 1);
-				 AG_MenuSetPollFn(ms, OnUpdateOpenGLFilter, "%Cp %i", this, 1);
+		mi = AG_MenuNode(mt_screen,   menu_str(CMSG(Drawing_Method)), NULL);
+			ms = AG_MenuAction(mi, menu_str(CMSG(Default_Drawing)), NULL, OnSelectDrawingMethod, "%Cp %i", this, DRAWING_METHOD_DEFAULT_AS);
+				 AG_MenuSetPollFn(ms, OnUpdateDrawingMethod, "%Cp %i", this, DRAWING_METHOD_DEFAULT_AS);
+			ms = AG_MenuAction(mi, menu_str(CMSG(Default_Double_Buffering)), NULL, OnSelectDrawingMethod, "%Cp %i", this, DRAWING_METHOD_DEFAULT_ASDB);
+				 AG_MenuSetPollFn(ms, OnUpdateDrawingMethod, "%Cp %i", this, DRAWING_METHOD_DEFAULT_ASDB);
+#ifdef USE_OPENGL
+			ms = AG_MenuAction(mi, menu_str(CMSG(Use_OpenGL_Sync)), NULL, OnSelectDrawingMethod, "%Cp %i", this, DRAWING_METHOD_OPENGL_S);
+				 AG_MenuSetPollFn(ms, OnUpdateDrawingMethod, "%Cp %i", this, DRAWING_METHOD_OPENGL_S);
+			ms = AG_MenuAction(mi, menu_str(CMSG(Use_OpenGL_Async)), NULL, OnSelectDrawingMethod, "%Cp %i", this, DRAWING_METHOD_OPENGL_AS);
+				 AG_MenuSetPollFn(ms, OnUpdateDrawingMethod, "%Cp %i", this, DRAWING_METHOD_OPENGL_AS);
 #endif
+
+		AG_MenuSeparator(mt_screen);
+		mi = AG_MenuNode(mt_screen,   menu_str(CMSG(Filter_Type)), NULL);
+			ms = AG_MenuAction(mi, menu_str(CMSG(Nearest_Neighbor_Alt)), NULL, OnSelectScreenFilter, "%Cp %i", this, 0);
+				 AG_MenuSetPollFn(ms, OnUpdateScreenFilter, "%Cp %i", this, 0);
+			ms = AG_MenuAction(mi, menu_str(CMSG(Bilinear_Alt)), NULL, OnSelectScreenFilter, "%Cp %i", this, 1);
+				 AG_MenuSetPollFn(ms, OnUpdateScreenFilter, "%Cp %i", this, 1);
 	}
 	mt_sound = AG_MenuNode(menu->root, CMSG(Sound), NULL);
 	{
@@ -436,20 +445,29 @@ void GUI::set_menu_item(AG_Menu *menu)
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Mouse_Alt)), NULL, OnSelectEnableMouse, "%Cp", this);
 			 AG_MenuSetPollFn(mi, OnUpdateEnableMouse, "%Cp", this);
 #endif
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_JOYSTICK)
 		AG_MenuSeparator(mt_options);
-#endif
-#ifdef USE_JOYSTICK
-		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_Key_Assigned_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, 1);
-			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, 1);
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_Key_Assigned_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, SEL_JOY2KEY);
+			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, SEL_JOY2KEY);
 #ifdef USE_PIAJOYSTICK
-		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_PIA_Type_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, 2);
-			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, 2);
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_PIA_Type_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, SEL_JOY2PIAJOY);
+			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, SEL_JOY2PIAJOY);
+#endif
+#ifdef USE_PSGJOYSTICK
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Use_Joypad_PSG_Type_Alt)), NULL, OnSelectUseJoypad, "%Cp %i", this, SEL_JOY2PSGJOY);
+			 AG_MenuSetPollFn(mi, OnUpdateUseJoypad, "%Cp %i", this, SEL_JOY2PSGJOY);
 #endif
 #endif
-#ifdef USE_KEY2JOYSTICK
-		mi = AG_MenuAction(mt_options, menu_str(CMSG(Enable_Key_to_Joypad)), NULL, OnSelectEnableKey2Joy, "%Cp", this);
-			 AG_MenuSetPollFn(mi, OnUpdateEnableKey2Joy, "%Cp", this);
+#if defined(USE_KEY2JOYSTICK)
+		AG_MenuSeparator(mt_options);
+#ifdef USE_KEY2PIAJOYSTICK
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Enable_Key_to_Joypad_PIA_Type)), NULL, OnSelectEnableKey2Joy, "%Cp %i", this, DEV_PIAJOY);
+			 AG_MenuSetPollFn(mi, OnUpdateEnableKey2Joy, "%Cp %i", this, DEV_PIAJOY);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+		mi = AG_MenuAction(mt_options, menu_str(CMSG(Enable_Key_to_Joypad_PSG_Type)), NULL, OnSelectEnableKey2Joy, "%Cp %i", this, DEV_PSGJOY);
+			 AG_MenuSetPollFn(mi, OnUpdateEnableKey2Joy, "%Cp %i", this, DEV_PSGJOY);
+#endif
 #endif
 		AG_MenuSeparator(mt_options);
 		mi = AG_MenuAction(mt_options, menu_str(CMSG(Loosen_Key_Stroke_Game)), NULL, OnSelectLoosenKeyStroke, "%Cp", this);
@@ -895,41 +913,39 @@ void GUI::OnUpdateRGBType(AG_Event *event)
 	AG_GUI_MENU_CHECK(mi, gui->GetRGBTypeMode() == num);
 }
 #endif
-#ifdef USE_OPENGL
-// Change Use OpenGL
-void GUI::OnSelectUseOpenGL(AG_Event *event)
+// Drawing Method
+void GUI::OnSelectDrawingMethod(AG_Event *event)
 {
 	GUI *gui = (GUI *)AG_PTR(1);
 	int num = AG_INT(2);
-	gui->ChangeUseOpenGL(num);
+	gui->ChangeDrawingMethod(num);
 }
-// update Use OpenGL
-void GUI::OnUpdateUseOpenGL(AG_Event *event)
-{
-	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
-	GUI *gui = (GUI *)AG_PTR(1);
-	int num = AG_INT(2);
-
-	AG_GUI_MENU_CHECK(mi, gui->GetOpenGLMode() == num);
-}
-// Change OpenGL Filter
-void GUI::OnSelectOpenGLFilter(AG_Event *event)
-{
-	GUI *gui = (GUI *)AG_PTR(1);
-	int num = AG_INT(2);
-
-	gui->ChangeOpenGLFilter(num);
-}
-// update OpenGL Filter
-void GUI::OnUpdateOpenGLFilter(AG_Event *event)
+// update Drawing Method
+void GUI::OnUpdateDrawingMethod(AG_Event *event)
 {
 	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
 	GUI *gui = (GUI *)AG_PTR(1);
 	int num = AG_INT(2);
 
-	AG_GUI_MENU_CHECK(mi, gui->GetOpenGLFilter() == num);
+	AG_GUI_MENU_CHECK(mi, pConfig->drawing_method == num);
 }
-#endif
+// Screen Filter
+void GUI::OnSelectScreenFilter(AG_Event *event)
+{
+	GUI *gui = (GUI *)AG_PTR(1);
+	int num = AG_INT(2);
+
+	gui->ChangeScreenFilter(num);
+}
+// update Screen Filter
+void GUI::OnUpdateScreenFilter(AG_Event *event)
+{
+	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
+	GUI *gui = (GUI *)AG_PTR(1);
+	int num = AG_INT(2);
+
+	AG_GUI_MENU_CHECK(mi, gui->GetScreenFilter() == num);
+}
 
 // Change Ledbox
 void GUI::OnSelectLedBox(AG_Event *event)
@@ -1012,8 +1028,9 @@ void GUI::OnSelectEnableKey2Joy(AG_Event *event)
 {
 #ifdef USE_KEY2JOYSTICK
 	GUI *gui = (GUI *)AG_PTR(1);
+	int dev = AG_INT(2);
 
-	gui->ToggleEnableKey2Joypad();
+	gui->ToggleEnableKey2Joypad(dev);
 #endif
 }
 // update EnableKey2Joy
@@ -1022,8 +1039,9 @@ void GUI::OnUpdateEnableKey2Joy(AG_Event *event)
 #ifdef USE_KEY2JOYSTICK
 	AG_MenuItem *mi = (AG_MenuItem *)AG_SENDER();
 	GUI *gui = (GUI *)AG_PTR(1);
+	int dev = AG_INT(2);
 
-	AG_GUI_MENU_CHECK(mi, gui->IsEnableKey2Joypad());
+	AG_GUI_MENU_CHECK(mi, gui->IsEnableKey2Joypad(dev));
 #endif
 }
 

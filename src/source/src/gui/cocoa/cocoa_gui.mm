@@ -38,6 +38,7 @@
 
 extern EMU *emu;
 
+#ifndef USE_SDL2
 static NSWindow *get_main_window()
 {
 	NSWindow *window = nil;
@@ -59,6 +60,7 @@ static NSWindow *get_main_window()
 #endif
 	return window;
 }
+#endif
 
 //
 @implementation NSApplication (SDLApplication)
@@ -546,14 +548,14 @@ static NSWindow *get_main_window()
 	gui->ChangeRGBType(num);
 }
 #endif
-- (void)ChangeUseOpenGL:(id)sender
+- (void)ChangeDrawingMethod:(id)sender
 {
 	int num = [sender num];
-	gui->ChangeUseOpenGL(num);
+	gui->ChangeDrawingMethod(num);
 }
-- (void)ChangeOpenGLFilter:(id)sender
+- (void)ChangeScreenFilter:(id)sender
 {
-	gui->ChangeOpenGLFilter(-1);
+	gui->ChangeScreenFilter(-1);
 }
 
 // Sound
@@ -687,7 +689,8 @@ static NSWindow *get_main_window()
 #ifdef USE_KEY2JOYSTICK
 - (void)ToggleEnableKey2Joypad:(id)sender
 {
-	gui->ToggleEnableKey2Joypad();
+	int num = [sender num];
+	gui->ToggleEnableKey2Joypad(num);
 }
 #endif
 #ifdef USE_LIGHTPEN
@@ -740,6 +743,11 @@ static NSWindow *get_main_window()
 }
 #endif
 
+- (void)ShowPreferencesDialog:(id)sender
+{
+	gui->ShowConfigureDialog();
+}
+
 /// called from emu thread
 - (void)PerformUpdateScreen
 {
@@ -754,6 +762,12 @@ static NSWindow *get_main_window()
 	int state = NSControlStateValueOff;
 	BOOL enable = TRUE;
 	SEL act = [menuItem action];
+
+	if (act == @selector(ShowPreferencesDialog:)) {
+		// enable item
+		return true;
+	}
+
 	int drv = [menuItem drv];
 
 	if (act == @selector(Reset:)) {
@@ -991,14 +1005,21 @@ static NSWindow *get_main_window()
 			state = NSControlStateValueOn;
 		}
 #endif
-	} else if (act == @selector(ChangeUseOpenGL:)) {
+	} else if (act == @selector(ChangeDrawingMethod:)) {
 		int num = [menuItem num];
-		if (gui->GetOpenGLMode() == num) {
+		if (pConfig->drawing_method == num) {
 			state = NSControlStateValueOn;
 		}
-	} else if (act == @selector(ChangeOpenGLFilter:)) {
+#ifdef USE_OPENGL
+		if ((emu->get_enabled_drawing_method() & DRAWING_METHOD_OPENGL_MASK) == 0) {
+			if (num & DRAWING_METHOD_OPENGL_MASK) {
+				enable = FALSE;
+			}
+		}
+#endif
+	} else if (act == @selector(ChangeScreenFilter:)) {
 		int num = [menuItem num];
-		if (gui->GetOpenGLFilter() == num) {
+		if (gui->GetScreenFilter() == num) {
 			state = NSControlStateValueOn;
 		}
 	} else if (act == @selector(ShowRecordAudioDialog:)) {
@@ -1108,7 +1129,8 @@ static NSWindow *get_main_window()
 #endif
 #ifdef USE_KEY2JOYSTICK
 	} else if (act == @selector(ToggleEnableKey2Joypad:)) {
-		if (gui->IsEnableKey2Joypad()) {
+		int num = [menuItem num];
+		if (gui->IsEnableKey2Joypad(num)) {
 			state = NSControlStateValueOn;
 		}
 #endif
@@ -1265,7 +1287,7 @@ NSArray *get_file_filter(const char *str)
 			[file_types addObject:[NSString stringWithUTF8String:word]];
 		}
 	} while (pos >= 0);
-	
+
 	return file_types;
 }
 
@@ -1648,14 +1670,27 @@ void GUI::setup_menu(void)
 	[screenMenu add_menu_item_by_id:CMsg::Analog_RGB:recv:@selector(ChangeRGBType:):0:1:0];
 #endif
 
-#ifdef USE_OPENGL
 	[screenMenu addItem:[NSMenuItem separatorItem]];
-	[screenMenu add_menu_item_by_id:CMsg::Use_OpenGL_Sync:recv:@selector(ChangeUseOpenGL:):0:1:'y'];
-	[screenMenu add_menu_item_by_id:CMsg::Use_OpenGL_Async:recv:@selector(ChangeUseOpenGL:):0:2:'y'];
-	CocoaMenu *glFilterMenu = [CocoaMenu create_menu_by_id:CMsg::OpenGL_Filter];
-		[glFilterMenu add_menu_item_by_id:CMsg::Nearest_Neighbour:recv:@selector(ChangeOpenGLFilter:):0:0:'u'];
-		[glFilterMenu add_menu_item_by_id:CMsg::Linear:recv:@selector(ChangeOpenGLFilter:):0:1:'u'];
-	[screenMenu add_sub_menu_by_id:glFilterMenu:CMsg::OpenGL_Filter];
+	CocoaMenu *drawMethodMenu = [CocoaMenu create_menu_by_id:CMsg::Drawing_Method];
+#ifdef USE_SDL2
+		[drawMethodMenu add_menu_item_by_id:CMsg::Default_Sync:recv:@selector(ChangeDrawingMethod:):0:DRAWING_METHOD_DEFAULT_S:'y'];
+		[drawMethodMenu add_menu_item_by_id:CMsg::Default_Async:recv:@selector(ChangeDrawingMethod:):0:DRAWING_METHOD_DEFAULT_AS:'y'];
+#else
+		[drawMethodMenu add_menu_item_by_id:CMsg::Default_Drawing:recv:@selector(ChangeDrawingMethod:):0:DRAWING_METHOD_DEFAULT_AS:'y'];
+		[drawMethodMenu add_menu_item_by_id:CMsg::Default_Double_Buffering:recv:@selector(ChangeDrawingMethod:):0:DRAWING_METHOD_DEFAULT_ASDB:'y'];
+#endif
+#ifdef USE_OPENGL
+		[drawMethodMenu add_menu_item_by_id:CMsg::Use_OpenGL_Sync:recv:@selector(ChangeDrawingMethod:):0:DRAWING_METHOD_OPENGL_S:'y'];
+		[drawMethodMenu add_menu_item_by_id:CMsg::Use_OpenGL_Async:recv:@selector(ChangeDrawingMethod:):0:DRAWING_METHOD_OPENGL_AS:'y'];
+#endif
+	[screenMenu add_sub_menu_by_id:drawMethodMenu:CMsg::Drawing_Method];
+
+#if defined(USE_OPENGL) || defined(USE_SDL2)
+	[screenMenu addItem:[NSMenuItem separatorItem]];
+	CocoaMenu *scrnFilterMenu = [CocoaMenu create_menu_by_id:CMsg::Filter_Type];
+		[scrnFilterMenu add_menu_item_by_id:CMsg::Nearest_Neighbor:recv:@selector(ChangeScreenFilter:):0:0:'u'];
+		[scrnFilterMenu add_menu_item_by_id:CMsg::Bilinear:recv:@selector(ChangeScreenFilter:):0:1:'u'];
+	[screenMenu add_sub_menu_by_id:scrnFilterMenu:CMsg::Filter_Type];
 #endif
 
 	/* Put menu into the menubar */
@@ -1746,17 +1781,24 @@ void GUI::setup_menu(void)
 	[optionMenu addItem:[NSMenuItem separatorItem]];
 	[optionMenu add_menu_item_by_id:CMsg::Enable_Mouse:recv:@selector(ToggleUseMouse:):0:0:0];
 #endif
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_JOYSTICK)
 	[optionMenu addItem:[NSMenuItem separatorItem]];
+	[optionMenu add_menu_item_by_id:CMsg::Use_Joypad_Key_Assigned:recv:@selector(ChangeUseJoypad:):0:SEL_JOY2KEY:'j'];
+# ifdef USE_PIAJOYSTICK
+	[optionMenu add_menu_item_by_id:CMsg::Use_Joypad_PIA_Type:recv:@selector(ChangeUseJoypad:):0:SEL_JOY2PIAJOY:'j'];
+# endif
+# ifdef USE_PSGJOYSTICK
+	[optionMenu add_menu_item_by_id:CMsg::Use_Joypad_PSG_Type:recv:@selector(ChangeUseJoypad:):0:SEL_JOY2PSGJOY:'j'];
+# endif
 #endif
-#ifdef USE_JOYSTICK
-	[optionMenu add_menu_item_by_id:CMsg::Use_Joypad_Key_Assigned:recv:@selector(ChangeUseJoypad:):0:1:'j'];
-#ifdef USE_PIAJOYSTICK
-	[optionMenu add_menu_item_by_id:CMsg::Use_Joypad_PIA_Type:recv:@selector(ChangeUseJoypad:):0:2:'j'];
-#endif
-#endif
-#ifdef USE_KEY2JOYSTICK
-	[optionMenu add_menu_item_by_id:CMsg::Enable_Key_to_Joypad:recv:@selector(ToggleEnableKey2Joypad:):0:0:0];
+#if defined(USE_KEY2JOYSTICK)
+	[optionMenu addItem:[NSMenuItem separatorItem]];
+# ifdef USE_KEY2PIAJOYSTICK
+	[optionMenu add_menu_item_by_id:CMsg::Enable_Key_to_Joypad_PIA_Type:recv:@selector(ToggleEnableKey2Joypad:):0:DEV_PIAJOY:0];
+# endif
+# ifdef USE_KEY2PSGJOYSTICK
+	[optionMenu add_menu_item_by_id:CMsg::Enable_Key_to_Joypad_PSG_Type:recv:@selector(ToggleEnableKey2Joypad:):0:DEV_PSGJOY:0];
+# endif
 #endif
 	[optionMenu addItem:[NSMenuItem separatorItem]];
 	[optionMenu add_menu_item_by_id:CMsg::Loosen_Key_Stroke_Game:recv:@selector(ToggleLoosenKeyStroke:):0:0:0];
@@ -2351,17 +2393,17 @@ bool GUI::ShowJoySettingDialog(void)
 {
 	NSInteger	result;
 	CocoaJoySettingPanel *panel;
-	
+
 	PostEtSystemPause(true);
 	GoWindowMode();
-	
+
 	panel = [[CocoaJoySettingPanel alloc] init];
 	result = [panel runModal];
-	
+
 	[panel release];
 	PostEtSystemPause(false);
 	SetFocusToMainWindow();
-	
+
 	return (result == NSModalResponseOK);
 }
 
@@ -2443,9 +2485,7 @@ void GUI::ToggleUseMouse(void)
 }
 #endif
 
-#endif /* GUI_TYPE_COCOA */
-
-void remove_window_menu(void)
+void GUI::remove_window_menu(void)
 {
     NSMenu *mainMenu;
     NSInteger i;
@@ -2464,7 +2504,7 @@ void remove_window_menu(void)
 #define APPLE_MENU_STRING _TX("About bml3mk5"),_TX("Hide bml3mk5"),_TX("Hide Others"),_TX("Show All"),_TX("Quit bml3mk5"),_TX("Services"),_TX("Preferences…"),_TX("Window")
 #endif
 
-void translate_apple_menu(void)
+void GUI::translate_apple_menu()
 {
 	NSMenu *appleMenu;
 	NSArray *items;
@@ -2486,9 +2526,15 @@ void translate_apple_menu(void)
 		} else {
 			[item setKeyEquivalent:@""];
 		}
+		if ([[item title] hasPrefix:@"Preferences"]) {
+			[item setTarget:recv];
+			[item setAction:@selector(ShowPreferencesDialog:)];
+		}
 		[item setTitle:[NSString stringWithUTF8String:_tgettext([[item title] UTF8String])]];
 	}
 }
+
+#endif /* GUI_TYPE_COCOA */
 
 @implementation CocoaWindowDelegate
 @synthesize parentObject;

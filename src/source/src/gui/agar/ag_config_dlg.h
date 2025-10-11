@@ -57,8 +57,8 @@ private:
 		int  disptmg_skew;
 		int  curdisp_skew;
 
-		int  use_opengl;
-		int  gl_filter_type;
+		int  drawing_method_idx;
+		int  filter_type;
 		int  led_show;
 		int  led_pos;
 		int  capture_type;
@@ -160,7 +160,7 @@ private:
 	static void OnChangeIOPort(AG_Event *);
 	static void OnChangeDisptmgSkew(AG_Event *);
 	static void OnChangeCurdispSkew(AG_Event *);
-	static void OnChangeUseOpenGL(AG_Event *);
+	static void OnChangeDrawingMethod(AG_Event *);
 	static void OnChangeGLFilterType(AG_Event *);
 	static void OnChangeLedShow(AG_Event *);
 	static void OnChangeLedPos(AG_Event *);

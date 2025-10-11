@@ -119,8 +119,15 @@ void MyConfigDlg::InitDialog()
 	szrFDDType->Add(gszr, flags);
 	szrLeft->Add(szrFDDType);
 
+	// Power On/Off
+	wxBoxSizer *szrPowerOnOff;
+	szrPowerOnOff = new wxStaticBoxSizer(new MyStaticBox(page, wxID_ANY, CMsg::Behavior_of_Power_On_Off), wxVERTICAL);
 	chkPowerOff = new MyCheckBox(page, IDC_CHK_POWEROFF, CMsg::Enable_the_state_of_power_off);
-	szrLeft->Add(chkPowerOff, flags);
+	szrPowerOnOff->Add(chkPowerOff, flags);
+	szrPowerOnOff->Add(new MyStaticText(page, wxID_ANY, CMsg::Power_State_When_Start_Up_), flags);
+	comPowerState = new MyChoice(page, IDC_COMBO_POWER_STATE, wxDefaultPosition, wxDefaultSize, LABELS::power_state);
+	szrPowerOnOff->Add(comPowerState, flags);
+	szrLeft->Add(szrPowerOnOff);
 
 	szrRight = new wxBoxSizer(wxVERTICAL);
 
@@ -162,20 +169,23 @@ void MyConfigDlg::InitDialog()
 	szrMain = new wxBoxSizer(wxVERTICAL);
 	szrSub = new wxBoxSizer(wxHORIZONTAL);
 
-	// GL Filter Type
-	wxBoxSizer *szrGLFilter;
-	szrGLFilter = new wxStaticBoxSizer(new MyStaticBox(page, wxID_ANY, CMsg::Drawing), wxVERTICAL);
+	// Drawing
+	LABELS::MakeDrawingMethodList(emu->get_enabled_drawing_method());
+	wxBoxSizer *szrDrawing;
+	szrDrawing = new wxStaticBoxSizer(new MyStaticBox(page, wxID_ANY, CMsg::Drawing), wxVERTICAL);
+	// Drawing Method
 	bszr = new wxBoxSizer(wxHORIZONTAL);
-	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::Method_ASTERISK), flags);
-	comGLUse = new MyChoice(page, IDC_COMBO_OPENGL_USE, wxDefaultPosition, wxDefaultSize, LABELS::opengl_use);
-	bszr->Add(comGLUse, flags);
-	szrGLFilter->Add(bszr, flags);
+	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::Method), flags);
+	comDrawing = new MyChoice(page, IDC_COMBO_DRAWING, wxDefaultPosition, wxDefaultSize, LABELS::GetDrawingMethodIndex(pConfig->drawing_method));
+	bszr->Add(comDrawing, flags);
+	szrDrawing->Add(bszr, flags);
+	// Filter Type
 	bszr = new wxBoxSizer(wxHORIZONTAL);
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::Filter_Type), flags);
-	comGLFilter = new MyChoice(page, IDC_COMBO_OPENGL_FILTER, wxDefaultPosition, wxDefaultSize, LABELS::opengl_filter);
-	bszr->Add(comGLFilter, flags);
-	szrGLFilter->Add(bszr, flags);
-	szrSub->Add(szrGLFilter);
+	comFilter = new MyChoice(page, IDC_COMBO_SCREEN_FILTER, wxDefaultPosition, wxDefaultSize, LABELS::screen_filter);
+	bszr->Add(comFilter, flags);
+	szrDrawing->Add(bszr, flags);
+	szrSub->Add(szrDrawing);
 
 	// CRTC
 	wxBoxSizer *szrCrtc;
@@ -568,6 +578,7 @@ void MyConfigDlg::UpdateDialog()
 	int io_port = emu->get_parami(VM::ParamIOPort);
 
 	chkPowerOff->SetValue(pConfig->use_power_off);
+	comPowerState->Select(pConfig->power_state_when_start_up);
 #if defined(_MBS1)
 	for(i=0; i<2; i++) {
 		staSysMode[i]->Show((pConfig->sys_mode & 1) == (1 - i));
@@ -592,15 +603,9 @@ void MyConfigDlg::UpdateDialog()
 			chkIOPort[pos]->SetValue((io_port & (1 << pos)) != 0);
 		}
 	}
-#ifdef USE_OPENGL
-	comGLUse->Select(pConfig->use_opengl);
-	comGLFilter->Select(pConfig->gl_filter_type);
-#else
-	comGLUse->Select(0);
-	comGLUse->Enable(false);
-	comGLFilter->Select(0);
-	comGLFilter->Enable(false);
-#endif
+
+	comDrawing->Select(LABELS::GetDrawingMethodIndex(pConfig->drawing_method));
+	comFilter->Select(pConfig->filter_type);
 
 	int led_show = gui->GetLedBoxPhase(-1);
 	comLedShow->Select(led_show);
@@ -753,6 +758,7 @@ void MyConfigDlg::ModifyParam()
 
 	// immediate modify
 	pConfig->use_power_off = chkPowerOff->GetValue();
+	pConfig->power_state_when_start_up = comPowerState->GetCurrentSelection();
 #if defined(_MBS1)
 	emu->set_parami(VM::ParamSysMode, (radSysMode[0]->GetValue() ? 1 : 0) | (pConfig->sys_mode & ~1));
 	pConfig->dipswitch = chkDIPSwitch->GetValue() ? (pConfig->dipswitch | 4) : (pConfig->dipswitch & ~4);
@@ -762,10 +768,9 @@ void MyConfigDlg::ModifyParam()
 	emu->set_parami(VM::ParamFddType, fdd_type);
 	emu->set_parami(VM::ParamIOPort, io_port);
 
-#ifdef USE_OPENGL
-	pConfig->use_opengl = comGLUse->GetCurrentSelection();
-	pConfig->gl_filter_type = comGLFilter->GetCurrentSelection();
-#endif
+	pConfig->drawing_method = LABELS::drawing_method_idx[comDrawing->GetCurrentSelection()];
+	pConfig->filter_type = comFilter->GetCurrentSelection();
+
 #if defined(_MBS1)
 	pConfig->disptmg_skew = comDisptmg->GetCurrentSelection() - 2;
 	pConfig->curdisp_skew = comCurdisp->GetCurrentSelection() - 2;

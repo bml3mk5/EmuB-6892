@@ -62,7 +62,7 @@ protected:
 	guint m_timeout_id;
 	GtkWidget *notebook;
 	GtkWidget *selected_cell;
-	uint32_t enable_axes;
+	uint32_t joy_mask;
 
 	virtual void ShowAfter(GtkWidget *boxall);
 

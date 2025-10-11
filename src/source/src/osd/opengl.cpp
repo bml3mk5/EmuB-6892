@@ -203,11 +203,39 @@ unsigned char COpenGL::SetInterval(unsigned char use, void *user_data)
 #elif defined(USE_OPENGL_GLX)
 	// OpenGL on X11 (glx)
 	GLenum err = 0;
-
+# if defined(USE_OPENGL_GLXEXT)
+#  if defined(GLX_MESA_swap_control)
+	glXSwapIntervalMESA(use == 1 ? 1 : 0);
+	while ((err = glGetError()) != GL_NO_ERROR) {
+		logging->out_logf(LOG_ERROR, _T("COpenGL::SetInterval::glXSwapIntervalMESA err:0x%x"), err);
+	}
+	int interval = glXGetSwapIntervalMESA();
+	use = (interval == 1 ? 1 : 2);
+	while ((err = glGetError()) != GL_NO_ERROR) {
+		logging->out_logf(LOG_ERROR, _T("COpenGL::SetInterval::glXGetSwapIntervalMESA err:0x%x"), err);
+	}
+	logging->out_logf(LOG_DEBUG, _T("COpenGL::SetInterval::glXGetSwapIntervalMESA: %d"), interval);
+#  elif defined(GLX_EXT_swap_control)
 	Display *display = reinterpret_cast<Display *>(user_data);
-	const char *ext = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
+	glXSwapIntervalEXT(display, 0, use == 1 ? 1 : 0);
+	while ((err = glGetError()) != GL_NO_ERROR) {
+		logging->out_logf(LOG_ERROR, _T("COpenGL::SetInterval::glXSwapIntervalEXT err:0x%x"), err);
+	}
+#  elif defined(GLX_SGI_swap_control)
+	glXSwapIntervalSGI(use == 1 ? 1 : 0);
+	while ((err = glGetError()) != GL_NO_ERROR) {
+		logging->out_logf(LOG_ERROR, _T("COpenGL::SetInterval::glXSwapIntervalSGI err:0x%x"), err);
+	}
+#  endif
+# else
+	Display *display = reinterpret_cast<Display *>(user_data);
+	const char *ext = NULL;
+	ext = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
 	if ((err = glGetError()) != GL_NO_ERROR) {
 		logging->out_logf(LOG_ERROR, _T("COpenGL::SetInterval::glGetString err:0x%x"), err);
+		while ((err = glGetError()) != GL_NO_ERROR) {
+			logging->out_logf(LOG_ERROR, _T("COpenGL::SetInterval::glGetString err:0x%x"), err);
+		}
 		return use;
 	}
 	if (!ext) {
@@ -290,6 +318,7 @@ unsigned char COpenGL::SetInterval(unsigned char use, void *user_data)
 			}
 		}
 	}
+# endif
 #elif defined(USE_OPENGL_CGL)
 	// OpenGL for MacOSX (cgl)
 	CGLError err;
@@ -462,7 +491,7 @@ void COpenGL1Texture::Draw(int width, int height, void *buffer)
 	// draw texture using screen pixel buffer
 	glBindTexture(GL_TEXTURE_2D, m_id);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, m_format,
+	glTexImage2D(GL_TEXTURE_2D, 0, m_format, width, height, 0, m_format,
 			GL_UNSIGNED_BYTE, static_cast<GLvoid *>(buffer));
 	while ((err = glGetError()) != GL_NO_ERROR) {
 		logging->out_logf(LOG_ERROR, _T("COpenGL1Texture::Draw::glTexImage2D: 0x%x"), err);
@@ -514,7 +543,7 @@ void COpenGL1Texture::Render(int width, int height, void *buffer)
 	// draw texture using screen pixel buffer
 	glBindTexture(GL_TEXTURE_2D, m_id);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, m_format,
+	glTexImage2D(GL_TEXTURE_2D, 0, m_format, width, height, 0, m_format,
 			GL_UNSIGNED_BYTE, static_cast<GLvoid *>(buffer));
 	while ((err = glGetError()) != GL_NO_ERROR) {
 		logging->out_logf(LOG_ERROR, _T("COpenGL1Texture::Render::glTexImage2D: 0x%x"), err);

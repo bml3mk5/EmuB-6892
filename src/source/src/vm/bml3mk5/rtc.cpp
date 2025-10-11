@@ -149,15 +149,23 @@ bool RTC::debug_write_reg(uint32_t reg_num, uint32_t data)
 	return true;
 }
 
+static const _TCHAR *c_reg_names[] = {
+	_T("FF38"),
+	_T("FF39"),
+	NULL
+};
+
 bool RTC::debug_write_reg(const _TCHAR *reg, uint32_t data)
 {
-	return false;
+	uint32_t num = find_debug_reg_name(c_reg_names, reg);
+	return debug_write_reg(num, data);
 }
 
-void RTC::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void RTC::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
-
-	UTILITY::sntprintf(buffer, buffer_len, _T(" 0(FF38):%02X 1(FF39):%02X"), rtc_reg_sel, rtc_data);
+	UTILITY::tcscpy(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(" Registers:\n"));
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %d(%s):%02X"), 0, c_reg_names[0], rtc_reg_sel);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %d(%s):%02X"), 1, c_reg_names[1], rtc_data);
 }
 #endif

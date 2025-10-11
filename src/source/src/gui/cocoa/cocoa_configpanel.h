@@ -27,6 +27,7 @@
 @interface CocoaConfigPanel : CocoaBasePanel
 {
 	CocoaCheckBox *chkPowerOff;
+	CocoaPopUpButton *popPowerState;
 #if defined(_MBS1)
 	CocoaRadioButton *radSysMode[2];
 #endif
@@ -34,8 +35,8 @@
 	CocoaRadioButton *radFddType[4];
 	CocoaCheckBox *chkIOPort[IOPORT_NUMS];
 
-	CocoaPopUpButton *popUseOpenGL;
-	CocoaPopUpButton *popGLFilter;
+	CocoaPopUpButton *popDrawingMethod;
+	CocoaPopUpButton *popScreenFilter;
 	CocoaPopUpButton *popLEDShow;
 	CocoaPopUpButton *popLEDPosition;
 	CocoaPopUpButton *popCurdispSkew;

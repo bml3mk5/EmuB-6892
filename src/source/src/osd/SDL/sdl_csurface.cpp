@@ -10,6 +10,8 @@
 #include "sdl_csurface.h"
 //#include "sdl_utils.h"
 
+// ----------------------------------------------------------------------------
+
 CSurface::CSurface()
 {
 	suf = NULL;
@@ -242,6 +244,11 @@ bool CSurface::Blit(SDL_Rect &src_re, CSurface &dst, SDL_Rect &dst_re)
 #else
 	return (SDL_BlitSurface(suf, &src_re, dst.Get(), &dst_re) >= 0);
 #endif
+}
+
+bool CSurface::Blit(SDL_Surface &dst)
+{
+	return (SDL_BlitSurface(suf, NULL, &dst, NULL) >= 0);
 }
 
 bool CSurface::Blit(SDL_Surface &dst, const VmRectWH &dst_re)
@@ -525,3 +532,317 @@ bool CSurface::Render(SDL_Renderer &renderer, SDL_Texture &texture, VmRectWH &sr
 	return (SDL_RenderCopy(&renderer, &texture, &s_reSrc, &s_reDst) >= 0);
 }
 #endif
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+#ifdef USE_GTK
+CCairoSurface::CCairoSurface()
+{
+	p_cas = NULL;
+}
+CCairoSurface::CCairoSurface(CSurface &buf, long width, long height)
+{
+	p_cas = NULL;
+	CreateC(buf, width, height);
+}
+CCairoSurface::CCairoSurface(CSurface &buf, const VmRectWH &srcrect)
+{
+	p_cas = NULL;
+	CreateC(buf, srcrect);
+}
+CCairoSurface::~CCairoSurface()
+{
+	ReleaseC();
+}
+
+bool CCairoSurface::CreateC(CSurface &buf, long width, long height)
+{
+	return CreateC(buf, width, height, CAIRO_FORMAT_RGB24);
+}
+
+bool CCairoSurface::CreateC(CSurface &buf, const VmRectWH &srcrect)
+{
+	return CreateC(buf, srcrect, CAIRO_FORMAT_RGB24);
+}
+
+bool CCairoSurface::CreateC(CSurface &buf, long width, long height, cairo_format_t format)
+{
+	ReleaseC();
+
+	p_cas = cairo_image_surface_create_for_data(
+		(unsigned char *)buf.GetBuffer()
+		, format
+		, width, height
+		, cairo_format_stride_for_width(format, buf.Width())
+	);
+	return (p_cas != NULL);
+}
+
+bool CCairoSurface::CreateC(CSurface &buf, const VmRectWH &srcrect, cairo_format_t format)
+{
+	return CreateC(buf, srcrect.w, srcrect.h, format);
+}
+
+// release surface
+void CCairoSurface::ReleaseC()
+{
+	if (p_cas) {
+		cairo_surface_finish(p_cas);
+		p_cas = NULL;
+	}
+}
+
+bool CCairoSurface::BlitC(cairo_t *dst)
+{
+	if (!p_cas) return false;
+	cairo_set_source_surface(dst, p_cas, 0.0, 0.0);
+	return true;
+}
+
+bool CCairoSurface::BlitC(cairo_t *dst, const VmRectWH &dst_re)
+{
+	if (!p_cas) return false;
+	cairo_matrix_t m, bm;
+	cairo_get_matrix(dst, &m);
+	bm = m;
+	m.xx = 1.0;
+	m.xy = 0.0;
+	m.yx = 0.0;
+	m.yy = 1.0;
+	m.x0 += (double)dst_re.x;
+	m.y0 += (double)dst_re.y;
+	cairo_set_matrix(dst, &m);
+	cairo_set_source_surface(dst, p_cas, 0.0, 0.0);
+	cairo_set_matrix(dst, &bm);
+	return true;
+}
+
+bool CCairoSurface::BlitC(cairo_t *dst, const SDL_Rect &dst_re)
+{
+	if (!p_cas) return false;
+	cairo_matrix_t m, bm;
+	cairo_get_matrix(dst, &m);
+	bm = m;
+	m.xx = 1.0;
+	m.xy = 0.0;
+	m.yx = 0.0;
+	m.yy = 1.0;
+	m.x0 += (double)dst_re.x;
+	m.y0 += (double)dst_re.y;
+	cairo_set_matrix(dst, &m);
+	cairo_set_source_surface(dst, p_cas, 0.0, 0.0);
+	cairo_set_matrix(dst, &bm);
+	return true;
+}
+
+bool CCairoSurface::BlitC(SDL_Rect &src_re, cairo_t *dst, SDL_Rect &dst_re)
+{
+	if (!p_cas) return false;
+	cairo_matrix_t m, bm;
+	cairo_get_matrix(dst, &m);
+	bm = m;
+	m.xx = 1.0;
+	m.xy = 0.0;
+	m.yx = 0.0;
+	m.yy = 1.0;
+	m.x0 += (double)dst_re.x;
+	m.y0 += (double)dst_re.y;
+	cairo_set_matrix(dst, &m);
+	cairo_set_source_surface(dst, p_cas, (double)-src_re.x, -(double)src_re.y);
+	cairo_set_matrix(dst, &bm);
+	return true;
+}
+
+const cairo_filter_t CCairoSurface::c_filter[] = {
+		CAIRO_FILTER_NEAREST,
+		CAIRO_FILTER_BILINEAR
+};
+
+bool CCairoSurface::StretchBlitC(cairo_t *dst, const VmRectWH &dst_re, int filter)
+{
+	if (!p_cas) return false;
+	VmRectWH src_re;
+	RECT_IN(src_re, 0, 0,
+		cairo_image_surface_get_width(p_cas),
+		cairo_image_surface_get_height(p_cas)
+	);
+	return StretchBlitC(src_re, dst, dst_re, filter);
+}
+
+bool CCairoSurface::StretchBlitC(const VmRectWH &src_re, cairo_t *dst, const VmRectWH &dst_re, int filter)
+{
+	if (!p_cas) return false;
+	cairo_matrix_t m, bm;
+	cairo_get_matrix(dst, &m);
+	bm = m;
+	m.xx = (double)dst_re.w/src_re.w;
+	m.xy = 0.0;
+	m.yx = 0.0;
+	m.yy = (double)dst_re.h/src_re.h;
+	m.x0 += (double)dst_re.x;
+	m.y0 += (double)dst_re.y;
+	cairo_set_matrix(dst, &m);
+	cairo_set_source_surface(dst, p_cas, (double)-src_re.x, -(double)src_re.y);
+	cairo_pattern_set_filter(cairo_get_source(dst), c_filter[filter]);
+	cairo_set_matrix(dst, &bm);
+	return true;
+}
+#endif /* USE_GTK */
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+#if defined(USE_SDL2) || defined(USE_WX2)
+CTexture::CTexture()
+{
+	m_renderer = NULL;
+	m_tex = NULL;
+	m_buf = NULL;
+	m_w = 0;
+	m_h = 0;
+}
+
+CTexture::CTexture(SDL_Renderer *renderer, long width, long height)
+{
+	m_renderer = NULL;
+	m_tex = NULL;
+	m_buf = NULL;
+	m_w = 0;
+	m_h = 0;
+
+	this->Create(renderer, width, height, 0);
+}
+
+CTexture::CTexture(SDL_Renderer *renderer, long width, long height, Uint32 format)
+{
+	m_renderer = NULL;
+	m_tex = NULL;
+	m_buf = NULL;
+	m_w = 0;
+	m_h = 0;
+
+	this->Create(renderer, width, height, format);
+}
+
+CTexture::~CTexture()
+{
+	Release();
+}
+
+bool CTexture::Create(SDL_Renderer *renderer, long width, long height, Uint32 format)
+{
+	if (!format) {
+		format = SDL_PIXELFORMAT_ARGB8888;
+	}
+	m_tex = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_STREAMING,
+			(int)width, (int)height);
+	if (m_tex != NULL) {
+		m_renderer = renderer;
+		m_buf = NULL;
+		m_w = (int)width;
+		m_h = (int)height;
+		SDL_SetTextureBlendMode(m_tex, SDL_BLENDMODE_BLEND);
+	} else {
+		m_renderer = NULL;
+		m_buf = NULL;
+		m_w = 0;
+		m_h = 0;
+	}
+	return (m_tex != NULL);
+}
+
+void CTexture::Release()
+{
+	if (m_tex) {
+		SDL_DestroyTexture(m_tex);
+		m_tex = NULL;
+		m_buf = NULL;
+		m_w = 0;
+		m_h = 0;
+	}
+}
+
+SDL_Texture *CTexture::Get()
+{
+	return m_tex;
+}
+
+SDL_Renderer *CTexture::Renderer()
+{
+	return m_renderer;
+}
+
+scrntype *CTexture::GetBuffer()
+{
+	return m_buf;
+}
+
+scrntype *CTexture::GetBuffer(int y)
+{
+	return (m_buf + m_w * y);
+}
+
+bool CTexture::IsEnable()
+{
+	return (m_tex != NULL);
+}
+
+int CTexture::Width()
+{
+	return m_w;
+}
+
+int CTexture::Height()
+{
+	return m_h;
+}
+
+bool CTexture::Lock()
+{
+	int p;
+	return (m_tex != NULL && SDL_LockTexture(m_tex, NULL, (void **)&m_buf, &p) == 0);
+}
+
+void CTexture::Unlock()
+{
+	if (m_tex) SDL_UnlockTexture(m_tex);
+	m_buf = NULL;
+}
+
+/// fill data on texture
+/// @param[in] data : pixel data to fill
+/// @note no error check. so you must specify valid rect.
+void CTexture::Fill(scrntype data)
+{
+	int pitch;
+	if (SDL_LockTexture(m_tex, NULL, (void **)&m_buf, &pitch) == 0) {
+		for(int sy=0; sy < m_h; sy++) {
+			for(int sx=0; sx < m_w; sx++) {
+				*m_buf = data;
+				m_buf++;
+			}
+		}
+		SDL_UnlockTexture(m_tex);
+		m_buf = NULL;
+	}
+}
+
+void CTexture::SetScaleType(int type)
+{
+	if (!m_tex) return;
+#if SDL_VERSION_ATLEAST(2,0,12)
+	SDL_ScaleMode mode;
+	switch(type) {
+	case 1:
+		mode = SDL_ScaleModeLinear;
+		break;
+	default:
+		mode = SDL_ScaleModeNearest;
+		break;
+	}
+	SDL_SetTextureScaleMode(m_tex, mode);
+#endif
+}
+
+#endif /* defined(USE_SDL2) || defined(USE_WX2) */

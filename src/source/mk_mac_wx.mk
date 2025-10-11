@@ -15,7 +15,7 @@ CC:=gcc
 CXX:=g++
 LD:=g++
 
-FFMPEGDIR:=$(HOME)/Devel/ffmpeg
+FFMPEGDIR:=$(HOME)/Devel/ffmpeg-6.1.1
 
 MACMINVER:=-mmacosx-version-min=10.13
 
@@ -114,6 +114,9 @@ VMOBJS:=$(SRCVM)/device.o \
 	$(SRCVM)/ay38910.o \
 	$(SRCVM)/disk.o \
 	$(SRCVM)/disk_parser.o \
+	$(SRCVM)/disk_image.o \
+	$(SRCVM)/diskd88_image.o \
+	$(SRCVM)/diskhfe_image.o \
 	$(SRCVM)/mb8866.o \
 	$(SRCVM)/mc6809.o \
 	$(SRCVM)/mc6809dasm.o \

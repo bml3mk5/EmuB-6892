@@ -49,8 +49,9 @@ private:
 		EVENT_LOST		= 6,
 		EVENT_DRQ		= 7,
 		EVENT_RESTORE	= 8,
+		EVENT_STARTCMD	= 9,
 
-		MB8866_REGISTER_IDS	= 9
+		MB8866_REGISTER_IDS	= 10
 	};
 	/// @brief status
 	enum STATUS_MASKS {
@@ -70,6 +71,7 @@ private:
 	};
 	/// @brief cmd type
 	enum CMD_TYPES {
+		FDC_CMD_IDLE		= 0,
 		FDC_CMD_TYPE1		= 1,
 		FDC_CMD_RD_SEC		= 2,
 		FDC_CMD_RD_MSEC		= 3,
@@ -79,6 +81,18 @@ private:
 		FDC_CMD_RD_TRK		= 7,
 		FDC_CMD_WR_TRK		= 8,
 		FDC_CMD_TYPE4		= 0x80,
+	};
+	/// @brief cmd register masks
+	enum CR_MASKS {
+		FDC_CR1_UPDATETRACK	= 0x10,
+		FDC_CR1_HEADLOAD	= 0x08,
+		FDC_CR1_VERIFYTRACK	= 0x04,
+		FDC_CR1_STEPRATE	= 0x03,
+		FDC_CR2_MULTI		= 0x10,
+		FDC_CR2_SIDESEL		= 0x08,
+		FDC_CR2_COMPARESIDE	= 0x02,
+		FDC_CR2_SETDELETED	= 0x01,
+		FDC_CR23_DELAY15MS	= 0x04,
 	};
 
 private:
@@ -149,7 +163,10 @@ private:
 
 		// version 3 
 		int register_id3[1];
-		char dummy[12];
+
+		// version 4
+		int register_id4[1];
+		char dummy[8];
 	};
 #pragma pack()
 
@@ -163,13 +180,20 @@ private:
 	void register_restore_event();
 
 	// image handler
-	uint8_t verify_track();
-	uint8_t search_sector(int side, bool compare);
-	uint8_t search_addr();
-	bool make_track();
-	bool parse_track();
+	uint8_t find_track();
+//	void parse_sector();
+	uint8_t find_sector(int side, bool compare);
+	uint8_t find_sector_and_get_clock(int side, bool compare, int &arrive_clock);
+	uint8_t find_addr();
+	uint8_t find_addr_and_get_clock(int &arrive_clock);
+//	bool make_track();
+//	bool parse_track();
+	int get_clock_reach_sector(int side, bool compare);
+	int get_clock_reach_addr();
+	int get_clock_reach_index_hole();
 
 	// command
+	void accept_cmd();
 	void process_cmd();
 	void cmd_restore();
 	void cmd_seek();
@@ -244,7 +268,7 @@ public:
 	uint32_t debug_read_io8(uint32_t addr);
 	bool debug_write_reg(uint32_t reg_num, uint32_t data);
 	bool debug_write_reg(const _TCHAR *reg, uint32_t data);
-	void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
+	void debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len);
 #endif
 };
 

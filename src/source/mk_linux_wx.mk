@@ -106,6 +106,9 @@ VMOBJS:=$(SRCVM)/device.o \
 	$(SRCVM)/ay38910.o \
 	$(SRCVM)/disk.o \
 	$(SRCVM)/disk_parser.o \
+	$(SRCVM)/disk_image.o \
+	$(SRCVM)/diskd88_image.o \
+	$(SRCVM)/diskhfe_image.o \
 	$(SRCVM)/mb8866.o \
 	$(SRCVM)/mc6809.o \
 	$(SRCVM)/mc6809dasm.o \
@@ -165,8 +168,8 @@ GUIOBJSWX:=$(SRCGUIWX)/wx_dlg.o \
 	$(SRCGUIWX)/wx_seldrv_dlg.o \
 	$(SRCGUIWX)/wx_ledbox.o \
 	$(SRCGUIWX)/wx_vkeyboard.o \
-	$(SRCGUIWX)/wx_joysetbox.o \
-	$(SRCGUIWX)/wx_loggingbox.o \
+	$(SRCGUIWX)/wx_joyset_dlg.o \
+	$(SRCGUIWX)/wx_logging_dlg.o \
 	$(SRCGUIWX)/wx_about_dlg.o \
 	$(SRCGUIWX)/wx_gui.o
 

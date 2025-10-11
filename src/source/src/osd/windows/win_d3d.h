@@ -13,10 +13,10 @@
 
 #include "../../vm/vm_defs.h"
 
-#ifdef USE_DIRECT3D
-
 #include <windows.h>
 #include "../../common.h"
+
+#ifdef USE_DIRECT3D
 
 //#define DIRECT3D_VERSION 0x900
 #include <d3d9.h>
@@ -31,7 +31,63 @@ typedef struct st_d3d_vertex {
 	float u,v;
 } d3d_vertex_t;
 
+#else
+
+#define PDIRECT3D9 void *
+#define PDIRECT3DDEVICE9 void *
+#define PDIRECT3DSURFACE9 void *
+#define PDIRECT3DTEXTURE9 void *
+#define D3DTEXTUREFILTERTYPE int
+
+#endif /* USE_DIRECT3D */
+
 class CSurface;
+
+/**
+	@brief the device
+*/
+class CD3DDevice
+{
+protected:
+	PDIRECT3D9 pD3D;
+#ifdef USE_DIRECT3D
+	D3DPRESENT_PARAMETERS	mD3Dpp;
+	D3DDISPLAYMODE			mD3Ddm;
+#endif /* USE_DIRECT3D */
+	PDIRECT3DDEVICE9	pDevice;
+
+public:
+	CD3DDevice();
+	virtual ~CD3DDevice();
+
+	bool Load();
+	void Unload();
+
+	HRESULT CreateDevice(HWND hWnd);
+	void ReleaseDevice();
+	HRESULT ResetDevice();
+
+	PDIRECT3DDEVICE9 GetDevice();
+
+	void ClearDevice();
+	HRESULT TestDevice();
+
+	HRESULT BeginScene(int filter_type);
+	void EndScene();
+	HRESULT Present();
+
+	void SetViewport(int w, int h);
+	HRESULT SetFVF();
+
+	bool IsEnableScanlineOrInterval() const;
+	void SetPresentationInterval(int val);
+
+	void SetPresentParametersSize(int w, int h);
+
+	bool GetBackBufferSize(int &w, int &h);
+
+	static D3DTEXTUREFILTERTYPE GetFilterType(int filter_type);
+};
 
 /**
 	@brief one surface
@@ -45,13 +101,23 @@ public:
 	CD3DSurface();
 	virtual ~CD3DSurface();
 
-	HRESULT CreateD3DSurface(PDIRECT3DDEVICE9 pD3Device, int w, int h);
-	HRESULT CreateD3DMemorySurface(PDIRECT3DDEVICE9 pD3Device, int w, int h);
+	HRESULT CreateD3DSurface(CD3DDevice &D3Device, int w, int h);
+	HRESULT CreateD3DMemorySurface(CD3DDevice &D3Device, int w, int h);
+	HRESULT CreateD3DBackBufferSurface(CD3DDevice &D3Device);
 	void ReleaseD3DSurface();
 
 	PDIRECT3DSURFACE9 GetD3DSurface();
-	int GetD3DSurfaceWidth() const;
-	int GetD3DSurfaceHeight() const;
+
+	HRESULT GetDC(HDC *phdc);
+	void ReleaseDC(HDC hdc);
+
+	HRESULT Update(CD3DDevice &D3DDevice, CD3DSurface &srcSurface, RECT &srcRect, RECT &dstRect);
+	HRESULT Update(CD3DDevice &D3DDevice, CD3DSurface &srcSurface, RECT &srcRect);
+	HRESULT StretchRect(CD3DDevice &D3DDevice, CD3DSurface &srcSurface, RECT &srcRect, RECT &dstRect, int filter_type);
+	HRESULT StretchRect(CD3DDevice &D3DDevice, CD3DSurface &srcSurface, RECT &srcRect, int filter_type);
+
+	int Width() const;
+	int Height() const;
 };
 
 /**
@@ -62,18 +128,20 @@ class CD3DTexture
 protected:
 	PDIRECT3DTEXTURE9 pTexture;
 
+#ifdef USE_DIRECT3D
 	d3d_vertex_t m_vertex[4];
 
 	bool m_first;
+#endif /* USE_DIRECT3D */
 
 public:
 	CD3DTexture();
 	virtual ~CD3DTexture();
 
-	HRESULT CreateD3DTexture(PDIRECT3DDEVICE9 pD3Device, int w, int h);
+	HRESULT CreateD3DTexture(CD3DDevice &D3Device, int w, int h);
 	void ReleaseD3DTexture();
 
-	HRESULT DrawD3DTexture(PDIRECT3DDEVICE9 pD3Device);
+	HRESULT DrawD3DTexture(CD3DDevice &D3Device);
 
 	bool CopyD3DTextureFrom(CSurface *suf);
 	bool CopyD3DTextureFrom(CSurface *suf, int suf_top, int suf_h);
@@ -88,7 +156,5 @@ public:
 	int GetD3DTextureWidth() const;
 	int GetD3DTextureHeight() const;
 };
-
-#endif /* USE_DIRECT3D */
 
 #endif /* WIN_D3D_H */

@@ -199,7 +199,7 @@ KeybindControlBox::KeybindControlBox(GUI *new_gui)
 	m_timeout_id = 0;
 	notebook = NULL;
 	selected_cell = NULL;
-	enable_axes = ~0;
+	joy_mask = ~0;
 }
 
 KeybindControlBox::~KeybindControlBox()
@@ -220,11 +220,13 @@ void KeybindControlBox::ShowAfter(GtkWidget *boxall)
 {
 	if (!dialog) return;
 
+	joy_mask = ~0;
 	GtkWidget *hbox = create_hbox(boxall);
-	create_check_box(hbox, CMsg::Enable_Z_axis, (enable_axes & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0, 2, G_CALLBACK(OnClickAxis));
-	create_check_box(hbox, CMsg::Enable_R_axis, (enable_axes & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0, 3, G_CALLBACK(OnClickAxis));
-	create_check_box(hbox, CMsg::Enable_U_axis, (enable_axes & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0, 4, G_CALLBACK(OnClickAxis));
-	create_check_box(hbox, CMsg::Enable_V_axis, (enable_axes & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0, 5, G_CALLBACK(OnClickAxis));
+	create_label(hbox, CMsg::Disable_temporarily_the_following_);
+	create_check_box(hbox, CMsg::Z_axis, (joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) == 0, 2, G_CALLBACK(OnClickAxis));
+	create_check_box(hbox, CMsg::R_axis, (joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) == 0, 3, G_CALLBACK(OnClickAxis));
+	create_check_box(hbox, CMsg::U_axis, (joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) == 0, 4, G_CALLBACK(OnClickAxis));
+	create_check_box(hbox, CMsg::V_axis, (joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) == 0, 5, G_CALLBACK(OnClickAxis));
 
 	//
 
@@ -345,8 +347,8 @@ void KeybindControlBox::UpdateJoy()
 
 	uint32_t *joy_stat = emu->joy_real_buffer(col);
 
-	if (joy_stat[0] & enable_axes) {
-		kc->SetJoyCell(row, col, joy_stat[0] & enable_axes, selected_cell);
+	if (joy_stat[0] & joy_mask) {
+		kc->SetJoyCell(row, col, joy_stat[0] & joy_mask, selected_cell);
 	}
 }
 
@@ -379,7 +381,7 @@ void KeybindControlBox::SavePreset(int idx)
 void KeybindControlBox::ToggleAxis(GtkWidget *widget)
 {
 	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
-	bool chkd = get_check_state(widget);
+	bool unchkd = !get_check_state(widget);
 	uint32_t bits = 0;
 	switch(num) {
 	case 2:
@@ -396,7 +398,7 @@ void KeybindControlBox::ToggleAxis(GtkWidget *widget)
 		break;
 	}
 
-	BIT_ONOFF(enable_axes, bits, chkd);
+	BIT_ONOFF(joy_mask, bits, unchkd);
 }
 
 gboolean KeybindControlBox::OnKeyDown(GtkWidget *widget, GdkEvent *event, gpointer user_data)

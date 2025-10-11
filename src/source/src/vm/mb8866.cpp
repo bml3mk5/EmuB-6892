@@ -20,7 +20,7 @@
 //#define SET_CURRENT_TRACK_IMMEDIATELY 1
 
 #ifdef _DEBUG_MB8866
-#include "../../logging.h"
+#include "../logging.h"
 
 #define OUT_DEBUG logging->out_debugf
 #ifdef _DEBUG_MB8866_L2
@@ -40,6 +40,12 @@ static const int seek_wait[2][4] = {
 	{6000, 12000, 20000, 30000},	// 1MHz
 	{3000,  6000, 10000, 15000},	// 2MHz
 };
+
+#define ROUND_TIMEOUT (5 - 1)
+#define START_COMMAND_DELAY_US	32
+
+#define SEARCH_SECTOR_IMMEDIATELY
+#define SEARCH_ADDRESS_IMMEDIATELY
 
 void MB8866::cancel_my_event(int event)
 {
@@ -127,7 +133,8 @@ void MB8866::reset()
 
 	seektrk = 0;
 	seekvct = true;
-	status = cmdreg = trkreg = secreg = datareg = cmdtype = 0;
+	status = cmdreg = trkreg = secreg = datareg = 0;
+	cmdtype = FDC_CMD_IDLE;
 
 	density = 0;
 	now_irq = false;
@@ -183,7 +190,8 @@ void MB8866::write_io8(uint32_t addr, uint32_t data)
 #else
 		cmdreg = data;
 #endif
-		process_cmd();
+		accept_cmd();
+//		process_cmd();
 		break;
 	case 1:
 		// track reg
@@ -193,12 +201,12 @@ void MB8866::write_io8(uint32_t addr, uint32_t data)
 		trkreg = data;
 #endif
 		OUT_DEBUG(_T("FDCw\tTRACKREG=%d"), trkreg);
-		if((status & FDC_ST_BUSY) && data_idx == 0) {
-			// track reg is written after command starts
-			if(cmdtype == FDC_CMD_RD_SEC || cmdtype == FDC_CMD_RD_MSEC || cmdtype == FDC_CMD_WR_SEC || cmdtype == FDC_CMD_WR_MSEC) {
-				process_cmd();
-			}
-		}
+//		if((status & FDC_ST_BUSY) && data_idx == 0) {
+//			// track reg is written after command starts
+//			if(cmdtype == FDC_CMD_RD_SEC || cmdtype == FDC_CMD_RD_MSEC || cmdtype == FDC_CMD_WR_SEC || cmdtype == FDC_CMD_WR_MSEC) {
+//				process_cmd();
+//			}
+//		}
 		break;
 	case 2:
 		// sector reg
@@ -208,12 +216,12 @@ void MB8866::write_io8(uint32_t addr, uint32_t data)
 		secreg = data;
 #endif
 		OUT_DEBUG(_T("FDCw\tSECREG=%d"), secreg);
-		if((status & FDC_ST_BUSY) && data_idx == 0) {
-			// sector reg is written after command starts
-			if(cmdtype == FDC_CMD_RD_SEC || cmdtype == FDC_CMD_RD_MSEC || cmdtype == FDC_CMD_WR_SEC || cmdtype == FDC_CMD_WR_MSEC) {
-				process_cmd();
-			}
-		}
+//		if((status & FDC_ST_BUSY) && data_idx == 0) {
+//			// sector reg is written after command starts
+//			if(cmdtype == FDC_CMD_RD_SEC || cmdtype == FDC_CMD_RD_MSEC || cmdtype == FDC_CMD_WR_SEC || cmdtype == FDC_CMD_WR_MSEC) {
+//				process_cmd();
+//			}
+//		}
 		break;
 	case 3:
 		// data reg
@@ -285,7 +293,7 @@ void MB8866::write_io8(uint32_t addr, uint32_t data)
 //					cmdtype = 0;
 					set_irq(true);
 
-					parse_track();
+					d_fdd->parse_track(channel);
 				} else {
 					if (density) {
 						if (datareg == 0xf5) {
@@ -312,7 +320,7 @@ void MB8866::write_io8(uint32_t addr, uint32_t data)
 //					cmdtype = 0;
 					set_irq(true);
 
-					parse_track();
+					d_fdd->parse_track(channel);
 				} else {
 					// next data
 					register_drq_event(1);
@@ -529,14 +537,20 @@ uint32_t MB8866::read_dma_io8(uint32_t addr)
 
 void MB8866::write_signal(int id, uint32_t data, uint32_t mask)
 {
-	if (id == SIG_FLOPPY_DENSITY) {
+	switch(id) {
+	case SIG_FLOPPY_DENSITY:
 		density = (data & mask) ? 1 : 0;
-	} else if (id == SIG_MB8866_CLOCKNUM) {
+		break;
+	case SIG_MB8866_CLOCKNUM:
 		set_context_clock_num((int)data);
-	} else if (id == SIG_CPU_RESET) {
+		break;
+	case SIG_CPU_RESET:
 		now_reset = (data & mask) ? true : false;
 		cancel_my_events();
 		if (!now_reset) warm_reset();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -597,7 +611,7 @@ void MB8866::event_callback(int event_id, int err)
 			if(seektrk == (int)trkreg || (cmdreg & 0xe0) != 0) {
 //				|| ((cmdreg & 0xf0) == 0 && d_fdd->read_signal(SIG_FLOPPY_TRACK0 | channel) != 0)) {
 				// match track or step end
-				status |= verify_track();
+				status |= find_track();
 				now_seek = false;
 				set_irq(!irq_mask);
 				irq_mask = false;
@@ -618,7 +632,7 @@ void MB8866::event_callback(int event_id, int err)
 			if((cmdreg & 0xf0) == 0) {
 				datareg = 0;
 			}
-			status |= verify_track();
+			status |= find_track();
 			now_seek = false;
 			cancel_my_event(EVENT_SEEK);
 			set_irq(!irq_mask);
@@ -632,32 +646,36 @@ void MB8866::event_callback(int event_id, int err)
 		if (cmdtype == FDC_CMD_RD_SEC || cmdtype == FDC_CMD_RD_MSEC
 		 || cmdtype == FDC_CMD_WR_SEC || cmdtype == FDC_CMD_WR_MSEC) {
 			if(cmdreg & 2) {
-				status |= search_sector(((cmdreg & 8) ? 1 : 0), true);
+				status |= find_sector(((cmdreg & 8) ? 1 : 0), true);
 			} else {
-				status |= search_sector(0, false);
+				status |= find_sector(0, false);
 			}
 		}
 #endif
 #ifndef SEARCH_ADDRESS_IMMEDIATELY
 		// search address
 		if (cmdtype == FDC_CMD_RD_ADDR) {
-			status |= search_addr();
+			status |= find_addr();
 		}
 #endif
 #ifndef MAKE_TRACK_IMMEDIATELY
 		// make track
 		if (cmdtype == FDC_CMD_RD_TRK) {
-			make_track();
+			d_fdd->make_track(channel);
 		}
 #endif
 		// start dma
 		if(!FLG_ORIG_FDDRQ) {
-			if (!(status & (FDC_ST_RECNFND | FDC_ST_CRCERR))) {
+//			if (!(status & (FDC_ST_RECNFND | FDC_ST_CRCERR))) {
+			// record not found ?
+			// (CRC error occur after all data accessed)
+			if (!(status & FDC_ST_RECNFND)) {
 				status |= FDC_ST_DRQ;
 				register_lost_event(3);
 				set_drq(true);
 			} else {
 				// error end
+				status &= ~FDC_ST_BUSY;
 				set_irq(true);
 			}
 		}
@@ -696,12 +714,65 @@ void MB8866::event_callback(int event_id, int err)
 	case EVENT_RESTORE:
 		cmd_restore();
 		break;
+	case EVENT_STARTCMD:
+		process_cmd();
+		break;
 	}
 }
 
 // ----------------------------------------------------------------------------
 // command
 // ----------------------------------------------------------------------------
+
+void MB8866::accept_cmd()
+{
+	cancel_my_event(EVENT_STARTCMD);
+	cancel_my_event(EVENT_TYPE4);
+	set_irq(false);
+	status = FDC_ST_BUSY;
+	switch(cmdreg & 0xf0) {
+	// type-1
+	case 0x00:
+	case 0x10:
+	case 0x20:
+	case 0x30:
+	case 0x40:
+	case 0x50:
+	case 0x60:
+	case 0x70:
+		cmdtype = FDC_CMD_TYPE1;
+		break;
+	// type-2
+	case 0x80:
+	case 0x90:
+		cmdtype = (cmdreg & FDC_CR2_MULTI) ? FDC_CMD_RD_MSEC : FDC_CMD_RD_SEC;
+		break;
+	case 0xa0:
+	case 0xb0:
+		cmdtype = (cmdreg & FDC_CR2_MULTI) ? FDC_CMD_WR_MSEC : FDC_CMD_WR_SEC;
+		break;
+	// type-3
+	case 0xc0:
+		cmdtype = FDC_CMD_RD_ADDR;
+		break;
+	case 0xe0:
+		cmdtype = FDC_CMD_RD_TRK;
+		break;
+	case 0xf0:
+		cmdtype = FDC_CMD_WR_TRK;
+		break;
+	// type-4
+	case 0xd0:
+		if(cmdtype == FDC_CMD_IDLE || cmdtype == FDC_CMD_WR_SEC) {
+			status = 0;
+			cmdtype = FDC_CMD_TYPE1;
+		}
+		break;
+	default:
+		break;
+	}
+	register_my_event(EVENT_STARTCMD, START_COMMAND_DELAY_US);
+}
 
 void MB8866::process_cmd()
 {
@@ -858,21 +929,28 @@ void MB8866::cmd_readdata()
 	d_fdd->write_signal(SIG_FLOPPY_CURRENTTRACK | channel, trkreg, 0xff);
 #endif
 
-	cmdtype = (cmdreg & 0x10) ? FDC_CMD_RD_MSEC : FDC_CMD_RD_SEC;
+	cmdtype = (cmdreg & FDC_CR2_MULTI) ? FDC_CMD_RD_MSEC : FDC_CMD_RD_SEC;
+
+	d_fdd->parse_sector(channel);
+
 #ifdef SEARCH_SECTOR_IMMEDIATELY
-	if(cmdreg & 2) {
-		status = search_sector(((cmdreg & 8) ? 1 : 0), true);
+	int time = 0;
+	if(cmdreg & FDC_CR2_COMPARESIDE) {
+		status = find_sector_and_get_clock(((cmdreg & FDC_CR2_SIDESEL) ? 1 : 0), true, time);
 	} else {
-		status = search_sector(0, false);
+		status = find_sector_and_get_clock(0, false, time);
 	}
-	if(!(status & FDC_ST_RECNFND)) {
-		status |= FDC_ST_BUSY;
-	}
+	status |= FDC_ST_BUSY;
 #else
+	int time = 0;
+	if(cmdreg & FDC_CR2_COMPARESIDE) {
+		time = get_clock_reach_sector(((cmdreg & FDC_CR2_SIDESEL) ? 1 : 0), true);
+	} else {
+		time = get_clock_reach_sector(0, false);
+	}
 	status = FDC_ST_BUSY;
 #endif
 
-	int time = d_fdd->calc_sector_search_clock(channel, secreg);
 	register_search_event(time);
 	cancel_my_event(EVENT_LOST);
 
@@ -886,23 +964,29 @@ void MB8866::cmd_writedata()
 	d_fdd->write_signal(SIG_FLOPPY_CURRENTTRACK | channel, trkreg, 0xff);
 #endif
 
-	cmdtype = (cmdreg & 0x10) ? FDC_CMD_WR_MSEC : FDC_CMD_WR_SEC;
+	cmdtype = (cmdreg & FDC_CR2_MULTI) ? FDC_CMD_WR_MSEC : FDC_CMD_WR_SEC;
+
+	d_fdd->parse_sector(channel);
+
 #ifdef SEARCH_SECTOR_IMMEDIATELY
-	if(cmdreg & 2) {
-		status = search_sector(((cmdreg & 8) ? 1 : 0), true);
-	}
-	else {
-		status = search_sector(0, false);
+	int time = 0;
+	if(cmdreg & FDC_CR2_COMPARESIDE) {
+		status = find_sector_and_get_clock(((cmdreg & FDC_CR2_SIDESEL) ? 1 : 0), true, time);
+	} else {
+		status = find_sector_and_get_clock(0, false, time);
 	}
 	status &= ~FDC_ST_RECTYPE;
-	if(!(status & FDC_ST_RECNFND)) {
-		status |= FDC_ST_BUSY;
-	}
+	status |= FDC_ST_BUSY;
 #else
+	int time = 0;
+	if(cmdreg & FDC_CR2_COMPARESIDE) {
+		time = get_clock_reach_sector(((cmdreg & FDC_CR2_SIDESEL) ? 1 : 0), true);
+	} else {
+		time = get_clock_reach_sector(0, false);
+	}
 	status = FDC_ST_BUSY;
 #endif
 
-	int time = d_fdd->calc_sector_search_clock(channel, secreg);
 	register_search_event(time);
 	cancel_my_event(EVENT_LOST);
 
@@ -917,16 +1001,18 @@ void MB8866::cmd_readaddr()
 #endif
 
 	cmdtype = FDC_CMD_RD_ADDR;
+
+	d_fdd->parse_sector(channel);
+
 #ifdef SEARCH_ADDRESS_IMMEDIATELY
-	status = search_addr();
-	if(!(status & FDC_ST_RECNFND)) {
-		status |= FDC_ST_BUSY;
-	}
+	int time = 0;
+	status = find_addr_and_get_clock(time);
+	status |= FDC_ST_BUSY;
 #else
+	int time = get_clock_reach_addr();
 	status = FDC_ST_BUSY;
 #endif
 
-	int time = d_fdd->calc_next_sector_clock(channel);
 	register_search_event(time);
 	cancel_my_event(EVENT_LOST);
 
@@ -946,10 +1032,10 @@ void MB8866::cmd_readtrack()
 	d_fdd->write_signal(SIG_FLOPPY_TRACK_SIZE | channel, 1, 1);
 	data_idx = 0;
 #ifdef MAKE_TRACK_IMMEDIATELY
-	make_track();
+	d_fdd->make_track(channel);
 #endif
 
-	int time = d_fdd->calc_index_hole_search_clock(channel);
+	int time = get_clock_reach_index_hole();
 	register_search_event(time);
 	cancel_my_event(EVENT_LOST);
 
@@ -969,7 +1055,7 @@ void MB8866::cmd_writetrack()
 	d_fdd->write_signal(SIG_FLOPPY_TRACK_SIZE | channel, 1, 1);
 	data_idx = 0;
 
-	int time = d_fdd->calc_index_hole_search_clock(channel);
+	int time = get_clock_reach_index_hole();
 	register_search_event(time);
 	cancel_my_event(EVENT_LOST);
 
@@ -987,7 +1073,7 @@ void MB8866::cmd_forceint()
 	}
 	cmdtype = FDC_CMD_TYPE4;
 #else
-	if(cmdtype == 0 || cmdtype == 4) {
+	if(cmdtype == FDC_CMD_IDLE || cmdtype == FDC_CMD_WR_SEC) {
 		status = 0;
 		cmdtype = FDC_CMD_TYPE1;
 	}
@@ -1015,11 +1101,10 @@ void MB8866::cmd_forceint()
 // media handler
 // ----------------------------------------------------------------------------
 
-uint8_t MB8866::verify_track()
+uint8_t MB8866::find_track()
 {
-	if(!d_fdd->search_track(channel)) {
-		return FDC_ST_SEEKERR;
-	}
+	// search track (ignore error)
+	d_fdd->search_track(channel);
 
 	// verify track number
 	if(!(cmdreg & 4)) {
@@ -1028,51 +1113,104 @@ uint8_t MB8866::verify_track()
 
 	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD | channel, 1, 1);
 
-	if(!d_fdd->verify_track(channel, trkreg)) {
+	if(!d_fdd->verify_track_number(channel, trkreg)) {
 		return FDC_ST_SEEKERR;
 	}
 	return 0;
 }
 
-uint8_t MB8866::search_sector(int side, bool compare)
+#if 0
+void MB8866::parse_sector()
 {
-	// get track
-	if(!d_fdd->search_track(channel)) {
-//		if (FLG_ORIG_FDDRQ) set_irq(true);
-		return FDC_ST_RECNFND;
-	}
+	d_fdd->parse_sector(channel);
+}
+#endif
 
+uint8_t MB8866::find_sector(int side, bool compare)
+{
 	// scan sectors
 	int stat = d_fdd->search_sector(channel, trkreg, secreg, compare, side);
-	if (stat != 1) {
-		data_idx = 0;
-		return ((stat & 4) ? FDC_ST_RECTYPE : 0) | ((stat & 2) ? FDC_ST_CRCERR : 0);
+	if (stat & (STS_UNMATCH_TRACK_NUMBER | STS_UNMATCH_SIDE_NUMBER)) {
+		stat |= STS_RECORD_NOT_FOUND;
 	}
+	if (!(stat & STS_RECORD_NOT_FOUND)) {
+		data_idx = 0;
+		int fdc_stat = 0;
+		if (stat & STS_DELETED_MARK_DETECTED) fdc_stat |= FDC_ST_RECTYPE;
+		if (stat & STS_CRC_ERROR) fdc_stat |= FDC_ST_CRCERR;
+		return fdc_stat;
+	}
+
 	// sector not found
-//	if (FLG_ORIG_FDDRQ) set_irq(true);
 	return FDC_ST_RECNFND;
 }
 
-uint8_t MB8866::search_addr()
+uint8_t MB8866::find_sector_and_get_clock(int side, bool compare, int &arrive_clock)
 {
-	// get track
-	if(!d_fdd->search_track(channel)) {
-//		if (FLG_ORIG_FDDRQ) set_irq(true);
-		return FDC_ST_RECNFND;
+	// wait head loading time 15ms at least
+	int delay_clock = d_fdd->get_head_loading_clock(channel, (cmdreg & FDC_CR23_DELAY15MS) ? seek_wait[clk_num][3] : 0);
+	int clock = 0;
+	// scan sectors
+	int stat = d_fdd->search_sector_and_get_clock(channel, trkreg, secreg, compare, side, delay_clock, ROUND_TIMEOUT, clock, true);
+	if (FLG_DELAY_FDSEARCH) {
+		arrive_clock = 64;
+	} else {
+		arrive_clock = clock;
 	}
-
-	// get sector
-	int stat = d_fdd->search_sector(channel);
-	if (stat != 1) {
+	if (stat & (STS_UNMATCH_TRACK_NUMBER | STS_UNMATCH_SIDE_NUMBER)) {
+		stat |= STS_RECORD_NOT_FOUND;
+	}
+	if (!(stat & STS_RECORD_NOT_FOUND)) {
 		data_idx = 0;
-		return ((status == 2) ? FDC_ST_CRCERR : 0);
+		int fdc_stat = 0;
+		if (stat & STS_DELETED_MARK_DETECTED) fdc_stat |= FDC_ST_RECTYPE;
+		if (stat & STS_CRC_ERROR) fdc_stat |= FDC_ST_CRCERR;
+		return fdc_stat;
 	}
 
 	// sector not found
-//	if (FLG_ORIG_FDDRQ) set_irq(true);
 	return FDC_ST_RECNFND;
 }
 
+uint8_t MB8866::find_addr()
+{
+	// get sector
+	int stat = d_fdd->search_next_sector(channel);
+	if (!(stat & STS_RECORD_NOT_FOUND)) {
+		data_idx = 0;
+		int fdc_stat = 0;
+		if (stat & STS_CRC_ERROR) fdc_stat |= FDC_ST_CRCERR;
+		return fdc_stat;
+	}
+
+	// sector not found
+	return FDC_ST_RECNFND;
+}
+
+uint8_t MB8866::find_addr_and_get_clock(int &arrive_clock)
+{
+	// wait head loading time 15ms at least
+	int delay_clock = d_fdd->get_head_loading_clock(channel, (cmdreg & FDC_CR23_DELAY15MS) ? seek_wait[clk_num][3] : 0);
+	int clock = 0;
+	// scan sectors
+	int stat = d_fdd->search_next_sector_and_get_clock(channel, delay_clock, ROUND_TIMEOUT, clock);
+	if (FLG_DELAY_FDSEARCH) {
+		arrive_clock = 64;
+	} else {
+		arrive_clock = clock;
+	}
+	if (!(stat & STS_RECORD_NOT_FOUND)) {
+		data_idx = 0;
+		int fdc_stat = 0;
+		if (stat & STS_CRC_ERROR) fdc_stat |= FDC_ST_CRCERR;
+		return fdc_stat;
+	}
+
+	// sector not found
+	return FDC_ST_RECNFND;
+}
+
+#if 0
 bool MB8866::make_track()
 {
 	return d_fdd->make_track(channel);
@@ -1081,6 +1219,38 @@ bool MB8866::make_track()
 bool MB8866::parse_track()
 {
 	return d_fdd->parse_track(channel);
+}
+#endif
+
+int MB8866::get_clock_reach_sector(int side, bool compare)
+{
+	int arrive_clock = 64;
+#ifndef SEARCH_SECTOR_IMMEDIATELY
+	if (!FLG_DELAY_FDSEARCH) {
+		// wait head loading time 15ms at least
+		int delay_clock = d_fdd->get_head_loading_clock(channel, (cmdreg & FDC_CR23_DELAY15MS) ? seek_wait[clk_num][3] : 0);
+		arrive_clock = d_fdd->get_clock_arrival_sector(channel, trkreg, secreg, compare, side, delay_clock, ROUND_TIMEOUT, true);
+	}
+#endif
+	return arrive_clock;
+}
+
+int MB8866::get_clock_reach_addr()
+{
+	int arrive_clock = 64;
+#ifndef SEARCH_SECTOR_IMMEDIATELY
+	if (!FLG_DELAY_FDSEARCH) {
+		// wait head loading time 15ms at least
+		int delay_clock = d_fdd->get_head_loading_clock(channel, (cmdreg & FDC_CR23_DELAY15MS) ? seek_wait[clk_num][3] : 0);
+		arrive_clock = d_fdd->get_clock_next_sector(channel, delay_clock, ROUND_TIMEOUT);
+	}
+#endif
+	return arrive_clock;
+}
+
+int MB8866::get_clock_reach_index_hole()
+{
+	return d_fdd->get_index_hole_search_clock(channel, (cmdreg & FDC_CR23_DELAY15MS) ? seek_wait[clk_num][3] : 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -1117,7 +1287,7 @@ void MB8866::save_state(FILEIO *fp)
 	struct vm_state_st vm_state;
 
 	//
-	vm_state_ident.version = Uint16_LE(3);
+	vm_state_ident.version = Uint16_LE(4);
 	vm_state_ident.size = Uint32_LE(sizeof(vm_state_ident) + sizeof(vm_state));
 
 	// copy values
@@ -1136,8 +1306,9 @@ void MB8866::save_state(FILEIO *fp)
 	vm_state.flags = (seekvct ? 8 : 0) | (now_search ? 4 : 0) | (after_seek ? 2 : 0) | (now_seek ? 1 : 0);
 	vm_state.flags2 = density;
 
-	vm_state.register_id2[0] = Int32_LE(register_id[7]);
-	vm_state.register_id3[0] = Int32_LE(register_id[8]);
+	vm_state.register_id2[0] = Int32_LE(register_id[EVENT_DRQ]);
+	vm_state.register_id3[0] = Int32_LE(register_id[EVENT_RESTORE]);
+	vm_state.register_id4[0] = Int32_LE(register_id[EVENT_STARTCMD]);
 
 	fp->Fwrite(&vm_state_ident, sizeof(vm_state_ident), 1);
 	fp->Fwrite(&vm_state, sizeof(vm_state), 1);
@@ -1169,10 +1340,13 @@ bool MB8866::load_state(FILEIO *fp)
 	}
 	if (Uint16_LE(vm_state_i.version) >= 2) {
 		density = vm_state.flags2;
-		register_id[7] = Int32_LE(vm_state.register_id2[0]);
+		register_id[EVENT_DRQ] = Int32_LE(vm_state.register_id2[0]);
 	}
 	if (Uint16_LE(vm_state_i.version) >= 3) {
-		register_id[8] = Int32_LE(vm_state.register_id3[0]);
+		register_id[EVENT_RESTORE] = Int32_LE(vm_state.register_id3[0]);
+	}
+	if (Uint16_LE(vm_state_i.version) >= 4) {
+		register_id[EVENT_STARTCMD] = Int32_LE(vm_state.register_id4[0]);
 	}
 
 	return true;
@@ -1268,14 +1442,17 @@ bool MB8866::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return debug_write_reg(num, data);
 }
 
-void MB8866::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void MB8866::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
+	UTILITY::tcscpy(buffer, buffer_len, _T("MB8866/8876 ("));
+	UTILITY::tcscat(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], status);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], cmdreg);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], trkreg);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 3, c_reg_names[3], secreg);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 4, c_reg_names[4], datareg);
+	UTILITY::tcscat(buffer, buffer_len, _T("\nStatus\n"));
 	UTILITY::sntprintf(buffer, buffer_len, _T("  %s:%d"), _T("DRQ"), now_drq ? 1 : 0);
 	UTILITY::sntprintf(buffer, buffer_len, _T("  %s:%d"), _T("IRQ"), now_irq ? 1 : 0);
 }

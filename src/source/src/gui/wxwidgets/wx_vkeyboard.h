@@ -48,6 +48,8 @@ public:
 	void Close();
 
 	void paint_window(wxBitmap *, wxRect &);
+	void changing_size();
+	void change_size(double mag);
 };
 
 } /* namespace Vkbd */
@@ -60,14 +62,21 @@ class MyVKeyboard : public wxFrame
 private:
 	Vkbd::VKeyboard *vkbd;
 	wxBitmap *bmp;
+	wxMenu *popupMenu;
+
+	void create_popup_menu();
+	void show_popup_menu(int x, int y);
 
 	void OnPaint(wxPaintEvent &);
 	void OnClose(wxCloseEvent &);
-	void OnMouseDown(wxMouseEvent &); 
-	void OnMouseUp(wxMouseEvent &); 
+	void OnMouseLeftDown(wxMouseEvent &); 
+	void OnMouseLeftUp(wxMouseEvent &); 
+	void OnMouseRightDown(wxMouseEvent &); 
 	void OnCharHook(wxKeyEvent &);
 	void OnKeyDown(wxKeyEvent &);
 	void OnKeyUp(wxKeyEvent &);
+	void OnSize(wxSizeEvent &);
+	void OnSelectMenu(wxCommandEvent &);
 
 public:
 	MyVKeyboard(wxWindow *parent, wxSize &sz, Vkbd::VKeyboard *vkbd);

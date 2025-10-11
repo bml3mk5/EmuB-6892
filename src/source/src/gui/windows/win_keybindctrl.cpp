@@ -8,9 +8,9 @@
 
 #include "win_keybindctrl.h"
 #include <windowsx.h>
-#include "win_dialogbox.h"
 #include "../../res/resource.h"
 #include "win_gui.h"
+#include "../../keycode.h"
 #include "../../emu.h"
 #include "../../labels.h"
 #include "../../clocale.h"
@@ -463,12 +463,18 @@ void KeybindControl::dispose_children(HWND hWnd)
 	for(int row=0; row<rows; row++) {
 		x = margin;
 
-		if (m_vm_type == VM_TYPE_PIOBITASSIGN) {
+		switch(m_vm_type) {
+		case VM_TYPE_PIOBITASSIGN:
+		case VM_TYPE_PSGBITASSIGN:
 			KeybindData::GetVmJoyBitLabel(row2idx_map[row], label, true);
-		} else if (m_vm_type == VM_TYPE_PIOJOYASSIGN) {
+			break;
+		case VM_TYPE_PIOJOYASSIGN:
+		case VM_TYPE_PSGJOYASSIGN:
 			KeybindData::GetVmJoyLabel(row2idx_map[row], label, true);
-		} else {
+			break;
+		default:
 			KeybindData::GetVmKeyLabel(row2idx_map[row], label, true);
+			break;
 		}
 		UTILITY::conv_to_api_string(label, KBLABEL_MAXLEN, label, KBLABEL_MAXLEN);
 
@@ -521,7 +527,7 @@ LRESULT KeybindControl::ctlcolor_children(HWND hWnd, WPARAM wParam, LPARAM lPara
 //
 void KeybindControl::move_children(HWND hWnd, int x, int y)
 {
-	WINDOWINFO wid;
+	WINDOWINFO wid = { sizeof(WINDOWINFO) };
 	RECT re;
 
 	GetWindowInfo(hStaticMain, &wid);
@@ -786,6 +792,155 @@ int KeybindControl::GetCombiId()
 		break;
 	}
 	return id;
+}
+
+//
+//
+//
+
+KeybindBaseBox::KeybindBaseBox(HINSTANCE new_inst, DWORD new_id, EMU *new_emu, GUI *new_gui)
+	: CDialogBox(new_inst, new_id, new_emu, new_gui)
+{
+	m_selected_tabctrl = 0;
+	m_joy_mask = ~0;
+}
+
+void KeybindBaseBox::create_dialog_footer(CBox *box_all)
+{
+	m_joy_mask = ~0;
+
+	CBox *hbox = box_all->AddBox(CBox::HorizontalBox);
+	CreateStatic(hbox, IDC_STATIC, CMsg::Disable_temporarily_the_following_);
+	CreateCheckBox(hbox, IDC_CHK_AXIS3, CMsg::Z_axis, (m_joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) == 0);
+	CreateCheckBox(hbox, IDC_CHK_AXIS4, CMsg::R_axis, (m_joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) == 0);
+	CreateCheckBox(hbox, IDC_CHK_AXIS5, CMsg::U_axis, (m_joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) == 0);
+	CreateCheckBox(hbox, IDC_CHK_AXIS6, CMsg::V_axis, (m_joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) == 0);
+}
+
+INT_PTR KeybindBaseBox::onCommand(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch(LOWORD(wParam)) {
+	case IDOK:
+	case IDCANCEL:
+		if (LOWORD(wParam) == IDOK) {
+			onClickOk();
+		}
+		::EndDialog(hDlg, LOWORD(wParam));
+		return (INT_PTR)TRUE;
+
+	case IDC_BTN_LOAD_DEFAULT:
+		return onClickLoadDefault();
+
+	case IDC_BTN_LOAD_PRESET1:
+	case IDC_BTN_LOAD_PRESET2:
+	case IDC_BTN_LOAD_PRESET3:
+	case IDC_BTN_LOAD_PRESET4:
+		return onClickLoadPreset(LOWORD(wParam) - IDC_BTN_LOAD_PRESET1);
+
+	case IDC_BTN_SAVE_PRESET1:
+	case IDC_BTN_SAVE_PRESET2:
+	case IDC_BTN_SAVE_PRESET3:
+	case IDC_BTN_SAVE_PRESET4:
+		return onClickSavePreset(LOWORD(wParam) - IDC_BTN_SAVE_PRESET1);
+
+	case IDC_CHK_AXIS1:
+	case IDC_CHK_AXIS2:
+	case IDC_CHK_AXIS3:
+	case IDC_CHK_AXIS4:
+	case IDC_CHK_AXIS5:
+	case IDC_CHK_AXIS6:
+		return onClickAxis(LOWORD(wParam));
+	}
+	return (INT_PTR)FALSE;
+}
+
+INT_PTR KeybindBaseBox::onNotify(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// change tab
+	LPNMHDR lpNmHdr = (NMHDR *)lParam;
+	int i;
+	if (lpNmHdr->idFrom == IDC_TAB1) {
+		switch (lpNmHdr->code) {
+		case TCN_SELCHANGE:
+			i = TabCtrl_GetCurSel(lpNmHdr->hwndFrom);
+			select_tabctrl(i);
+			break;
+		}
+	}
+	return (INT_PTR)TRUE;
+}
+
+INT_PTR KeybindBaseBox::onMouseWheel(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	SendDlgItemMessage(hDlg, IDC_CUSTOM0 + m_selected_tabctrl, message, wParam, lParam);
+	return (INT_PTR)TRUE;
+}
+
+#if 0
+INT_PTR KeybindBaseBox::onControlColorStatic(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	HANDLE h = (HANDLE)GetStockObject(NULL_BRUSH);
+	SetBkMode((HDC)wParam, TRANSPARENT);
+	return (INT_PTR)h;
+}
+#endif
+
+INT_PTR KeybindBaseBox::onClickOk()
+{
+	for(int tab_num=0; tab_num<(int)m_kbctl.size(); tab_num++) {
+		m_kbctl[tab_num]->SetData();
+	}
+	return (INT_PTR)TRUE;
+}
+
+INT_PTR KeybindBaseBox::onClickLoadDefault()
+{
+	int tab_num = m_selected_tabctrl;
+
+	m_kbctl[tab_num]->LoadDefaultPreset();
+	return (INT_PTR)TRUE;
+}
+
+INT_PTR KeybindBaseBox::onClickLoadPreset(int idx)
+{
+	int tab_num = m_selected_tabctrl;
+
+	m_kbctl[tab_num]->LoadPreset(idx);
+	return (INT_PTR)TRUE;
+}
+
+INT_PTR KeybindBaseBox::onClickSavePreset(int idx)
+{
+	int tab_num = m_selected_tabctrl;
+
+	m_kbctl[tab_num]->SavePreset(idx);
+	return (INT_PTR)TRUE;
+}
+
+INT_PTR KeybindBaseBox::onClickAxis(int id)
+{
+	uint32_t bits = 0;
+
+	switch(id) {
+	case IDC_CHK_AXIS3:
+		bits = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
+		break;
+	case IDC_CHK_AXIS4:
+		bits = (JOYCODE_R_UP | JOYCODE_R_DOWN);
+		break;
+	case IDC_CHK_AXIS5:
+		bits = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
+		break;
+	case IDC_CHK_AXIS6:
+		bits = (JOYCODE_V_UP | JOYCODE_V_DOWN);
+		break;
+	default:
+		break;
+	}
+
+	BIT_ONOFF(m_joy_mask, bits, (IsDlgButtonChecked(hDlg, id) == 0));
+
+	return (INT_PTR)TRUE;
 }
 
 }; /* namespace GUI_WIN */

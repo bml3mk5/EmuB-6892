@@ -125,10 +125,12 @@ public:
 	/// draw screen on window
 	/// @note this function should be called by main thread
 #if defined(USE_WIN)
-	virtual void UpdateScreen(HDC hdc);
+	virtual void UpdateScreen(HWND hWnd, bool user_event);
 #elif defined(USE_SDL) || defined(USE_SDL2) || defined(USE_QT) || defined(USE_WX) || defined(USE_WX2)
 	virtual void UpdateScreen();
 	virtual void DecreaseUpdateScreenCount();
+	virtual bool StoreDrawingMethod(uint8_t method);
+	virtual bool RestoreDrawingMethod(uint8_t &method) const;
 #endif
 
 	virtual int CreateGlobalKeys();
@@ -189,18 +191,6 @@ public:
 	virtual void CreateLedBoxSub();
 	virtual void ReleaseLedBox();
 	virtual void SetLedBoxPosition(bool mode, int left, int top, int width, int height, int place);
-#if 0
-#if defined(USE_WIN)
-	virtual void DrawLedBox(HDC hdc);
-	virtual void DrawLedBox(LPDIRECT3DSURFACE9 suf);
-#elif defined(USE_SDL) || defined(USE_SDL2)
-	virtual void DrawLedBox(CSurface *screen);
-#elif defined(USE_QT)
-	virtual void DrawLedBox(QImage *screen);
-#elif defined(USE_WX) || defined(USE_WX2)
-	virtual void DrawLedBox(CSurface *screen);
-#endif
-#endif
 	virtual void MoveLedBox();
 
 	virtual void UpdateIndicator(uint64_t flag);
@@ -366,20 +356,9 @@ public:
 	virtual int  GetRGBTypeMode(void);
 #endif
 
-#ifdef USE_DIRECT3D
-	virtual void ChangeUseDirect3D(int num);
-	virtual void ChangeUseDirect3D(void);
-	virtual int  GetDirect3DMode(void);
-	virtual void ChangeDirect3DFilter(int num);
-	virtual int  GetDirect3DFilter(void);
-#endif
-#ifdef USE_OPENGL
-	virtual void ChangeUseOpenGL(int num);
-	virtual void ChangeUseOpenGL(void);
-	virtual int  GetOpenGLMode(void);
-	virtual void ChangeOpenGLFilter(int num);
-	virtual int  GetOpenGLFilter(void);
-#endif
+	virtual void ChangeDrawingMethod(int num);
+	virtual void ChangeScreenFilter(int num);
+	virtual int  GetScreenFilter(void);
 
 	// Sound
 
@@ -555,8 +534,8 @@ public:
 	virtual void ChangeUseJoypad(int num);
 	virtual bool IsEnableJoypad(int num);
 #ifdef USE_KEY2JOYSTICK
-	virtual void ToggleEnableKey2Joypad(void);
-	virtual bool IsEnableKey2Joypad(void);
+	virtual void ToggleEnableKey2Joypad(int dev);
+	virtual bool IsEnableKey2Joypad(int dev);
 #endif
 #ifdef USE_LIGHTPEN
 	virtual void ToggleEnableLightpen(void);

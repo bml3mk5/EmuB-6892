@@ -90,11 +90,11 @@
 
    + ソースコードからビルドする場合
 
-     - SDL2-2.26.5
+     - SDL2-2.28.5
 
      1. パッチを適用します。
 
-            patch -p 1 < SDL2-2.26.5-mac-keyboard.patch
+            patch -p 1 < SDL2-2.28.5-mac-keyboard.patch
 
      2. ビルド＆インストール
 
@@ -108,9 +108,9 @@
            make
            make install
 
-     - FFmpeg-4.x (https://ffmpeg.org/)
+     - FFmpeg-6.1.1 (https://ffmpeg.org/)
 
-       (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+       (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
        コメントアウトする。)
 
        * ヘッダファイルが必要です。
@@ -122,8 +122,7 @@
 
    + Homebrewを使用する場合
 
-     - sdl2, sdl2_ttf, ffmpeg@4 をインストールしてください。
-
+     - sdl2, sdl2_ttf, ffmpeg@6 をインストールしてください。
 
 #### 2. コンパイル（コマンドラインを使用する場合）
 
@@ -133,7 +132,7 @@
 
    + SDLPATH を /opt/homebrew に変更
 
-   + SDL_CFLAGS に -I/opt/homebrew/opt/ffmpeg@4/include を追加
+   + SDL_CFLAGS に -I/opt/homebrew/opt/ffmpeg@6/include を追加
 
 
  * sharedなバイナリを作成する場合
@@ -154,7 +153,6 @@
 
    + インストール先を変更するには、Makefile中にある、ST_INSTALLDIRを変更
      してください。
-
 
 
 #### 3. コンパイル（Xcodeを使用する場合）
@@ -179,14 +177,14 @@
 
  * ディストリビューションに付属する開発用ライブラリをインストール。
 
-   + DebianやUbuntu: Synapticパッケージマネージャもしくはapt-getでインストール
+   + DebianやUbuntu: Synapticパッケージマネージャもしくはaptでインストール
    + RedhatやFedora: Yumなどでインストール
 
    + 必要なライブラリ
      - コンパイラ: gcc, g++, make
      - 画面系: gtk-3.0-dev, libsdl2-dev, libsdl2-ttf-dev
-     - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
-       (これらはffmpeg4のライブラリ)
+     - 録画用: libavcodec60-dev, libavutil58-dev, libavformat60-dev, libswscale7-dev
+       (これらはffmpeg6のライブラリ)
 
 #### 2. コンパイル
 
@@ -235,7 +233,8 @@
      - mingw-w64-x86_64-make
      - mingw-w64-x86_64-SDL2
      - mingw-w64-x86_64-SDL2_ttf
-     - mingw-w64-x86_64-ffmpeg4.4
+     - mingw-w64-x86_64-ffmpeg6
+       ffmpegはたぶんないのでVC++(Windows)版を参考にincludeファイルを入手。
 
 #### 2. コンパイル
 
@@ -280,7 +279,7 @@
 
 * 必要なライブラリをVC++でビルドします。
 
-  + SDL2-2.26.5
+  + SDL2-2.28.5
 
     - ソースからインストール
       VisualCフォルダにあるSDL.slnを使用してビルド。
@@ -291,20 +290,21 @@
     - ソースからインストール
       VisualCフォルダにあるSDL_ttf.slnを使用してビルド。
 
-  + FFmpeg-4.x (https://ffmpeg.org/)
+  + FFmpeg-6.1.1 (https://ffmpeg.org/)
 
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+   (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
 
     * ヘッダファイルが必要です。
       includeフォルダにヘッダファイルを入れてください。
     * 64ビット版のsharedライブラリとincludeファイルは以下のサイトから入手できます。
       [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/)
-      にある ffmpeg-4.4.1-full_build-shared.7z をダウンロードします。
+      にある ffmpeg-6.1.1-full_build-shared.7z をダウンロードします。
+    * 上記にない場合はGithub内の以下にあります。
+      [CODEX FFMPEG Github](https://github.com/GyanD/codexffmpeg/releases/tag/6.1.1)
     * ヘッダファイルがあれば、32ビット版のビルドもできます。
-    * バージョン3のヘッダファイルでもビルドできます。
-    * バージョン5のヘッダファイルでもビルドできますが動作するかは未確認。
-
+    * バージョン5のヘッダファイルでもビルドできます。
+    * バージョン4のヘッダファイルでもビルドできますが動作するかは未確認。
 
 #### 2. コンパイル
 

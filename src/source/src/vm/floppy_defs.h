@@ -22,6 +22,7 @@ enum SIG_FLOPPY_IDS {
 	SIG_FLOPPY_READ_ID				= 1,	///< read id (FDC to DISK)
 //	SIG_FLOPPY_READ_ID_TRACK_NUM	= 2,
 //	SIG_FLOPPY_READ_ID_HEAD_NUM		= 3,
+	SIG_FLOPPY_READ_TRACK_LOOP		= 5,	///< read track (FDC to DISK)
 	SIG_FLOPPY_READ					= 6,	///< read sector (FDC to DISK)
 	SIG_FLOPPY_READ_TRACK			= 7,	///< read track (FDC to DISK)
 	SIG_FLOPPY_WRITE				= 8,	///< write sector (FDC to DISK)
@@ -46,6 +47,19 @@ enum SIG_FLOPPY_IDS {
 	SIG_FLOPPY_DRQ					= 27,	///< DRQ from FDC (for 5inch mini floppy)
 
 	SIG_FLOPPY_DENSITY				= 28	///< density to FDC (for 5inch mini floppy)
+};
+
+/// @ingroup Enums
+/// @brief status of searching sector
+enum SEARCH_SECTOR_STATUS
+{
+	STS_RECORD_NOT_FOUND		 = 0x0001,
+	STS_CRC_ERROR				 = 0x0002,
+	STS_DELETED_MARK_DETECTED	 = 0x0004,
+	STS_UNMATCH_TRACK_NUMBER	 = 0x0010,
+	STS_UNMATCH_SIDE_NUMBER		 = 0x0020,
+	STS_UNMATCH_SECTOR_NUMBER	 = 0x0040,
+	STS_UNMATCH_SECTOR_SIZE		 = 0x0080
 };
 
 #endif /* FLOPPY_DEFS_H */

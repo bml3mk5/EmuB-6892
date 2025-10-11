@@ -352,24 +352,22 @@ void AVK_REC_AUDIO::Stop()
 	CMTime curtime = CMTimeMake((int64_t)frame_count, (int32_t)rec_rate);
 	[asset endSessionAtSourceTime:curtime];
 
-	BOOL rc = TRUE;
 	if (write_error_count > 0) logging->out_logf(LOG_ERROR, "appendSampleBuffer failed repeated %d times.", write_error_count);
 
-#if 1
-	rc = [asset finishWriting];
+#if 0
+	BOOL rc = [asset finishWriting];
 	if (!rc) {
 		NSError *err = [asset error];
 		logging->out_log(LOG_ERROR, "AVAssetWriter finishWriting Failed.");
 		if (err) logging->out_log(LOG_ERROR, [[err description] UTF8String]);
 	}
 #else
-	//osx 10.10 or later
+	//osx 10.9 or later
 	[asset finishWritingWithCompletionHandler:^{}];
 	if ([asset status] == AVAssetWriterStatusFailed) {
 		NSError *err = [asset error];
 		logging->out_log(LOG_ERROR, "AVAssetWriter finishWriting Failed.");
 		if (err) logging->out_log(LOG_ERROR, [[err description] UTF8String]);
-		rc = FALSE;
 	}
 #endif
 

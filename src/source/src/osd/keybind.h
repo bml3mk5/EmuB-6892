@@ -183,11 +183,22 @@ public:
 };
 
 /// @brief keybind mapping pool
-/// @note 0: key2key 1: joy2key 2: joy2joy 3: key2joy
+/// @note 0: key2key 1: joy2key 2: joy2joy 3: key2joy 
 class Keybind
 {
+public:
+	enum en_tabs {
+		TAB_KEY2KEY = 0,
+		TAB_JOY2KEY,
+		TAB_JOY2JOY,
+		TAB_KEY2JOY,
+		TAB_JOY2JOYB,
+		TAB_KEY2JOYB,
+		TABS_MAX,
+	};
+
 protected:
-	KeybindKeySet m_set[4];
+	KeybindKeySet m_set[TABS_MAX];
 
 public:
 	Keybind();

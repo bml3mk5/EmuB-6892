@@ -326,18 +326,23 @@ public:
 	//@}
 
 #ifdef USE_DEBUGGER
-protected:
+public:
 	// debugger
 	enum en_device_name_map {
-		DNM_KEYBOARD = 0,
-		DNM_CRTC,
-		DNM_PIA,
+		DNM_PIA = 0,
 		DNM_ACIA,
-		DNM_FDC3,
-		DNM_FDC5,
+		DNM_CRTC,
+		DNM_KEYBOARD,
 		DNM_CMT,
 		DNM_TIMER,
+		DNM_FDC3,
+		DNM_FDC5,
 		DNM_FDDUNIT,
+		DNM_FDDINFO,
+		DNM_FDD0,
+		DNM_FDD1,
+		DNM_FDD2,
+		DNM_FDD3,
 		DNM_BOARD,
 		DNM_PSG60,
 		DNM_PSG61,
@@ -352,10 +357,16 @@ protected:
 		DNM_MSM58321,
 		DNM_EVENT
 	};
-	static const struct st_device_name_map {
+	enum en_device_info_type {
+		DEVTYPE_ANY = -1,
+		DEVTYPE_REG = 0,
+		DEVTYPE_STATUS,
+	};
+protected:
+	static const struct st_device_name_list {
 		const _TCHAR *name;
-		uint32_t        num;
-	} c_device_names_map[];
+		en_device_info_type type;
+	} c_device_name_list[];
 
 public:
 	// debugger
@@ -364,7 +375,7 @@ public:
 	DEVICE *get_memory(int index);
 
 	bool get_debug_device_name(const _TCHAR *param, uint32_t *num, int *idx, const _TCHAR **name);
-	void get_debug_device_names_str(_TCHAR *buffer, size_t buffer_len);
+	void get_debug_device_names_str(int type, _TCHAR *buffer, size_t buffer_len);
 	bool debug_write_reg(uint32_t num, uint32_t reg_num, uint32_t data);
 	bool debug_write_reg(uint32_t num, const _TCHAR *reg, uint32_t data);
 	void debug_regs_info(uint32_t num, _TCHAR *buffer, size_t buffer_len);

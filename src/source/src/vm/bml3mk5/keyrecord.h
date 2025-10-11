@@ -89,8 +89,14 @@ private:
 	int   mouse_recp_stat[3];
 	int   mouse_recr_stat[3];
 #endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 	uint8_t joypia_recp_stat[2];
 	uint8_t joypia_recr_stat[2];
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	uint8_t joypsg_recp_stat[2];
+	uint8_t joypsg_recr_stat[2];
+#endif
 	char  rec_key_tmp_buff[512];
 	char  rec_key_rec_buff[512];
 	int64_t key_rec_sum_clock;
@@ -103,8 +109,11 @@ private:
 #ifdef USE_MOUSE
 	KEYRECORD_CACHE m_mouse_cache;
 #endif
-#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 	KEYRECORD_CACHE m_joypia_cache;
+#endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	KEYRECORD_CACHE m_joypsg_cache;
 #endif
 #ifdef _DEBUG
 	uint8_t vm_key_dbg_stat[KEYBIND_KEYS];
@@ -116,12 +125,12 @@ private:
 	bool set_relative_path(const char *key, const _TCHAR *base_path, CRecentPath &path);
 	void get_file_path(const _TCHAR *base_path, _TCHAR **file_path, int *bank_num);
 
-//	inline bool playing_keys(int code, bool pressed);
-//	inline void recording_keys(int code, bool pressed);
 	inline void playing_mouse_status(int *mstat);
 	inline void recording_mouse_status(const int *mstat);
 	inline void playing_joypia_status(uint8_t *joy);
 	inline void recording_joypia_status(const uint8_t *joy);
+	inline void playing_joypsg_status(uint8_t *joy);
+	inline void recording_joypsg_status(const uint8_t *joy);
 #ifdef USE_LIGHTPEN
 	inline void playing_lightpen_status(int *mstat);
 	inline void recording_lightpen_status(const int *mstat);
@@ -133,15 +142,13 @@ public:
 
 	void read_to_cache();
 
-//	void reading_keys(int num);
-
-//	bool processing_keys(int code, bool pressed);
 	void playing_key();
 	void recording_key(int code, bool pressed);
 	void playing_system_keys();
 	void recording_system_keys(int code, bool pressed);
 	void processing_mouse_status(int *mstat);
 	void processing_joypia_status(uint8_t *joy);
+	void processing_joypsg_status(uint8_t *joy);
 #ifdef USE_LIGHTPEN
 	void processing_lightpen_status(int *mstat);
 #endif

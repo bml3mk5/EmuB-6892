@@ -12,11 +12,16 @@
 #ifndef QT_LEDBOX_BASE_H
 #define QT_LEDBOX_BASE_H
 
+#include <QDialog>
 #include "../../vm/vm.h"
 #include "../../common.h"
 #include "../../csurface.h"
 
 class CBitmap;
+class QPainter;
+#ifdef USE_OPENGL
+class COpenGLTexture;
+#endif
 
 /**
 	@brief LedBoxBase is the class that display the access indicator on the screen.
@@ -100,7 +105,6 @@ protected:
 	// LED位置
 	VmRectWH	led_pt[LED_POS_END];
 
-
 	// 表示位置
 	struct win_pt_st {
 		int left;
@@ -110,6 +114,9 @@ protected:
 		int place;
 	} win_pt;
 	VmRectWH    parent_pt;
+	VmRect		win_rec_pt;
+	VmRectWH    parent_rec_pt;
+	bool		changed_position;
 
 	int			mode;
 	int         prev_mode;
@@ -142,7 +149,13 @@ public:
 	void SetMode(int);
 	void SetPos(int left, int top, int right, int bottom, int place);
 	void SetPos(int place);
-	void Draw(QImage *);
+	void SetPosForRec(int left, int top, int right, int bottom);
+	void Draw(CSurface &);
+	void Draw(QPainter *);
+#ifdef USE_OPENGL
+	void Draw(COpenGLTexture &);
+#endif
+	void DrawForRec(CSurface &);
 	void Update(uint64_t flag);
 
 	void SetDistance(int place, const VmPoint *ndist);

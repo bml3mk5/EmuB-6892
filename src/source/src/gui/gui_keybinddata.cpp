@@ -16,22 +16,32 @@
 const struct KeybindData::st_type KeybindData::cTypes[] = {
 	{ DEVTYPE_KEYBOARD,	VM_TYPE_KEYASSIGN,	FLAG_DENY_DUPLICATE },
 	{ DEVTYPE_JOYPAD,	VM_TYPE_KEYASSIGN,	0 },
-#if !defined(USE_PIAJOYSTICKBIT)
+#if !defined(USE_JOYSTICKBIT)
 	{ DEVTYPE_JOYPAD,	VM_TYPE_PIOJOYASSIGN,	0 },
 #else
 	{ DEVTYPE_JOYPAD,	VM_TYPE_PIOBITASSIGN,	0 },
 #endif
-#if !defined(USE_PIAJOYSTICKBIT)
+#if !defined(USE_JOYSTICKBIT)
 	{ DEVTYPE_KEYBOARD,	VM_TYPE_PIOJOYASSIGN,	0 },
 #else
 	{ DEVTYPE_KEYBOARD,	VM_TYPE_PIOBITASSIGN,	0 },
+#endif
+#if !defined(USE_JOYSTICKBIT)
+	{ DEVTYPE_JOYPAD,	VM_TYPE_PSGJOYASSIGN,	0 },
+#else
+	{ DEVTYPE_JOYPAD,	VM_TYPE_PSGBITASSIGN,	0 },
+#endif
+#if !defined(USE_JOYSTICKBIT)
+	{ DEVTYPE_KEYBOARD,	VM_TYPE_PSGJOYASSIGN,	0 },
+#else
+	{ DEVTYPE_KEYBOARD,	VM_TYPE_PSGBITASSIGN,	0 },
 #endif
 	{ -1, -1, 0 },
 }; 
 
 KeybindData::KeybindData()
 {
-	m_max_tabs = TABS_MAX;
+	m_max_tabs = Keybind::TABS_MAX;
 	m_tab_num = 0;
 	m_devtype = DEVTYPE_KEYBOARD;
 	m_vm_type = VM_TYPE_KEYASSIGN;
@@ -433,9 +443,19 @@ bool KeybindData::GetCellString(int row, int col, _TCHAR *label)
 	bool rc = false;
 	int idx = row2idx_map[row];
 	if(col < 0) {
-		if (m_vm_type == VM_TYPE_PIOBITASSIGN) rc = GetVmJoyBitLabel(idx, label, true);
-		else if (m_vm_type == VM_TYPE_PIOJOYASSIGN) rc = GetVmJoyLabel(idx, label, true);
-		else rc = GetVmKeyLabel(idx, label, true);
+		switch(m_vm_type) {
+		case VM_TYPE_PIOBITASSIGN:
+		case VM_TYPE_PSGBITASSIGN:
+			rc = GetVmJoyBitLabel(idx, label, true);
+			break;
+		case VM_TYPE_PIOJOYASSIGN:
+		case VM_TYPE_PSGJOYASSIGN:
+			rc = GetVmJoyLabel(idx, label, true);
+			break;
+		default:
+			rc = GetVmKeyLabel(idx, label, true);
+			break;
+		}
 	} else {
 		codetable_t *tbl = &table[idx];
 		uint32_t code = tbl->cols[col].vk_keycode;
@@ -594,6 +614,7 @@ void KeybindData::SetData()
 	int cols = vkkey_defmap_cols;
 	uint32_key_assign_t *dst = vkkey_map;
 	uint32_t code = 0;
+	int joy_dev = DEV_PIAJOY;
 
 	for(int row=0; row<rows; row++) {
 		if (table[row].flags & CODE_TABLE_FLAG_ENABLE) {
@@ -619,10 +640,14 @@ void KeybindData::SetData()
 				}
 			}
 			break;
+		case VM_TYPE_PSGJOYASSIGN:
+		case VM_TYPE_PSGBITASSIGN:
+			joy_dev = DEV_PSGJOY;
+//			[: through :]
 		case VM_TYPE_PIOJOYASSIGN:
 		case VM_TYPE_PIOBITASSIGN:
 			// make keyboard to joyport mapping
-			emu->clear_key2joy_map();
+			emu->clear_key2joy_map(joy_dev);
 			for(int row=0, bidx = -1; row<rows; row++) {
 				if (table[row].flags & CODE_TABLE_FLAG_ENABLE) {
 					uint32_t joy_code = (table[row].vm_keycode & 0xff);
@@ -630,9 +655,9 @@ void KeybindData::SetData()
 						code = table[row].cols[col].vk_keycode;
 						if (table[row].flags & CODE_TABLE_FLAG_JOYBTN) {
 							if (bidx < 0) bidx = joy_code;
-							emu->set_key2joy_map(code, col, (joy_code - bidx) | 0x80000000);
+							emu->set_key2joy_map(joy_dev, code, col, (joy_code - bidx) | 0x80000000);
 						} else {
-							emu->set_key2joy_map(code, col, joy_code);
+							emu->set_key2joy_map(joy_dev, code, col, joy_code);
 						}
 					}
 				}
@@ -644,10 +669,14 @@ void KeybindData::SetData()
 		break;
 	case DEVTYPE_JOYPAD:
 		switch(m_vm_type) {
+		case VM_TYPE_PSGJOYASSIGN:
+		case VM_TYPE_PSGBITASSIGN:
+			joy_dev = DEV_PSGJOY;
+//			[: through :]
 		case VM_TYPE_PIOJOYASSIGN:
 		case VM_TYPE_PIOBITASSIGN:
 			// make joypad to joyport mapping
-			emu->clear_joy2joy_map();
+			emu->clear_joy2joy_map(joy_dev);
 			emu->clear_joy2joyk_map();
 			for(int row=0, anaidx = -1; row<rows; row++) {
 				if (table[row].flags & CODE_TABLE_FLAG_ENABLE) {
@@ -660,7 +689,7 @@ void KeybindData::SetData()
 						} else if (table[row].flags & CODE_TABLE_FLAG_JOYKEY) {
 							emu->set_joy2joyk_map(col, idx, code);
 						} else {
-							emu->set_joy2joy_map(col, idx, code);
+							emu->set_joy2joy_map(joy_dev, col, idx, code);
 						}
 					}
 				}

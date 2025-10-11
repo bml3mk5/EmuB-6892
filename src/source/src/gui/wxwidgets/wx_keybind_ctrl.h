@@ -153,4 +153,48 @@ public:
 	void ClearCellByCode(uint32_t code);
 };
 
+/**
+	@brief keybind base dialog
+*/
+class MyKeybindBaseDlg : public MyDialog
+{
+protected:
+	std::vector<MyKeybindListWindow *> ctrls;
+	uint32_t joy_mask;
+
+	MyNotebook *notebook;
+
+	void create_footer(wxBoxSizer *szr, const wxSizerFlags &flags);
+
+	bool get_vmkeylabel(int code, wxString &label);
+	bool get_vkkeylabel(uint32_t code, wxString &label);
+	bool get_vkjoylabel(uint32_t code, wxString &label);
+	uint32_t translate_vkkey(uint32_t code);
+
+	void load_data(int tab, int num);
+	void save_data(int tab, int num);
+
+	void OnLoadDefault(wxCommandEvent &);
+	void OnLoadPreset(wxCommandEvent &);
+	void OnSavePreset(wxCommandEvent &);
+
+	void OnClickAxis(wxCommandEvent &);
+
+public:
+	MyKeybindBaseDlg(MyFrame *, wxWindowID, const wxString &, EMU *, GUI_BASE *);
+
+	enum {
+		IDC_BUTTON_LOAD_DEFAULT0 = 20,
+		IDC_BUTTON_LOAD_DEFAULT4 = 24,
+
+		IDC_BUTTON_LOAD_PRESET00 = 100,
+		IDC_BUTTON_LOAD_PRESET44 = 144,
+
+		IDC_BUTTON_SAVE_PRESET00 = 200,
+		IDC_BUTTON_SAVE_PRESET44 = 244,
+	};
+
+	DECLARE_EVENT_TABLE()
+};
+
 #endif /* WX_KEYBIND_CTRL_H */

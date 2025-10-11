@@ -32,14 +32,13 @@
 
 void EMU_OSD::EMU_SCREEN()
 {
-	screen = NULL;
-	window = NULL;
-	surface = NULL;
+	m_screen_flags = 0;
 
-	screen_flags = 0;
+	window = NULL;
+	dwarea = NULL;
 
 #ifdef USE_OPENGL
-	glscreen = NULL;
+	glarea = NULL;
 	texGLMixed = NULL;
 //	mix_texture_name = 0;
 	src_tex_l = src_tex_t = 0.0;
@@ -47,12 +46,22 @@ void EMU_OSD::EMU_SCREEN()
 	src_pyl_l = src_pyl_t = -1.0;
 	src_pyl_r = src_pyl_b = 1.0;
 	opengl = NULL;
-	next_use_opengl = 0;
+//	next_use_opengl = 0;
+	mixed_max_size = desktop_size;
+
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	sufGLMain = NULL;
+	texGLLedBox = NULL;
+	texGLMsgBoard = NULL;
 #endif
+#endif /* USE_OPENGL */
 
 #ifdef USE_LEDBOX
 	ledbox = NULL;
 #endif
+
+	casSource = new CCairoSurface();
+	casMixed = new CCairoSurface();
 }
 
 ///
@@ -63,8 +72,6 @@ void EMU_OSD::initialize_screen()
 	EMU::initialize_screen();
 
 #ifdef USE_OPENGL
-	next_use_opengl = pConfig->use_opengl;
-
 	initialize_opengl();
 #endif
 
@@ -77,6 +84,7 @@ void EMU_OSD::initialize_screen()
 		msgboard->SetVisible(FLG_SHOWMSGBOARD ? true : false);
 	}
 #endif
+
 #ifdef USE_LEDBOX
 	if (gui) {
 		ledbox = gui->CreateLedBox(res_path.GetN(), pixel_format);
@@ -89,18 +97,30 @@ void EMU_OSD::initialize_screen()
 ///
 void EMU_OSD::release_screen()
 {
-	if (surface) {
-		cairo_surface_destroy(surface);
-	}
+	delete casMixed; casMixed = NULL;
+	delete casSource; casSource = NULL;
 
 #ifdef USE_OPENGL
 	release_opengl();
+	terminate_opengl();
 #endif
 	if (gui) {
 		gui->ReleaseLedBox();
+
+		gui->RestoreDrawingMethod(pConfig->drawing_method);
 	}
 
 	EMU::release_screen();
+}
+
+///
+/// recreate window
+///
+void EMU_OSD::restart_screen()
+{
+	int x = 0;
+	int y = 0;
+	create_screen(pConfig->disp_device_no, x, y, pConfig->screen_width, pConfig->screen_height, m_screen_flags);
 }
 
 ///
@@ -109,7 +129,6 @@ void EMU_OSD::release_screen()
 bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, uint32_t flags)
 {
 	bool rc = true;
-//	uint32_t set_flags = 0;
 	VmRect margin = { 0, 0, 0, 0 };
 
 	lock_screen();
@@ -120,17 +139,16 @@ bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, ui
 		flags &= ~SDL_WINDOW_FULLSCREEN;
 		margin = display_margin;
 	}
+
 	flags &= ~SDL_WINDOW_OPENGL;
 
 #ifdef USE_OPENGL
-	if (use_opengl) {
+	if (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) {
 		flags |= SDL_WINDOW_OPENGL;
-//		release_opengl_texture();
-//		if (opengl) opengl->Terminate();
 	}
 #endif
 
-	if (screen) {
+	if (window) {
 		//
 		// change window
 		//
@@ -184,12 +202,28 @@ bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, ui
 			gtk_window_fullscreen(GTK_WINDOW(window));
 #endif
 		}
+
+#ifdef USE_OPENGL
+		if (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) {
+			if (dwarea) gtk_widget_hide(dwarea);
+			if (glarea) {
+				gtk_widget_show(glarea);
+				release_opengl_texture();
+				create_opengl_texture();
+			}
+		} else
+#endif
+		{
+			if (glarea) gtk_widget_hide(glarea);
+			if (dwarea) gtk_widget_show(dwarea);
+		}
+
 	} else {
 		//
 		// create window
 		//
 		window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-		if (window == NULL) {
+		if (!window) {
 			logging->out_log(LOG_ERROR, "gtk_window_new error.");
 			rc = false;
 			goto FIN;
@@ -218,48 +252,60 @@ bool EMU_OSD::create_screen(int disp_no, int x, int y, int width, int height, ui
 		gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 #endif
 
-		screen = gtk_drawing_area_new();
-		if (screen == NULL) {
+#ifdef linux
+		pixel_format->PresetBGRA();
+#endif
+
+		// create drawing area
+		if (!dwarea) {
+			dwarea = gtk_drawing_area_new();
+		}
+		if (!dwarea) {
 			logging->out_log(LOG_ERROR, "gtk_drawing_area_new error.");
 			rc = false;
 			goto FIN;
+		} else {
+#if GTK_CHECK_VERSION(3,0,0)
+			g_signal_connect(G_OBJECT(dwarea), "realize", G_CALLBACK(on_realize), (gpointer)this);
+			g_signal_connect(G_OBJECT(dwarea), "draw", G_CALLBACK(on_draw), (gpointer)this);
+#else
+			g_signal_connect(G_OBJECT(dwarea), "expose-event", G_CALLBACK(on_expose), (gpointer)this);
+#endif
 		}
-
-		pixel_format->PresetBGRA();
 
 #ifdef USE_OPENGL
+		// create OpenGL context
+		if (!glarea) {
+			enabled_drawing_method |= DRAWING_METHOD_OPENGL_MASK;
 #ifdef USE_GTK_GLAREA
-		glscreen = gtk_gl_area_new();
+			glarea = gtk_gl_area_new();
 #else
-		glscreen = NULL;
+			glarea = NULL;
 #endif
-		if (glscreen == NULL) {
+		}
+		if (!glarea) {
 			logging->out_log(LOG_ERROR, "gtk_gl_area_new error.");
-			use_opengl = 0;
 			flags &= ~SDL_WINDOW_OPENGL;
+			enabled_drawing_method &= ~DRAWING_METHOD_OPENGL_MASK;
+			if (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) {
+				pConfig->drawing_method = DRAWING_METHOD_DEFAULT_AS;
+			}
+		} else {
+			g_signal_connect(G_OBJECT(glarea), "realize", G_CALLBACK(on_gl_realize), (gpointer)this);
+			g_signal_connect(G_OBJECT(glarea), "unrealize", G_CALLBACK(on_gl_unrealize), (gpointer)this);
+			g_signal_connect(G_OBJECT(glarea), "render", G_CALLBACK(on_gl_render), (gpointer)this);
 		}
-		if (use_opengl && glscreen) {
-			g_signal_connect(G_OBJECT(glscreen), "realize", G_CALLBACK(on_gl_realize), (gpointer)this);
-			g_signal_connect(G_OBJECT(glscreen), "unrealize", G_CALLBACK(on_gl_unrealize), (gpointer)this);
-			g_signal_connect(G_OBJECT(glscreen), "render", G_CALLBACK(on_gl_render), (gpointer)this);
-		} else
-#endif
-		{
-#if GTK_CHECK_VERSION(3,0,0)
-			g_signal_connect(G_OBJECT(screen), "realize", G_CALLBACK(on_realize), (gpointer)this);
-			g_signal_connect(G_OBJECT(screen), "draw", G_CALLBACK(on_draw), (gpointer)this);
-#else
-			g_signal_connect(G_OBJECT(screen), "expose-event", G_CALLBACK(on_expose), (gpointer)this);
-#endif
-		}
+#endif /* USE_OPENGL */
+
 	}
-	if (flags != screen_flags) {
-		logging->out_debugf(_T("different flags: 0x%x -> 0x%x"), screen_flags, flags);
-		screen_flags = flags;
+
+	if (flags != m_screen_flags) {
+		logging->out_debugf(_T("different flags: 0x%x -> 0x%x"), m_screen_flags, flags);
+		m_screen_flags = flags;
 	}
 
 	// create gui window
-	if (gui->CreateWidget(screen, width, height) == -1) {
+	if (gui->CreateWidget(window, width, height) == -1) {
 		rc = false;
 		goto FIN;
 	}
@@ -270,7 +316,28 @@ FIN:
 	return rc;
 }
 
-void EMU_OSD::realize_window(GtkWidget *window)
+/// when using GTK+ on main window
+/// attach child widgets to main window
+/// @note called by GUI::CreateMenu()
+void EMU_OSD::attach_widgets_to(GtkWidget *parent)
+{
+#ifdef USE_OPENGL
+	gtk_box_pack_start(GTK_BOX(parent), glarea, TRUE, TRUE, 0);
+	g_object_ref(G_OBJECT(glarea));
+#endif
+	gtk_box_pack_start(GTK_BOX(parent), dwarea, TRUE, TRUE, 0);
+	g_object_ref(G_OBJECT(dwarea));
+
+	if ((pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) != 0) {
+		if (dwarea) gtk_widget_hide(dwarea);
+		if (glarea) gtk_widget_show(glarea);
+	} else {
+		if (glarea) gtk_widget_hide(glarea);
+		if (dwarea) gtk_widget_show(dwarea);
+	}
+}
+
+void EMU_OSD::realize_window(GtkWidget *area)
 {
 #ifdef WINDOW_MOVE_POSITION
 	if (window_dest.x != 0x7fffffff && window_dest.y != 0x7fffffff) {
@@ -285,8 +352,6 @@ void EMU_OSD::realize_window(GtkWidget *window)
 ///
 bool EMU_OSD::create_offlinesurface()
 {
-	if (!screen) return true;
-
 	if (sufOrigin && !sufOrigin->IsEnable()) {
 		if (!sufOrigin->Create(screen_size.w, screen_size.h, *pixel_format)) {
 			logging->out_log(LOG_ERROR, _T("EMU_OSD::create_offlinesurface sufOrigin failed."));
@@ -302,26 +367,13 @@ bool EMU_OSD::create_offlinesurface()
 		}
 	}
 #endif
-	if (sufMixed) {
-		sufMixed->Release();
-		if (!sufMixed->Create(mixed_max_size.w, mixed_max_size.h, *pixel_format)) {
-			logging->out_log(LOG_ERROR, _T("EMU_OSD::create_offlinesurface sufMixed failed."));
-			return false;
-		}
-		if (surface) {
-			cairo_surface_finish(surface);
-		}
-		surface = cairo_image_surface_create_for_data(
-			(unsigned char *)sufMixed->GetBuffer()
-			, CAIRO_FORMAT_RGB24
-			, mixed_max_size.w, mixed_max_size.h
-			, cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, mixed_max_size.w)
-		);
-		if (!surface) {
-			logging->out_log(LOG_ERROR, _T("cairo_image_surface_create_for_data failed."));
-			return false;
-		}
+	if (casSource) {
+		casSource->CreateC(*sufSource, screen_size.w, screen_size.h);
 	}
+	if (!create_mixedsurface()) {
+		return false;
+	}
+
 #ifdef USE_SMOOTH_STRETCH
 	if (sufStretch1 && sufStretch2) {
 		sufStretch1->Release();
@@ -345,23 +397,48 @@ bool EMU_OSD::create_offlinesurface()
 	return true;
 }
 
-///
+bool EMU_OSD::create_mixedsurface()
+{
+	if (sufMixed) {
+		sufMixed->Release();
+#ifdef USE_SCREEN_MIX_SURFACE
+		if (!sufMixed->Create(display_size.w, display_size.h, *pixel_format)) {
+			logging->out_log(LOG_ERROR, _T("EMU_OSD::create_offlinesurface sufMixed failed."));
+			return false;
+		}
+#endif
+	}
+	if (casMixed) {
+		casMixed->CreateC(*sufMixed, display_size.w, display_size.h);
+	}
+	return true;
+}
+
+void EMU_OSD::set_screen_filter_type()
+{
+	set_opengl_filter_type();
+}
+
 /// setting window or fullscreen size
 ///
 /// @param [in] width : new width or -1 set current width
 /// @param [in] height : new height or -1 set current height
-/// @param [in] power : magnify x 10
+/// @param [in] magnify
 /// @param [in] now_window : true:window / false:fullscreen
-void EMU_OSD::set_display_size(int width, int height, int power, bool now_window)
+void EMU_OSD::set_display_size(int width, int height, double magnify, bool now_window)
 {
 //	bool display_size_changed = false;
+#ifdef USE_SCREEN_ROTATE
 	bool stretch_changed = false;
+#endif
 
 	if(width != -1 && (display_size.w != width || display_size.h != height)) {
 		display_size.w = width;
 		display_size.h = height;
 //		display_size_changed = true;
+#ifdef USE_SCREEN_ROTATE
 		stretch_changed = true;
+#endif
 	}
 
 #ifdef USE_SCREEN_ROTATE
@@ -382,11 +459,12 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	} else
 #endif
 	{
+#ifdef USE_SCREEN_ROTATE
 		stretch_changed |= (source_size.w != screen_size.w);
 		stretch_changed |= (source_size.h != screen_size.h);
 		stretch_changed |= (source_aspect_size.w != screen_aspect_size.w);
 		stretch_changed |= (source_aspect_size.h != screen_aspect_size.h);
-
+#endif
 		source_size = screen_size;
 		source_aspect_size = screen_aspect_size;
 	}
@@ -553,8 +631,8 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	else {
 		for(int n = 0; n <= 1; n++) {
 			if (n == 0) {
-				mixed_size.w = display_size.w * 10 / power;
-				mixed_size.h = display_size.h * 10 / power;
+				mixed_size.w = (int)((double)display_size.w / magnify + 0.5);
+				mixed_size.h = (int)((double)display_size.h / magnify + 0.5);
 			} else {
 				mixed_size = source_size;
 			}
@@ -571,13 +649,13 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 		}
 		mixed_size.y = adjust_y_position(mixed_size.h, mixed_size.y);
 
-		stretched_size.w = source_aspect_size.w * power / 10;
-		stretched_size.h = source_aspect_size.h * power / 10;
+		stretched_size.w = (int)((double)source_aspect_size.w * magnify + 0.5);
+		stretched_size.h = (int)((double)source_aspect_size.h * magnify + 0.5);
 		stretched_size.x = (display_size.w - stretched_size.w) / 2;
 		stretched_size.y = (display_size.h - stretched_size.h) / 2;
 #ifndef USE_GTK
-		stretched_dest_real.x = - mixed_size.x * power / 10;
-		stretched_dest_real.y = - mixed_size.y * power / 10;
+		stretched_dest_real.x = (int)((double)- mixed_size.x * magnify + 0.5);
+		stretched_dest_real.y = (int)((double)- mixed_size.y * magnify + 0.5);
 		if (mixed_ratio.w < mixed_ratio.h) {
 			stretched_dest_real.y = stretched_dest_real.y * mixed_ratio.h / mixed_ratio.w;
 		} else {
@@ -614,10 +692,12 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	reSuf = stretched_size;
 
 #ifdef USE_OPENGL
+#ifndef USE_SCREEN_OPENGL_MIX_ON_RENDERER
 	src_tex_l = (GLfloat)mixed_size.x / mixed_max_size.w;
 	src_tex_t = (GLfloat)mixed_size.y / mixed_max_size.h;
 	src_tex_r = (GLfloat)(mixed_size.x + mixed_size.w) / mixed_max_size.w;
 	src_tex_b = (GLfloat)(mixed_size.y + mixed_size.h) / mixed_max_size.h;
+#endif
 	if (stretched_size.w < display_size.w) src_pyl_r = (GLfloat)stretched_size.w / display_size.w;
 	else src_pyl_r = 1.0f;
 	if (stretched_size.h < display_size.h) src_pyl_b = (GLfloat)stretched_size.h / display_size.h;
@@ -637,14 +717,17 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	first_invalidate = true;
 	screen_size_changed = false;
 #ifdef _DEBUG_LOG
-	logging->out_debugf(_T("set_display_size: w:%d h:%d power:%d %s"),width,height,power,now_window ? _T("window") : _T("fullscreen"));
-	logging->out_debugf(_T("         display: w:%d h:%d"),display_size.w, display_size.h);
+	logging->out_debugf(_T("set_display_size: w:%d h:%d magnify:%.1f %s"), width, height, magnify, now_window ? _T("window") : _T("fullscreen"));
+	logging->out_debugf(_T("         display: w:%d h:%d"), display_size.w, display_size.h);
 	logging->out_debugf(_T("          screen: w:%d h:%d"), screen_size.w, screen_size.h);
 	logging->out_debugf(_T("   screen aspect: w:%d h:%d"), screen_aspect_size.w, screen_aspect_size.h);
 	logging->out_debugf(_T("          source: w:%d h:%d"), source_size.w, source_size.h);
 	logging->out_debugf(_T("   source aspect: w:%d h:%d"), source_aspect_size.w, source_aspect_size.h);
 	logging->out_debugf(_T("           mixed: w:%d h:%d"), mixed_size.w, mixed_size.h);
+	logging->out_debugf(_T("       mixed max: w:%d h:%d"), mixed_max_size.w, mixed_max_size.h);
 	logging->out_debugf(_T("         stretch: w:%d h:%d"), stretched_size.w, stretched_size.h);
+	logging->out_debugf(_T("     screen dest: x:%d y:%d"), screen_size.x, screen_size.y);
+	logging->out_debugf(_T("     source dest: x:%d y:%d"), source_size.x, source_size.y);
 	logging->out_debugf(_T("      mixed dest: x:%d y:%d"), mixed_size.x, mixed_size.y);
 	logging->out_debugf(_T("    stretch dest: x:%d y:%d"), stretched_size.x, stretched_size.y);
 	logging->out_debugf(_T(" stretch dest re: x:%d y:%d"), stretched_dest_real.x, stretched_dest_real.y);
@@ -654,9 +737,14 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 	logging->out_debugf(_T("     src texture: l:%.5f t:%.5f r:%.5f b:%.5f"), src_tex_l, src_tex_t, src_tex_r, src_tex_b);
 #endif
 #endif
+
+	calc_vm_screen_size();
+
 	if (now_window) {
+#ifndef USE_GTK
 		stretched_size.x += display_margin.left;
 		stretched_size.y += display_margin.top;
+#endif
 		reSuf.x += display_margin.left;
 		reSuf.y += display_margin.top;
 #ifdef _DEBUG_LOG
@@ -693,24 +781,62 @@ void EMU_OSD::set_display_size(int width, int height, int power, bool now_window
 		create_offlinesurface();
 	}
 #endif
+	create_mixedsurface();
 
 	// send display size to vm
 	set_vm_display_size();
 
-#ifdef USE_LEDBOX
-	if (gui) {
-		gui->SetLedBoxPosition(now_window, mixed_size.x, mixed_size.y, mixed_size.w, mixed_size.h, pConfig->led_pos | (is_fullscreen() ? 0x10 : 0));
-	}
-#endif
-#ifdef USE_MESSAGE_BOARD
-	if (msgboard) {
-		msgboard->SetSize(source_size.w, source_size.h);
-		msgboard->SetMessagePos(4 + mixed_size.x,  - 4 - source_size.h + mixed_size.y + mixed_size.h, 2);
-		msgboard->SetInfoPos(-4 - mixed_size.x, 4 + mixed_size.y, 1);
-	}
-#endif
+	set_ledbox_position(now_window);
+
+	set_msgboard_position();
 
 	unlock_screen();
+}
+
+void EMU_OSD::set_ledbox_position(bool now_window)
+{
+#ifdef USE_LEDBOX
+	if (gui) {
+#ifdef USE_OPENGL
+		if (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) {
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+			gui->SetLedBoxPosition(now_window, 0, 0, display_size.w, display_size.h, pConfig->led_pos | (is_fullscreen() ? 0x10 : 0));
+#else
+			gui->SetLedBoxPosition(now_window, mixed_size.x, mixed_size.y, mixed_size.w, mixed_size.h, pConfig->led_pos | (is_fullscreen() ? 0x10 : 0));
+#endif
+		} else
+#endif
+		{
+			gui->SetLedBoxPosition(now_window, 0, 0, display_size.w, display_size.h, pConfig->led_pos | (is_fullscreen() ? 0x10 : 0));
+		}
+	}
+#endif
+}
+
+void EMU_OSD::set_msgboard_position()
+{
+#ifdef USE_MESSAGE_BOARD
+	if (msgboard) {
+#ifdef USE_OPENGL
+		if (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) {
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+			msgboard->SetSize(display_size.w, display_size.h);
+			msgboard->SetMessagePos(4, -4, 2);
+			msgboard->SetInfoPos(-4, 4, 1);
+#else
+			msgboard->SetSize(source_size.w, source_size.h);
+			msgboard->SetMessagePos(4 + mixed_size.x,  - 4 - source_size.h + mixed_size.y + mixed_size.h, 2);
+			msgboard->SetInfoPos(-4 - mixed_size.x, 4 + mixed_size.y, 1);
+#endif
+		} else
+#endif
+		{
+			msgboard->SetSize(display_size.w, display_size.h);
+			msgboard->SetMessagePos(4, -4, 2);
+			msgboard->SetInfoPos(-4, 4, 1);
+		}
+	}
+#endif
 }
 
 ///
@@ -768,13 +894,13 @@ void EMU_OSD::draw_screen()
 	}
 #endif
 
+#if 0
 	{
-#ifdef USE_LEDBOX
 		if (FLG_SHOWLEDBOX && ledbox) {
 			ledbox->Draw(*sufSource);
 		}
-#endif
 	}
+#endif
 
 	unlock_screen();
 }
@@ -853,6 +979,36 @@ gboolean EMU_OSD::on_gl_render(GtkGLArea *area, GdkGLContext *context, gpointer 
 #endif
 
 ///
+/// copy src screen to mix screen
+///
+void EMU_OSD::mix_screen_sub()
+{
+#if 1 /* USE_SCREEN_MIX_SURFACE */
+	lock_screen();
+
+	sufSource->StretchBlit(vm_screen_size, *sufMixed, stretched_size);
+
+	unlock_screen();
+
+	if (gui) {
+		gui->UpdateIndicator(update_led());
+	}
+
+#ifdef USE_LEDBOX
+	if (FLG_SHOWLEDBOX && ledbox) {
+		ledbox->Draw(*sufMixed);
+	}
+#endif
+
+#ifdef USE_MESSAGE_BOARD
+	if (msgboard && FLG_SHOWMSGBOARD) {
+		msgboard->Draw(*sufMixed);
+	}
+#endif
+#endif /* USE_SCREEN_MIX_SURFACE */
+}
+
+///
 /// copy src screen to mix screen and overlap a message
 ///
 /// @return false: cannot mix (no allocate mix surface)
@@ -860,52 +1016,59 @@ bool EMU_OSD::mix_screen_pa(cairo_t *cr)
 {
 	if (disable_screen) return false;
 
-	lock_screen();
+	if (pConfig->drawing_method & DRAWING_METHOD_DBUFFER_MASK) {
+		// double buffering
+		mix_screen_sub();
 
-	sufSource->Blit(*sufMixed);
+		// render screen
 
-	unlock_screen();
+//		// fill black on screen
+//		if (first_invalidate) {
+//			cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
+//		}
 
-	if (gui) {
-		gui->UpdateIndicator(update_led());
-	}
-#ifdef USE_MESSAGE_BOARD
-	if (msgboard && FLG_SHOWMSGBOARD) {
-		msgboard->Draw(sufMixed);
-	}
+		// paint surface
+		casMixed->BlitC(cr);
+
+		cairo_paint(cr);
+
+		cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
+		cairo_fill(cr);
+
+		if (first_invalidate) {
+			first_invalidate = false;
+#ifdef _DEBUG
+			cairo_matrix_t m2;
+			cairo_get_matrix(cr, &m2);
+			logging->out_debugf(_T("matrix:[%.2f, %.2f, %.2f, %.2f] %.2f, %.2f"),
+				m2.xx, m2.xy, m2.yx, m2.yy, m2.x0, m2.y0);
 #endif
+		}
 
-#ifdef USE_OPENGL
-	if (!(screen_flags & SDL_WINDOW_OPENGL))
-#endif
+	}
+	else
 	{
 		// render screen
-		if (surface) {
-			gint w, h;
-			cairo_matrix_t m2;
+		gint w, h;
 
-			gtk_window_get_size(GTK_WINDOW(window), &w, &h);
+		gtk_window_get_size(GTK_WINDOW(window), &w, &h);
 
-			// fill black on screen
-			if (first_invalidate) {
-				cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
-			}
+		// fill black on screen
+//		if (first_invalidate) {
+//			cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
+//		}
 
-//			cairo_antialias_t ar = CAIRO_ANTIALIAS_DEFAULT;
-//			if (pConfig->gl_filter_type == 0) ar = CAIRO_ANTIALIAS_NONE;
-//			cairo_set_antialias(cr, ar);
+//		cairo_antialias_t ar = CAIRO_ANTIALIAS_DEFAULT;
+//		if (pConfig->filter_type == 0) ar = CAIRO_ANTIALIAS_NONE;
+//		cairo_set_antialias(cr, ar);
 
-			cairo_get_matrix(cr, &m2);
-			m2.xx = (double)stretched_size.w / mixed_size.w;
-			m2.xy = 0.0;
-			m2.yx = 0.0;
-			m2.yy = (double)stretched_size.h / mixed_size.h;
-			if (is_fullscreen()) {
-				m2.x0 = (double)(stretched_size.x);
-				m2.y0 = (double)(stretched_size.y);
-			}
-			cairo_set_matrix(cr, &m2);
+		if (is_fullscreen()) {
+			cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
+			cairo_fill(cr);
+			cairo_paint(cr);
+		}
 
+#if 0
 			// fill black on frame area
 			cairo_rectangle(cr
 				, (double)-stretched_size.x
@@ -927,26 +1090,43 @@ bool EMU_OSD::mix_screen_pa(cairo_t *cr)
 				, (double)mixed_size.h
 				, (double)w
 				, (double)h - mixed_size.h);
+#endif
 
 			// paint surface
-			cairo_set_source_surface(cr, surface
-				, (double)stretched_dest_real.x
-				, (double)stretched_dest_real.y);
+			lock_screen();
+			casSource->StretchBlitC(vm_screen_size, cr, stretched_size, pConfig->filter_type);
+			unlock_screen();
 
 			cairo_paint(cr);
 
-			cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
-			cairo_fill(cr);
+			if (gui) {
+				gui->UpdateIndicator(update_led());
+			}
+
+#ifdef USE_LEDBOX
+			if (FLG_SHOWLEDBOX && ledbox) {
+				ledbox->Draw(cr);
+			}
+#endif
+
+#ifdef USE_MESSAGE_BOARD
+			if (msgboard && FLG_SHOWMSGBOARD) {
+				msgboard->Draw(cr);
+			}
+#endif
+
+//			cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
+//			cairo_fill(cr);
 
 			if (first_invalidate) {
 				first_invalidate = false;
 #ifdef _DEBUG
+				cairo_matrix_t m2;
 				cairo_get_matrix(cr, &m2);
 				logging->out_debugf(_T("matrix:[%.2f, %.2f, %.2f, %.2f] %.2f, %.2f"),
 					m2.xx, m2.xy, m2.yx, m2.yy, m2.x0, m2.y0);
 #endif
 			}
-		}
 	}
 
 	// invalidate window
@@ -958,50 +1138,91 @@ bool EMU_OSD::mix_screen_pa(cairo_t *cr)
 
 #ifdef USE_OPENGL
 ///
-/// copy src screen to mix screen and overlap a message
+/// copy src screen to mix screen and overlap a message using OpenGL
 ///
 /// @return false: cannot mix (no allocate mix surface)
 bool EMU_OSD::mix_screen_gl(GdkGLContext *context)
 {
+	/* OpenGL ********************/
+	if (disable_screen) return false;
+
+	if (!(m_screen_flags & SDL_WINDOW_OPENGL)) return false;
+
+#ifndef USE_SCREEN_OPENGL_MIX_ON_RENDERER
 	if (!(sufMixed && sufMixed->IsEnable())) return false;
 
-	lock_screen();
+	if (texGLMixed) {
+		mix_screen_sub();
 
-	sufSource->Blit(*sufMixed);
-
-	unlock_screen();
-
-	if (gui) {
-		gui->UpdateIndicator(update_led());
-	}
-	if (msgboard && FLG_SHOWMSGBOARD) {
-		msgboard->Draw(sufMixed);
-	}
-
-	if (screen_flags & SDL_WINDOW_OPENGL) {
-		if (texGLMixed) {
-			if (first_invalidate) {
+		if (first_invalidate) {
 #ifdef USE_OPENGL_WH_ORTHO
-				if (opengl->Version() <= 1) {
-					src_pyl_l = (GLfloat)rePyl.left;
-					src_pyl_t = (GLfloat)rePyl.top;
-					src_pyl_r = (GLfloat)rePyl.right;
-					src_pyl_b = (GLfloat)rePyl.bottom;
-				}
+			if (opengl->Version() <= 1) {
+				src_pyl_l = (GLfloat)rePyl.left;
+				src_pyl_t = (GLfloat)rePyl.top;
+				src_pyl_r = (GLfloat)rePyl.right;
+				src_pyl_b = (GLfloat)rePyl.bottom;
+			}
 #endif
-				texGLMixed->SetPos(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
-				first_invalidate = false;
-			}
-
-			// draw texture using screen pixel buffer
-			texGLMixed->Draw(sufMixed->Width(), sufMixed->Height(), sufMixed->GetBuffer());
-
-			if (!self_invalidate) {
-				// call this only once at first.
-				change_opengl_attr();
-			}
+			texGLMixed->SetPos(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
+			first_invalidate = false;
 		}
+
+		// draw texture using screen pixel buffer
+		texGLMixed->Draw(sufMixed->Width(), sufMixed->Height(), sufMixed->GetBuffer());
+
+//		if (!self_invalidate) {
+//			// call this only once at first.
+//			change_opengl_attr();
+//		}
 	}
+
+#else /*  USE_SCREEN_OPENGL_MIX_ON_RENDERER */
+	if (texGLMixed) {
+		lock_screen();
+
+		SDL_Rect re;
+		RECT_IN(re, 0, 0, vm_screen_size.x + vm_screen_size.w, vm_screen_size.y + vm_screen_size.h);
+		sufSource->Blit(*sufGLMain, re);
+
+		unlock_screen();
+
+		if (first_invalidate) {
+#ifdef USE_OPENGL_WH_ORTHO
+			if (opengl->Version() <= 1) {
+				src_pyl_l = (GLfloat)rePyl.left;
+				src_pyl_t = (GLfloat)rePyl.top;
+				src_pyl_r = (GLfloat)rePyl.right;
+				src_pyl_b = (GLfloat)rePyl.bottom;
+			}
+#endif
+			texGLMixed->SetPos(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
+			first_invalidate = false;
+		}
+
+		// draw texture using screen pixel buffer
+		texGLMixed->Draw(sufGLMain->Width(), sufGLMain->Height(), sufGLMain->GetBuffer());
+
+		if (gui) {
+			gui->UpdateIndicator(update_led());
+		}
+
+#ifdef USE_LEDBOX
+		if (FLG_SHOWLEDBOX && ledbox && texGLLedBox) {
+			ledbox->Draw(*texGLLedBox);
+		}
+#endif
+#ifdef USE_MESSAGE_BOARD
+		if (FLG_SHOWMSGBOARD && msgboard && texGLMsgBoard) {
+			msgboard->Draw(*texGLMsgBoard);
+		}
+#endif
+//		if (!self_invalidate) {
+//			// call this only once at first.
+//			change_opengl_attr();
+//		}
+	}
+
+#endif /* USE_SCREEN_OPENGL_MIX_ON_RENDERER */
 
 	// invalidate window
 	self_invalidate = true;
@@ -1009,7 +1230,7 @@ bool EMU_OSD::mix_screen_gl(GdkGLContext *context)
 
 	return true;
 }
-#endif
+#endif /* USE_OPENGL */
 
 ///
 /// post request screen updating to draw it on main thread
@@ -1017,14 +1238,14 @@ bool EMU_OSD::mix_screen_gl(GdkGLContext *context)
 void EMU_OSD::need_update_screen()
 {
 #ifdef USE_OPENGL
-	if (use_opengl && glscreen) {
+	if (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) {
 #ifdef USE_GTK_GLAREA
-		gtk_gl_area_queue_render(GTK_GL_AREA(glscreen));
+		if (glarea) gtk_gl_area_queue_render(GTK_GL_AREA(glarea));
 #endif
 	} else
 #endif
 	{
-		gtk_widget_queue_draw(screen);
+		if (dwarea) gtk_widget_queue_draw(dwarea);
 	}
 }
 
@@ -1044,6 +1265,57 @@ scrntype* EMU_OSD::screen_buffer(int y)
 int EMU_OSD::screen_buffer_offset()
 {
 	return screen_size.w;
+}
+
+///
+/// change screen size on vm
+///
+void EMU_OSD::set_vm_screen_size(int screen_width, int screen_height, int window_width, int window_height, int window_width_aspect, int window_height_aspect)
+{
+	EMU::set_vm_screen_size(screen_width, screen_height, window_width, window_height, window_width_aspect, window_height_aspect);
+
+	calc_vm_screen_size();
+
+	first_invalidate = true;
+}
+
+void EMU_OSD::calc_vm_screen_size()
+{
+	calc_vm_screen_size_sub(mixed_size, vm_screen_size);
+
+#ifdef _DEBUG
+	logging->out_debugf(_T("vm_display_size: w:%d h:%d"), vm_display_size.w, vm_display_size.h);
+	logging->out_debugf(_T("vm_screen_size: x:%d y:%d w:%d h:%d"), vm_screen_size.x, vm_screen_size.y, vm_screen_size.w, vm_screen_size.h);
+#endif
+
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	src_tex_l = (float)vm_screen_size.x / (float)mixed_max_size.w;
+	src_tex_r = (float)(vm_screen_size.x + vm_screen_size.w) / (float)mixed_max_size.w;
+	src_tex_t = (float)vm_screen_size.y / (float)mixed_max_size.h;
+	src_tex_b = (float)(vm_screen_size.y + vm_screen_size.h) / (float)mixed_max_size.h;
+
+#ifdef _DEBUG
+	logging->out_debugf(_T("src tex: l:%.3f t:%.3f r:%.3f b:%.3f"), src_tex_l, src_tex_t, src_tex_r, src_tex_b);
+#endif
+#endif
+}
+
+void EMU_OSD::calc_vm_screen_size_sub(const VmRectWH &src_size, VmRectWH &vm_size)
+{
+	double sw = (double)vm_display_size.w * src_size.w / MIN_WINDOW_WIDTH;
+	vm_size.w = (int)(sw + 0.5);
+	if (vm_display_size.w < SCREEN_WIDTH) {
+		vm_size.x = (int)((double)screen_size.x - ((sw - vm_display_size.w) / 2.0) + 0.5);
+	} else {
+		vm_size.x = (int)(- ((sw - vm_display_size.w) / 2.0) + 0.5);
+	}
+	double sh = (double)vm_display_size.h * src_size.h / MIN_WINDOW_HEIGHT;
+	vm_size.h = (int)(sh + 0.5);
+	vm_size.y = (int)((double)screen_size.y - ((sh - vm_display_size.h) / 2.0) + 0.5);
+}
+
+void EMU_OSD::update_screen()
+{
 }
 
 ///
@@ -1077,41 +1349,148 @@ void EMU_OSD::update_screen_gl(GdkGLContext *context)
 #endif
 
 ///
+/// create the surface for recording
+///
+/// @return true if create successfully
+bool EMU_OSD::create_recordingsurface()
+{
+#ifdef USE_RECORDING_SURFACE
+	if (!sufRecording->IsEnable()) {
+		if (!sufRecording->Create(sufOrigin->Width(), sufOrigin->Height(), *pixel_format)) {
+			logging->out_log(LOG_ERROR, _T("Cannot create surface for recording."));
+			return false;
+		}
+	}
+#endif /* USE_RECORDING_SURFACE */
+	return true;
+}
+
+///
+/// copy current screen to the surface for recording
+///
+void EMU_OSD::copy_surface_for_rec()
+{
+#ifdef USE_RECORDING_SURFACE
+	lock_screen();
+
+	sufOrigin->Blit(*sufRecording);
+
+# ifdef USE_LEDBOX
+	if (ledbox) {
+		// overlap the indicator to the surface
+		ledbox->DrawForRec(*sufRecording);
+	}
+# endif
+
+	unlock_screen();
+#endif /* USE_RECORDING_SURFACE */
+}
+
+///
 /// capture current screen and save to a file
 ///
 void EMU_OSD::capture_screen()
 {
+#ifdef USE_CAPTURE_SCREEN
+# ifdef USE_RECORDING_SURFACE
+	if (!create_recordingsurface()) {
+		return;
+	}
+
 	int size = pConfig->screen_video_size;
-	rec_video->Capture(CAPTURE_SCREEN_TYPE, rec_video_stretched_size, sufSource, rec_video_size[size]);
+
+	copy_surface_for_rec();
+
+//	calc_vm_screen_size_sub(rec_video_size[size], vm_screen_size_for_rec);
+
+	rec_video->Capture(CAPTURE_SCREEN_TYPE, rec_video_stretched_size, sufRecording, rec_video_size[size]);
+
+# else /* !USE_RECORDING_SURFACE */
+	int size = pConfig->screen_video_size;
+
+	calc_vm_screen_size_sub(rec_video_size[size], vm_screen_size_for_rec);
+
+	rec_video->Capture(CAPTURE_SCREEN_TYPE, vm_screen_size_for_rec, sufSource, rec_video_size[size]);
+
+# endif /* USE_RECORDING_SURFACE */
+#endif /* USE_CAPTURE_SCREEN */
 }
 
 ///
 /// start recording video
 ///
+/// @return false if cannot start recording
 bool EMU_OSD::start_rec_video(int type, int fps_no, bool show_dialog)
 {
 #ifdef USE_REC_VIDEO
+# ifdef USE_RECORDING_SURFACE
+	if (!create_recordingsurface()) {
+		return false;
+	}
+
+	int size = pConfig->screen_video_size;
+	return rec_video->Start(type, fps_no, rec_video_size[size], sufRecording, show_dialog);
+
+# else /* !USE_RECORDING_SURFACE */
 	int size = pConfig->screen_video_size;
 	return rec_video->Start(type, fps_no, rec_video_size[size], sufSource, show_dialog);
+
+# endif /* USE_RECORDING_SURFACE */
 #else
 	return false;
-#endif
+#endif /* USE_REC_VIDEO */
 }
 
 ///
-/// record video
+/// record one frame to stream
 ///
 void EMU_OSD::record_rec_video()
 {
 #ifdef USE_REC_VIDEO
+# ifdef USE_RECORDING_SURFACE
 	if (rec_video->IsRecordFrame()) {
 		int size = pConfig->screen_video_size;
+
+		copy_surface_for_rec();
+
+		rec_video->Record(rec_video_stretched_size, sufRecording, rec_video_size[size]);
+	}
+
+# else /* !USE_RECORDING_SURFACE */
+	if (rec_video->IsRecordFrame()) {
+		int size = pConfig->screen_video_size;
+
 		rec_video->Record(rec_video_stretched_size, sufSource, rec_video_size[size]);
 	}
-#endif
+
+# endif /* USE_RECORDING_SURFACE */
+#endif /* USE_REC_VIDEO */
 }
 
+///
+/// change video frame size for recording
+///
+void EMU_OSD::change_rec_video_size(int num)
+{
+	EMU::change_rec_video_size(num);
+
+#ifdef USE_REC_VIDEO
+# ifdef USE_RECORDING_SURFACE
+#  ifdef USE_LEDBOX
+	if (ledbox) {
+		ledbox->SetPosForRec(rec_video_stretched_size.x
+			, rec_video_stretched_size.y
+			, rec_video_stretched_size.x + rec_video_stretched_size.w
+			, rec_video_stretched_size.y + rec_video_stretched_size.h);
+	}
+#  endif
+# endif /* USE_RECORDING_SURFACE */
+#endif /* USE_REC_VIDEO */
+}
+
+///
 /// store window position to ini file
+///
 void EMU_OSD::resume_window_placement()
 {
 	if (now_screenmode == NOW_FULLSCREEN) {
@@ -1157,9 +1536,8 @@ void EMU_OSD::change_screen_mode(int mode)
 	}
 //	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,pConfig->window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
 	set_window(mode, desktop_size.w, desktop_size.h);
-	if (!create_screen(pConfig->disp_device_no, 0, 0, pConfig->screen_width, pConfig->screen_height, screen_flags)) {
-		exit(1);
-	}
+	create_screen(pConfig->disp_device_no, 0, 0, pConfig->screen_width, pConfig->screen_height, m_screen_flags);
+
 	first_change_screen = false;
 }
 
@@ -1167,7 +1545,8 @@ void EMU_OSD::change_screen_mode(int mode)
 /// @param [in] mode 0 .. 7 window mode / 8 .. 23 fullscreen mode / -1 want to go fullscreen, but unknown mode
 /// @param [in] cur_width  current desktop width if mode is -1
 /// @param [in] cur_height current desktop height if mode is -1
-void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
+/// @param [in] dpi reserved
+void EMU_OSD::set_window(int mode, int cur_width, int cur_height, int dpi)
 {
 	logging->out_debugf(_T("set_window: mode:%d"), mode);
 
@@ -1191,7 +1570,7 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 		pConfig->disp_device_no = 0;
 		pConfig->screen_width = width;
 		pConfig->screen_height = height;
-		window_mode_power = wm->power;
+		window_mode_magnify = wm->magnify;
 
 		now_screenmode = NOW_WINDOW;
 
@@ -1200,7 +1579,7 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 		logging->out_debugf(_T("set_window: f->w mode:%d w:%d h:%d nf:%d"), mode, width, height, (int)now_screenmode);
 
 		// set screen size to emu class
-		set_display_size(width, height, window_mode_power, true);
+		set_display_size(width, height, window_mode_magnify, true);
 	}
 	else if(now_screenmode != NOW_FULLSCREEN) {
 		// go fullscreen
@@ -1265,7 +1644,7 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 		logging->out_debugf(_T("set_window: w->f mode:%d w:%d h:%d nf:%d"), mode, width, height, (int)now_screenmode);
 
 		// set screen size to emu class
-		set_display_size(width, height, 10, false);
+		set_display_size(width, height, 1.0, false);
 	} else {
 		// now fullscreen
 		if (mode >= screen_mode.CountMode(0) + 8) {
@@ -1278,7 +1657,7 @@ void EMU_OSD::set_window(int mode, int cur_width, int cur_height)
 		logging->out_debugf(_T("set_window: f->f mode:%d w:%d h:%d nf:%d"), mode, width, height, (int)now_screenmode);
 
 		// set screen size to emu class
-		set_display_size(width, height, 10, false);
+		set_display_size(width, height, 1.0, false);
 	}
 	now_resizing = false;
 }
@@ -1290,11 +1669,84 @@ void EMU_OSD::initialize_opengl()
 {
 }
 
+void EMU_OSD::create_opengl()
+{
+	if (!opengl) {
+#ifdef USE_OPENGL_WH_ORTHO
+		opengl = COpenGL::New(1);
+#else
+		opengl = COpenGL::New();
+#endif
+	}
+	if (!opengl) return;
+
+	if (!texGLMixed) {
+		texGLMixed = COpenGLTexture::New(opengl, 0);
+	}
+
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	if (!sufGLMain) {
+		sufGLMain = new CSurface();
+	}
+	if (!texGLLedBox) {
+		texGLLedBox = COpenGLTexture::New(opengl, 1);
+	}
+	if (!texGLMsgBoard) {
+		texGLMsgBoard = COpenGLTexture::New(opengl, 2);
+	}
+#endif
+}
+
+void EMU_OSD::create_opengl_texture()
+{
+	if (!opengl) return;
+
+	opengl->Initialize();
+
+	if (!window) return;
+
+	create_opengl_mixedtexture();
+
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	if (sufGLMain) {
+		if (!sufGLMain->Create(mixed_max_size.w, mixed_max_size.h, *pixel_format)) {
+			logging->out_log(LOG_ERROR, _T("EMU_OSD::create_opengl_texture sufGLMain failed."));
+			sufGLMain = NULL;
+		}
+	}
+	if (texGLLedBox) {
+		texGLLedBox->Create(pConfig->filter_type);
+# ifdef linux
+		texGLLedBox->PresetBGRA();
+# endif
+	}
+	if (texGLMsgBoard) {
+		texGLMsgBoard->Create(pConfig->filter_type);
+# ifdef linux
+		texGLMsgBoard->PresetBGRA();
+# endif
+	}
+#endif
+
+	set_opengl_interval();
+}
+
+void EMU_OSD::create_opengl_mixedtexture()
+{
+	if (!texGLMixed) return;
+
+	texGLMixed->Release();
+	texGLMixed->Create(pConfig->filter_type);
+	texGLMixed->CreateBuffer(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
+# ifdef linux
+	texGLMixed->PresetBGRA();
+# endif
+}
+
 void EMU_OSD::realize_opengl(GtkGLArea *area)
 {
-	if (!use_opengl) {
-		return;
-	}
+//	if (!(pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK)) return;
+
 #ifdef USE_GTK_GLAREA
 	gtk_gl_area_make_current(area);
 	GError *err = gtk_gl_area_get_error(area);
@@ -1303,66 +1755,70 @@ void EMU_OSD::realize_opengl(GtkGLArea *area)
 		return;
 	}
 #endif
-	if (!opengl) {
-		opengl = COpenGL::New();
-		if (!texGLMixed) {
-			texGLMixed = COpenGLTexture::New(opengl, 0);
-		}
-	}
 
-	// set pixel format
-//	SDL_UTILS::set_pixel_format_for_opengl(pixel_format);
-	pixel_format->PresetRGBA();
-
-	//
-	opengl->Initialize();
+	// create opengl
+	create_opengl();
 
 	// create texture
 	create_opengl_texture();
 
 	opengl->InitViewport(mixed_size.w, mixed_size.h);
 
-	GdkWindow *gwin = gtk_widget_get_window(window);
-	GdkDisplay *gdisp = gdk_window_get_display(gwin);
-	pConfig->use_opengl = opengl->SetInterval(pConfig->use_opengl, GDK_DISPLAY_XDISPLAY(gdisp));
-
 //	opengl->CreateBuffer(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
 }
 
 void EMU_OSD::unrealize_opengl(GtkGLArea *area)
 {
-	if (!use_opengl) return;
-
 	release_opengl_texture();
-	opengl->Terminate();
+	release_opengl();
 
-	if (glscreen) {
-		glscreen = NULL;
+	if (glarea) {
+		glarea = NULL;
 	}
 }
 
-void EMU_OSD::create_opengl_texture()
+void EMU_OSD::reset_opengl_texture()
 {
-	if (!window) return;
-
-//	if (mix_texture_name) return;
-	if (!texGLMixed) return;
-
-	// create
-//	mix_texture_name = opengl->CreateTexture(pConfig->gl_filter_type);
-	texGLMixed->Create(pConfig->gl_filter_type);
-	texGLMixed->CreateBuffer(src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b, src_tex_l, src_tex_t, src_tex_r, src_tex_b);
+	release_opengl_texture();
+	create_opengl_texture();
 }
 
-void EMU_OSD::change_opengl_attr()
+void EMU_OSD::release_opengl_texture()
 {
-	if (!use_opengl) return;
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	if (texGLMsgBoard) {
+		texGLMsgBoard->Release();
+	}
+	if (texGLLedBox) {
+		texGLLedBox->Release();
+	}
+	if (sufGLMain) {
+		sufGLMain->Release();
+	}
+#endif
 
-	texGLMixed->SetFilter(pConfig->gl_filter_type);
+	if (texGLMixed) {
+		texGLMixed->Release();
+	}
+
+	if (opengl) {
+		opengl->Terminate();
+	}
 }
 
 void EMU_OSD::release_opengl()
 {
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	delete texGLMsgBoard;
+	texGLMsgBoard = NULL;
+
+	delete texGLLedBox;
+	texGLLedBox = NULL;
+
+	delete sufGLMain;
+	sufGLMain = NULL;
+#endif
+
 	delete texGLMixed;
 	texGLMixed = NULL;
 
@@ -1370,12 +1826,39 @@ void EMU_OSD::release_opengl()
 	opengl = NULL;
 }
 
-void EMU_OSD::release_opengl_texture()
+void EMU_OSD::terminate_opengl()
 {
-	if (texGLMixed) {
-//		mix_texture_name = opengl->ReleaseTexture();
-		texGLMixed->Release();
-	}
+}
+
+void EMU_OSD::set_opengl_interval()
+{
+	if (!(pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK)) return;
+	if (!glarea) return;
+
+	int interval = ((pConfig->drawing_method & DRAWING_METHOD_SYNC_MASK) ? 1 : 2);
+#ifdef GDK_WINDOWING_X11
+	GdkWindow *gwindow = gtk_widget_get_window(glarea);
+	GdkDisplay *gdisplay = gdk_window_get_display(gwindow);
+	Display *xdisplay = gdk_x11_display_get_xdisplay(gdisplay);
+	opengl->SetInterval(interval, xdisplay);
+//	int rc = SDL_GL_SetSwapInterval(interval != 1 ? 0 : 1);
+//	if (rc) {
+//		logging->out_logf(LOG_ERROR,_T("SDL_GL_SetSwapInterval failed: %s"), SDL_GetError());
+//	}
+#endif
+}
+
+void EMU_OSD::set_opengl_filter_type()
+{
+	if (!(pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK)) return;
+
+//	opengl->SetTextureFilter(pConfig->filter_type);
+	if (texGLMixed) texGLMixed->SetFilter(pConfig->filter_type);
+
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	if (texGLLedBox) texGLLedBox->SetFilter(pConfig->filter_type);
+	if (texGLMsgBoard) texGLMsgBoard->SetFilter(pConfig->filter_type);
+#endif
 }
 
 void EMU_OSD::set_opengl_attr()
@@ -1386,4 +1869,4 @@ void EMU_OSD::set_opengl_poly(int width, int height)
 {
 }
 
-#endif // USE_OPENGL
+#endif /* USE_OPENGL */

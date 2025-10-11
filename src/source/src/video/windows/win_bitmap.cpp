@@ -19,13 +19,13 @@
 CBitmap::CBitmap()
 	: CBitmapBase()
 {
-	token = NULL;
+	token = (ULONG_PTR)NULL;
 }
 
 CBitmap::CBitmap(const _TCHAR *file_name, CPixelFormat *format)
 	: CBitmapBase()
 {
-	token = NULL;
+	token = (ULONG_PTR)NULL;
 
 	this->Load(file_name, format);
 }
@@ -33,7 +33,7 @@ CBitmap::CBitmap(const _TCHAR *file_name, CPixelFormat *format)
 CBitmap::CBitmap(CBitmap &src, int x, int y, int w, int h)
 	: CBitmapBase(src, x, y, w, h)
 {
-	token = NULL;
+	token = (ULONG_PTR)NULL;
 }
 
 CBitmap::~CBitmap()
@@ -90,5 +90,5 @@ bool CBitmap::Startup()
 void CBitmap::Shutdown()
 {
 	Gdiplus::GdiplusShutdown(token);
-	token = NULL;
+	token = (ULONG_PTR)NULL;
 }

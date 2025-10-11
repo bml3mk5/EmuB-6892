@@ -41,6 +41,7 @@ class GUI : public GUI_BASE
 {
 private:
 	QString replaceSemicolon(const QString &str);
+	uint8_t next_drawing_method;
 public:
 	GUI(int argc, char **argv, EMU *new_emu);
 	virtual ~GUI();
@@ -48,6 +49,8 @@ public:
 	bool NeedUpdateScreen();
 	void UpdatedScreen();
 	void ScreenModeChanged(bool fullscreen);
+	bool StoreDrawingMethod(uint8_t method);
+	bool RestoreDrawingMethod(uint8_t &method) const;
 	void PreProcessEvent();
 	void PostCommandMessage(int id, void *data1 = nullptr, void *data2 = nullptr);
 
@@ -207,8 +210,8 @@ private slots:
 	void selectRGBTypeSlot();
 #endif
 
-	void selectOpenGLSlot();
-	void selectOpenGLFilterSlot();
+	void selectDrawingMethodSlot();
+	void selectScreenFilterSlot();
 
 	void updateMenuSoundSlot();
 	void updateMenuSoundRecordSlot();
@@ -246,9 +249,17 @@ private slots:
 	void selectShowPMeterSlot();
 #endif
 	void selectUseJoypadSlot();
+#ifdef USE_PIAJOYSTICK
 	void selectUsePIAJoypadSlot();
-#ifdef USE_KEY2JOYSTICK
-	void selectKey2JoypadSlot();
+#endif
+#ifdef USE_PSGJOYSTICK
+	void selectUsePSGJoypadSlot();
+#endif
+#ifdef USE_KEY2PIAJOYSTICK
+	void selectKey2PIAJoypadSlot();
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	void selectKey2PSGJoypadSlot();
 #endif
 	void selectJoySettingSlot();
 #ifdef USE_LIGHTPEN
@@ -329,10 +340,12 @@ private:
 	QAction *actionDigitalRGB;
 	QAction *actionAnalogRGB;
 #endif
+	QAction *actionDrawDefault;
+	QAction *actionDrawDouble;
 	QAction *actionOpenGLSync;
 	QAction *actionOpenGLAsync;
-	QAction *actionGLFNear;
-	QAction *actionGLFLinear;
+	QAction *actionFilterNear;
+	QAction *actionFilterLinear;
 	QMenu *menuRecordSound;
 	QAction *actionStartRecordSound;
 	QAction *actionStopRecordSound;
@@ -355,10 +368,10 @@ private:
 	QAction *actionShowPMeter;
 #endif
 #ifdef USE_JOYSTICK
-	QAction *actionUseJoypad[2];
+	QAction *actionUseJoypad[3];
 #endif
 #ifdef USE_KEY2JOYSTICK
-	QAction *actionKey2Joypad;
+	QAction *actionKey2Joypad[2];
 #endif
 #if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	QAction *actionJoySetting;

@@ -44,7 +44,7 @@ static const int audio_type_ids[] = {
 	0 };
 
 RecAudioBox::RecAudioBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_RECAUDIOBOX, new_font, new_emu, new_gui)
+	: CDialogBox(hInst, IDD_RECAUDIOBOX, new_emu, new_gui)
 {
 	typnum = 0;
 	memset(codnums, 0, sizeof(codnums));
@@ -59,7 +59,11 @@ RecAudioBox::~RecAudioBox()
 /// create modal dialog box
 INT_PTR RecAudioBox::Show(HWND hWnd)
 {
-	return (audio_type_ids[0] ? ::DialogBoxParam(hInstance, MAKEINTRESOURCE(dialogId), hWnd, Proc, (LPARAM)this) : IDCANCEL);
+	if (!audio_type_ids[0]) {
+		return IDCANCEL;
+	}
+//	return ::DialogBoxParam(hInstance, MAKEINTRESOURCE(dialogId), hWnd, Proc, (LPARAM)this);
+	return CDialogBox::Show(hWnd);
 }
 
 INT_PTR RecAudioBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)

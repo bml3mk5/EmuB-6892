@@ -10,6 +10,7 @@
 
 #include "win_dialogbox.h"
 #include "win_gui.h"
+#include "../../osd/windows/win_apiex.h"
 #include "../../emu.h"
 #include "../../utility.h"
 
@@ -23,6 +24,32 @@ CDialogBox::CDialogBox(HINSTANCE new_inst, DWORD new_id, CFont *new_font, EMU *n
 	dialogId  = new_id;
 	hDlg      = NULL;
 	font      = new_font;
+	isOwnFont = false;
+	emu       = new_emu;
+	gui       = new_gui;
+	isModeless = false;
+
+	padding   = 2;
+	margin    = 10;
+
+	// size of dialog
+	re_max.left = 0;
+	re_max.top = 0;
+	re_max.right = 0;
+	re_max.bottom = 0;
+
+	curStaticId = IDC_STATIC_AUTO;
+	maxStaticId = curStaticId + 100;
+//	hToolTips = NULL;
+}
+
+CDialogBox::CDialogBox(HINSTANCE new_inst, DWORD new_id, EMU *new_emu, GUI *new_gui)
+{
+	hInstance = new_inst;
+	dialogId  = new_id;
+	hDlg      = NULL;
+	font      = NULL;
+	isOwnFont = false;
 	emu       = new_emu;
 	gui       = new_gui;
 	isModeless = false;
@@ -44,17 +71,33 @@ CDialogBox::CDialogBox(HINSTANCE new_inst, DWORD new_id, CFont *new_font, EMU *n
 CDialogBox::~CDialogBox()
 {
 	Close();
+
+	if (isOwnFont) {
+		delete font;
+	}
 }
 
 /// create modal dialog box
 INT_PTR CDialogBox::Show(HWND hWnd)
 {
+	if (!font) {
+		font = new CFont();
+		isOwnFont = true;
+	}
+	font->SetDefaultFont(hWnd);
+
 	return ::DialogBoxParam(hInstance, MAKEINTRESOURCE(dialogId), hWnd, Proc, (LPARAM)this);
 }
 
 /// create modeless dialog box
 HWND CDialogBox::Create(HWND hWnd)
 {
+	if (!font) {
+		font = new CFont();
+		isOwnFont = true;
+	}
+	font->SetDefaultFont(hWnd);
+
 	if (hDlg == NULL) {
 		hDlg = ::CreateDialogParam(hInstance, MAKEINTRESOURCE(dialogId), hWnd, Proc, (LPARAM)this);
 		if (hDlg != NULL) {
@@ -108,8 +151,8 @@ INT_PTR CALLBACK CDialogBox::Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 			return myObj->onSize(message, wParam, lParam);
 		case WM_GETMINMAXINFO:
 			return myObj->onMinMaxInfo(message, wParam, lParam);
-		break;
-
+		case WM_DPICHANGED:
+			return myObj->onDpiChanged(message, wParam, lParam);
 	}
 	return (INT_PTR)FALSE;
 }
@@ -198,6 +241,13 @@ INT_PTR CDialogBox::onControlColorDialog(UINT message, WPARAM wParam, LPARAM lPa
 	return (INT_PTR)FALSE;
 }
 
+INT_PTR CDialogBox::onDpiChanged(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// set font on all controls
+	SetFont();
+	return (INT_PTR)FALSE;
+}
+
 void CDialogBox::SetFontAndTranslateText()
 {
 	// set font
@@ -210,10 +260,10 @@ void CDialogBox::SetFontAndTranslateText()
 	}
 #endif
 	// set font and translate text string in child controls
-	EnumChildWindows(hDlg, ChildProc, (LPARAM)this);
+	EnumChildWindows(hDlg, FontAndTranslateTextProc, (LPARAM)this);
 }
 
-BOOL CALLBACK CDialogBox::ChildProc(HWND hCtrl, LPARAM lParam)
+BOOL CALLBACK CDialogBox::FontAndTranslateTextProc(HWND hCtrl, LPARAM lParam)
 {
 	CDialogBox *myObj = (CDialogBox *)lParam;
 	// set font
@@ -225,6 +275,23 @@ BOOL CALLBACK CDialogBox::ChildProc(HWND hCtrl, LPARAM lParam)
 		SetWindowText(hCtrl, _tgettext(buf));
 	}
 #endif
+	return TRUE;
+}
+
+void CDialogBox::SetFont()
+{
+	// set font
+	font->RecalcFontSize(hDlg);
+	SendMessage(hDlg, WM_SETFONT, (WPARAM)font->GetFont(), MAKELPARAM(TRUE, 0));
+	// set font in child controls
+	EnumChildWindows(hDlg, FontProc, (LPARAM)this);
+}
+
+BOOL CALLBACK CDialogBox::FontProc(HWND hCtrl, LPARAM lParam)
+{
+	CDialogBox *myObj = (CDialogBox *)lParam;
+	// set font
+	SendMessage(hCtrl, WM_SETFONT, (WPARAM)myObj->font->GetFont(), MAKELPARAM(TRUE, 0));
 	return TRUE;
 }
 
@@ -864,7 +931,7 @@ HWND CDialogBox::CreateEditBox(CBox *box, int nItemId, const _TCHAR *text, int n
 /// @return : handle of edit box
 HWND CDialogBox::CreateEditBox(CBox *box, int nItemId, int digit, int nMaxSize, int align, const _TCHAR ch)
 {
-	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL;
+	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_RIGHT | ES_AUTOHSCROLL;
 	align |= WS_EX_CLIENTEDGE;
 	HWND hCtrl = CreateWindowEx(align, WC_EDIT, _T(""), dwStyle, 0, 0, 10, 10, hDlg, (HMENU)(INT_PTR)nItemId, hInstance, NULL);
 	if (hCtrl) {
@@ -970,7 +1037,7 @@ HWND CDialogBox::CreateSlider(CBox *box, int nItemId, int min_w, int min_h, int 
 /// @return : handle of updown button
 HWND CDialogBox::CreateUpDown(CBox *box, int nItemId, HWND hEdit, int range_min, int range_max, int value)
 {
-	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | UDS_ALIGNRIGHT | UDS_SETBUDDYINT;
+	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | UDS_ALIGNRIGHT | UDS_SETBUDDYINT | UDS_NOTHOUSANDS;
 	HWND hCtrl = CreateWindowEx(0, UPDOWN_CLASS, _T(""), dwStyle, 0, 0, 16, 16, hDlg, (HMENU)(INT_PTR)nItemId, hInstance, NULL);
 	if (hCtrl) {
 		SendMessage(hCtrl, WM_SETFONT, (WPARAM)font->GetFont(), MAKELPARAM(TRUE, 0));
@@ -1380,7 +1447,7 @@ CBox *CDialogBox::AdjustTabControl(CBox *box, int nItemId, int nBGItemId)
 /// @param[in] lmargin : margin
 void CDialogBox::AdjustWindow(int lmargin)
 {
-	WINDOWINFO wi;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
 	GetWindowInfo(hDlg, &wi);
 
 //	RECT scn_re;
@@ -1435,7 +1502,7 @@ void CDialogBox::AdjustControlSize(int nItemId, int diff_x, int diff_y)
 		hCtrl = hDlg;
 	}
 	if (hCtrl == NULL) return;
-	WINDOWINFO wi;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
 	GetWindowInfo(hCtrl, &wi);
 	int width = wi.rcWindow.right - wi.rcWindow.left + diff_x;
 	int height = wi.rcWindow.bottom - wi.rcWindow.top + diff_y;
@@ -1469,7 +1536,7 @@ void CDialogBox::AdjustControlPos(int nItemId, int diff_x, int diff_y)
 /// @return difference of width
 int CDialogBox::GetControlXdiff(int nItemId, int new_width)
 {
-	WINDOWINFO wi;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
 	HWND hCtrl = GetDlgItem(hDlg, nItemId);
 	GetWindowInfo(hCtrl, &wi);
 	return new_width - wi.rcClient.right + wi.rcClient.left;
@@ -1482,9 +1549,9 @@ void CDialogBox::GetControlPos(int nItemId, RECT *re)
 {
 	HWND hCtrl = GetDlgItem(hDlg, nItemId);
 	if (hCtrl == NULL) return;
-	WINDOWINFO wiDlg;
+	WINDOWINFO wiDlg = { sizeof(WINDOWINFO) };
 	GetWindowInfo(hDlg, &wiDlg);
-	WINDOWINFO wi;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
 	GetWindowInfo(hCtrl, &wi);
 	if (re != NULL) {
 		re->left = wi.rcWindow.left - wiDlg.rcClient.left;

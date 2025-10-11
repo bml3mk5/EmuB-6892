@@ -117,16 +117,21 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
   レジスタ名、値を指定すると、そのレジスタの値を変更します。
 
 
-  ◆ RD - 指定デバイスのレジスタを表示/編集する。
+  ◆ RD - 指定デバイスのレジスタや内部の状態を表示/編集する。
 
-  書式: RD <device name> [<regno> <value>]
-  <device name> - 以下のデバイス名を指定
-    PIA,ACIA,CRTC,KB,CMT,TIMER,FDC3,FDC5,FDDUNIT,PSG60,PSG61,PSG90,PSG91,PSG92,
-    PIAEX,ACIAEX,VIA,PIAEX2,RTC,MSM58321,BOARD
+  書式: RD <device name> [{<regno>|<regname>} <value>]
+  <device name> - デバイス名
+   以下のデバイス名を指定するとレジスタの表示/編集が出来ます：
+    PIA,ACIA,CRTC,KEYBOARD,CMT,TIMER,FDC3,FDC5,FDDUNIT,BOARD,PSG60,PSG61,
+    PSG90,PSG91,PSG92,PIAEX,ACIAEX,VIA,PIAEX2,RTC,MSM58321
+   以下のデバイス名を指定すると状態が表示されます：
+    FDDINFO,FDD0,FDD1,FDD2,FDD3,EVENT
   <regno> - レジスタ番号を指定
     レジスタ番号は各デバイスのレジスタを表示させたときのインデックス番号です。
+  <regname> - レジスタ名を指定
+    レジスタ名は各デバイスのレジスタを表示させたときの名前です。
   <value> - 書き込む値を指定
-  レジスタ番号、値を指定すると、そのレジスタの値を変更します。
+  レジスタ番号またはレジスタ名と値を指定すると、そのレジスタの値を変更します。
 
 
   ◆ M - 現在のメモリマップを表示する。

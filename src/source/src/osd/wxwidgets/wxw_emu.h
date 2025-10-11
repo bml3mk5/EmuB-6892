@@ -130,16 +130,34 @@ private:
 	void EMU_SCREEN();
 	void initialize_screen();
 	void release_screen();
+	void restart_screen();
 	void change_pixel_format();
+	bool create_wx_texture();
+	bool create_wx_mixedtexture();
+	void reset_wx_texture();
+	void release_wx_texture();
+	void set_screen_filter_type();
+	inline void mix_screen_sub();
+	inline void calc_vm_screen_size();
+	inline void calc_vm_screen_size_sub(const VmRectWH &src_size, VmRectWH &vm_size);
+	void set_ledbox_position(bool now_window);
+	void set_msgboard_position();
+	bool create_mixedsurface();
+	bool create_recordingsurface();
+	void copy_surface_for_rec();
 
 #ifdef USE_OPENGL
 	void initialize_opengl();
-	void release_opengl();
-
+	void create_opengl();
 	void create_opengl_texture();
+	void create_opengl_mixedtexture();
+	void reset_opengl_texture();
 	void release_opengl_texture();
+	void release_opengl();
+	void terminate_opengl();
 
 	void set_opengl_attr();
+	void set_opengl_filter_type();
 	void set_opengl_poly(int width, int height);
 #endif /* USE_OPENGL */
 	//@}
@@ -148,10 +166,11 @@ private:
 	// screen settings
 	/* wxWidgets */
 	CSurface *scrBmp;
-#ifdef USE_OPENGL
-	COpenGL *opengl;
-#endif
-	uint32_t screen_flags;
+	CSurface *texSource;
+	CSurface *texMixed;
+//	CSurface *texLedBox;
+//	CSurface *texMsgBoard;
+	uint32_t m_screen_flags;
 
 	VmSize mixed_max_size;	// for OpenGL
 
@@ -162,15 +181,22 @@ private:
 	VmRectWH reSuf;
 
 #ifdef USE_OPENGL
+	COpenGL *opengl;
+
 	COpenGLTexture *texGLMixed;
 //	unsigned int mix_texture_name;
 	VmRect	rePyl;
 	float src_tex_l, src_tex_t, src_tex_r, src_tex_b;
 	float src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b;
-	int use_opengl;
-	uint8_t next_use_opengl;
-#endif
+//	int use_opengl;
+//	uint8_t next_use_opengl;
 
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	CSurface *sufGLMain;
+	COpenGLTexture *texGLLedBox;
+	COpenGLTexture *texGLMsgBoard;
+#endif
+#endif
 #ifdef USE_LEDBOX
 	LedBox *ledbox;
 #endif
@@ -200,7 +226,6 @@ private:
 #if defined(USE_SDL2) || defined(USE_WX2)
 	SDL_AudioDeviceID audio_devid;
 #endif
-
 	// direct sound
 	uint32_t sound_prev_time;
 	//@}
@@ -271,14 +296,10 @@ public:
 	//@{
 	void change_screen_mode(int mode);
 	void capture_screen();
+	bool start_rec_video(int type, int fps_no, bool show_dialog);
 	void record_rec_video();
-#ifdef USE_OPENGL
-	void change_screen_use_opengl(int num);
-	void change_opengl_attr();
-	int now_use_opengl() const {
-		return use_opengl;
-	}
-#endif
+	void change_rec_video_size(int num);
+	void change_drawing_method(int method);
 	//@}
 
 	//
@@ -303,28 +324,19 @@ public:
 	//@{
 	void resume_window_placement();
 	bool create_screen(int disp_no, int x, int y, int width, int height, uint32_t flags);
-	void set_display_size(int width, int height, int power, bool window_mode);
+	void set_display_size(int width, int height, double magnify, bool window_mode);
 	void draw_screen();
-	bool mix_screen();
+//	bool mix_screen();
 	void update_screen_pa(MyPanel *panel);
 	void update_screen_gl(MyGLCanvas *panel);
 # ifdef USE_OPENGL
 	void realize_opengl(MyGLCanvas *panel);
 	void set_mode_opengl(MyGLCanvas *panel, int w, int h);
-	void set_interval_opengl();
+	void set_opengl_interval();
 #endif
 
-	void set_window(int mode, int cur_width, int cur_height);
+	void set_window(int mode, int cur_width, int cur_height, int dpi = 0);
 	bool create_offlinesurface();
-
-#ifdef USE_OPENGL
-	int  get_use_opengl() const {
-		return use_opengl;
-	}
-	void set_use_opengl(int val) {
-		use_opengl = val;
-	}
-#endif
 
 	/// when using wxWidgets on main window
 	/// @return wxWindow * : main screen
@@ -363,11 +375,13 @@ public:
 	//@{
 	scrntype* screen_buffer(int y);
 	int screen_buffer_offset();
+	void set_vm_screen_size(int screen_width, int screen_height, int window_width, int window_height, int window_width_aspect, int window_height_aspect);
 	//@}
 	/// @name sound for vm
 	//@{
 	void lock_sound_buffer();
 	void unlock_sound_buffer();
+	void record_rec_sound(int32_t *buffer, int samples);
 	//@}
 	/// @name timer for vm
 	//@{

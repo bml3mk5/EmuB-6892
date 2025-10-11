@@ -19,7 +19,9 @@
 
 void EMU::EMU_SCREEN()
 {
-	RECT_IN(screen_size, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	enabled_drawing_method = 0;
+
+	RECT_IN(screen_size, SCREEN_DEST_X, SCREEN_DEST_Y, SCREEN_WIDTH, SCREEN_HEIGHT);
 	SIZE_IN(screen_aspect_size, SCREEN_WIDTH_ASPECT, SCREEN_HEIGHT_ASPECT);
 //	window_width = WINDOW_WIDTH;
 //	window_height = WINDOW_HEIGHT;
@@ -51,9 +53,12 @@ void EMU::EMU_SCREEN()
 	mixed_size = source_size;
 	SIZE_IN(mixed_ratio, 1, 1);
 
+	RECT_IN(vm_screen_size, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	SIZE_IN(vm_display_size, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
+
 	// screen mode
 	now_resizing = false;
-	window_mode_power = 10;
+	window_mode_magnify = 1.0;
 	now_screenmode = NOW_WINDOW;
 	prev_screenmode = NOW_WINDOW;
 	prev_window_mode = 0;
@@ -84,6 +89,11 @@ void EMU::EMU_SCREEN()
 
 	//
 	sufOrigin = new CSurface();
+
+#ifdef USE_RECORDING_SURFACE
+	sufRecording = new CSurface();
+#endif
+
 #ifdef USE_SCREEN_ROTATE
 	sufRotate = new CSurface();
 #endif
@@ -120,14 +130,17 @@ void EMU::release_screen()
 {
 	delete sufOrigin;
 	sufOrigin = NULL;
+#ifdef USE_RECORDING_SURFACE
+	delete sufRecording;
+	sufRecording = NULL;
+#endif
 #ifdef USE_SCREEN_ROTATE
 	delete sufRotate;
 	sufRotate = NULL;
 #endif
-#ifdef USE_EMU_INHERENT_SPEC
 	delete sufMixed;
 	sufMixed = NULL;
-#endif
+
 #ifdef USE_SMOOTH_STRETCH
 	delete sufStretch1;
 	sufStretch1 = NULL;
@@ -143,6 +156,33 @@ void EMU::release_screen()
 
 	delete rec_video;
 	rec_video = NULL;
+}
+
+/// get flags which drawing method enable.
+///
+/// @return enabled drawing method
+/// @see DRAWING_METHOD_ENUMS in config.h
+uint32_t EMU::get_enabled_drawing_method() const
+{
+	return enabled_drawing_method;
+}
+
+/// set flags which drawing method enable.
+///
+/// @param[in] flags
+/// @see DRAWING_METHOD_ENUMS in config.h
+void EMU::set_enabled_drawing_method(uint32_t flags)
+{
+	enabled_drawing_method |= flags;
+}
+
+/// clear flags which drawing method enable.
+///
+/// @param[in] flags
+/// @see DRAWING_METHOD_ENUMS in config.h
+void EMU::clear_enabled_drawing_method(uint32_t flags)
+{
+	enabled_drawing_method &= ~flags;
 }
 
 ///
@@ -194,9 +234,9 @@ void EMU::release_screen_on_emu_thread()
 ///
 /// @param [in] width : new width or -1 set current width
 /// @param [in] height : new height or -1 set current height
-/// @param [in] power : magnify x 10
+/// @param [in] magnify
 /// @param [in] now_window : true:window / false:fullscreen
-void EMU::set_display_size(int width, int height, int power, bool now_window)
+void EMU::set_display_size(int width, int height, double magnify, bool now_window)
 {
 }
 
@@ -209,6 +249,10 @@ void EMU::set_vm_display_size()
 		int t = mixed_size.y;
 		int r = l + mixed_size.w;
 		int b = t + mixed_size.h;
+//		int l = source_size.x;
+//		int t = source_size.y;
+//		int r = source_size.w;
+//		int b = source_size.h;
 
 		// vm drawing area is same as area to capture and record screen
 		if (rec_video_size[new_size].w > mixed_size.w) {
@@ -244,10 +288,10 @@ void EMU::draw_screen()
 {
 }
 
-bool EMU::mix_screen()
-{
-	return false;
-}
+//bool EMU::mix_screen()
+//{
+//	return false;
+//}
 
 void EMU::fill_gray()
 {
@@ -276,8 +320,20 @@ bool EMU::now_skip_frame()
 	return skip_frame && !now_rec_video();
 }
 
+void EMU::set_screen_filter_type()
+{
+}
+
 void EMU::capture_screen()
 {
+}
+
+///
+/// change screen size on vm
+///
+void EMU::set_vm_screen_size(int screen_width, int screen_height, int window_width, int window_height, int window_width_aspect, int window_height_aspect)
+{
+	SIZE_IN(vm_display_size, screen_width, screen_height);
 }
 
 ///
@@ -285,12 +341,7 @@ void EMU::capture_screen()
 ///
 bool EMU::start_rec_video(int type, int fps_no, bool show_dialog)
 {
-#ifdef USE_REC_VIDEO
-	int size = pConfig->screen_video_size;
-	return rec_video->Start(type, fps_no, rec_video_size[size], sufOrigin, show_dialog);
-#else
 	return false;
-#endif
 }
 
 ///
@@ -409,7 +460,7 @@ void EMU::init_screen_mode()
 }
 
 /// enumerate screen mode for window
-/// calcurate magnify range
+/// calculate magnify range
 /// @param [in] max_width
 /// @param [in] max_height
 void EMU::enum_window_mode(int max_width, int max_height)
@@ -447,6 +498,32 @@ void EMU::enum_screen_mode(uint32_t flags)
 	screen_mode.Enum(desktop_size.w, desktop_size.h, flags);
 }
 
+/// change mode number for window sizing or switch over fullscreen and window
+/// @param[in] mode 0 - 7: window size  8 -:  fullscreen size  -1: switch over  -2: shift window mode
+/// @return changed number
+int EMU::change_screen_mode_number(int mode)
+{
+	if (mode == -1) {
+		// switch over fullscreen and window
+		if (now_screenmode != NOW_WINDOW) {
+			// go window mode
+			mode = prev_window_mode;
+		}
+	} else if (mode == -2) {
+		// shift window mode 
+		if (now_screenmode != NOW_WINDOW) {
+			// no change
+			return mode;
+		} else {
+			mode = ((pConfig->window_mode + 1) % window_mode.Count());
+		}
+	}
+	if (now_screenmode != NOW_FULLSCREEN) {
+		prev_window_mode = pConfig->window_mode;
+	}
+	return mode;
+}
+
 /// change window size / switch over fullscreen and window
 /// @param[in] mode 0 - 7: window size  8 -:  fullscreen size  -1: switch over  -2: shift window mode
 void EMU::change_screen_mode(int mode)
@@ -458,24 +535,9 @@ void EMU::change_screen_mode(int mode)
 		return;
 	}
 
-	if (mode == -1) {
-		// switch over fullscreen and window
-		if (now_screenmode != NOW_WINDOW) {
-			// go window mode
-			mode = prev_window_mode;
-		}
-	} else if (mode == -2) {
-		// shift window mode 
-		if (now_screenmode != NOW_WINDOW) {
-			// no change
-			return;
-		} else {
-			mode = ((pConfig->window_mode + 1) % window_mode.Count());
-		}
-	}
-	if (now_screenmode != NOW_FULLSCREEN) {
-		prev_window_mode = pConfig->window_mode;
-	}
+	// next number
+	mode = change_screen_mode_number(mode);
+
 //	logging->out_debugf(_T("change_screen_mode: mode:%d cwmode:%d pwmode:%d w:%d h:%d"),mode,pConfig->window_mode,prev_window_mode,desktop_size.w,desktop_size.h);
 	set_window(mode, desktop_size.w, desktop_size.h);
 }
@@ -491,8 +553,19 @@ void EMU::change_maximize_window(int width, int height, bool maximize)
 	if (now_screenmode != NOW_FULLSCREEN && now_screenmode != next_mode) {
 		// change screen
 		now_screenmode = next_mode;
-		set_display_size(width, height, 10, now_screenmode == NOW_WINDOW);
+		set_display_size(width, height, 1.0, now_screenmode == NOW_WINDOW);
 	}
+}
+
+/// change screen resolution (OS dependent function)
+///
+/// @param[in] x
+/// @param[in] y
+/// @param[in] width
+/// @param[in] height
+/// @param[in] dpi
+void EMU::change_screen_resolution(int x, int y, int width, int height, int dpi)
+{
 }
 
 /// change screen stretching on fullscreen/maximize mode
@@ -512,16 +585,17 @@ void EMU::change_stretch_screen(int num)
 	pConfig->stretch_screen = num;
 	if (now_screenmode != NOW_WINDOW) {
 		// change screen
-		set_display_size(-1, -1, 10, now_screenmode == NOW_WINDOW);
+		set_display_size(-1, -1, 1.0, now_screenmode == NOW_WINDOW);
 	}
 }
 
-/// setting window or fullscreen size to display
+/// setting window or fullscreen size to display (OS dependent function)
 ///
 /// @param [in] mode 0 .. 7 window mode / 8 .. 23 fullscreen mode / -1 want to go fullscreen, but unknown mode
 /// @param [in] cur_width  current desktop width if mode is -1
 /// @param [in] cur_height current desktop height if mode is -1
-void EMU::set_window(int mode, int cur_width, int cur_height)
+/// @param [in] dpi : dot per inch or 0
+void EMU::set_window(int mode, int cur_width, int cur_height, int dpi)
 {
 }
 
@@ -535,7 +609,12 @@ void EMU::change_pixel_aspect(int mode)
 	}
 	pConfig->pixel_aspect = get_pixel_aspect(mode, &mixed_ratio.w, &mixed_ratio.h);
 
-	set_display_size(pConfig->screen_width, pConfig->screen_height, now_screenmode != NOW_WINDOW ? 10 : window_mode_power, now_screenmode == NOW_WINDOW);
+	set_display_size(
+		pConfig->screen_width ? pConfig->screen_width : MIN_WINDOW_WIDTH,
+		pConfig->screen_height ? pConfig->screen_height : MIN_WINDOW_HEIGHT,
+		now_screenmode != NOW_WINDOW ? 1.0 : window_mode_magnify,
+		now_screenmode == NOW_WINDOW
+	);
 }
 
 /// kind of aspect ratio

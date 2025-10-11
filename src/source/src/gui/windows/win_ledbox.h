@@ -17,6 +17,7 @@
 #include "../ledbox.h"
 #include "../../depend.h"
 #include <windows.h>
+#include "../../osd/windows/win_d2d.h"
 #include "../../res/resource.h"
 
 #define NO_TITLEBAR
@@ -47,9 +48,17 @@ private:
 	void set_dist(HWND);
 #endif
 	void adjust_dialog_size(HWND);
+	void activate_parent_window(HWND);
 	void update_dialog(HDC);
 
 	static INT_PTR CALLBACK LedBoxProc(HWND, UINT, WPARAM, LPARAM);
+
+	// Direct2D
+	CD2DHwndRender mD2DRender;
+	CD2DSurface mD2DSurface;
+	bool create_d2d_surface();
+	void release_d2d_surface();
+	void draw_d2d_render();
 
 public:
 	LedBox();

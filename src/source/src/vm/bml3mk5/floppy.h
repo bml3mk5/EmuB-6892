@@ -15,6 +15,7 @@
 #include "../vm_defs.h"
 //#include "../../emu.h"
 #include "../device.h"
+#include "../disk.h"
 //#include "parsewav.h"
 #include "../noise.h"
 
@@ -22,12 +23,110 @@
 
 #include "../floppy_defs.h"
 
-
-#define MAX_FDC_NUMS				1
-
-//class FDC;
 class EMU;
 class DISK;
+class DISK_TRACK;
+
+/**
+	@brief disk drive info
+*/
+class DISK_DRIVE : public DISK
+{
+public:
+	int16_t i_track;		///< cylinder position
+	int16_t i_side;			///< head position
+	int16_t i_dataidx;
+	int16_t i_secidx;
+	int16_t i_delay_write;
+
+	uint8_t i_ready;		///< ready warmup:01 on:11
+	uint8_t i_motor_warmup;	///< motor warming up:1
+	uint8_t i_head_loading;
+
+#ifdef USE_SIG_FLOPPY_ACCESS
+	bool i_access;
+#endif
+	bool i_shown_media_error; 
+
+public:
+	struct vm_state_st {
+		int16_t i_track;
+		int16_t i_side;
+
+		int16_t i_dataidx;
+		int16_t i_secidx;
+
+		int16_t i_delay_write;
+		char reserved[2];
+
+		uint8_t i_ready;
+		uint8_t i_motor_warmup;
+		uint8_t i_head_loading;
+		uint8_t i_flags;
+		// 16bytes
+	};
+
+private:
+	DISK_DRIVE();
+
+public:
+	DISK_DRIVE(DEVICE *fdc, int drv);
+	virtual ~DISK_DRIVE();
+
+	void reset();
+	void warm_reset();
+
+	bool open(const _TCHAR *path, int offset, uint32_t flags);
+	void close();
+
+	// disk
+	bool ready_on();
+	void ready_off();
+	void update_ready();
+	bool is_ready() const;
+	bool set_head_load(uint8_t data);
+	bool is_head_loading() const;
+	bool now_disk_accessing() const;
+	void update_motor_warmup();
+
+	// side
+	void set_side_position(int side_pos);
+	int get_side_position() const;
+
+	// track
+	bool search_track(int density, int data_start_pos);
+	bool verify_track_number(int track_num, int density);
+	bool make_track(int density);
+	bool parse_track(int density);
+	void write_track_data(uint8_t data);
+	uint8_t read_track_data(uint8_t default_data);
+	uint8_t read_track_data_repeat(uint8_t default_data);
+	bool step_track_position(uint8_t data);
+	bool is_track_zero() const;
+	void set_current_pos_in_track(int remain_clock);
+
+	// sector
+	void parse_sector(int density);
+	int  search_sector(int density, int sector_num, int &sector_pos);
+	int  search_sector_and_get_clock(int density, int sector_num, int &sector_pos, int remain_clock, int timeout_round, int &arrive_clock);
+//	int  search_next_sector_and_get_clock(int density, int &sector_pos, int remain_clock, int timeout_round, int &arrive_clock);
+	void write_sector_data(uint8_t data);
+	uint8_t read_sector_data(uint8_t default_data);
+	uint8_t read_sector_id(uint8_t default_data);
+
+	// event
+	bool update_event();
+	void restore_state(uint8_t density);
+
+	void save_state(struct vm_state_st &vm_state);
+	void load_state(const struct vm_state_st &vm_state);
+
+#ifdef USE_DEBUGGER
+	static void debug_param_header(_TCHAR *buffer, size_t buffer_len);
+	void debug_param_data(_TCHAR *buffer, size_t buffer_len);
+	void debug_media_info(_TCHAR *buffer, size_t buffer_len);
+#endif /* USE_DEBUGGER */
+};
 
 /**
 	@brief floppy drive
@@ -80,13 +179,14 @@ private:
 		DELAY_MOTOR_OFF_5	= 11000000,
 		DELAY_MOTOR_TIMEOUT	= 60000000,
 
-		/// head loaded time 60ms
-		HEAD_LOADED_TIME	= 60000,
+		/// head loaded time 75ms
+		HEAD_LOADED_TIME	= 75000,
 		HEAD_LOADED_CLOCK	= (HEAD_LOADED_TIME * (CPU_CLOCKS / 1000000)),
-
-		DELAY_WRITE_FRAME	= 300,
 	};
 
+	enum {
+		MAX_FDC_NUMS		= 1
+	};
 private:
 	DEVICE *d_fdc3, *d_fdc5[MAX_FDC_NUMS], *d_board;
 
@@ -109,8 +209,8 @@ private:
 	uint8_t m_density;	///< density (double = 1)
 	uint8_t m_motor_on_expand[MAX_FDC_NUMS];	///< motor on (expand)
 
-	int m_sectorcnt;
-	bool m_sectorcnt_cont;
+	int m_next_sector_pos;
+//	bool m_sectorcnt_cont;
 
 	uint8_t m_fdd5outreg[MAX_FDC_NUMS];	///< bit7:/DRQ bit0:/IRQ
 	uint8_t m_fdd5outreg_delay;			///< bit7:/DRQ for 8inch or 2HD
@@ -124,39 +224,17 @@ private:
 	outputs_t outputs_irq;
 	outputs_t outputs_drq;
 
-	/// drive info
-	typedef struct {
-		int side;
-		int track;
-		int index;
-#ifdef USE_SIG_FLOPPY_ACCESS
-		bool access;
-#endif
-		uint8_t ready;			///< ready warmup:01 on:11
-		uint8_t motor_warmup;	///< motor warming up:1
-		uint8_t head_loading;
-		int delay_write;
-
-		bool shown_media_error; 
-	} fdd_t;
-	fdd_t m_fdd[USE_FLOPPY_DISKS];
-
 	// diskette info
-	DISK* p_disk[USE_FLOPPY_DISKS];
+	DISK_DRIVE* p_disk[USE_FLOPPY_DISKS];
 
 	// index hole
 	int m_delay_index_hole;	///< spent clocks per round (cpu clocks)
 	int m_limit_index_hole; ///< width of asserting index signal (cpu clocks)
-	int m_delay_index_mark;	///< clocks in index mark area (cpu clocks)
 	// ready on
 	int m_delay_ready_on;
 
-//	int sector_step[1];
 
 	int m_sample_rate;
-//	int max_vol;
-//	int wav_volume;
-//	int wav_enable;
 	int m_wav_fddtype;
 	bool m_wav_loaded_at_first;
 
@@ -165,7 +243,7 @@ private:
 		FLOPPY_WAV_FDDTYPES = 3,
 		FLOPPY_WAV_FDD3	= 0,
 		FLOPPY_WAV_FDD5	= 1,
-		FLOPPY_WAV_FDD8	= 2,
+		FLOPPY_WAV_FDD8 = 2,
 	};
 	/// 2nd [0]:seek sound [1]:motor sound [2]:head on [3]:head off
 	enum WAV_SNDTYPES {
@@ -175,12 +253,6 @@ private:
 		FLOPPY_WAV_HEADON	= 2,
 		FLOPPY_WAV_HEADOFF	= 3,
 	};
-//	_TCHAR wav_file[FLOPPY_WAV_FDDTYPES][FLOPPY_WAV_SNDTYPES][20];
-//	uint8_t *wav_data[FLOPPY_WAV_FDDTYPES][FLOPPY_WAV_SNDTYPES];
-//	int    wav_size[FLOPPY_WAV_FDDTYPES][FLOPPY_WAV_SNDTYPES];
-//	// [0]:seek sound [1]:motor sound [2]:head on [3]:head off
-//	int    wav_play_pos[FLOPPY_WAV_SNDTYPES];
-//	int    wav_play[FLOPPY_WAV_SNDTYPES];
 	NOISE  m_noises[FLOPPY_WAV_FDDTYPES][FLOPPY_WAV_SNDTYPES];
 
 	//for resume
@@ -210,10 +282,15 @@ private:
 		// version 5
 		uint8_t flags;
 
-		char reserved[13];
+		uint8_t fdd5outreg_delay;	// version 7
+
+		char reserved[12];
 
 		// version 6
 		struct NOISE::vm_state_st m_noises[FLOPPY_WAV_FDDTYPES][FLOPPY_WAV_SNDTYPES];
+
+		// version 7
+		struct DISK_DRIVE::vm_state_st m_fdd[USE_FLOPPY_DISKS];
 	};
 #pragma pack()
 	// cannot write when load state from file
@@ -237,24 +314,19 @@ private:
 	void set_irq(bool val);
 	void set_drq(bool val);
 
-	int  search_sector_main(int fdcnum, int drvnum, int index);
+	inline int get_drive_number(int channel) const;
+
+	void disp_message_searched_sector(int drvnum, int status);
 
 	void load_wav();
 
 	void motor(int drv, bool val);
 
 	void set_drive_speed();
+	void set_current_pos_in_track(int drvnum);
 
 public:
-	FLOPPY(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("FLOPPY");
-		init_output_signals(&outputs_irq);
-		init_output_signals(&outputs_drq);
-		d_fdc3 = NULL;
-		for(int i=0; i<MAX_FDC_NUMS; i++) {
-			d_fdc5[i] = NULL;
-		}
-	}
+	FLOPPY(VM* parent_vm, EMU* parent_emu, const char* identifier);
 	~FLOPPY() {}
 
 	// common functions
@@ -285,22 +357,26 @@ public:
 	void event_frame();
 	void event_callback(int event_id, int err);
 
+	// track
 	bool search_track(int channel);
-	bool verify_track(int channel, int track);
+	bool verify_track_number(int channel, int track_num);
 	int  get_current_track_number(int channel);
-	int  search_sector(int channel);
-//	int  search_sector(int channel, int sect);
-	int  search_sector(int channel, int track, int sect, bool compare_side, int side);
 	bool make_track(int channel);
 	bool parse_track(int channel);
 
-	int get_head_loading_clock(int channel);
-	int get_index_hole_remain_clock();
-	int calc_index_hole_search_clock(int channel);
-	int get_clock_arrival_sector(int channel, int sect, int delay);
-	int get_clock_next_sector(int channel, int delay);
-	int calc_sector_search_clock(int channel, int sect);
-	int calc_next_sector_clock(int channel);
+	// sector
+	void parse_sector(int channel);
+	int  search_sector(int channel, int track_num, int sector_num, bool compare_side, int side);
+	int  search_next_sector(int channel);
+	int  search_sector_and_get_clock(int channel, int track_num, int sector_num, bool compare_side, int side_num, int delay_clock, int timeout_round, int &arrive_clock, bool skip_unmatch);
+	int  search_next_sector_and_get_clock(int channel, int delay_clock, int timeout_round, int &arrive_clock);
+
+	int get_clock_arrival_sector(int channel, int sector_num, int delay_clock, int timeout_round);
+	int get_clock_next_sector(int channel, int delay_clock, int timeout_round);
+
+	int get_head_loading_clock(int channel, int delay_time);
+	int get_index_hole_search_clock(int channel, int delay_time);
+	int get_index_hole_remain_clock(int delay_clock);
 
 	// user interface
 	bool open_disk(int drv, const _TCHAR *path, int offset, uint32_t flags);
@@ -309,8 +385,6 @@ public:
 	void set_disk_side(int drv, int side);
 	int  get_disk_side(int drv);
 	bool disk_inserted(int drv);
-	void set_drive_type(int drv, uint8_t type);
-	uint8_t get_drive_type(int drv);
 	uint8_t fdc_status();
 	void toggle_disk_write_protect(int drv);
 	bool disk_write_protected(int drv);
@@ -330,8 +404,9 @@ public:
 	uint32_t debug_read_io8(uint32_t addr);
 	bool debug_write_reg(uint32_t reg_num, uint32_t data);
 	bool debug_write_reg(const _TCHAR *reg, uint32_t data);
-	void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
-#endif
+	void debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len);
+	void debug_status_info(int type, _TCHAR *buffer, size_t buffer_len);
+#endif /* USE_DEBUGGER */
 };
 
 #endif /* FLOPPY_H */

@@ -163,7 +163,7 @@ public:
 	uint32_t debug_read_io8(uint32_t addr);
 	bool debug_write_reg(uint32_t reg_num, uint32_t data);
 	bool debug_write_reg(const _TCHAR *reg, uint32_t data);
-	void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
+	void debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len);
 #endif
 };
 

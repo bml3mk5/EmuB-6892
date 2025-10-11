@@ -47,6 +47,8 @@ private:
 	uint8_t	drb;	///< Data Register B
 	uint8_t	ddra;	///< Data Direction Register A
 	uint8_t	ddrb;	///< Data Direction Register B
+	uint8_t	ora;	///< Output Data Register A
+	uint8_t	orb;	///< Output Data Register B
 
 	uint8_t	ca1;	///< CA1 signal
 	uint8_t	ca2;	///< CA2 signal
@@ -82,8 +84,12 @@ private:
 		uint8_t	cb;
 
 		uint8_t   now_irq;
+		// version 2
+		char reserved0;
+		uint8_t ora;
+		uint8_t orb;
 
-		char reserved[15];
+		char reserved[12];
 	};
 #pragma pack()
 
@@ -145,7 +151,7 @@ public:
 	uint32_t debug_read_io8(uint32_t addr);
 	bool debug_write_reg(uint32_t reg_num, uint32_t data);
 	bool debug_write_reg(const _TCHAR *reg, uint32_t data);
-	void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
+	void debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len);
 #endif
 };
 

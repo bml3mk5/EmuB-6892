@@ -20,32 +20,32 @@ static const VmSize window_proposal[] = {
 
 CWindowMode::CWindowMode()
 {
-	power = 10;
+	magnify = 1.0;
 	width = 0;
 	height = 0;
 }
 
-CWindowMode::CWindowMode(int power_, int width_, int height_)
+CWindowMode::CWindowMode(double magnify_, int width_, int height_)
 {
-	Set(power_, width_, height_);
+	Set(magnify_, width_, height_);
 }
 
 CWindowMode::~CWindowMode()
 {
 }
 
-void CWindowMode::Set(int power_, int width_, int height_)
+void CWindowMode::Set(double magnify_, int width_, int height_)
 {
-	power = power_;
-	width = width_ * power_ / 10;
-	height = height_ * power_ / 10;
+	magnify = magnify_;
+	width = (int)((double)width_ * magnify_ + 0.5);
+	height = (int)((double)height_ * magnify_ + 0.5);
 }
 
-bool CWindowMode::Match(int power_, int width_, int height_) const
+bool CWindowMode::Match(double magnify_, int width_, int height_) const
 {
-	return (power == power_
-		&& width == (width_ * power_ / 10)
-		&& height == (height_ * power_ / 10));
+	return (magnify == magnify_
+		&& width == (int)((double)width_ * magnify_ + 0.5)
+		&& height == (int)((double)height_ * magnify_ + 0.5));
 }
 
 //
@@ -60,7 +60,7 @@ bool CWindowModes::greater(const CWindowMode *a, const CWindowMode *b)
 	int rc = 0;
 	if (!rc) rc = (a->width - b->width);
 	if (!rc) rc = (a->height - b->height);
-	if (!rc) rc = (a->power - b->power);
+	if (!rc) rc = (int)(a->magnify - b->magnify);
 	return (rc < 0);
 }
 
@@ -69,10 +69,10 @@ void CWindowModes::Sort()
 	std::sort(items.begin(), items.end(), greater);
 }
 
-int CWindowModes::Find(int power_, int width_, int height_) const
+int CWindowModes::Find(double magnify_, int width_, int height_) const
 {
 	for(int i=0; i<Count(); i++) {
-		if (Item(i)->Match(power_, width_, height_)) {
+		if (Item(i)->Match(magnify_, width_, height_)) {
 			return i;
 		}
 	}
@@ -90,7 +90,7 @@ WindowMode::~WindowMode()
 }
 
 /// enumerate screen mode for window
-/// calcurate magnify range
+/// calculate magnify range
 /// @param [in] max_width
 /// @param [in] max_height
 void WindowMode::Enum(int max_width, int max_height)
@@ -123,12 +123,17 @@ void WindowMode::Enum(int max_width, int max_height)
 				break;
 			}
 		}
-		for (int pow = 10; pow <= 30 && window_modes.Count() < WINDOW_MODE_MAX; pow+=5) {
-			if ((w*pow/10) <= max_width && (h*pow/10) <= max_height) {
+		for (double pow = 1.0; pow <= 3.0 && window_modes.Count() < WINDOW_MODE_MAX; pow += 0.5) {
+			if ((int)((double)w*pow) <= max_width && (int)((double)h*pow) <= max_height) {
 				int found = window_modes.Find(pow, w, h);
 				if (found < 0) {
 					window_modes.Add(new CWindowMode(pow, w, h));
-					logging->out_debugf(_T("window_mode:%d %dx%d x%.1f"),window_modes.Count(), w * pow / 10, h * pow / 10, (double)pow / 10.0);
+					logging->out_debugf(_T("window_mode:%d %dx%d x%.1f")
+						, window_modes.Count()
+						, (int)((double)w * pow + 0.5)
+						, (int)((double)h * pow + 0.5)
+						, pow
+					);
 				}
 			} else {
 				break;
@@ -148,5 +153,5 @@ const CWindowMode *WindowMode::Get(int num) const
 
 int WindowMode::Find(int width, int height) const
 {
-	return window_modes.Find(10, width, height);
+	return window_modes.Find(1.0, width, height);
 }

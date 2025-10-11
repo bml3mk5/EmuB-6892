@@ -151,10 +151,6 @@ int main(int argc, char *argv[])
 	while (!rc) {
 		emu->set_gui(gui);
 
-#ifdef USE_OPENGL
-		emu->set_use_opengl(pConfig->use_opengl);
-#endif
-
 		// create window
 		emu->init_screen_mode();
 		if (!emu->create_screen(0, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, 0)) {
@@ -199,7 +195,7 @@ int main(int argc, char *argv[])
 	//	cond_allow_update_screen =SDL_CreateCond();
 
 		if (mainwindow->isValid()) {
-			if (pConfig->use_opengl) {
+			if (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) {
 				scgl = new MyGLWidget(mainwindow);
 				mainwindow->setCentralWidget(scgl);
 				scgl->resize(pConfig->screen_width, pConfig->screen_height);
@@ -333,7 +329,7 @@ void MyGLWidget::resizeGL(int w, int h)
 	emu_osd->set_mode_opengl(this, w, h);
 
 	// set swap interval
-	emu_osd->set_interval_opengl();
+	emu_osd->set_opengl_interval();
 }
 
 //

@@ -16,6 +16,7 @@
 #include <QDialog>
 
 class MyVKeyboard;
+class QMenu;
 
 namespace Vkbd {
 
@@ -36,6 +37,8 @@ private:
 	void update_window();
 //	void init_dialog(HWND);
 	void paint_window(QPaintDevice *, const QRect &);
+	void changing_size();
+	void change_size(double mag);
 
 public:
 	VKeyboard(QWidget *);
@@ -57,6 +60,7 @@ class MyVKeyboard : public QDialog
 
 private:
 	Vkbd::VKeyboard *vkbd;
+	QMenu *popupMenu;
 
 	void closeEvent(QCloseEvent *);
 	void paintEvent(QPaintEvent *);
@@ -64,6 +68,13 @@ private:
 	void mouseReleaseEvent(QMouseEvent *);
 	void keyPressEvent(QKeyEvent *);
 	void keyReleaseEvent(QKeyEvent *);
+	void resizeEvent(QResizeEvent *);
+
+	void create_popup_menu();
+	void show_popup_menu(int x, int y);
+
+private slots:
+	void selectMenuItem();
 
 public:
 	explicit MyVKeyboard(Vkbd::VKeyboard *vkbd, QWidget *parent = nullptr);

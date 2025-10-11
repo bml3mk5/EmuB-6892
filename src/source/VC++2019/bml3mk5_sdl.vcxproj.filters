@@ -17,7 +17,7 @@
     <Filter Include="Header Files\OSD Header Files\SDL">
       <UniqueIdentifier>{2f9dfd90-9c15-4920-a9d4-c30b8d64d905}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OSD Header Files\windows">
+    <Filter Include="Header Files\OSD Header Files\Windows">
       <UniqueIdentifier>{05289855-df05-4502-9a74-8b839d156f4a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\VIDEO Header Files">
@@ -64,7 +64,7 @@
     <Filter Include="Source Files\OSD Source Files\SDL">
       <UniqueIdentifier>{19ac4d0d-5ae9-4f9f-a72b-660a2bdd875f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\OSD Source Files\windows">
+    <Filter Include="Source Files\OSD Source Files\Windows">
       <UniqueIdentifier>{916f7f29-5adb-4939-a386-216c2ff48462}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\VIDEO Source Files">
@@ -300,8 +300,14 @@
     <ClCompile Include="..\src\osd\windowmode.cpp">
       <Filter>Source Files\OSD Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\osd\windows\win_apiex.cpp">
+      <Filter>Source Files\OSD Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osd\windows\win_d2d.cpp">
+      <Filter>Source Files\OSD Source Files\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\osd\windows\win_uart.cpp">
-      <Filter>Source Files\OSD Source Files\windows</Filter>
+      <Filter>Source Files\OSD Source Files\Windows</Filter>
     </ClCompile>
     <ClCompile Include="..\src\simple_ini.cpp">
       <Filter>Source Files</Filter>
@@ -414,7 +420,16 @@
     <ClCompile Include="..\src\vm\disk.cpp">
       <Filter>Source Files\VM Common Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vm\disk_image.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\vm\disk_parser.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\diskd88_image.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\diskhfe_image.cpp">
       <Filter>Source Files\VM Common Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\vm\event.cpp">
@@ -530,9 +545,6 @@
     <ClInclude Include="..\src\curtime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d88_defs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\debugger_bpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -546,6 +558,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\depend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\diskd88_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\diskhfe_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\emu.h">
@@ -737,6 +755,12 @@
     <ClInclude Include="..\src\osd\windowmode.h">
       <Filter>Header Files\OSD Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\osd\windows\win_apiex.h">
+      <Filter>Header Files\OSD Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\osd\windows\win_d2d.h">
+      <Filter>Header Files\OSD Header Files\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\osd\windows\win_uart.h">
       <Filter>Header Files\OSD Header Files\windows</Filter>
     </ClInclude>
@@ -878,7 +902,16 @@
     <ClInclude Include="..\src\vm\disk.h">
       <Filter>Header Files\VM Common Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\vm\disk_image.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\vm\disk_parser.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\diskd88_image.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\diskhfe_image.h">
       <Filter>Header Files\VM Common Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\vm\event.h">

@@ -23,6 +23,7 @@
 #include "../../msgboard.h"
 #endif
 #include "qt_csurface.h"
+#include "../../labels.h"
 
 // ----------------------------------------------------------------------------
 // initialize
@@ -61,37 +62,32 @@ void EMU_OSD::sleep(uint32_t ms)
 	CDelay(ms);
 }
 
-#ifdef USE_OPENGL
-void EMU_OSD::change_screen_use_opengl(int num)
+void EMU_OSD::change_drawing_method(int method)
 {
-	CMsg::Id need_restart = CMsg::Null;
-	const CMsg::Id list[] = {
-		CMsg::OpenGL_OFF,
-		CMsg::OpenGL_ON_Sync,
-		CMsg::OpenGL_ON_Async,
-		CMsg::End
-	};
+	int count = LABELS::MakeDrawingMethodList(enabled_drawing_method);
+	int idx;
 
-	if (num >= 0) {
-		pConfig->use_opengl = static_cast<uint8_t>(pConfig->use_opengl == num ? 0 : num);
+	uint8_t prev_method = pConfig->drawing_method;
+	if (method >= 0) {
+		idx = LABELS::GetDrawingMethodIndex((uint8_t)method);
 	} else {
-		pConfig->use_opengl = (pConfig->use_opengl + 1) % 3;
+		idx = (LABELS::GetDrawingMethodIndex(prev_method) + 1) % count;
+	}
+	uint8_t new_method = LABELS::drawing_method_idx[idx];
+	// device will change
+	if (!gui->StoreDrawingMethod(new_method)) {
+		// restart this app to change drawing method
+		out_infoc_x(LABELS::drawing_method[idx], CMsg::LB_Need_restart_program_RB, 0);
+		return;
 	}
 
-	if (pConfig->use_opengl != next_use_opengl) {
-		need_restart = CMsg::LB_Need_restart_program_RB;
-	}
-	out_infoc_x(list[pConfig->use_opengl], need_restart, 0);
+	// change drawing method immediately
 
-#ifdef OPENGL_IMMCHANGE
-// warning: cannot change immediate under agar gui
-	use_opengl = pConfig->use_opengl;
-	if (!create_screen(pConfig->disp_device_no, 0, 0, pConfig->screen_width, pConfig->screen_height, screen_flags)) {
-		exit(1);
-	}
-	lock_screen();
-	update_config();
-	unlock_screen();
-#endif
+	pConfig->drawing_method = new_method;
+
+	set_ledbox_position(!is_fullscreen());
+
+	set_msgboard_position();
+
+	out_infoc_x(LABELS::drawing_method[idx], 0);
 }
-#endif

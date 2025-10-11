@@ -396,7 +396,16 @@
     <ClCompile Include="..\src\vm\disk.cpp">
       <Filter>Source Files\VM Common Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vm\disk_image.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\vm\disk_parser.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\diskd88_image.cpp">
+      <Filter>Source Files\VM Common Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vm\diskhfe_image.cpp">
       <Filter>Source Files\VM Common Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\vm\event.cpp">
@@ -515,9 +524,6 @@
     <ClInclude Include="..\src\curtime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\d88_defs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\debugger_bpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -531,6 +537,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\depend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\diskd88_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\diskhfe_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\emu.h">
@@ -836,7 +848,16 @@
     <ClInclude Include="..\src\vm\disk.h">
       <Filter>Header Files\VM Common Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\vm\disk_image.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\vm\disk_parser.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\diskd88_image.h">
+      <Filter>Header Files\VM Common Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vm\diskhfe_image.h">
       <Filter>Header Files\VM Common Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\vm\event.h">

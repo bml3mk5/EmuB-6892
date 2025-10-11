@@ -20,6 +20,7 @@
 #include <mmsystem.h>
 #include <stdio.h>
 #include "win_main.h"
+#include "win_apiex.h"
 #include "../../gui/windows/winfont.h"
 #include "../../clocale.h"
 #include "../../res/resource.h"
@@ -173,8 +174,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPTSTR szCm
 	window_client_width = MIN_WINDOW_WIDTH;
 	window_client_height = MIN_WINDOW_HEIGHT;
 //	SetRect(&rect, 0, 0, window_client_width, window_client_height);
+//	AdjustWindowRectEx(&rect, dwStyle, TRUE, 0);
 
-	//	AdjustWindowRectEx(&rect, dwStyle, TRUE, 0);
+//	int defDpi = (int)WIN_API_EX::GetDpiForSystem();
+//	window_client_width = window_client_width * defDpi / USER_DEFAULT_SCREEN_DPI;
+//	window_client_height = window_client_height * defDpi / USER_DEFAULT_SCREEN_DPI;
 
 	// enumerate screen mode
 	emu->init_screen_mode();
@@ -328,13 +332,12 @@ void register_my_class(HINSTANCE hInstance_)
  */
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	PAINTSTRUCT ps;
-	HDC hdc;
 	int no;
 	LRESULT result = 1;
 
 	switch(iMsg) {
 	case WM_PAINT:
+	case WM_USERPAINT:
 		if (need_update_title) {
 			need_update_title = false;
 			_TCHAR buf[256];
@@ -343,17 +346,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			_stprintf(buf, _T("%s - %d/%dfps"), _T(DEVICE_NAME), frames_result.draw, frames_result.total);
 			SetWindowText(hWnd, buf);
 		}
-		hdc = BeginPaint(hWnd, &ps);
 		if(gui) {
 #ifdef LOG_MEASURE
 			logging->out_logf(LOG_DEBUG,"WM_PAINT ST: thread_id:%ld %ld",GetCurrentThreadId(), timeGetTime());
 #endif
-			gui->UpdateScreen(hdc);
+			gui->UpdateScreen(hWnd, iMsg == WM_USERPAINT);
 #ifdef LOG_MEASURE
 			logging->out_logf(LOG_DEBUG,"WM_PAINT ED: %ld",timeGetTime());
 #endif
 		}
-		EndPaint(hWnd, &ps);
 		return 0;
 	case WM_CREATE:
 #ifdef USE_BUTTON
@@ -440,11 +441,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
-#ifdef USE_BITMAP
+#if 0
 	case WM_SIZE:
-		if(emu) {
-			emu->reload_bitmap();
-		}
 		break;
 #endif
 	case WM_KILLFOCUS:
@@ -594,6 +592,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 #endif
 	case WM_DROPFILES:
 		gui->OpenDroppedFile((void *)wParam);
+		return 0;
+	case WM_DPICHANGED:
+		if (emu) {
+			emu->change_screen_resolution(
+				(int)((RECT *)lParam)->left,
+				(int)((RECT *)lParam)->top,
+				(int)((RECT *)lParam)->right - ((RECT *)lParam)->left,
+				(int)((RECT *)lParam)->bottom - ((RECT *)lParam)->top,
+				(int)HIWORD(wParam));
+		}
 		return 0;
 	case WM_INITMENUPOPUP:
 	case WM_ENTERMENULOOP:
@@ -851,3 +859,4 @@ static DWORD WINAPI EmuProc(LPVOID lpParameter)
 
 	return 0;
 }
+

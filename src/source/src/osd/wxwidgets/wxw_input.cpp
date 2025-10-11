@@ -145,7 +145,7 @@ void EMU_OSD::release_joystick()
 
 #ifdef USE_JOYSTICK
 	// release joystick
-	for(int i = 0; i < MAX_JOYSTICKS; i++) {
+	for(int i=0; i<MAX_JOYSTICKS; i++) {
 # ifdef USE_SDL_JOYSTICK
 		if (joy[i] != NULL) {
 			SDL_JoystickClose(joy[i]);
@@ -362,8 +362,10 @@ void EMU_OSD::update_joystick()
 			}
 			joy2joy_status[i][0] = joy_stat;
 
-			// convert
-			convert_joy_status(i);
+			// convert joy to joy mapping
+			if (joy2joy_curr_device >= 0) {
+				convert_joy_status(joy2joy_curr_device, i);
+			}
 		}
 # else
 		for(int i = 0; i < MAX_JOYSTICKS; i++) {
@@ -439,30 +441,34 @@ void EMU_OSD::update_joystick()
 				}
 				joy2joy_status[i][0] = joy_stat;
 
-				// convert
-				convert_joy_status(i);
+				// convert joy to joy mapping
+				if (joy2joy_curr_device >= 0) {
+					convert_joy_status(joy2joy_curr_device, i);
+				}
 			}
 		}
 # endif
 	}
 #endif // USE_JOYSTICK
 #ifdef USE_KEY2JOYSTICK
-	if (key2joy_enabled) {
-#ifndef USE_PIAJOYSTICKBIT
+	if (key2joy_curr_device >= 0) {
+# ifndef USE_JOYSTICKBIT
 		// update key 2 joystick status
 		for(int i = 0; i < MAX_JOYSTICKS; i++) {
 			for(int k = 0; k < 9; k++) {
-				joy_status[i][0] |= key2joy_status[i][k];
+				joy_status[i][0] |= key2joy[key2joy_curr_device].status[i][k];
 			}
 		}
-#else
+# else
+		// update key 2 joystick status
 		for(int i = 0; i < MAX_JOYSTICKS; i++) {
-			joy_status[i][0] |= key2joy_status[i];
+			joy_status[i][0] |= key2joy[key2joy_curr_device].status[i];
 		}
-#endif
+# endif
 	}
 #endif
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	// If rapid fire is enabled, mask the joystick state.
 	for(int i = 0; i < MAX_JOYSTICKS; i++) {
 		joy_status[i][0] &= joy_mashing_mask[i][joy_mashing_count];
 	}

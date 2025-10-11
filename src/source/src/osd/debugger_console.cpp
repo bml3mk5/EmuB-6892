@@ -2162,11 +2162,15 @@ void DebuggerConsole::CommandAccessDevice()
 /// usage - read / write register in peripheral devices
 void DebuggerConsole::UsageAccessDevice(bool s)
 {
-	UsageCmdStr1(s, _T("RD"), _T("<device name> [{<regno>|<regname>} <value>]"), _T("Show/Edit register(s) in specified device."));
+	UsageCmdStr1(s, _T("RD"), _T("<device name> [{<regno>|<regname>} <value>]"), _T("Show/Edit register(s) or status in specified device."));
 	if (s) return;
 
-	Print(_T("  <device name> - specify following device name."));
-	dp->vm->get_debug_device_names_str(buffer, DC_MAX_BUFFER_LEN);
+	Print(_T("  <device name> - specify a device name."));
+	Print(_T("   Set following name if show or edit register(s):"));
+	dp->vm->get_debug_device_names_str(VM::DEVTYPE_REG, buffer, DC_MAX_BUFFER_LEN);
+	Print(buffer);
+	Print(_T("   Set following name if show status:"));
+	dp->vm->get_debug_device_names_str(VM::DEVTYPE_STATUS, buffer, DC_MAX_BUFFER_LEN);
 	Print(buffer);
 	Cr();
 	Print(_T("  <regno>   - specify a register number."));
@@ -6730,7 +6734,9 @@ void EMU::open_debugger()
 		}
 
 		if (ok) {
-
+#ifdef USE_TELNET_SERVER
+			debugger_socket->allocate();
+#endif
 			debugger_thread_param.emu = this;
 			debugger_thread_param.vm = vm;
 			debugger_thread_param.cpu_index = -1;

@@ -221,31 +221,24 @@ public:
 	virtual bool bios_int(int intnum, uint16_t regs[], uint16_t sregs[], int32_t* ZeroFlag, int32_t* CarryFlag);
 	///@}
 
-	/// @name floppy disk controller
+	/// @name floppy disk controller and floppy disk drive
 	///@{
 	virtual bool search_track(int channel);
-	virtual uint8_t verify_track();
-	virtual bool verify_track(int channel, int track);
+	virtual bool verify_track_number(int channel, int track);
 	virtual int  get_current_track_number(int channel);
-	virtual uint8_t search_sector(int side, bool compare);
-	virtual int  search_sector(int channel);
-//	virtual int  search_sector(int channel, int sect);
-	virtual int  search_sector(int channel, int track, int sect, bool compare_side, int side);
-	virtual bool make_track();
+	virtual void parse_sector(int channel);
+	virtual int  search_sector(int channel, int track_num, int sector_num, bool compare_side, int side_num);
+	virtual int  search_next_sector(int channel);
+	virtual int  search_sector_and_get_clock(int channel, int track_num, int sector_num, bool compare_side, int side_num, int delay_clock, int timeout_round, int &arrive_clock, bool skip_unmatch);
+	virtual int  search_next_sector_and_get_clock(int channel, int delay_clock, int timeout_round, int &arrive_clock);
 	virtual bool make_track(int channel);
-	virtual bool parse_track();
 	virtual bool parse_track(int channel);
-	///@}
-
-	/// @name floppy disk drive
-	///@{
 	virtual int get_a_round_clock(int channel);
-	virtual int get_head_loading_clock(int channel);
-	virtual int get_index_hole_remain_clock();
-	virtual int calc_index_hole_search_clock(int channel);
-	virtual int get_clock_arrival_sector(int channel, int sect, int delay);
-	virtual int calc_sector_search_clock(int channel, int sect);
-	virtual int calc_next_sector_clock(int channel);
+	virtual int get_head_loading_clock(int channel, int delay_time);
+	virtual int get_index_hole_search_clock(int channel, int delay_time);
+	virtual int get_index_hole_remain_clock(int delay_clock);
+	virtual int get_clock_arrival_sector(int channel, int sect, int delay_clock, int timeout_round);
+	virtual int get_clock_next_sector(int channel, int delay_clock, int timeout_round);
 	///@}
 
 	/// processing event device
@@ -269,6 +262,7 @@ public:
 	virtual double get_passed_usec(uint64_t prev);
 	virtual void set_cpu_clock(uint32_t freq);
 	virtual uint32_t get_cpu_clock() const;
+	virtual int  get_current_power();
 
 	virtual void set_number_of_cpu(int nums);
 	virtual uint32_t get_cpu_pc(int index);
@@ -353,6 +347,7 @@ public:
 	static uint32_t find_debug_reg_name(const _TCHAR *list[], const _TCHAR *name);
 
 	virtual void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
+	virtual void debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len);
 	virtual void debug_regs_info(int type, _TCHAR *buffer, size_t buffer_len);
 	virtual bool get_debug_reg_ptr(_TCHAR *reg, size_t regsiz, void * &regptr, int &reglen);
 	virtual void debug_memory_map_info(DebuggerConsole *dc);

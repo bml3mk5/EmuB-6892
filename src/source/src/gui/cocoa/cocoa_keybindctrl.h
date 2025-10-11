@@ -196,4 +196,26 @@ typedef struct selected_st {
 - (id)initWithValue:(int)new_tabnum :(int)new_idx;
 @end
 
+/**
+	@brief Keybind base panel
+*/
+@interface CocoaKeybindBasePanel : CocoaBasePanel
+{
+	CocoaTabView *tabView;
+	NSMutableArray *tableViews;
+	Uint32 joy_mask;
+}
+- (id)init;
+- (void)createFooter:(CocoaLayout *)box_all;
+- (NSInteger)runModal;
+- (void)close;
+- (void)dialogCancel:(id)sender;
+- (void)dialogOk:(id)sender;
+- (void)setData;
+- (void)loadDefaultPreset:(id)sender;
+- (void)loadPreset:(id)sender;
+- (void)savePreset:(id)sender;
+- (void)clickJoyAxis:(id)sender;
+@end
+
 #endif /* COCOA_KEYBINDCTRL_H */

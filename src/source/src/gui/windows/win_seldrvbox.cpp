@@ -19,7 +19,7 @@ namespace GUI_WIN
 #define IDC_BUTTON	42101
 
 SelDrvBox::SelDrvBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_SELDRVBOX, new_font, new_emu, new_gui)
+	: CDialogBox(hInst, IDD_SELDRVBOX, new_emu, new_gui)
 {
 	def_drv = 0;
 	UTILITY::tcscpy(prefix, sizeof(prefix) / sizeof(prefix[0]), CMSG(Drive));

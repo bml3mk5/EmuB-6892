@@ -206,10 +206,10 @@ void GUI_BASE::UpdatedScreen()
 /// draw screen on window
 /// @note this function should be called by main thread
 #if defined(USE_WIN)
-void GUI_BASE::UpdateScreen(HDC hdc)
+void GUI_BASE::UpdateScreen(HWND hWnd, bool user_event)
 {
 //	logging->out_debug("GUI_BASE::UpdateScreen");
-	emu->update_screen(hdc);
+	emu->update_screen(hWnd, user_event);
 	need_update_screen = 6;
 }
 #elif defined(USE_SDL) || defined(USE_SDL2)
@@ -234,6 +234,15 @@ void GUI_BASE::DecreaseUpdateScreenCount()
 {
 	if (need_update_screen > 0) need_update_screen--;
 //	logging->out_logf(LOG_DEBUG, "GUI_BASE::Decrease %d",need_update_screen);
+}
+/// @return true if changing immediately
+bool GUI_BASE::StoreDrawingMethod(uint8_t method)
+{
+	return true;
+}
+bool GUI_BASE::RestoreDrawingMethod(uint8_t &method) const
+{
+	return true;
 }
 #endif
 
@@ -379,22 +388,12 @@ bool GUI_BASE::ExecuteGlobalKeys(int code, uint32_t status)
 		case GLOBALKEY_W:	// change window size
 			PostCommandMessage(ID_SCREEN_WINDOW_A);
 			break;
-#ifdef USE_DIRECT3D
-		case GLOBALKEY_U:	// direct3d filter
-			PostCommandMessage(ID_SCREEN_D3D_FILTER_A);
+		case GLOBALKEY_U:	// screen filter
+			PostCommandMessage(ID_SCREEN_FILTER_A);
 			break;
-		case GLOBALKEY_Y:	// use direct3d1,2
-			PostCommandMessage(ID_SCREEN_D3D_A);
+		case GLOBALKEY_Y:	// drawing method
+			PostCommandMessage(ID_SCREEN_DRAWING_METHOD_A);
 			break;
-#endif
-#ifdef USE_OPENGL
-		case GLOBALKEY_U:	// opengl filter
-			PostCommandMessage(ID_SCREEN_OPENGL_FILTER_A);
-			break;
-		case GLOBALKEY_Y:	// use opengl1,2
-			PostCommandMessage(ID_SCREEN_OPENGL_A);
-			break;
-#endif
 		case GLOBALKEY_Z:	// show Message
 			if (status == 2) ToggleMessageBoard();
 			else PostCommandMessage(ID_OPTIONS_MSGBOARD);
@@ -1067,48 +1066,65 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 			PostEtChangeDrawMode(-1);
 			return 0;
 #endif
+		case ID_SCREEN_DEFAULT_DRAW_S:
+			ChangeDrawingMethod(DRAWING_METHOD_DEFAULT_S);
+			return 0;
+		case ID_SCREEN_DEFAULT_DRAW_AS:
+			ChangeDrawingMethod(DRAWING_METHOD_DEFAULT_AS);
+			return 0;
+		case ID_SCREEN_DEFAULT_DRAW_SDB:
+			ChangeDrawingMethod(DRAWING_METHOD_DEFAULT_SDB);
+			return 0;
+		case ID_SCREEN_DEFAULT_DRAW_ASDB:
+			ChangeDrawingMethod(DRAWING_METHOD_DEFAULT_ASDB);
+			return 0;
+#ifdef USE_DIRECT2D
+		case ID_SCREEN_D2D_SYNC:
+			ChangeDrawingMethod(DRAWING_METHOD_DIRECT2D_S);
+			return 0;
+		case ID_SCREEN_D2D_ASYNC:
+			ChangeDrawingMethod(DRAWING_METHOD_DIRECT2D_AS);
+			return 0;
+		case ID_SCREEN_D2D_SYNC_DB:
+			ChangeDrawingMethod(DRAWING_METHOD_DIRECT2D_SDB);
+			return 0;
+		case ID_SCREEN_D2D_ASYNC_DB:
+			ChangeDrawingMethod(DRAWING_METHOD_DIRECT2D_ASDB);
+			return 0;
+#endif
 #ifdef USE_DIRECT3D
 		case ID_SCREEN_D3D_SYNC:
-			ChangeUseDirect3D(1);
+			ChangeDrawingMethod(DRAWING_METHOD_DIRECT3D_S);
 			return 0;
 		case ID_SCREEN_D3D_ASYNC:
-			ChangeUseDirect3D(2);
-			return 0;
-		case ID_SCREEN_D3D_A:
-			ChangeUseDirect3D();
-			return 0;
-		case ID_SCREEN_D3D_FILTER0:
-		case ID_SCREEN_D3D_FILTER1:
-		case ID_SCREEN_D3D_FILTER2:
-			ChangeDirect3DFilter(id - ID_SCREEN_D3D_FILTER0);
-			return 0;
-		case ID_SCREEN_D3D_FILTER_A:
-			ChangeDirect3DFilter(-1);
+			ChangeDrawingMethod(DRAWING_METHOD_DIRECT3D_AS);
 			return 0;
 #endif
 #ifdef USE_OPENGL
 		case ID_SCREEN_OPENGL_SYNC:
-			ChangeUseOpenGL(1);
+			ChangeDrawingMethod(DRAWING_METHOD_OPENGL_S);
 			return 0;
 		case ID_SCREEN_OPENGL_ASYNC:
-			ChangeUseOpenGL(2);
-			return 0;
-		case ID_SCREEN_OPENGL_A:
-			ChangeUseOpenGL();
-			return 0;
-		case ID_SCREEN_OPENGL_FILTER0:
-		case ID_SCREEN_OPENGL_FILTER1:
-		case ID_SCREEN_OPENGL_FILTER2:
-			ChangeOpenGLFilter(id - ID_SCREEN_OPENGL_FILTER0);
-			return 0;
-		case ID_SCREEN_OPENGL_FILTER_A:
-			ChangeOpenGLFilter(-1);
+			ChangeDrawingMethod(DRAWING_METHOD_OPENGL_AS);
 			return 0;
 #endif
+		case ID_SCREEN_DRAWING_METHOD_A:
+			ChangeDrawingMethod(-1);
+			return 0;
+		case ID_SCREEN_FILTER0:
+		case ID_SCREEN_FILTER1:
+		case ID_SCREEN_FILTER2:
+			ChangeScreenFilter(id - ID_SCREEN_FILTER0);
+			return 0;
+		case ID_SCREEN_FILTER_A:
+			ChangeScreenFilter(-1);
+			return 0;
 #ifdef USE_EMU_INHERENT_SPEC
 		case ID_SCREEN_PIXEL_ASPECT0:
 		case ID_SCREEN_PIXEL_ASPECT1:
 		case ID_SCREEN_PIXEL_ASPECT2:
+		case ID_SCREEN_PIXEL_ASPECT3:
+		case ID_SCREEN_PIXEL_ASPECT4:
 			ChangePixelAspect(id - ID_SCREEN_PIXEL_ASPECT0);
 			return 0;
 		case ID_SCREEN_PIXEL_ASPECT_A:
@@ -1293,17 +1309,29 @@ int GUI_BASE::ProcessCommand(int id, void *data1, void *data2)
 			return 0;
 #endif
 		case ID_OPTIONS_JOYPAD0:
-			ChangeUseJoypad(1);
+			ChangeUseJoypad(SEL_JOY2KEY);
 			return 0;
+#ifdef USE_PIAJOYSTICK
 		case ID_OPTIONS_JOYPAD1:
-			ChangeUseJoypad(2);
+			ChangeUseJoypad(SEL_JOY2PIAJOY);
 			return 0;
+#endif
+#ifdef USE_PSGJOYSTICK
+		case ID_OPTIONS_JOYPAD2:
+			ChangeUseJoypad(SEL_JOY2PSGJOY);
+			return 0;
+#endif
 		case ID_OPTIONS_JOYPAD_A:
 			ChangeUseJoypad(-1);
 			return 0;
-#ifdef USE_KEY2JOYSTICK
-		case ID_OPTIONS_KEY2JOYPAD:
-			ToggleEnableKey2Joypad();
+#ifdef USE_KEY2PIAJOYSTICK
+		case ID_OPTIONS_KEY2JOYPAD0:
+			ToggleEnableKey2Joypad(DEV_PIAJOY);
+			return 0;
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+		case ID_OPTIONS_KEY2JOYPAD1:
+			ToggleEnableKey2Joypad(DEV_PSGJOY);
 			return 0;
 #endif
 		case ID_OPTIONS_JOYSETTING:
@@ -1869,7 +1897,7 @@ bool GUI_BASE::GetWindowModeStr(int num, _TCHAR *str) const
 		UTILITY::stprintf(str, 32, _T("%dx%d x%.1f"),
 			mode->width,
 			mode->height,
-			(double)mode->power / 10.0);
+			mode->magnify);
 		return true;
 	} else {
 		*str = _T('\0');
@@ -2079,77 +2107,31 @@ int GUI_BASE::GetRGBTypeMode(void)
 	return ((pConfig->tvsuper & 0x10) >> 4);
 }
 #endif
-#ifdef USE_DIRECT3D
-/// Change Use Direct3D
-void GUI_BASE::ChangeUseDirect3D(int num)
+void GUI_BASE::ChangeDrawingMethod(int num)
 {
-	emu->change_screen_use_direct3d(num);
+	emu->change_drawing_method(num);
 }
-void GUI_BASE::ChangeUseDirect3D(void)
-{
-	emu->change_screen_use_direct3d(-1);
-}
-int GUI_BASE::GetDirect3DMode(void)
-{
-	return pConfig->use_direct3d;
-}
-void GUI_BASE::ChangeDirect3DFilter(int num)
+void GUI_BASE::ChangeScreenFilter(int num)
 {
 	const CMsg::Id list[] = {
-		CMsg::None_,
-		CMsg::Point,
-		CMsg::Linear,
+		CMsg::Nearest_Neighbor,
+		CMsg::Bilinear,
 		CMsg::End
 	};
 
 	if (num < 0) {
-		num = (pConfig->d3d_filter_type + 1) % 3;
+		num = (pConfig->filter_type + 1) % 2;
 	}
-	pConfig->d3d_filter_type = num;
+	pConfig->filter_type = num;
 
-	emu->out_infoc_x(CMsg::Direct3D_Filter, CMsg::Colon_Space, list[num], 0);
-}
-int GUI_BASE::GetDirect3DFilter(void)
-{
-	return pConfig->d3d_filter_type;
-}
-#endif
-#ifdef USE_OPENGL
-/// Change Use OpenGL
-void GUI_BASE::ChangeUseOpenGL(int num)
-{
-	emu->change_screen_use_opengl(num);
-}
-void GUI_BASE::ChangeUseOpenGL(void)
-{
-	emu->change_screen_use_opengl(-1);
-}
-int GUI_BASE::GetOpenGLMode(void)
-{
-	return pConfig->use_opengl;
-}
-void GUI_BASE::ChangeOpenGLFilter(int num)
-{
-	const CMsg::Id list[] = {
-		CMsg::Nearest_Neighbour,
-		CMsg::Linear,
-		CMsg::End
-	};
+	emu->set_screen_filter_type();
 
-	if (num < 0) {
-		num = (pConfig->gl_filter_type + 1) % 2;
-	}
-	pConfig->gl_filter_type = num;
-
-	emu->change_opengl_attr();
-
-	emu->out_infoc_x(CMsg::OpenGL_Filter, CMsg::Colon_Space, list[num], 0);
+	emu->out_infoc_x(CMsg::Filter_Type, CMsg::Colon_Space, list[num], 0);
 }
-int GUI_BASE::GetOpenGLFilter(void)
+int GUI_BASE::GetScreenFilter(void)
 {
-	return pConfig->gl_filter_type;
+	return pConfig->filter_type;
 }
-#endif
 
 // Sound
 
@@ -2919,12 +2901,14 @@ bool GUI_BASE::IsShownPMeter(void)
 /// Change UseJoypad
 void GUI_BASE::ChangeUseJoypad(int num)
 {
-	if (num > 0 && emu->is_enable_joypad(num)) num = 0;
+	if (num > SEL_NOJOY && emu->is_enable_joypad(num)) num = SEL_NOJOY;
 	emu->change_use_joypad(num);
-	if (emu->is_enable_joypad(1)) {
+	if (emu->is_enable_joypad(SEL_JOY2KEY)) {
 		emu->out_info_x(CMsg::Enable_Joypad_Key_Assigned);
-	} else if (emu->is_enable_joypad(2)) {
+	} else if (emu->is_enable_joypad(SEL_JOY2PIAJOY)) {
 		emu->out_info_x(CMsg::Enable_Joypad_PIA_Type);
+	} else if (emu->is_enable_joypad(SEL_JOY2PSGJOY)) {
+		emu->out_info_x(CMsg::Enable_Joypad_PSG_Type);
 	} else {
 		emu->out_info_x(CMsg::Disable_Joypad);
 	}
@@ -2935,13 +2919,20 @@ bool GUI_BASE::IsEnableJoypad(int num)
 }
 
 #ifdef USE_KEY2JOYSTICK
-void GUI_BASE::ToggleEnableKey2Joypad(void)
+void GUI_BASE::ToggleEnableKey2Joypad(int dev)
 {
-	emu->toggle_enable_key2joy();
+	emu->toggle_enable_key2joy(dev);
+	if (emu->is_enable_key2joy(0)) {
+		emu->out_info_x(CMsg::Enable_Key_to_Joypad_PIA_Type);
+	} else if (emu->is_enable_key2joy(1)) {
+		emu->out_info_x(CMsg::Enable_Key_to_Joypad_PSG_Type);
+	} else {
+		emu->out_info_x(CMsg::Disable_Key_to_Joypad);
+	}
 }
-bool GUI_BASE::IsEnableKey2Joypad(void)
+bool GUI_BASE::IsEnableKey2Joypad(int dev)
 {
-	return emu->is_enable_key2joy();
+	return emu->is_enable_key2joy(dev);
 }
 #endif
 
@@ -3360,58 +3351,6 @@ void GUI_BASE::UpdateIndicator(uint64_t flag)
 	UpdateVirtualKeyboard((uint32_t)flag);
 }
 
-// ---------------------------------------------------------
-#if 0
-#if defined(USE_WIN)
-void GUI_BASE::DrawLedBox(HDC hdc)
-{
-#ifdef USE_LEDBOX
-	if (ledbox) {
-		ledbox->Draw(hdc);
-	}
-#endif
-}
-
-void GUI_BASE::DrawLedBox(LPDIRECT3DSURFACE9 suf)
-{
-#ifdef USE_LEDBOX
-	if (ledbox) {
-		ledbox->Draw(suf);
-	}
-#endif
-}
-// -------------------------------------
-#elif defined(USE_SDL) || defined(USE_SDL2)
-void GUI_BASE::DrawLedBox(CSurface *screen)
-{
-#ifdef USE_LEDBOX
-	if (ledbox) {
-		ledbox->Draw(*screen);
-	}
-#endif
-}
-// -------------------------------------
-#elif defined(USE_QT)
-void GUI_BASE::DrawLedBox(QImage *screen)
-{
-#ifdef USE_LEDBOX
-	if (ledbox) {
-		ledbox->Draw(screen);
-	}
-#endif
-}
-// -------------------------------------
-#elif defined(USE_WX) || defined(USE_WX2)
-void GUI_BASE::DrawLedBox(CSurface *screen)
-{
-#ifdef USE_LEDBOX
-	if (ledbox) {
-		ledbox->Draw(*screen);
-	}
-#endif
-}
-#endif
-#endif
 // ---------------------------------------------------------
 
 void GUI_BASE::MoveLedBox()

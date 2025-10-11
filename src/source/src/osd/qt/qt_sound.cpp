@@ -187,7 +187,7 @@ void EMU_OSD::initialize_sound(int rate, int samples, int latency)
 		return;
 	}
 
-	logging->out_logf(LOG_INFO, _T("sound ok: rate:%d samples:%d latency:%d"), rate, samples, latency);
+	logging->out_logf(LOG_DEBUG, _T("sound ok: rate:%d samples:%d latency:%d"), rate, samples, latency);
 	sound_ok = true;
 }
 

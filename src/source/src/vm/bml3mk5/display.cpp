@@ -877,7 +877,7 @@ void DISPLAY::update_display(int v, int clock)
 		cursor_st_ras = 255;
 		cursor_ed_ras = 0;
 
-		// calcrate address
+		// calculate address
 		{
 			// L3
 			addr_offset = hireso * (((*crtc_ra) >> REG_INTERLACE_SEL) & 0x7) << (10 + width_sel);	// 0x400 or 0x800
@@ -1073,11 +1073,11 @@ enum en_gnames {
 const struct st_gnames {
 	const _TCHAR *name;
 } c_gnames[] = {
-	_T("IG RAM"),
-	_T("IG RAM (blue)"),
-	_T("IG RAM (red)"),
-	_T("IG RAM (green)"),
-	NULL
+	{ _T("IG RAM") },
+	{ _T("IG RAM (blue)") },
+	{ _T("IG RAM (red)") },
+	{ _T("IG RAM (green)") },
+	{ NULL }
 };
 
 int DISPLAY::get_debug_graphic_memory_size(int num, int type, int *width, int *height)

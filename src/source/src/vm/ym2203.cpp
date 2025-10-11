@@ -777,11 +777,20 @@ bool YM2203::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return false;
 }
 
-void YM2203::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void YM2203::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
 	int val = 0;
 
-	buffer[0] = _T('\0');
+#ifdef HAS_YM2608
+	if (is_ym2608) {
+		UTILITY::tcscpy(buffer, buffer_len, _T("YM2608 ("));
+	} else
+#endif
+	{
+		UTILITY::tcscpy(buffer, buffer_len, _T("YM2203 ("));
+	}
+	UTILITY::tcscat(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
 
 	// for opn/opna register
 	for(uint32_t m=0;

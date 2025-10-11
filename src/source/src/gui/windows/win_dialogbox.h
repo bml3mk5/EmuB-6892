@@ -50,6 +50,7 @@ protected:
 	HWND        hDlg;
 	bool        isModeless;
 	CFont      *font;
+	bool		isOwnFont;
 //	HWND		hToolTips;
 	EMU        *emu;
 	GUI        *gui;
@@ -74,22 +75,27 @@ protected:
 	virtual INT_PTR onHelp(UINT, WPARAM, LPARAM);
 	virtual INT_PTR onControlColorStatic(UINT, WPARAM, LPARAM);
 	virtual INT_PTR onControlColorDialog(UINT, WPARAM, LPARAM);
+	virtual INT_PTR onDpiChanged(UINT, WPARAM, LPARAM);
 
 	static INT_PTR CALLBACK Proc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 //	virtual void AddToolTipText(const t_tooltip_text *texts);
 
 private:
-	static BOOL CALLBACK ChildProc(HWND hCtrl, LPARAM lParam);
+	CDialogBox(HINSTANCE new_inst, DWORD new_id, CFont *new_font, EMU *new_emu, GUI *new_gui);
+
+	static BOOL CALLBACK FontAndTranslateTextProc(HWND hCtrl, LPARAM lParam);
+	static BOOL CALLBACK FontProc(HWND hCtrl, LPARAM lParam);
 
 public:
-	CDialogBox(HINSTANCE new_inst, DWORD new_id, CFont *new_font, EMU *new_emu, GUI *new_gui);
+	CDialogBox(HINSTANCE new_inst, DWORD new_id, EMU *new_emu, GUI *new_gui);
 	virtual ~CDialogBox();
 
 	virtual INT_PTR Show(HWND hWnd);
 	virtual HWND Create(HWND hWnd);
 	virtual void Close();
 	virtual void SetFontAndTranslateText();
+	virtual void SetFont();
 #ifdef USE_LAYOUT_RECT
 	virtual HWND CreateStatic(int nItemId, const _TCHAR *label, RECT *re, bool align_right = false);
 	virtual HWND CreateComboBox(int nItemId, const _TCHAR **list, int selnum, int nMinSize, RECT *re, bool align_right = false, bool translate = false);

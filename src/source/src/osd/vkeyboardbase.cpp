@@ -51,6 +51,9 @@ Base::Base()
 	offset_x = 0;
 	offset_y = 0;
 
+	magnify_x = 1.0;
+	magnify_y = 1.0;
+
 	key_status = NULL;
 	key_status_mask = 0;
 	key_status_size = 0;
@@ -284,6 +287,8 @@ void Base::MouseDown(int px, int py)
 		int y = vy->y + offset_y;
 		int h = vy->h;
 		if (h == 0) break;
+		y = (int)((double)y * magnify_y + 0.5);
+		h = (int)((double)h * magnify_y + 0.5);
 		if (py < y || (y + h) <= py) continue;
 
 		int i = 0;
@@ -292,6 +297,8 @@ void Base::MouseDown(int px, int py)
 			int x = vx->x + offset_x;
 			int w = vx->w;
 			if (w == 0) break;
+			x = (int)((double)x * magnify_x + 0.5);
+			w = (int)((double)w * magnify_x + 0.5);
 			if (x <= px && px < (x + w)) {
 				found = true;
 

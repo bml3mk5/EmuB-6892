@@ -149,6 +149,9 @@
  || defined(USE_CAP_SCREEN_WX) \
  || defined(USE_CAP_SCREEN_QT)
 /// @ingroup Macros
+/// @brief can caputure screen
+#define USE_CAPTURE_SCREEN
+/// @ingroup Macros
 /// @brief can caputure screen with PNG format
 #define USE_CAPTURE_SCREEN_PNG
 #endif

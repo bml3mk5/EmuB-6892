@@ -419,3 +419,142 @@ void MyKeybindListEdit::OnTextEnter(wxCommandEvent &event)
 
 }
 #endif
+
+//
+//
+//
+
+// Attach Event
+BEGIN_EVENT_TABLE(MyKeybindBaseDlg, wxDialog)
+	EVT_COMMAND_RANGE(IDC_BUTTON_LOAD_DEFAULT0, IDC_BUTTON_LOAD_DEFAULT4, wxEVT_BUTTON, MyKeybindBaseDlg::OnLoadDefault)
+	EVT_COMMAND_RANGE(IDC_BUTTON_LOAD_PRESET00, IDC_BUTTON_LOAD_PRESET44, wxEVT_BUTTON, MyKeybindBaseDlg::OnLoadPreset)
+	EVT_COMMAND_RANGE(IDC_BUTTON_SAVE_PRESET00, IDC_BUTTON_SAVE_PRESET44, wxEVT_BUTTON, MyKeybindBaseDlg::OnSavePreset)
+	EVT_COMMAND_RANGE(IDC_CHK_AXIS1, IDC_CHK_AXIS4, wxEVT_CHECKBOX, MyKeybindBaseDlg::OnClickAxis)
+//	EVT_BUTTON(wxID_CANCEL, MyKeybindDlg::OnCancel)
+//	EVT_KEY_DOWN(MyKeybindDlg::OnKeyDown)
+END_EVENT_TABLE()
+
+MyKeybindBaseDlg::MyKeybindBaseDlg(MyFrame* parent, wxWindowID id, const wxString &title, EMU *parent_emu, GUI_BASE *parent_gui)
+	: MyDialog(parent, id, title, parent_emu, parent_gui)
+{
+	joy_mask = ~0;
+}
+
+void MyKeybindBaseDlg::create_footer(wxBoxSizer *szr, const wxSizerFlags &flags)
+{
+	joy_mask = ~0;
+
+	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
+	MyStaticText *lbl = new MyStaticText(this, wxID_ANY, CMsg::Disable_temporarily_the_following_);
+	hbox->Add(lbl, flags);
+	MyCheckBox *chk;
+	chk = new MyCheckBox(this, IDC_CHK_AXIS1, CMsg::Z_axis);
+	chk->SetValue((joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) == 0);
+	hbox->Add(chk, flags);
+	chk = new MyCheckBox(this, IDC_CHK_AXIS2, CMsg::R_axis);
+	chk->SetValue((joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) == 0);
+	hbox->Add(chk, flags);
+	chk = new MyCheckBox(this, IDC_CHK_AXIS3, CMsg::U_axis);
+	chk->SetValue((joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) == 0);
+	hbox->Add(chk, flags);
+	chk = new MyCheckBox(this, IDC_CHK_AXIS4, CMsg::V_axis);
+	chk->SetValue((joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) == 0);
+	hbox->Add(chk, flags);
+	szr->Add(hbox, flags);
+}
+
+bool MyKeybindBaseDlg::get_vmkeylabel(int code, wxString &label)
+{
+	_TCHAR clabel[128];
+	bool rc = KeybindData::GetVmKeyLabel(code, clabel);
+	label = wxString(clabel);
+	return rc;
+}
+
+uint32_t MyKeybindBaseDlg::translate_vkkey(uint32_t code)
+{
+	return code;
+}
+
+bool MyKeybindBaseDlg::get_vkkeylabel(uint32_t code, wxString &label)
+{
+	_TCHAR clabel[128];
+	bool rc = KeybindData::GetVkKeyLabel(code, clabel);
+	label = wxString(clabel);
+	return rc;
+}
+
+bool MyKeybindBaseDlg::get_vkjoylabel(uint32_t code, wxString &label)
+{
+	_TCHAR clabel[128];
+	bool rc = KeybindData::GetVkJoyLabel(code, clabel);
+	label = wxString(clabel);
+	return rc;
+}
+
+/// load keybind data to dialog from buffer
+void MyKeybindBaseDlg::load_data(int tab, int num)
+{
+	ctrls[tab]->LoadPreset(num);
+}
+
+/// save keybind data to buffer from dialog
+void MyKeybindBaseDlg::save_data(int tab, int num)
+{
+	ctrls[tab]->SavePreset(num);
+}
+
+/*
+ * Event Handler
+ */
+void MyKeybindBaseDlg::OnLoadDefault(wxCommandEvent &event)
+{
+//	int id = event.GetId() - IDC_BUTTON_LOAD_DEFAULT0;
+//	int num = id % KeybindData::TABS_MAX;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
+	load_data(tab, -1);
+}
+
+void MyKeybindBaseDlg::OnLoadPreset(wxCommandEvent &event)
+{
+	int id = event.GetId() - IDC_BUTTON_LOAD_PRESET00;
+	int num = id % KEYBIND_PRESETS;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
+	load_data(tab, num);
+}
+
+void MyKeybindBaseDlg::OnSavePreset(wxCommandEvent &event)
+{
+	int id = event.GetId() - IDC_BUTTON_SAVE_PRESET00;
+	int num = id % KEYBIND_PRESETS;
+	int tab = notebook->GetSelection();
+	if (tab < 0 || tab >= (int)ctrls.size()) return;
+	save_data(tab, num);
+}
+
+void MyKeybindBaseDlg::OnClickAxis(wxCommandEvent &event)
+{
+	int id = event.GetId();
+	wxCheckBox *chk = (wxCheckBox *)FindWindowById(id);
+	if (!chk) return;
+	bool unchecked = !chk->GetValue();
+	uint32_t mask = 0;
+	switch(id) {
+	case IDC_CHK_AXIS1:
+		mask = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
+		break;
+	case IDC_CHK_AXIS2:
+		mask = (JOYCODE_R_UP | JOYCODE_R_DOWN);
+		break;
+	case IDC_CHK_AXIS3:
+		mask = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
+		break;
+	case IDC_CHK_AXIS4:
+		mask = (JOYCODE_V_UP | JOYCODE_V_DOWN);
+		break;
+	}
+	BIT_ONOFF(joy_mask, mask, unchecked);
+}
+

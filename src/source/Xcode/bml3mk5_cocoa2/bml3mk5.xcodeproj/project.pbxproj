@@ -21,6 +21,9 @@
 		D902B8481FB331CB00EC8622 /* sdl_sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D902B8351FB331CB00EC8622 /* sdl_sound.cpp */; };
 		D902B8491FB331CB00EC8622 /* sdl_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D902B8361FB331CB00EC8622 /* sdl_timer.cpp */; };
 		D902B84B1FB331CB00EC8622 /* sdl_vkeyboardbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D902B8391FB331CB00EC8622 /* sdl_vkeyboardbase.cpp */; };
+		D904D83C2E657A5500687034 /* disk_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D904D8372E657A5500687034 /* disk_image.cpp */; };
+		D904D83D2E657A5500687034 /* diskd88_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D904D8392E657A5500687034 /* diskd88_image.cpp */; };
+		D904D83E2E657A5500687034 /* diskhfe_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D904D83B2E657A5500687034 /* diskhfe_image.cpp */; };
 		D905023E1B948F6100EF607C /* mc6809dasm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D905023C1B948F6100EF607C /* mc6809dasm.cpp */; };
 		D907C5C81C2C402200F62CF6 /* cocoa_ledbox.mm in Sources */ = {isa = PBXBuildFile; fileRef = D907C5C71C2C402200F62CF6 /* cocoa_ledbox.mm */; };
 		D90ED4311BCAAA6F0051ABB6 /* keyrecord.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D90ED42F1BCAAA6F0051ABB6 /* keyrecord.cpp */; };
@@ -214,6 +217,14 @@
 		D902B8361FB331CB00EC8622 /* sdl_timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdl_timer.cpp; sourceTree = "<group>"; };
 		D902B8391FB331CB00EC8622 /* sdl_vkeyboardbase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdl_vkeyboardbase.cpp; sourceTree = "<group>"; };
 		D902B83A1FB331CB00EC8622 /* sdl_vkeyboardbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sdl_vkeyboardbase.h; sourceTree = "<group>"; };
+		D904D8342E657A2D00687034 /* diskd88_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskd88_defs.h; sourceTree = "<group>"; };
+		D904D8352E657A2D00687034 /* diskhfe_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskhfe_defs.h; sourceTree = "<group>"; };
+		D904D8362E657A5500687034 /* disk_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = disk_image.h; sourceTree = "<group>"; };
+		D904D8372E657A5500687034 /* disk_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = disk_image.cpp; sourceTree = "<group>"; };
+		D904D8382E657A5500687034 /* diskd88_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskd88_image.h; sourceTree = "<group>"; };
+		D904D8392E657A5500687034 /* diskd88_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = diskd88_image.cpp; sourceTree = "<group>"; };
+		D904D83A2E657A5500687034 /* diskhfe_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskhfe_image.h; sourceTree = "<group>"; };
+		D904D83B2E657A5500687034 /* diskhfe_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = diskhfe_image.cpp; sourceTree = "<group>"; };
 		D905023C1B948F6100EF607C /* mc6809dasm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mc6809dasm.cpp; sourceTree = "<group>"; };
 		D905023D1B948F6100EF607C /* mc6809dasm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mc6809dasm.h; sourceTree = "<group>"; };
 		D905D454256F6F8400380ACB /* floppy_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = floppy_defs.h; sourceTree = "<group>"; };
@@ -316,7 +327,6 @@
 		D967368B2962CD1F00DBFEB5 /* ffm_rec_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ffm_rec_base.h; sourceTree = "<group>"; };
 		D967FC652350A177008A021A /* ccolor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccolor.h; sourceTree = "<group>"; };
 		D967FC662350A177008A021A /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
-		D967FC672350A177008A021A /* d88_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d88_defs.h; sourceTree = "<group>"; };
 		D967FC682350A177008A021A /* debugger_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debugger_defs.h; sourceTree = "<group>"; };
 		D967FC692350A177008A021A /* rec_video_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rec_video_defs.h; sourceTree = "<group>"; };
 		D967FC6B2350A196008A021A /* d88_files.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = d88_files.cpp; sourceTree = "<group>"; };
@@ -961,7 +971,6 @@
 				D9A9AE431E229C6000D770D9 /* csurface.h */,
 				D998C5811FFFDDAF001FDCBC /* curtime.cpp */,
 				D998C5821FFFDDAF001FDCBC /* curtime.h */,
-				D967FC672350A177008A021A /* d88_defs.h */,
 				D968888923633CD600997394 /* debugger_bpoint.cpp */,
 				D968888A23633CD600997394 /* debugger_bpoint.h */,
 				D967FC682350A177008A021A /* debugger_defs.h */,
@@ -971,6 +980,8 @@
 				D968888F23633CD600997394 /* debugger_symbol.h */,
 				D971D9E71AF0A6EE00896525 /* depend.cpp */,
 				D971D9E81AF0A6EE00896525 /* depend.h */,
+				D904D8342E657A2D00687034 /* diskd88_defs.h */,
+				D904D8352E657A2D00687034 /* diskhfe_defs.h */,
 				D971D9EA1AF0A6EE00896525 /* emu.h */,
 				D968889023633CD600997394 /* emu_osd.h */,
 				D971D9EB1AF0A6EE00896525 /* emumsg.cpp */,
@@ -1040,8 +1051,14 @@
 				D971DA7E1AF0A6EE00896525 /* device.h */,
 				D971DA7F1AF0A6EE00896525 /* disk.cpp */,
 				D971DA801AF0A6EE00896525 /* disk.h */,
+				D904D8372E657A5500687034 /* disk_image.cpp */,
+				D904D8362E657A5500687034 /* disk_image.h */,
 				D967FC6F2350A196008A021A /* disk_parser.cpp */,
 				D967FC702350A196008A021A /* disk_parser.h */,
+				D904D8392E657A5500687034 /* diskd88_image.cpp */,
+				D904D8382E657A5500687034 /* diskd88_image.h */,
+				D904D83B2E657A5500687034 /* diskhfe_image.cpp */,
+				D904D83A2E657A5500687034 /* diskhfe_image.h */,
 				D971DA811AF0A6EE00896525 /* event.cpp */,
 				D971DA821AF0A6EE00896525 /* event.h */,
 				D905D454256F6F8400380ACB /* floppy_defs.h */,
@@ -1189,6 +1206,9 @@
 				D902B8481FB331CB00EC8622 /* sdl_sound.cpp in Sources */,
 				D902B8491FB331CB00EC8622 /* sdl_timer.cpp in Sources */,
 				D902B84B1FB331CB00EC8622 /* sdl_vkeyboardbase.cpp in Sources */,
+				D904D83C2E657A5500687034 /* disk_image.cpp in Sources */,
+				D904D83D2E657A5500687034 /* diskd88_image.cpp in Sources */,
+				D904D83E2E657A5500687034 /* diskhfe_image.cpp in Sources */,
 				D905023E1B948F6100EF607C /* mc6809dasm.cpp in Sources */,
 				D907C5C81C2C402200F62CF6 /* cocoa_ledbox.mm in Sources */,
 				D90ED4311BCAAA6F0051ABB6 /* keyrecord.cpp in Sources */,
@@ -1361,7 +1381,7 @@
 					USE_SDL2,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Devel/ffmpeg",
+					"$(HOME)/Devel/ffmpeg-6.1.1",
 					/usr/local/include,
 					/usr/X11/include,
 					/usr/local/include/SDL2,
@@ -1438,7 +1458,7 @@
 					USE_SDL2,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Devel/ffmpeg",
+					"$(HOME)/Devel/ffmpeg-6.1.1",
 					/usr/local/include,
 					/usr/X11/include,
 					/usr/local/include/SDL2,
@@ -1467,7 +1487,7 @@
 					USE_SDL2,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Devel/ffmpeg",
+					"$(HOME)/Devel/ffmpeg-6.1.1",
 					/usr/local/include,
 					/usr/X11/include,
 					/usr/local/include/SDL2,

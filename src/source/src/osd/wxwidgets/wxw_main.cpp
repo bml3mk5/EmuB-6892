@@ -32,6 +32,10 @@
 #undef main
 #endif
 #endif
+#if defined(__WXGTK__)
+// X11
+#include <X11/Xlib.h>
+#endif
 
 #if defined(__WXMSW__) || defined(__WXGTK__)
 wxIMPLEMENT_APP_NO_MAIN(MyApp);
@@ -706,7 +710,7 @@ void MyGLCanvas::ResetProjectionMode()
 	emu_osd->set_mode_opengl(this, w, h);
 
 	// set swap interval 
-	emu_osd->set_interval_opengl();
+	emu_osd->set_opengl_interval();
 }
 
 void MyGLCanvas::OnKeyDown(wxKeyEvent &event)

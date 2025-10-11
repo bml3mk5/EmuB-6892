@@ -1,15 +1,15 @@
-/** @file d88_defs.h
+/** @file diskd88_defs.h
 
 	Skelton for retropc emulator
 
 	@author Sasaji
 	@date   2019.09.01
 
-	@brief [d88 defines]
+	@brief [d88 disk image defines]
 */
 
-#ifndef D88_DEFS_H
-#define D88_DEFS_H
+#ifndef DISKD88_DEFS_H
+#define DISKD88_DEFS_H
 
 #include "common.h"
 
@@ -18,11 +18,6 @@
 #define MEDIA_TYPE_2DD	0x10
 #define MEDIA_TYPE_2HD	0x20
 #define MEDIA_TYPE_UNK	0xff
-
-#define DRIVE_TYPE_2D	MEDIA_TYPE_2D
-#define DRIVE_TYPE_2DD	MEDIA_TYPE_2DD
-#define DRIVE_TYPE_2HD	MEDIA_TYPE_2HD
-#define DRIVE_TYPE_UNK	MEDIA_TYPE_UNK
 
 /// d88 header
 typedef struct d88_hdr_st {
@@ -43,5 +38,4 @@ typedef struct d88_sct_st {
 	uint16_t size;
 } d88_sct_t;
 
-
-#endif /* D88_DEFS_H */
+#endif /* DISKD88_DEFS_H */

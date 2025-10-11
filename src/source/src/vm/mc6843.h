@@ -32,7 +32,8 @@ class MC6843 : public DEVICE
 public:
 	/// @brief signals of MC6843
 	enum SIG_MC6843_IDS {
-		SIG_MC6843_UPDATESTATUS	= 0
+		SIG_MC6843_UPDATESTATUS	= 0,
+		SIG_MC6843_CLOCKNUM
 	};
 
 private:
@@ -43,8 +44,10 @@ private:
 		EVENT_MULTI		= 2,
 		EVENT_LOST		= 3,
 		EVENT_DRQ		= 4,
+		EVENT_SEEK_END  = 5,
+		EVENT_STARTCMD  = 6,
 
-		MC6843_MAX_EVENT = 5
+		MC6843_MAX_EVENT = 7
 	};
 
 	/// @brief interrupt status
@@ -89,7 +92,7 @@ private:
 
 	/// @brief macro commands
 	enum CMD_MASKS {
-		FDC_CMD_FFW_END = 0x00,	///< stop of multi sector write
+		FDC_CMD_FF_END	= 0x00,	///< stop of multi sector write
 		FDC_CMD_STZ		= 0x02,	///< seek track zero
 		FDC_CMD_SEK		= 0x03,	///< seek
 		FDC_CMD_SSR		= 0x04,	///< single sector read
@@ -119,6 +122,11 @@ private:
 	uint8_t ccr;        // reg6   w: crc control (2bit)
 	uint8_t ltar;       // reg7   w: logical address track (=track destination) (7bit)
 
+	// pre status
+	uint8_t m_pre_stra;
+	uint8_t m_pre_strb;
+	uint8_t m_pre_dir;
+
 	// event
 	int register_id[MC6843_MAX_EVENT];
 
@@ -140,6 +148,9 @@ private:
 	int   parse_idx;
 	int   ffw_phase;
 
+	int   channel;
+	int   clk_num;	// 0:1MHz 1:2MHz
+
 	//for resume
 #pragma pack(1)
 	struct vm_state_st {
@@ -160,12 +171,32 @@ private:
 		uint8_t now;
 
 		int data_idx;
+
 		int stepcnt;
 
 		// version 2
 		int register_id2[1];
 
-		char reserved[8];
+		// version 3
+		int register_id3[1];
+
+		// version 4
+		int register_id4[1];
+
+		int reserved4;
+
+		uint8_t pre_dir;
+		char reserved_ctar;
+		char reserved_cmr;
+		char reserved_isr;
+		char reserved_sur;
+		uint8_t pre_stra;
+		uint8_t pre_strb;
+		char reserved_sar;
+		char reserved_gcr;
+		char reserved_ccr;
+		char reserved_ltar;
+		char reserved_now;
 	};
 #pragma pack()
 
@@ -179,6 +210,8 @@ private:
 	void status_update();
 	void cmd_end();
 
+	void accept_cmd(uint8_t cmd);
+	void process_cmd();
 	void cmd_STZ();
 	void cmd_SEK();
 	void cmd_SSR();
@@ -189,24 +222,32 @@ private:
 	void cmd_FFW();
 	void cmd_MSR();
 	void cmd_MSW();
-	void cmd_FFW_END();
+	void cmd_FF_END(uint8_t cmd);
 
-	int  set_delay(uint8_t);
+	int  get_seek_delay();
+	int  get_head_loading_delay();
 
-	void event_seek(int);
-	void event_search(int);
-	void event_search2(int);
-	void event_multi(int);
-	void event_lost(int);
-	void event_drq(int);
+	void event_seek();
+	void event_seek_end();
+	void event_search();
+	void event_search2();
+	void event_multi();
+	void event_lost();
+	void event_drq();
 
 	uint8_t read_data_reg();
 	void write_data_reg(uint8_t);
 
 	void update_stra();
 
+	inline void backup_regs();
+	inline void restore_regs();
 	void find_track();
-	void find_sector(int);
+	void find_sector(int sector_num);
+	int  find_sector_and_get_clock(int sector_num);
+
+	int  get_clock_reach_sector(int sector_num);
+	int  get_clock_reach_index_hole();
 
 	// irq
 	void set_irq(bool val);
@@ -221,6 +262,8 @@ public:
 	MC6843(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
 		set_class_name("MC6843");
 		init_output_signals(&outputs_irq);
+		channel = 0;
+		clk_num = 0;
 	}
 	~MC6843() {}
 
@@ -240,6 +283,12 @@ public:
 	void set_context_fdd(DEVICE* device) {
 		d_fdd = device;
 	}
+	void set_context_clock_num(int clock_num) {
+		clk_num = clock_num;
+	}
+	void set_channel(int ch) {
+		channel = (uint32_t)(ch << 16);
+	}
 
 	// event callback
 	void event_frame();
@@ -252,7 +301,7 @@ public:
 	uint32_t debug_read_io8(uint32_t addr);
 	bool debug_write_reg(uint32_t reg_num, uint32_t data);
 	bool debug_write_reg(const _TCHAR *reg, uint32_t data);
-	void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
+	void debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len);
 #endif
 };
 

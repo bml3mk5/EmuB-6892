@@ -16,7 +16,7 @@
 #include "../../common.h"
 #include <gtk/gtk.h>
 #include "gtk_dialogbox.h"
-#include "../../vm/vm.h"
+#include "../../vm/vm_defs.h"
 #include "../../config.h"
 #include "../../cchar.h"
 #include "../../cptrlist.h"
@@ -31,6 +31,7 @@ class ConfigBox : public DialogBox
 {
 private:
 	GtkWidget *chkPowerOff;
+	GtkWidget *comPowerState;
 #if defined(_MBS1)
 	GtkWidget *radSYS[2];
 #endif
@@ -38,8 +39,8 @@ private:
 	GtkWidget *radFDD[4];
 	GtkWidget *chkIO[IOPORT_NUMS];
 
-	GtkWidget *comUseOpenGL;
-	GtkWidget *comGLFilter;
+	GtkWidget *comDrawingMethod;
+	GtkWidget *comScreenFilter;
 
 	GtkWidget *comDispSkew;
 	GtkWidget *comCurdSkew;

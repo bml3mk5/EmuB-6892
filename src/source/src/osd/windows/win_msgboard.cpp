@@ -15,7 +15,7 @@
 
 #undef USE_BG_TRANSPARENT
 
-MsgBoard::MsgBoard(HWND hWnd, EMU *pEmu) : CSurface()
+MsgBoard::MsgBoard(EMU *pEmu) : CSurface()
 {
 	visible = true;
 	inited = false;
@@ -41,6 +41,7 @@ MsgBoard::MsgBoard(HWND hWnd, EMU *pEmu) : CSurface()
 
 MsgBoard::~MsgBoard()
 {
+	ReleaseD2DSurface();
 	ReleaseTexture();
 
 	if (enable) {
@@ -55,7 +56,7 @@ MsgBoard::~MsgBoard()
 }
 
 /// 画面初期化
-void MsgBoard::InitScreen(int width, int height)
+void MsgBoard::InitScreen(HWND hWnd, int width, int height)
 {
 	// ウィンドウサイズ
 	szWin.cx = width;
@@ -92,7 +93,7 @@ void MsgBoard::InitScreen(int width, int height)
 		info.pt.x = 0; info.pt.y = 0; info.place = 1;
 
 	}
-	if (enable && SetFont()) {
+	if (enable && SetFont(hWnd)) {
 		inited = true;
 		pConfig->msgboard_msg_fontname.Set(msg.font->GetFontNamePtr());
 		pConfig->msgboard_info_fontname.Set(info.font->GetFontNamePtr());
@@ -105,31 +106,39 @@ void MsgBoard::InitScreen(int width, int height)
 }
 
 /// フォント設定
-bool MsgBoard::SetFont()
+bool MsgBoard::SetFont(HWND hWnd, bool outlog)
 {
 	_TCHAR font_name[64];
 
 	// フォントパスの設定
 	if (pConfig->font_path.Length() > 0 && !CFont::AddFontPath(pConfig->font_path.Get())) {
-		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR, pConfig->font_path);
+		if (outlog) {
+			logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR, pConfig->font_path);
+		}
 	}
 
-	msg.font->SetFont((HWND)NULL, pConfig->msgboard_msg_fontname.Get(), pConfig->msgboard_msg_fontsize, FW_NORMAL, fg.Get());
-	if (msg.font->GetFont() != NULL) {
-		CTchar xtitle(gMessages.Get(CMsg::message));
-		msg.font->GetFontName(font_name, sizeof(font_name) / sizeof(font_name[0]));
-		logging->out_logf_x(LOG_INFO, CMsg::MsgBoard_Use_VSTR_for_VSTR, font_name, xtitle.Get());
-	} else {
-		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_message, pConfig->msgboard_msg_fontname);
+	msg.font->SetFont(hWnd, pConfig->msgboard_msg_fontname.Get(), pConfig->msgboard_msg_fontsize, FW_NORMAL, fg.Get());
+	if (outlog) {
+		if (msg.font->GetFont() != NULL) {
+			CTchar xtitle(gMessages.Get(CMsg::message));
+			msg.font->GetFontName(font_name, sizeof(font_name) / sizeof(font_name[0]));
+			logging->out_logf_x(LOG_INFO, CMsg::MsgBoard_Use_VSTR_for_VSTR, font_name, xtitle.Get());
+		} else {
+			logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_message, pConfig->msgboard_msg_fontname);
+		}
 	}
-	info.font->SetFont((HWND)NULL, pConfig->msgboard_info_fontname.Get(), pConfig->msgboard_info_fontsize, FW_BOLD, fg.Get());
-	if (info.font->GetFont() != NULL) {
-		CTchar xtitle(gMessages.Get(CMsg::info));
-		info.font->GetFontName(font_name, sizeof(font_name) / sizeof(font_name[0]));
-		logging->out_logf_x(LOG_INFO, CMsg::MsgBoard_Use_VSTR_for_VSTR, font_name, xtitle.Get());
-	} else {
-		logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_info, pConfig->msgboard_info_fontname);
+
+	info.font->SetFont(hWnd, pConfig->msgboard_info_fontname.Get(), pConfig->msgboard_info_fontsize, FW_BOLD, fg.Get());
+	if (outlog) {
+		if (info.font->GetFont() != NULL) {
+			CTchar xtitle(gMessages.Get(CMsg::info));
+			info.font->GetFontName(font_name, sizeof(font_name) / sizeof(font_name[0]));
+			logging->out_logf_x(LOG_INFO, CMsg::MsgBoard_Use_VSTR_for_VSTR, font_name, xtitle.Get());
+		} else {
+			logging->out_logf_x(LOG_WARN, CMsg::MsgBoard_Couldn_t_load_font_VSTR_for_info, pConfig->msgboard_info_fontname);
+		}
 	}
+
 	if (msg.font->GetFont() == NULL || info.font->GetFont() == NULL) {
 		enable = false;
 	} else {
@@ -169,8 +178,9 @@ void MsgBoard::draw(HDC hdc, msg_data_t &data)
 
 	data.mux->unlock();
 }
-void MsgBoard::draw(LPDIRECT3DSURFACE9 suf, msg_data_t &data)
+void MsgBoard::draw(CD3DSurface &suf, msg_data_t &data)
 {
+#ifdef USE_DIRECT3D
 	RECT  reDst;
 
 	data.mux->lock();
@@ -214,27 +224,27 @@ void MsgBoard::draw(LPDIRECT3DSURFACE9 suf, msg_data_t &data)
 			D3DX_FILTER_NONE,
 			0);
 #else
-		if (suf) {
-			HDC hdc;
-			HRESULT hre = suf->GetDC(&hdc);
-			if (hre == D3D_OK) {
+
+		HDC hdc;
+		HRESULT hre = suf.GetDC(&hdc);
+		if (hre == D3D_OK) {
 #ifdef USE_BG_TRANSPARENT
-				draw_text(hdc, data, reDst.left, reDst.top);
+			draw_text(hdc, data, reDst.left, reDst.top);
 #else
-				BitBlt(hdc, reDst.left, reDst.top,
-					data.sz.cx, data.sz.cy,
-					hMainDC, data.re.left, data.re.top, SRCCOPY);
+			BitBlt(hdc, reDst.left, reDst.top,
+				data.sz.cx, data.sz.cy,
+				hMainDC, data.re.left, data.re.top, SRCCOPY);
 #endif
-			}
-			suf->ReleaseDC(hdc);
 		}
+		suf.ReleaseDC(hdc);
 #endif
 	}
 
 	data.mux->unlock();
+#endif /* USE_DIRECT3D */
 }
 
-void MsgBoard::draw(PDIRECT3DDEVICE9 device, msg_data_t &data, CD3DTexture &tex)
+void MsgBoard::draw(CD3DDevice &device, msg_data_t &data, CD3DTexture &tex)
 {
 	RECT  reDst;
 
@@ -273,6 +283,68 @@ void MsgBoard::draw(PDIRECT3DDEVICE9 device, msg_data_t &data, CD3DTexture &tex)
 	data.mux->unlock();
 }
 
+/// 文字列出力
+void MsgBoard::draw(CD2DRender &render, msg_data_t &data)
+{
+	POINT pt;
+
+	data.mux->lock();
+
+	if (!data.lists.empty()) {
+		list_t::iterator it = data.lists.begin();
+
+		// 基準位置の計算
+		pt = data.pt;
+		if (data.place & 1) {
+			pt.x += szWin.cx - data.sz.cx;
+		}
+		pt.y = - pt.y;
+		if (!(data.place & 2)) {
+			pt.y += szWin.cy - data.sz.cy;
+		}
+
+		// メインコンテキストにメッセージをコピー
+		VmRectWH srcRect;
+		VmRectWH dstRect;
+		RECT_IN(srcRect, data.re.left, (64 - data.re.top) + (64 - data.sz.cy), data.sz.cx, data.sz.cy);
+		RECT_IN(dstRect, pt.x, pt.y, data.sz.cx, data.sz.cy);
+		render.DrawBitmap(d2d_surface, dstRect, srcRect);
+	}
+
+	data.mux->unlock();
+}
+
+/// 文字列出力
+void MsgBoard::draw(CD2DBitmapRender &render, msg_data_t &data)
+{
+	POINT pt;
+
+	data.mux->lock();
+
+	if (!data.lists.empty()) {
+		list_t::iterator it = data.lists.begin();
+
+		// 基準位置の計算
+		pt = data.pt;
+		if (data.place & 1) {
+			pt.x += szWin.cx - data.sz.cx;
+		}
+		pt.y = - pt.y;
+		if (!(data.place & 2)) {
+			pt.y += szWin.cy - data.sz.cy;
+		}
+
+		// メインコンテキストにメッセージをコピー
+		VmRectWH srcRect;
+		VmRectWH dstRect;
+		RECT_IN(srcRect, data.re.left, (64 - data.re.top) + (64 - data.sz.cy), data.sz.cx, data.sz.cy);
+		RECT_IN(dstRect, pt.x, pt.y, data.sz.cx, data.sz.cy);
+		render.DrawBitmap(d2d_surface, dstRect, srcRect);
+	}
+
+	data.mux->unlock();
+}
+
 void MsgBoard::Draw(HDC hdc)
 {
 	if (!visible || !inited || !enable) return;
@@ -281,7 +353,7 @@ void MsgBoard::Draw(HDC hdc)
 	draw(hdc, info);
 }
 
-void MsgBoard::Draw(LPDIRECT3DSURFACE9 suf)
+void MsgBoard::Draw(CD3DSurface &suf)
 {
 	if (!visible || !inited || !enable) return;
 
@@ -289,7 +361,7 @@ void MsgBoard::Draw(LPDIRECT3DSURFACE9 suf)
 	draw(suf, info);
 }
 
-void MsgBoard::Draw(PDIRECT3DDEVICE9 device)
+void MsgBoard::Draw(CD3DDevice &device)
 {
 #ifdef USE_SCREEN_D3D_TEXTURE
 	if (!visible || !inited || !enable) return;
@@ -299,10 +371,46 @@ void MsgBoard::Draw(PDIRECT3DDEVICE9 device)
 #endif
 }
 
-/// テクスチャ作成
-HRESULT MsgBoard::CreateTexture(PDIRECT3DDEVICE9 device)
+void MsgBoard::Draw(CD2DRender &render)
 {
-#ifdef USE_SCREEN_D3D_TEXTURE
+#ifdef USE_DIRECT2D
+	if (!visible || !inited || !enable) return;
+
+	d2d_surface.Copy(*this);
+	draw(render, msg);
+	draw(render, info);
+#endif /* USE_DIRECT2D */
+}
+
+void MsgBoard::Draw(CD2DBitmapRender &render)
+{
+#ifdef USE_DIRECT2D
+	if (!visible || !inited || !enable) return;
+
+	d2d_surface.Copy(*this);
+	draw(render, msg);
+	draw(render, info);
+#endif /* USE_DIRECT2D */
+}
+
+/// サーフェース作成
+HRESULT MsgBoard::CreateD2DSurface(CD2DFactory &D2DFactory, CD2DRender &D2DRender)
+{
+	HRESULT hre;
+	hre = d2d_surface.CreateSurface(D2DRender, Width(), Height());
+	return hre;
+}
+
+/// サーフェース解放
+void MsgBoard::ReleaseD2DSurface()
+{
+	d2d_surface.ReleaseSurface();
+}
+
+/// テクスチャ作成
+HRESULT MsgBoard::CreateTexture(CD3DDevice &device)
+{
+#if defined(USE_DIRECT3D) && defined(USE_SCREEN_D3D_TEXTURE)
 	HRESULT hre = D3D_OK;
 	hre |= tex_msg.CreateD3DTexture(device, Width(), 64);
 	hre |= tex_info.CreateD3DTexture(device, Width(), 64);
@@ -315,7 +423,7 @@ HRESULT MsgBoard::CreateTexture(PDIRECT3DDEVICE9 device)
 /// テクスチャ解放
 void MsgBoard::ReleaseTexture()
 {
-#ifdef USE_SCREEN_D3D_TEXTURE
+#if defined(USE_DIRECT3D) && defined(USE_SCREEN_D3D_TEXTURE)
 	tex_msg.ReleaseD3DTexture();
 	tex_info.ReleaseD3DTexture();
 #endif

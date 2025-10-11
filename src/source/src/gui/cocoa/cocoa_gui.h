@@ -178,8 +178,8 @@ class GUI;
 #ifdef _MBS1
 - (void)ChangeRGBType:(id)sender;
 #endif
-- (void)ChangeUseOpenGL:(id)sender;
-- (void)ChangeOpenGLFilter:(id)sender;
+- (void)ChangeDrawingMethod:(id)sender;
+- (void)ChangeScreenFilter:(id)sender;
 
 
 - (void)ShowVolumeDialog:(id)sender;
@@ -232,6 +232,8 @@ class GUI;
 - (void)OpenDebugger:(id)sender;
 - (void)CloseDebugger:(id)sender;
 #endif
+
+- (void)ShowPreferencesDialog:(id)sender;
 
 
 - (void)PerformUpdateScreen;
@@ -302,6 +304,8 @@ private:
 /*	void *popupMenu; */
 #endif
 
+	void remove_window_menu(void);
+	void translate_apple_menu(void);
 	void setup_menu(void);
 public:
 	GUI(int argc, char **argv, EMU *new_emu);
@@ -372,8 +376,6 @@ public:
 
 #endif /* GUI_TYPE_COCOA */
 
-void remove_window_menu(void);
-void translate_apple_menu(void);
 void set_delegate_to_sdl_window(GUI_BASE *new_gui);
 
 #ifdef __OBJC__

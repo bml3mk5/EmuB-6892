@@ -27,7 +27,11 @@
 
 #define DRIVE_MASK	(USE_FLOPPY_DISKS - 1)
 
-#define SEEK_TIMEOUT	600000	
+#define SEEK_TIMEOUT	600000
+#define ROUND_TIMEOUT	3
+#define START_COMMAND_DELAY_US	32
+
+#define SEARCH_SECTOR_IMMEDIATELY
 
 void MC6843::cancel_my_event(int event_no)
 {
@@ -43,6 +47,7 @@ void MC6843::register_my_event(int event_no, int wait)
 	register_event(this, event_no, (double)wait, false, &register_id[event_no]);
 }
 
+/// @param[in] wait : clock
 void MC6843::register_search_event(int wait)
 {
 	cancel_my_event(EVENT_SEARCH);
@@ -80,6 +85,10 @@ void MC6843::initialize()
 	gcr = 0;
 	ccr = 0;
 	ltar = 0;
+
+	m_pre_stra = 0;
+	m_pre_strb = 0;
+	m_pre_dir = 0;
 }
 
 void MC6843::reset()
@@ -123,10 +132,6 @@ void MC6843::release()
 
 void MC6843::write_io8(uint32_t addr, uint32_t data)
 {
-#ifdef _DEBUG
-	static const _TCHAR *cmdname[16]={ _T("?"), _T("?"), _T("STZ"), _T("SEK"), _T("SSR"), _T("SSW"), _T("RCR"), _T("SWD")
-									, _T("?"), _T("?"), _T("FFR"), _T("FFW"), _T("MSR"), _T("MSW"), _T("?"), _T("?") };
-#endif
 	switch(addr & 15) {
 	case 0:	// DOR
 		OUT_DEBUG(_T("MC6843: write DOR  d:%02x"), data);
@@ -138,51 +143,7 @@ void MC6843::write_io8(uint32_t addr, uint32_t data)
 		ctar = data;
 		break;
 	case 2:	// CMR : command
-
-		stra &= ~(FDC_STA_BUSY | FDC_STA_DRQ);
-
-#ifdef _DEBUG
-		OUT_DEBUG(_T("MC6843: write CMR  %s d:%02x ctar:%02x cmr:%02x sur:%02x sar:%02x gcr:%02x ccr:%02x ltar:%02x isr:%02x stra:%02x strb:%02x")
-		,cmdname[data & 15]
-		,data
-		,ctar,cmr,sur,sar,gcr,ccr,ltar,isr,stra,strb);
-#endif
-
-		switch(data & 15) {
-		case FDC_CMD_FFW_END:	// stop ffw command
-			cmd_FFW_END();
-			break;
-		case FDC_CMD_STZ:	// seek track zero
-			cmd_STZ();
-			break;
-		case FDC_CMD_SEK:	// seek
-			cmd_SEK();
-			break;
-		case FDC_CMD_SSR:	// single sector read
-			cmd_SSR();
-			break;
-		case FDC_CMD_SSW:	// single sector write
-			cmd_SSW();
-			break;
-		case FDC_CMD_RCR:	// read CRC
-			cmd_RCR();
-			break;
-		case FDC_CMD_SWD:	// single sector write with delete data mark
-			cmd_SWD();
-			break;
-		case FDC_CMD_FFR:	// free format read
-			cmd_FFR();
-			break;
-		case FDC_CMD_FFW:	// free format write
-			cmd_FFW();
-			break;
-		case FDC_CMD_MSR:	// multi sector read
-			cmd_MSR();
-			break;
-		case FDC_CMD_MSW:	// multi sector write
-			cmd_MSW();
-			break;
-		}
+		accept_cmd(data);
 		cmr = data;
 		break;
 	case 3:	// SUR
@@ -234,7 +195,7 @@ uint32_t MC6843::read_io8(uint32_t addr)
 	case 2:	// ISR
 		data = isr;
 		// clear status without strb
-		isr &= 0x08;
+		isr &= FDC_STI_STRB;
 		OUT_DEBUG(_T("MC6843: read isr a:%04x d:%02x isr:%02x")
 			,addr,data,isr);
 		break;
@@ -253,7 +214,7 @@ uint32_t MC6843::read_io8(uint32_t addr)
 	case 4:	// STRB
 		data = strb;
 		// clear status b
-		isr &= ~0x08;
+		isr &= ~FDC_STI_STRB;
 		strb &= ~(FDC_STB_DATAERR | FDC_STB_CRCERR | FDC_STB_SECTNF | FDC_STB_SEEKERR | FDC_STB_HARDERR | FDC_STB_WRITEERR | FDC_STB_FILEINO);
 		OUT_DEBUG(_T("MC6843: read strb a:%04x d:%02x strb:%02x")
 			,addr,data,strb);
@@ -270,6 +231,9 @@ void MC6843::write_signal(int id, uint32_t data, uint32_t mask)
 	switch(id) {
 		case SIG_MC6843_UPDATESTATUS:
 			update_stra();
+			break;
+		case SIG_MC6843_CLOCKNUM:
+			set_context_clock_num((int)data);
 			break;
 		case SIG_CPU_RESET:
 			now_reset = (data & mask) ? true : false;
@@ -309,16 +273,30 @@ uint8_t MC6843::read_data_reg()
 					// single sector
 					OUT_DEBUG(_T("MC6843: READ : END OF SECTOR"));
 					stra &= ~FDC_STA_BUSY;
+					d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 0, 1);	// head unload
+					head_load = false;
 				} else {
 					// multi sector
 					OUT_DEBUG(_T("MC6843: READ : END OF SECTOR (SEARCH NEXT)"));
-					register_my_event(EVENT_MULTI, set_delay(0xf0));
+					register_my_event(EVENT_MULTI, START_COMMAND_DELAY_US);
 				}
 				cancel_my_event(EVENT_LOST);
 			} else {
 				// next data
 				register_drq_event(1);
 			}
+			stra &= ~FDC_STA_DRQ;
+#ifdef USE_SIG_FLOPPY_ACCESS
+			d_fdd->write_signal(SIG_FLOPPY_ACCESS, 1, 1);
+#endif
+		} else if (cmd == FDC_CMD_FFR) {
+
+			// free format read
+			dir = d_fdd->read_signal(SIG_FLOPPY_READ_TRACK_LOOP);
+
+			// next data
+			register_drq_event(1);
+
 			stra &= ~FDC_STA_DRQ;
 #ifdef USE_SIG_FLOPPY_ACCESS
 			d_fdd->write_signal(SIG_FLOPPY_ACCESS, 1, 1);
@@ -371,10 +349,12 @@ void MC6843::write_data_reg(uint8_t data)
 					// single sector
 					OUT_DEBUG(_T("MC6843: WRITE : END OF SECTOR"));
 					stra &= ~FDC_STA_BUSY;
+					d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 0, 1);	// head unload
+					head_load = false;
 				} else {
 					// multisector
 					OUT_DEBUG(_T("MC6843: WRITE : END OF SECTOR (SEARCH NEXT)"));
-					register_my_event(EVENT_MULTI, set_delay(0xf0));
+					register_my_event(EVENT_MULTI, START_COMMAND_DELAY_US);
 				}
 				cancel_my_event(EVENT_LOST);
 			} else {
@@ -470,26 +450,32 @@ void MC6843::event_callback(int event_id, int err)
 
 	switch(event_no) {
 	case EVENT_SEEK:
-		event_seek(event_no);
+		event_seek();
 		break;
 	case EVENT_SEARCH:
-		event_search(event_no);
+		event_search();
 		break;
 	case EVENT_MULTI:
-		event_multi(event_no);
+		event_multi();
 		break;
 	case EVENT_LOST:
-		event_lost(event_no);
+		event_lost();
 		break;
 	case EVENT_DRQ:
-		event_drq(event_no);
+		event_drq();
+		break;
+	case EVENT_SEEK_END:
+		event_seek_end();
+		break;
+	case EVENT_STARTCMD:
+		process_cmd();
 		break;
 	}
 
 }
 
 // ----------------------------------------------------------------------------
-// called at end of command
+/// called at end of command
 void MC6843::cmd_end()
 {
 	int cmd = cmr & 0x0f;
@@ -508,37 +494,135 @@ void MC6843::cmd_end()
 	status_update();
 }
 
-// called after ISR or STRB has changed
+/// called after ISR or STRB has changed
 void MC6843::status_update()
 {
 	bool irq = false;
 
 	// ISR bit3
-	if ( (cmr & 0x40) || ! strb )	// ISR bit3 mask
-		isr &= ~FDC_STI_STRB;
-	else
-		isr |=  FDC_STI_STRB;
+	BIT_ONOFF(isr, FDC_STI_STRB, strb != 0);
 
 	// interrupts
-	if (isr & FDC_STI_STSREQ) irq = true;
 	if ((cmr & FDC_CMR_FUNCMASK) == 0) {
-		if ( isr & ~FDC_STI_STSREQ ) irq = true;
+		if (isr & FDC_STI_STSREQ) irq = true;
+		if ((isr & (FDC_STI_SETCOMP | FDC_STI_CMDCOMP)) != 0) irq = true;
+		if ((cmr & FDC_CMR_ISR3MASK) == 0 && (strb & ~FDC_STB_DATAERR) != 0) irq = true;
 	}
 
 	// IRQ interrupt
 	set_irq(irq);
 }
 
-// set delay
-int MC6843::set_delay(uint8_t mask)
+/// get seek delay
+/// @return usec.
+int MC6843::get_seek_delay()
 {
-	uint8_t setupreg = sur & mask;
-	int delay = FLG_DELAY_FDSEEK ? 0 : ((setupreg & 0xf0) >> 4) * 1024 + (setupreg & 0x0f) * 4096;
+	int delay = 0;
+	if (!FLG_DELAY_FDSEEK) {
+		delay = ((int)sur & 0xf0) * (1024 / 16 / (clk_num + 1));
+	}
 	if (delay == 0) delay = 64;
 
-	OUT_DEBUG(_T("MC6843: set_delay:%d"), delay);
+	OUT_DEBUG(_T("MC6843: get_seek_delay:%d"), delay);
+	return delay;
+}
+
+/// get head loading delay
+/// @return usec.
+int MC6843::get_head_loading_delay()
+{
+	int delay = 0;
+	if (!FLG_DELAY_FDSEARCH && !head_load) {
+		delay = ((int)sur & 0x0f) * 4096 / (clk_num + 1);
+	}
+	if (delay == 0) delay = 64;
+
+	OUT_DEBUG(_T("MC6843: get_head_loading_delay:%d"), delay);
 
 	return delay;
+}
+
+// ----------------------------------------------------------------------------
+
+void MC6843::accept_cmd(uint8_t cmd)
+{
+	cancel_my_event(EVENT_STARTCMD);
+
+	stra &= ~FDC_STA_DRQ;
+	stra |= FDC_STA_BUSY;
+
+	switch(cmd & 15) {
+	case FDC_CMD_SSR:	// single sector read
+	case FDC_CMD_SSW:	// single sector write
+	case FDC_CMD_RCR:	// read CRC
+	case FDC_CMD_SWD:	// single sector write with delete data mark
+	case FDC_CMD_MSR:	// multi sector read
+	case FDC_CMD_MSW:	// multi sector write
+		stra &= ~(FDC_STA_DELETE | FDC_STA_TRACKNE);
+		break;
+	case FDC_CMD_FF_END:	// stop free format command
+		// process immediately
+		cmd_FF_END(cmr);
+		return;
+	default:
+		break;
+	}
+
+	register_my_event(EVENT_STARTCMD, START_COMMAND_DELAY_US);
+}
+
+void MC6843::process_cmd()
+{
+#ifdef _DEBUG
+	static const _TCHAR *cmdname[16]={ _T("?"), _T("?"), _T("STZ"), _T("SEK"), _T("SSR"), _T("SSW"), _T("RCR"), _T("SWD")
+									, _T("?"), _T("?"), _T("FFR"), _T("FFW"), _T("MSR"), _T("MSW"), _T("?"), _T("?") };
+#endif
+	stra &= ~(FDC_STA_BUSY | FDC_STA_DRQ);
+
+#ifdef _DEBUG
+	OUT_DEBUG(_T("MC6843: write CMR  %s cmr:%02x ctar:%02x sur:%02x sar:%02x gcr:%02x ccr:%02x ltar:%02x isr:%02x stra:%02x strb:%02x")
+	,cmdname[cmr & 15]
+	,cmr
+	,ctar,sur,sar,gcr,ccr,ltar,isr,stra,strb);
+#endif
+
+	switch(cmr & 15) {
+//	case FDC_CMD_FF_END:	// stop free format command
+//		cmd_FF_END();
+//		break;
+	case FDC_CMD_STZ:	// seek track zero
+		cmd_STZ();
+		break;
+	case FDC_CMD_SEK:	// seek
+		cmd_SEK();
+		break;
+	case FDC_CMD_SSR:	// single sector read
+		cmd_SSR();
+		break;
+	case FDC_CMD_SSW:	// single sector write
+		cmd_SSW();
+		break;
+	case FDC_CMD_RCR:	// read CRC
+		cmd_RCR();
+		break;
+	case FDC_CMD_SWD:	// single sector write with delete data mark
+		cmd_SWD();
+		break;
+	case FDC_CMD_FFR:	// free format read
+		cmd_FFR();
+		break;
+	case FDC_CMD_FFW:	// free format write
+		cmd_FFW();
+		break;
+	case FDC_CMD_MSR:	// multi sector read
+		cmd_MSR();
+		break;
+	case FDC_CMD_MSW:	// multi sector write
+		cmd_MSW();
+		break;
+	default:
+		break;
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -555,7 +639,7 @@ void MC6843::cmd_STZ()
 	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 0, 1);	// head unload
 	head_load = false;
 
-	register_my_event(EVENT_SEEK, set_delay(0xf0));	// seek track
+	register_my_event(EVENT_SEEK, get_seek_delay());	// seek track
 }
 
 /// Seek
@@ -569,7 +653,7 @@ void MC6843::cmd_SEK()
 	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 0, 1);	// head unload
 	head_load = false;
 
-	register_my_event(EVENT_SEEK, set_delay(0xf0));	// seek track
+	register_my_event(EVENT_SEEK, get_seek_delay());	// seek track
 }
 
 
@@ -589,21 +673,35 @@ void MC6843::cmd_MSR()
 	stra &= ~(FDC_STA_TRACKNE | FDC_STA_DELETE);
 	strb &= ~FDC_STB_DATANF;
 
-	int time =  set_delay(head_load ? 0x01 : 0x0f);
-	if (!FLG_DELAY_FDSEARCH) time += d_fdd->get_clock_arrival_sector(0, sar, 0);
+	d_fdd->parse_sector(channel);
+
+#ifndef SEARCH_SECTOR_IMMEDIATELY
+	int time = get_clock_reach_sector(sar);
+#else
+	int time = find_sector_and_get_clock(sar);
+#endif
+
 	register_search_event(time);
 	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 1, 1);	// head load
 	head_load = true;
 }
 
 /// Free Format Read
-/// TODO: This command does not read data from the disk.
 void MC6843::cmd_FFR()
 {
-	gcr = 0;
 	sar = 1;
 
-	cmd_MSR();
+	stra |= FDC_STA_BUSY;
+	// clear status
+	stra &= ~(FDC_STA_TRACKNE | FDC_STA_DELETE);
+	strb &= ~FDC_STB_DATANF;
+
+	backup_regs();
+
+	int time = get_head_loading_delay();
+	register_search_event(time);
+	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 1, 1);	// head load
+	head_load = true;
 }
 
 /// Read CRC
@@ -630,8 +728,14 @@ void MC6843::cmd_MSW()
 	stra &= ~(FDC_STA_TRACKNE | FDC_STA_DELETE);
 	strb &= ~FDC_STB_DATANF;
 
-	int time =  set_delay(head_load ? 0x01 : 0x0f);
-	if (!FLG_DELAY_FDSEARCH) time += d_fdd->get_clock_arrival_sector(0, sar, 0);
+	d_fdd->parse_sector(channel);
+
+#ifndef SEARCH_SECTOR_IMMEDIATELY
+	int time = get_clock_reach_sector(sar);
+#else
+	int time = find_sector_and_get_clock(sar);
+#endif
+
 	register_search_event(time);
 	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 1, 1);	// head load
 	head_load = true;
@@ -661,68 +765,124 @@ void MC6843::cmd_FFW()
 	stra &= ~(FDC_STA_TRACKNE | FDC_STA_DELETE);
 	strb &= ~FDC_STB_DATANF;
 
-	int time =  set_delay(head_load ? 0x01 : 0x0f);
-	if (!FLG_DELAY_FDSEARCH) time += d_fdd->get_index_hole_remain_clock();
+	backup_regs();
+
+	int time = get_clock_reach_index_hole();
 	register_search_event(time);
 	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 1, 1);	// head load
 	head_load = true;
 }
 
-/// stop of Free Format Write
-void MC6843::cmd_FFW_END()
+/// stop of Free Format Read/Write
+void MC6843::cmd_FF_END(uint8_t cmd)
 {
-	if ((cmr & 15) != FDC_CMD_FFW)  return;
-
-	d_fdd->parse_track(0);
+	switch(cmd & 0xf) {
+	case FDC_CMD_FFW:
+		// free format write
+		d_fdd->parse_track(channel);
+		cancel_my_event(EVENT_DRQ);
+		cancel_my_event(EVENT_LOST);
+		stra &= ~FDC_STA_BUSY;
+		cmr  &=  0xf0; // clear command
+		status_update();
+		break;
+	case FDC_CMD_FFR:
+		// free format read
+		cancel_my_event(EVENT_DRQ);
+		cancel_my_event(EVENT_LOST);
+		stra &= ~FDC_STA_BUSY;
+		cmr  &=  0xf0; // clear command
+		status_update();
+		break;
+	default:
+		break;
+	}
 }
 
 // ----------------------------------------------------------------------------
-void MC6843::event_seek(int event_no)
+void MC6843::event_seek()
 {
 //	int cmd = cmr & 0x0f;
+	int trk00 = d_fdd->read_signal(SIG_FLOPPY_TRACK0);
 
 	stepcnt--;
-	if (stepcnt < 0) {
-		// seek error
-		strb |= FDC_STB_SEEKERR;
-		OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
-	} else {
-		// seek
-		uint32_t seek = 0x80;
-		if(gcr > ctar) {
-			seek = 0x7f; // plus
-		} else if (gcr < ctar) {
-			seek = 0xff; // minus
-		}
-		d_fdd->write_signal(SIG_FLOPPY_STEP, seek, 0xff);
-		if (d_fdd->read_signal(SIG_FLOPPY_TRACK0) != 0) {
-			ctar = 0;
-		} else if (seek < 0x80) {
-			ctar++;
-		} else if (seek > 0x80) {
-			ctar--;
-		}
-//		ctar = d_fdd->read_signal(SIG_FLOPPY_CURRENTTRACK);
 
-		if(gcr == ctar) {
-//			|| (cmd == FDC_CMD_STZ && d_fdd->read_signal(SIG_FLOPPY_TRACK0) != 0)) {
-			// match track
+	if ((cmr & 0x0f) == FDC_CMD_STZ) {
+		// seek track zero
 
-			find_track();
+		if (stepcnt < 0) {
+			if (trk00) {
+				// match track
+				find_track();
+			} else {
+				// seek error
+				strb |= FDC_STB_SEEKERR;
+			}
+			OUT_DEBUG(_T("MC6843: seek_zero stepcnt0 strb:%02x\n"), strb);
 
-			now_seek = false;
+		} else {
+			// seek
+			if (trk00) {
+				ctar = 0;
+			} else {
+				// step out
+				d_fdd->write_signal(SIG_FLOPPY_STEP, 0xff, 0xff);
+				ctar--;
+			}
+			OUT_DEBUG(_T("MC6843: seek_zero gcr:%02x ctar:%02x\n"), gcr, ctar);
 
-			d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 1, 1);	// head load
-//			head_load = true;
-		}
-		else {
 			// seek next track
-			register_my_event(event_no, set_delay(0xf0));
+			register_my_event(EVENT_SEEK, get_seek_delay());
 			return;
 		}
+
+	} else {
+		// seek
+
+		if (stepcnt < 0) {
+			// seek error
+			strb |= FDC_STB_SEEKERR;
+			OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
+
+		} else {
+			// seek
+			if (trk00) {
+				ctar = 0;
+			}
+			if(gcr > ctar) {
+				// step in
+				d_fdd->write_signal(SIG_FLOPPY_STEP, 0x7f, 0xff);
+				ctar++;
+			} else if (gcr < ctar) {
+				// step out
+				d_fdd->write_signal(SIG_FLOPPY_STEP, 0xff, 0xff);
+				ctar--;
+			}
+
+			if(gcr == ctar) {
+				// match track
+				find_track();
+
+			} else {
+				// seek next track
+				register_my_event(EVENT_SEEK, get_seek_delay());
+				return;
+			}
+		}
+
 	}
 
 	// seek complete
+	register_my_event(EVENT_SEEK_END, get_head_loading_delay());
+
+	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 1, 1);	// head load
+	head_load = true;
+}
+
+void MC6843::event_seek_end()
+{
+	// seek complete
+	now_seek = false;
 
 	// update state
 	ctar = gcr;
@@ -732,9 +892,20 @@ void MC6843::event_seek(int event_no)
 	cmd_end();
 }
 
-void MC6843::event_search(int event_no)
+void MC6843::event_search()
 {
-	find_sector(sar);
+#ifndef SEARCH_SECTOR_IMMEDIATELY
+	switch(cmr & 0xf) {
+	case FDC_CMD_MSR:
+	case FDC_CMD_MSW:
+		break;
+	default:
+		find_sector(sar);
+		break;
+	}
+#endif
+	restore_regs();
+
 	if ((stra & FDC_STA_TRACKNE) || strb != 0) {
 
 		cmd_end();
@@ -745,7 +916,7 @@ void MC6843::event_search(int event_no)
 		return;
 	}
 
-	event_search2(event_no);
+	event_search2();
 
 //	cancel_my_event(EVENT_LOST);
 //	if(!(strb & FDC_STB_SECTNF)) {
@@ -753,11 +924,16 @@ void MC6843::event_search(int event_no)
 //	}
 }
 
-void MC6843::event_search2(int event_no)
+void MC6843::event_search2()
 {
 	now_search = false;
 	// start dma
 	if(!(strb & FDC_STB_SECTNF) && (cmr & 0x0f) != FDC_CMD_RCR) {
+
+		if ((cmr & 0xf) == FDC_CMD_FFR) {
+			d_fdd->make_track(channel);
+		}
+
 		register_lost_event(3);
 		stra |= FDC_STA_DRQ;
 		// if no DMA then Status Sense is set.
@@ -769,27 +945,37 @@ void MC6843::event_search2(int event_no)
 	status_update();
 }
 
-void MC6843::event_multi(int event_no)
+void MC6843::event_multi()
 {
 	sar++;
 	gcr--;
-	cmd_MSR();
-}
-
-void MC6843::event_lost(int event_no)
-{
-	if((cmr & 0xf) != FDC_CMD_FFW && stra & FDC_STA_BUSY) {
-		strb |= FDC_STB_DATAERR;
-		OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
-
-		cmd_end();
-		OUT_DEBUG(_T("MC6843: event_lost HEAD UNLOAD"));
-		d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 0, 1);	// head unload
-		head_load = false;
+	switch(cmr & 0xf) {
+	case FDC_CMD_MSR:
+		cmd_MSR();
+		break;
+	case FDC_CMD_MSW:
+		cmd_MSW();
+		break;
+	default:
+		break;
 	}
 }
 
-void MC6843::event_drq(int event_no)
+void MC6843::event_lost()
+{
+	if (!(stra & FDC_STA_BUSY)) return;
+	if((cmr & 0xf) == FDC_CMD_FFW) return;
+
+	strb |= FDC_STB_DATAERR;
+	OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
+
+//	cmd_end();
+//	OUT_DEBUG(_T("MC6843: event_lost HEAD UNLOAD"));
+//	d_fdd->write_signal(SIG_FLOPPY_HEADLOAD, 0, 1);	// head unload
+//	head_load = false;
+}
+
+void MC6843::event_drq()
 {
 	if(stra & FDC_STA_BUSY) {
 		register_lost_event(1);
@@ -798,66 +984,72 @@ void MC6843::event_drq(int event_no)
 }
 
 // ----------------------------------------------------------------------------
+
+void MC6843::backup_regs()
+{
+	m_pre_stra = stra;
+	m_pre_strb = strb;
+	m_pre_dir = dir;
+}
+
+void MC6843::restore_regs()
+{
+	stra = m_pre_stra;
+	strb = m_pre_strb;
+	dir = m_pre_dir;
+}
+
+// ----------------------------------------------------------------------------
 // media handler
 // ----------------------------------------------------------------------------
 void MC6843::find_track()
 {
-	if(!d_fdd->search_track(0)) {
-		strb |= FDC_STB_SEEKERR;
-		OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
-	}
-
+	// search track (ignore error)
+	d_fdd->search_track(channel);
 	return;
 }
 
-void MC6843::find_sector(int sect)
+void MC6843::find_sector(int sector_num)
 {
 	int cmd = cmr & 0x0f;
 
+	backup_regs();
+
 	// clear status
-	strb &= ~(FDC_STB_CRCERR | FDC_STB_SECTNF);
+	m_pre_strb &= ~(FDC_STB_CRCERR | FDC_STB_SECTNF);
 
-	if (sar > 26) {
-		// address error
-		strb |= FDC_STB_SECTNF;
-		OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
-		return;
-	}
-
-	// check track number
-//	ctar = d_fdd->read_signal(SIG_FLOPPY_CURRENTTRACK);
-	if(!d_fdd->search_track(0)) {
-		stra |= FDC_STA_TRACKNE;
-		dir = d_fdd->get_current_track_number(0);
-		OUT_DEBUG(_T("MC6843: chg_stat stra:%02x"),stra);
-		return;
-	}
-
+#if 0
 	if (cmd != FDC_CMD_FFR && cmd != FDC_CMD_FFW) {
 		// verify track number
-		if (!d_fdd->verify_track(0, ltar)) {
-//		if (ltar != ctar) {
-			stra |= FDC_STA_TRACKNE;
-			dir = d_fdd->get_current_track_number(0);
+		if (!d_fdd->verify_track_number(channel, ltar)) {
+			m_pre_stra |= FDC_STA_TRACKNE;
+			m_pre_dir = d_fdd->get_current_track_number(channel);
 			OUT_DEBUG(_T("MC6843: chg_stat stra:%02x"),stra);
 			return;
 		}
 	}
+#endif
 
 	// search sector when sector read or write
 	if (cmd != FDC_CMD_FFR && cmd != FDC_CMD_FFW) {
-		int stat = d_fdd->search_sector(0, ltar, sect, false, 0);
-		if (stat & 1) {
-			strb |= FDC_STB_SECTNF;
+		int stat = d_fdd->search_sector(channel, ltar, sector_num, false, 0);
+		if (stat & STS_RECORD_NOT_FOUND) {
+			m_pre_strb |= FDC_STB_SECTNF;
 			OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
 		}
-		if (stat & 2) {
-			strb |= FDC_STB_CRCERR;
+		if (stat & STS_UNMATCH_TRACK_NUMBER) {
+			m_pre_stra |= FDC_STA_TRACKNE;
+			m_pre_dir = d_fdd->get_current_track_number(channel);
+			OUT_DEBUG(_T("MC6843: chg_stat stra:%02x"),stra);
+			return;
+		}
+		if (stat & STS_CRC_ERROR) {
+			m_pre_strb |= FDC_STB_CRCERR;
 			OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
 		}
 		// delete mark ?
-		if (stat & 4) {
-			stra |= FDC_STA_DELETE;
+		if (stat & STS_DELETED_MARK_DETECTED) {
+			m_pre_stra |= FDC_STA_DELETE;
 			OUT_DEBUG(_T("MC6843: chg_stat stra:%02x"),stra);
 		}
 	}
@@ -865,6 +1057,93 @@ void MC6843::find_sector(int sect)
 	data_idx = 0;
 
 	return;
+}
+
+int MC6843::find_sector_and_get_clock(int sector_num)
+{
+	int total_clock = 0;
+	int cmd = cmr & 0x0f;
+
+	backup_regs();
+
+	// clear status
+	m_pre_strb &= ~(FDC_STB_CRCERR | FDC_STB_SECTNF);
+
+	// head loading time
+	int delay_clock = get_head_loading_delay();
+
+#if 0
+	if (cmd != FDC_CMD_FFR && cmd != FDC_CMD_FFW) {
+		// verify track number
+		if (!d_fdd->verify_track_number(channel, ltar)) {
+			m_pre_stra |= FDC_STA_TRACKNE;
+			m_pre_dir = d_fdd->get_current_track_number(channel);
+			OUT_DEBUG(_T("MC6843: chg_stat stra:%02x"),stra);
+			return total_clock;
+		}
+	}
+#endif
+
+	// search sector when sector read or write
+	if (cmd != FDC_CMD_FFR && cmd != FDC_CMD_FFW) {
+		int arrive_clock = 0;
+		int stat = d_fdd->search_sector_and_get_clock(channel, ltar, sector_num, false, 0, delay_clock, ROUND_TIMEOUT, arrive_clock, false);
+		if (stat & STS_RECORD_NOT_FOUND) {
+			m_pre_strb |= FDC_STB_SECTNF;
+			OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
+		}
+		if (stat & STS_UNMATCH_TRACK_NUMBER) {
+			m_pre_stra |= FDC_STA_TRACKNE;
+			m_pre_dir = d_fdd->get_current_track_number(channel);
+			OUT_DEBUG(_T("MC6843: chg_stat stra:%02x"),stra);
+			return total_clock;
+		}
+		if (stat & STS_CRC_ERROR) {
+			m_pre_strb |= FDC_STB_CRCERR;
+			OUT_DEBUG(_T("MC6843: chg_stat strb:%02x"),strb);
+		}
+		// delete mark ?
+		if (stat & STS_DELETED_MARK_DETECTED) {
+			m_pre_stra |= FDC_STA_DELETE;
+			OUT_DEBUG(_T("MC6843: chg_stat stra:%02x"),stra);
+		}
+		if (FLG_DELAY_FDSEARCH) {
+			// ignore delay
+			total_clock += delay_clock;
+		} else {
+			total_clock += arrive_clock;
+		}
+	}
+
+	data_idx = 0;
+
+	return total_clock;
+}
+
+int MC6843::get_clock_reach_sector(int sector_num)
+{
+	int delay_clock = get_head_loading_delay();
+	int arrive_clock = 0;
+	if (FLG_DELAY_FDSEARCH) {
+		// ignore delay
+		arrive_clock = delay_clock;
+	} else {
+		arrive_clock = d_fdd->get_clock_arrival_sector(channel, sector_num, delay_clock, ROUND_TIMEOUT);
+	}
+	return arrive_clock;
+}
+
+int MC6843::get_clock_reach_index_hole()
+{
+	int delay_clock = get_head_loading_delay();
+	int arrive_clock = 0;
+	if (FLG_DELAY_FDSEARCH) {
+		// ignore delay
+		arrive_clock = delay_clock;
+	} else {
+		arrive_clock= d_fdd->get_index_hole_remain_clock(delay_clock);
+	}
+	return arrive_clock;
 }
 
 // ----------------------------------------------------------------------------
@@ -976,7 +1255,7 @@ void MC6843::write_ibm3740_format()
 		} else if (ffw_phase == 2) {	// id mark
 			if (data_idx == 3) {
 				// search sector
-				if(d_fdd->search_sector(0, parse_dat)) {
+				if(d_fdd->search_sector(channel, parse_dat)) {
 					ffw_phase = 0;
 				}
 			}
@@ -1008,7 +1287,7 @@ void MC6843::save_state(FILEIO *fp)
 	struct vm_state_st vm_state;
 
 	//
-	vm_state_ident.version = Uint16_LE(2);
+	vm_state_ident.version = Uint16_LE(4);
 	vm_state_ident.size = Uint32_LE(sizeof(vm_state_ident) + sizeof(vm_state));
 
 	// copy values
@@ -1033,7 +1312,15 @@ void MC6843::save_state(FILEIO *fp)
 	vm_state.data_idx = Int32_LE(data_idx);
 	vm_state.stepcnt = Int32_LE(stepcnt);
 
-	vm_state.register_id2[0] = Int32_LE(register_id[4]);
+	vm_state.register_id2[0] = Int32_LE(register_id[EVENT_DRQ]);
+
+	vm_state.register_id3[0] = Int32_LE(register_id[EVENT_SEEK_END]);
+
+	vm_state.register_id4[0] = Int32_LE(register_id[EVENT_STARTCMD]);
+
+	vm_state.dir = m_pre_dir;
+	vm_state.stra = m_pre_stra;
+	vm_state.strb = m_pre_strb;
 
 	fp->Fwrite(&vm_state_ident, sizeof(vm_state_ident), 1);
 	fp->Fwrite(&vm_state, sizeof(vm_state), 1);
@@ -1069,7 +1356,21 @@ bool MC6843::load_state(FILEIO *fp)
 	stepcnt = Int32_LE(vm_state.stepcnt);
 
 	if (Uint16_LE(vm_state_i.version) >= 2) {
-		register_id[4] = Int32_LE(vm_state.register_id2[0]);
+		register_id[EVENT_DRQ] = Int32_LE(vm_state.register_id2[0]);
+	}
+	if (Uint16_LE(vm_state_i.version) >= 3) {
+		register_id[EVENT_SEEK_END] = Int32_LE(vm_state.register_id3[0]);
+	}
+	if (Uint16_LE(vm_state_i.version) >= 4) {
+		register_id[EVENT_STARTCMD] = Int32_LE(vm_state.register_id4[0]);
+
+		m_pre_dir = vm_state.pre_dir;
+		m_pre_stra = vm_state.pre_stra;
+		m_pre_strb = vm_state.pre_strb;
+	} else {
+		m_pre_dir = dir;
+		m_pre_stra = stra;
+		m_pre_strb = strb;
 	}
 
 	return true;
@@ -1158,9 +1459,11 @@ bool MC6843::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return debug_write_reg(num, data);
 }
 
-void MC6843::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void MC6843::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
+	UTILITY::tcscpy(buffer, buffer_len, _T("HD46503/MC6843 ("));
+	UTILITY::tcscat(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], ctar);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], cmr);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], isr);

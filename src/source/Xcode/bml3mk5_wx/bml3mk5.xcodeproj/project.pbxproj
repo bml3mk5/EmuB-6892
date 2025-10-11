@@ -190,6 +190,14 @@
 
 /* Begin PBXFileReference section */
 		D902B8351FB331CB00EC8622 /* sdl_sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdl_sound.cpp; sourceTree = "<group>"; };
+		D904D8342E657A2D00687034 /* diskd88_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskd88_defs.h; sourceTree = "<group>"; };
+		D904D8352E657A2D00687034 /* diskhfe_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskhfe_defs.h; sourceTree = "<group>"; };
+		D904D8362E657A5500687034 /* disk_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = disk_image.h; sourceTree = "<group>"; };
+		D904D8372E657A5500687034 /* disk_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = disk_image.cpp; sourceTree = "<group>"; };
+		D904D8382E657A5500687034 /* diskd88_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskd88_image.h; sourceTree = "<group>"; };
+		D904D8392E657A5500687034 /* diskd88_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = diskd88_image.cpp; sourceTree = "<group>"; };
+		D904D83A2E657A5500687034 /* diskhfe_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = diskhfe_image.h; sourceTree = "<group>"; };
+		D904D83B2E657A5500687034 /* diskhfe_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = diskhfe_image.cpp; sourceTree = "<group>"; };
 		D905023C1B948F6100EF607C /* mc6809dasm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mc6809dasm.cpp; sourceTree = "<group>"; };
 		D905023D1B948F6100EF607C /* mc6809dasm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mc6809dasm.h; sourceTree = "<group>"; };
 		D905D454256F6F8400380ACB /* floppy_defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = floppy_defs.h; sourceTree = "<group>"; };
@@ -481,6 +489,8 @@
 		D9BBE16A223D4EEB007D7078 /* wx_dlg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wx_dlg.cpp; sourceTree = "<group>"; };
 		D9CF3D992969990C0031915E /* vkeyboardbase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vkeyboardbase.cpp; sourceTree = "<group>"; };
 		D9CF3D9A2969990C0031915E /* vkeyboardbase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vkeyboardbase.h; sourceTree = "<group>"; };
+		D9D05D6E283A2CBF008FED65 /* debugger_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = debugger_base.cpp; sourceTree = "<group>"; };
+		D9D05D6F283A2CBF008FED65 /* debugger_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debugger_base.h; sourceTree = "<group>"; };
 		D9D05D70283A2CBF008FED65 /* noise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = noise.cpp; sourceTree = "<group>"; };
 		D9D05D71283A2CBF008FED65 /* noise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = noise.h; sourceTree = "<group>"; };
 		D9D235931C9461C100DEE400 /* mc6809_consts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mc6809_consts.h; sourceTree = "<group>"; };
@@ -880,7 +890,6 @@
 				D9A9AE431E229C6000D770D9 /* csurface.h */,
 				D998C5811FFFDDAF001FDCBC /* curtime.cpp */,
 				D998C5821FFFDDAF001FDCBC /* curtime.h */,
-				D967FC672350A177008A021A /* d88_defs.h */,
 				D968888923633CD600997394 /* debugger_bpoint.cpp */,
 				D968888A23633CD600997394 /* debugger_bpoint.h */,
 				D967FC682350A177008A021A /* debugger_defs.h */,
@@ -890,6 +899,8 @@
 				D968888F23633CD600997394 /* debugger_symbol.h */,
 				D971D9E71AF0A6EE00896525 /* depend.cpp */,
 				D971D9E81AF0A6EE00896525 /* depend.h */,
+				D904D8342E657A2D00687034 /* diskd88_defs.h */,
+				D904D8352E657A2D00687034 /* diskhfe_defs.h */,
 				D971D9EA1AF0A6EE00896525 /* emu.h */,
 				D968889023633CD600997394 /* emu_osd.h */,
 				D971D9EB1AF0A6EE00896525 /* emumsg.cpp */,
@@ -961,12 +972,20 @@
 				D971DA511AF0A6EE00896525 /* bml3mk5 */,
 				D9E14BC41C69BEA70092ABC0 /* debugger.cpp */,
 				D9E14BC51C69BEA70092ABC0 /* debugger.h */,
+				D9D05D6E283A2CBF008FED65 /* debugger_base.cpp */,
+				D9D05D6F283A2CBF008FED65 /* debugger_base.h */,
 				D99731311E5EDFF800DFA668 /* device.cpp */,
 				D971DA7E1AF0A6EE00896525 /* device.h */,
 				D971DA7F1AF0A6EE00896525 /* disk.cpp */,
 				D971DA801AF0A6EE00896525 /* disk.h */,
+				D904D8372E657A5500687034 /* disk_image.cpp */,
+				D904D8362E657A5500687034 /* disk_image.h */,
 				D967FC6F2350A196008A021A /* disk_parser.cpp */,
 				D967FC702350A196008A021A /* disk_parser.h */,
+				D904D8392E657A5500687034 /* diskd88_image.cpp */,
+				D904D8382E657A5500687034 /* diskd88_image.h */,
+				D904D83B2E657A5500687034 /* diskhfe_image.cpp */,
+				D904D83A2E657A5500687034 /* diskhfe_image.h */,
 				D971DA811AF0A6EE00896525 /* event.cpp */,
 				D971DA821AF0A6EE00896525 /* event.h */,
 				D905D454256F6F8400380ACB /* floppy_defs.h */,
@@ -1197,6 +1216,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D902B8481FB331CB00EC8622 /* sdl_sound.cpp in Sources */,
+				D904D83C2E657A5500687034 /* disk_image.cpp in Sources */,
+				D904D83D2E657A5500687034 /* diskd88_image.cpp in Sources */,
+				D904D83E2E657A5500687034 /* diskhfe_image.cpp in Sources */,
 				D905023E1B948F6100EF607C /* mc6809dasm.cpp in Sources */,
 				D90ED4311BCAAA6F0051ABB6 /* keyrecord.cpp in Sources */,
 				D91BBFE51B0C48A100E6604F /* gui_keybinddata.cpp in Sources */,

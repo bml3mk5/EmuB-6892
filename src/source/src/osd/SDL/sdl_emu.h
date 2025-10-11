@@ -23,6 +23,7 @@
 #include "../../emu.h"
 #include "../../vm/vm.h"
 #include "../../logging.h"
+#include "../../config.h"
 #include "../../res/resource.h"
 
 #ifdef USE_GTK
@@ -80,6 +81,9 @@ class CSurface;
 class CPixelFormat;
 class REC_VIDEO;
 class REC_AUDIO;
+#if defined(USE_SDL2) || defined(USE_WX2)
+class CTexture;
+#endif
 #ifdef USE_OPENGL
 class COpenGLTexture;
 #endif
@@ -95,6 +99,9 @@ class MyGLCanvas;
 #if defined(USE_JOYSTICK) && !defined(USE_SDL_JOYSTICK)
 class wxJoystick;
 #endif
+#endif
+#ifdef USE_GTK
+class CCairoSurface;
 #endif
 
 /**
@@ -152,20 +159,50 @@ private:
 	void EMU_SCREEN();
 	void initialize_screen();
 	void release_screen();
+	void restart_screen();
 #if defined(USE_SDL2)
+	bool create_sdl_renderer();
 	bool create_sdl_texture();
+	bool create_sdl_mixedtexture();
+	void reset_sdl_texture();
+	void release_sdl_texture();
+	void release_sdl_renderer();
 #endif
-	void set_screen_filter_type();
+#ifdef USE_GTK
+	inline bool mix_screen_pa(cairo_t *);
+# ifdef USE_OPENGL
+	inline bool mix_screen_gl(GdkGLContext *);
+# endif
+#else
+	inline void mix_screen_sdl();
+# ifdef USE_OPENGL
+	inline void mix_screen_gl();
+# endif
+#endif
+	inline void mix_screen_sub();
+	inline void calc_vm_screen_size();
+	inline void calc_vm_screen_size_sub(const VmRectWH &src_size, VmRectWH &vm_size);
+	void set_ledbox_position(bool now_window);
+	void set_msgboard_position();
+	bool create_mixedsurface();
+	bool create_recordingsurface();
+	void copy_surface_for_rec();
 
 #ifdef USE_OPENGL
 	void initialize_opengl();
-	void release_opengl();
-
+	void create_opengl();
 	void create_opengl_texture();
+	void create_opengl_mixedtexture();
+	void reset_opengl_texture();
 	void release_opengl_texture();
+	void release_opengl();
+	void terminate_opengl();
 
 	void set_opengl_attr();
+	void set_opengl_interval();
+	void set_opengl_filter_type();
 	void set_opengl_poly(int width, int height);
+
 
 # ifdef USE_GTK
 	void realize_window(GtkWidget *);
@@ -191,19 +228,25 @@ private:
 	//@{
 	// screen settings
 #if defined(USE_GTK)
-	GtkWidget *screen;
 	GtkWidget *window;
-	cairo_surface_t *surface;
+	GtkWidget *dwarea;
 	GdkCursor *bkup_cursor;
 # ifdef USE_OPENGL
-	GtkWidget *glscreen;
+	GtkWidget *glarea;
 # endif
+	CCairoSurface *casSource;
+	CCairoSurface *casMixed;
 
 #elif defined(USE_SDL2)
 	/* SDL2 */
 	SDL_Window *window;
 	SDL_Renderer *renderer;
-	SDL_Texture *texture;
+	CTexture *texSource;
+	CTexture *texMixed;
+# ifdef USE_SCREEN_SDL2_MIX_ON_RENDERER
+	CTexture *texLedBox;
+	CTexture *texMsgBoard;
+# endif
 # ifdef USE_OPENGL
 	SDL_GLContext glcontext;
 # endif
@@ -211,11 +254,11 @@ private:
 #else
 	/* SDL1 */
 	SDL_Surface *screen;
+	VmSize szVmDispArea;
+
 #endif
-#ifdef USE_OPENGL
-	COpenGL *opengl;
-#endif
-	Uint32 screen_flags;
+
+	Uint32 m_screen_flags;	// flags when created window (before create renderer)
 
 	VmSize mixed_max_size;	// for OpenGL
 
@@ -226,13 +269,21 @@ private:
 	VmRectWH reSuf;
 
 #ifdef USE_OPENGL
+	COpenGL *opengl;
+
 	COpenGLTexture *texGLMixed;
 //	GLuint mix_texture_name;
 	VmRect	rePyl;
 	GLfloat src_tex_l, src_tex_t, src_tex_r, src_tex_b;
 	GLfloat src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b;
-	int use_opengl;
-	uint8_t next_use_opengl;
+//	int use_opengl;
+//	uint8_t next_use_opengl;
+
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	CSurface *sufGLMain;
+	COpenGLTexture *texGLLedBox;
+	COpenGLTexture *texGLMsgBoard;
+#endif
 #endif
 #ifdef USE_LEDBOX
 	LedBox *ledbox;
@@ -335,12 +386,21 @@ public:
 	void capture_screen();
 	bool start_rec_video(int type, int fps_no, bool show_dialog);
 	void record_rec_video();
+	void change_rec_video_size(int num);
+	void change_drawing_method(int method);
+#if 0
 #ifdef USE_OPENGL
 	void change_screen_use_opengl(int num);
-	void change_opengl_attr();
 	int now_use_opengl() const {
 		return use_opengl;
 	}
+#endif
+#endif
+#ifdef USE_GTK
+	void update_screen_pa(cairo_t *);
+# ifdef USE_OPENGL
+	void update_screen_gl(GdkGLContext *);
+# endif
 #endif
 	//@}
 	/// @name input device procedures for host machine
@@ -365,32 +425,16 @@ public:
 	//@{
 	void resume_window_placement();
 	bool create_screen(int disp_no, int x, int y, int width, int height, uint32_t flags);
-	void set_display_size(int width, int height, int power, bool now_window);
+	void close_screen();
+	void set_display_size(int width, int height, double magnify, bool now_window);
 	void draw_screen();
-#ifdef USE_GTK
-	bool mix_screen_pa(cairo_t *);
-	void update_screen_pa(cairo_t *);
-# ifdef USE_OPENGL
-	bool mix_screen_gl(GdkGLContext *);
-	void update_screen_gl(GdkGLContext *);
-# endif
-#else
-	bool mix_screen();
+//	bool mix_screen();
 	void update_screen();
-#endif
 	void need_update_screen();
+	void set_screen_filter_type();
 
-	void set_window(int mode, int cur_width, int cur_height);
+	void set_window(int mode, int cur_width, int cur_height, int dpi = 0);
 	bool create_offlinesurface();
-
-#ifdef USE_OPENGL
-	int  get_use_opengl() const {
-		return use_opengl;
-	}
-	void set_use_opengl(int val) {
-		use_opengl = val;
-	}
-#endif
 
 #ifndef USE_GTK
 #ifndef USE_SDL2
@@ -414,15 +458,20 @@ public:
 	GtkWidget *get_window() {
 		return window;
 	}
+#if 0
 	/// when using GTK+ on main window
 	/// @return GtkWidget * : main screen panel
 	GtkWidget *get_screen() {
 #ifdef USE_OPENGL
-		return (use_opengl ? glscreen : screen);
+		return ((pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) != 0 ? glarea : dwarea);
 #else
-		return screen;
+		return dwarea;
 #endif
 	}
+#endif
+	/// when using GTK+ on main window
+	/// attach child widgets to main window
+	void attach_widgets_to(GtkWidget *parent);
 #endif
 	//@}
 	/// @name sound device procedures for host machine
@@ -458,6 +507,7 @@ public:
 	//@{
 	scrntype* screen_buffer(int y);
 	int screen_buffer_offset();
+	void set_vm_screen_size(int screen_width, int screen_height, int window_width, int window_height, int window_width_aspect, int window_height_aspect);
 	//@}
 	/// @name sound for vm
 	//@{

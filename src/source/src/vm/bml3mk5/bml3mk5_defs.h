@@ -17,7 +17,7 @@
 #define DEVICE_NAME		"HITACHI BASIC MASTER LEVEL3 MARK5"
 #define CONFIG_NAME		"bml3mk5"
 #define CLASS_NAME      "BML3MK5"
-#define CONFIG_VERSION		16
+#define CONFIG_VERSION		17
 
 // device informations for virtual machine
 #define USE_EMU_INHERENT_SPEC
@@ -44,6 +44,8 @@
 #define MIN_WINDOW_HEIGHT		480
 #define MAX_WINDOW_WIDTH		768
 #define MAX_WINDOW_HEIGHT		512
+#define SCREEN_DEST_X		((SCREEN_WIDTH  - MIN_WINDOW_WIDTH ) / 2)
+#define SCREEN_DEST_Y		((SCREEN_HEIGHT - MIN_WINDOW_HEIGHT) / 2)
 
 // max devices connected to the output port
 #define MAX_OUTPUT	18
@@ -58,7 +60,8 @@
 #define USE_AFTERIMAGE
 #define USE_DIPSWITCH
 #define DIPSWITCH_DEFAULT 0x03
-#define HAS_AY_3_8913
+//#define HAS_AY_3_8913
+#define HAS_AY_3_8910
 //#define USE_AUDIO_U8
 
 #define USE_PRINTER
@@ -66,11 +69,17 @@
 #define USE_LIGHTPEN
 #define USE_JOYSTICK
 #ifdef USE_JOYSTICK
-#define USE_PIAJOYSTICK
+# define USE_PIAJOYSTICK
+# define USE_PSGJOYSTICK
 #endif
 #define USE_KEY2JOYSTICK
-#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
-#define USE_PIAJOYSTICKBIT
+#ifdef USE_KEY2JOYSTICK
+# define USE_KEY2PIAJOYSTICK
+# define USE_KEY2PSGJOYSTICK
+#endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK) \
+ || defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+# define USE_JOYSTICKBIT
 #endif
 
 #define USE_FD1
@@ -94,12 +103,38 @@
 #define USE_MESSAGE_BOARD
 #define USE_VKEYBOARD
 
-#ifdef USE_WIN
-//#define USE_SCREEN_D3D_TEXTURE
-#define USE_SCREEN_D3D_MIX_SURFACE
+#if defined(USE_WIN)
+#define USE_SCREEN_MIX_SURFACE
+
+#define USE_SCREEN_D3D_TEXTURE
+//#define USE_SCREEN_D3D_MIX_SURFACE
 
 #define USE_DIRECTINPUT
+
+#elif defined(USE_SDL)
+#define USE_SCREEN_MIX_SURFACE
+
+#define USE_SCREEN_OPENGL_MIX_ON_RENDERER
+
+#elif defined(USE_SDL2)
+#define USE_SCREEN_MIX_SURFACE
+
+#define USE_SCREEN_SDL2_MIX_ON_RENDERER
+#define USE_SCREEN_OPENGL_MIX_ON_RENDERER
+
+#elif defined(USE_WX) || defined(USE_WX2)
+#define USE_SCREEN_MIX_SURFACE
+
+#define USE_SCREEN_OPENGL_MIX_ON_RENDERER
+
+#elif defined(USE_QT)
+#define USE_SCREEN_MIX_SURFACE
+
+#define USE_SCREEN_OPENGL_MIX_ON_RENDERER
+
 #endif
+/// @brief use the surface for recording video
+#define USE_RECORDING_SURFACE
 
 //#define USE_PERFORMANCE_METER
 

@@ -486,9 +486,11 @@ bool HD46505::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return false;
 }
 
-void HD46505::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void HD46505::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
+	UTILITY::tcscpy(buffer, buffer_len, _T("HD6845/HD46505 ("));
+	UTILITY::tcscat(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
 	for(int i=0; i<18; i++) {
 		UTILITY::sntprintf(buffer, buffer_len
 			,_T(" %02X:%02X")

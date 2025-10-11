@@ -43,8 +43,14 @@ private:
 	DWORD streamIndex;
 	LONGLONG sample_time;
 	LONGLONG frame_duration;
+	LONGLONG major_frame_duration;
+	LONG frame_duration_mod;
+	LONG major_frame_duration_mod;
+	LONG frame_duration_deci;
 	UINT32 bytes_per_sample;
 	int sample_buffer_size;
+	int major_sample_buffer_size;
+	bool first_writing;
 //	int sample_is_multiple;
 	int write_error_count;
 

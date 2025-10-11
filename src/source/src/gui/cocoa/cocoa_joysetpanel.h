@@ -15,42 +15,37 @@
 
 #import <Cocoa/Cocoa.h>
 #import "cocoa_basepanel.h"
+#import "cocoa_keybindctrl.h"
 #import "../../vm/vm_defs.h"
 #import "../../emu.h"
 
 /**
 	@brief Joypad setting dialog box
 */
-@interface CocoaJoySettingPanel : CocoaBasePanel
+@interface CocoaJoySettingPanel : CocoaKeybindBasePanel
 {
-	CocoaTabView *tabView;
-	NSMutableArray *tableViews;
-	Uint32 enable_axes;
-
 #if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	CocoaPopUpButton *pop[MAX_JOYSTICKS];
 	CocoaSlider *mash[MAX_JOYSTICKS][KEYBIND_JOY_BUTTONS];
 	CocoaSlider *axis[MAX_JOYSTICKS][6];
 #endif
-#ifdef USE_PIAJOYSTICKBIT
+#ifdef USE_PIAJOYSTICK
+#ifdef USE_JOYSTICKBIT
 	CocoaCheckBox *chkPiaJoyNeg;
-	CocoaCheckBox *chkPiaJoyConn;
+	CocoaRadioGroup *radPiaJoyConn;
 #else
 	CocoaCheckBox *chkPiaJoyNoIrq;
 #endif
+#endif
+#ifdef USE_PSGJOYSTICK
+#ifdef USE_JOYSTICKBIT
+	CocoaCheckBox *chkPsgJoyNeg;
+#endif
+#endif
 }
 - (id)init;
-- (NSInteger)runModal;
-- (void)close;
 - (void)dialogOk:(id)sender;
-- (void)dialogCancel:(id)sender;
-- (void)loadDefaultPreset:(id)sender;
-- (void)loadPreset:(id)sender;
-- (void)savePreset:(id)sender;
-- (void)clickJoyAxis:(id)sender;
 - (void)setData;
-
-//- (void)changeSlider:(CocoaSlider *)sender;
 @end
 
 #endif /* COCOA_JOYSETTINGPANEL_H */

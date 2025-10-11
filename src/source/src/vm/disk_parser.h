@@ -14,7 +14,8 @@
 #define DISK_PARSER_H
 
 #include "../common.h"
-#include "../d88_defs.h"
+#include "../diskd88_defs.h"
+#include "../diskhfe_defs.h"
 #include <stdlib.h>
 
 
@@ -150,14 +151,9 @@ private:
 	DISK_PARSER() {}
 	void alloc_tmp_buffer();
 	void free_tmp_buffer();
+	bool read_file();
 
 	static const fd_format_t c_fd_formats[];
-
-	bool standard_to_d88(const fd_format_t *param);
-
-public:
-	DISK_PARSER(DISK *disk, FILEIO *fio, const _TCHAR *file_path, uint8_t *buffer, size_t buffer_size);
-	~DISK_PARSER();
 
 	// teledisk image decoder (td0)
 	bool teledisk_to_d88();
@@ -168,8 +164,20 @@ public:
 	// cpdread image decoder (dsk)
 	bool cpdread_to_d88(int extended);
 
+	bool standard_to_d88(const fd_format_t *param);
+
 	bool parse_standard();
 
+	bool parse_d88(int offset, int &file_size_orig, int &file_offset);
+	bool parse_single_d88(int &file_size_orig, int &file_offset);
+
+	bool parse_hfe(int offset, int &file_size_orig, int &file_offset);
+
+public:
+	DISK_PARSER(DISK *disk, FILEIO *fio, const _TCHAR *file_path);
+	~DISK_PARSER();
+
+	void set_buffer(uint8_t *buffer, size_t buffer_size);
 	bool parse(int offset, int &file_size_orig, int &file_offset);
 };
 

@@ -313,7 +313,15 @@ void MC6809::initialize()
 	illegal_pc_idx = 0;
 }
 
+/// power on reset
 void MC6809::reset()
+{
+	warm_reset(true);
+}
+
+/// master reset
+/// @param[in] por : true if prosess the power on reset
+void MC6809::warm_reset(bool por)
 {
 	icount = 0;
 	/*
@@ -348,11 +356,13 @@ void MC6809::reset()
 	illegal_pc_idx = 0;
 
 	/* Clear other registers */
-	UD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
-	SD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
-	XD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
-	YD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
-	DD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+	if (por) {
+		UD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+		SD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+		XD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+		YD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+		DD = FLG_CLEAR_CPUREG ? 0 : 0xcdcdcdcd;
+	}
 
 	WS_BABS(0x01);
 	PCD = RM16(0xfffe);
@@ -434,7 +444,7 @@ void MC6809::write_signal(int id, uint32_t data, uint32_t mask)
 		}
 		else {
 			if (now_reset) {
-				reset();
+				warm_reset(false);
 			}
 			int_state &= ~MC6809_RESET_BIT;
 #ifdef USE_DEBUGGER

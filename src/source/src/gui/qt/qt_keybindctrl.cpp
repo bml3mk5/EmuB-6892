@@ -14,6 +14,7 @@
 #include "../../labels.h"
 #include "../../utility.h"
 //#include "../../keycode.h"
+#include "../../keycode.h"
 #include <QLayout>
 #include <QKeyEvent>
 #include <QTimer>
@@ -56,7 +57,7 @@ MyTableWidget::MyTableWidget(int tab_num, QWidget *parent)
 		}
 	}
 
-	connect(this, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(cellDoubleClick(int, int)));
+	connect(this, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(cellDoubleClick(int,int)));
 
 	if (kbdata->m_devtype == KeybindData::DEVTYPE_JOYPAD) {
 		timer = new QTimer();
@@ -222,4 +223,104 @@ void MyTableWidget::cellDoubleClick(int row, int column)
 	if (!itm) return;
 
 	clearCell(itm);
+}
+
+//
+//
+//
+
+MyKeybindBaseBox::MyKeybindBaseBox(QWidget *parent) :
+	QDialog(parent)
+{
+	tabWidget = nullptr;
+	joy_mask = ~0;
+}
+
+void MyKeybindBaseBox::createFooter(QVBoxLayout *vbox)
+{
+	joy_mask = ~0;
+	QHBoxLayout *hbox = new QHBoxLayout();
+	vbox->addLayout(hbox);
+	MyLabel *lbl = new MyLabel(CMsg::Disable_temporarily_the_following_);
+	hbox->addWidget(lbl);
+	MyCheckBox *chk;
+	chk = new MyCheckBox(CMsg::Z_axis);
+	connect(chk, SIGNAL(stateChanged(int)), this, SLOT(toggleAxis(int)));
+	chk->setProperty("num", 0);
+	chk->setChecked((joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) == 0);
+	hbox->addWidget(chk);
+	chk = new MyCheckBox(CMsg::R_axis);
+	connect(chk, SIGNAL(stateChanged(int)), this, SLOT(toggleAxis(int)));
+	chk->setProperty("num", 1);
+	chk->setChecked((joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) == 0);
+	hbox->addWidget(chk);
+	chk = new MyCheckBox(CMsg::U_axis);
+	connect(chk, SIGNAL(stateChanged(int)), this, SLOT(toggleAxis(int)));
+	chk->setProperty("num", 2);
+	chk->setChecked((joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) == 0);
+	hbox->addWidget(chk);
+	chk = new MyCheckBox(CMsg::V_axis);
+	connect(chk, SIGNAL(stateChanged(int)), this, SLOT(toggleAxis(int)));
+	chk->setProperty("num", 3);
+	chk->setChecked((joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) == 0);
+	hbox->addWidget(chk);
+}
+
+void MyKeybindBaseBox::accept()
+{
+	setData();
+	QDialog::accept();
+}
+
+void MyKeybindBaseBox::update()
+{
+	if (!tabWidget) return;
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
+	tables[curr_tab]->update();
+	QDialog::update();
+}
+
+void MyKeybindBaseBox::loadPreset()
+{
+	int num = sender()->property("num").toInt();
+	if (!tabWidget) return;
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
+	tables[curr_tab]->loadPreset(num);
+	update();
+}
+
+void MyKeybindBaseBox::savePreset()
+{
+	int num = sender()->property("num").toInt();
+	if (!tabWidget) return;
+	int curr_tab = tabWidget->currentIndex();
+	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
+	if (!tables[curr_tab]) return;
+	tables[curr_tab]->savePreset(num);
+	update();
+}
+
+void MyKeybindBaseBox::toggleAxis(int checked)
+{
+	int num = sender()->property("num").toInt();
+	uint32_t mask = 0;
+	switch(num) {
+	case 0:
+		mask = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
+		break;
+	case 1:
+		mask = (JOYCODE_R_UP | JOYCODE_R_DOWN);
+		break;
+	case 2:
+		mask = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
+		break;
+	case 3:
+		mask = (JOYCODE_V_UP | JOYCODE_V_DOWN);
+		break;
+	}
+	BIT_ONOFF(joy_mask, mask, checked != Qt::Checked);
 }

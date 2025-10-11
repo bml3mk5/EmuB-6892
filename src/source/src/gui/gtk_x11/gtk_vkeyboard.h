@@ -30,12 +30,21 @@ private:
 	GtkWidget	*parent;
 	GtkWidget	*window;
 	GtkWidget   *drawing;
-	cairo_surface_t *surface;
+	CCairoSurface surface;
+	VmRectWH	reWindow;
+	GtkWidget *popupMenu;
 
 	void set_dist();
+	void changing_size();
 
 	void need_update_window(PressedInfo_t *, bool);
 //	void need_update_window();
+	void draw_window(cairo_t *);
+	void calc_client_size();
+	void adjust_size(double mag);
+
+	void create_popup_menu();
+	void show_popup_menu(const GdkEvent *);
 
 	static gboolean OnMouseDown(GtkWidget *, GdkEvent *, gpointer);
 	static gboolean OnMouseUp(GtkWidget *, GdkEvent *, gpointer);
@@ -48,6 +57,9 @@ private:
 #endif
 	static gboolean OnDelete(GtkWidget *, GdkEvent *, gpointer);
 //	static void OnResponse(GtkWidget *, gint, gpointer);
+	static void OnSizeAllocate(GtkWidget *, GdkRectangle *, gpointer);
+
+	static void OnSelectPopupMenu(GtkWidget *widget, gpointer user_data);
 
 public:
 	VKeyboard();

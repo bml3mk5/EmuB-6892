@@ -491,19 +491,25 @@ void TELEDISK_PARSER::remove_tempfile()
 
 // ======================================================================
 
-DISK_PARSER::DISK_PARSER(DISK *disk, FILEIO *fio, const _TCHAR *file_path, uint8_t *buffer, size_t buffer_size)
+DISK_PARSER::DISK_PARSER(DISK *disk, FILEIO *fio, const _TCHAR *file_path)
 {
 	this->p_disk = disk;
 	this->fio = fio;
 	this->p_file_path = file_path;
-	this->p_buffer = buffer;
-	this->m_buffer_size = buffer_size;
+	this->p_buffer = NULL;
+	this->m_buffer_size = 0;
 	this->p_tmp_buffer = NULL;
 }
 
 DISK_PARSER::~DISK_PARSER()
 {
 	free_tmp_buffer();
+}
+
+void DISK_PARSER::set_buffer(uint8_t *buffer, size_t buffer_size)
+{
+	p_buffer = buffer;
+	m_buffer_size = buffer_size;
 }
 
 void DISK_PARSER::alloc_tmp_buffer()
@@ -556,7 +562,6 @@ bool DISK_PARSER::imagedisk_to_d88()
 	memset(&d88_hdr, 0, sizeof(d88_hdr_t));
 	UTILITY::strcpy(d88_hdr.title, sizeof(d88_hdr.title), "IMAGEDISK");
 	d88_hdr.protect = 0; // non-protected
-	d88_hdr.media_type = MEDIA_TYPE_UNK; // TODO
 	COPYBUFFER(p_buffer, m_buffer_size, file_size, &d88_hdr, sizeof(d88_hdr_t));
 
 	// create tracks
@@ -633,6 +638,11 @@ bool DISK_PARSER::imagedisk_to_d88()
 		}
 	}
 	d88_hdr.size = trkptr;
+	if (file_size > 931840) {
+		d88_hdr.media_type = MEDIA_TYPE_2HD;
+	} else {
+		d88_hdr.media_type = MEDIA_TYPE_2D;
+	}
 	memcpy(p_buffer, &d88_hdr, sizeof(d88_hdr_t));
 	p_disk->set_file_size(file_size);
 	p_disk->set_image_type(DISK::IMAGE_TYPE_D88_CONVERTED);
@@ -720,6 +730,11 @@ bool DISK_PARSER::cpdread_to_d88(int extended)
 		}
 	}
 	d88_hdr.size = trkptr;
+	if (file_size > 931840) {
+		d88_hdr.media_type = MEDIA_TYPE_2HD;
+	} else {
+		d88_hdr.media_type = MEDIA_TYPE_2D;
+	}
 	memcpy(p_buffer, &d88_hdr, sizeof(d88_hdr_t));
 	p_disk->set_file_size(file_size);
 	p_disk->set_image_type(DISK::IMAGE_TYPE_D88_CONVERTED);
@@ -853,39 +868,124 @@ bool DISK_PARSER::parse_standard()
 	return converted;
 }
 
+/// @brief d88 image parser (d88)
+///
+/// @param[in] offset
+/// @param[in,out] file_size_orig
+/// @param[in,out] file_offset
+/// @return true if valid d88
+bool DISK_PARSER::parse_d88(int offset, int &file_size_orig, int &file_offset)
+{
+	int file_size = p_disk->get_file_size();
+
+	if (file_size < 0x20) {
+		// too small
+		return false;
+	}
+	fio->Fseek(offset + 0x1c, FILEIO::SEEKSET);
+	file_size = fio->FgetUint32_LE();
+	if (0 < file_size && file_size < (int)m_buffer_size) {
+		file_size_orig = file_size;
+		fio->Fseek(offset, FILEIO::SEEKSET);
+		fio->Fread(p_buffer, file_size, 1);
+		file_offset = offset;
+
+		p_disk->set_file_size(file_size);
+		p_disk->set_image_type(DISK::IMAGE_TYPE_D88);
+		return true;
+	}
+	return false;
+}
+
+/// @brief d88 image parser (d88)
+///
+/// @param[in,out] file_size_orig
+/// @param[in,out] file_offset
+/// @return true if valid d88
+bool DISK_PARSER::parse_single_d88(int &file_size_orig, int &file_offset)
+{
+	int file_size = p_disk->get_file_size();
+
+	uint32_t *buffer_file_size = (uint32_t *)(&p_buffer[0x1c]);
+
+	if (Uint32_LE(*buffer_file_size) == (uint32_t)file_size) {
+		file_size_orig = file_size;
+		file_offset = 0;
+		p_disk->set_file_size(file_size);
+		p_disk->set_image_type(DISK::IMAGE_TYPE_D88);
+		return true;
+	}
+	return false;
+}
+
+/// @brief hfe image parser (hfe)
+///
+/// @param[in] offset
+/// @param[in,out] file_size_orig
+/// @param[in,out] file_offset
+/// @return true if valid hfe
+bool DISK_PARSER::parse_hfe(int offset, int &file_size_orig, int &file_offset)
+{
+	int file_size = p_disk->get_file_size();
+
+	if (file_size < (int)sizeof(hfe_header_t)) {
+		// too small
+		return false;
+	}
+	// check signature
+	hfe_header_t header;
+
+	fio->Fseek(offset, FILEIO::SEEKSET);
+	fio->Fread(&header, sizeof(hfe_header_t), 1);
+	// support only V1
+	if (memcmp(header.signature, DISK_HFE_HEADER, sizeof(DISK_HFE_HEADER)) != 0 || header.revision != 0) {
+		// signature unmatch
+		return false;
+	}
+
+	if (0 < file_size && file_size < (int)m_buffer_size) {
+		fio->Fseek(offset, FILEIO::SEEKSET);
+		fio->Fread(p_buffer, file_size, 1);
+
+		p_disk->set_file_size(file_size);
+		p_disk->set_image_type(DISK::IMAGE_TYPE_HFE);
+		return true;
+	}
+	return false;
+}
+
+/// @brief read from the first of file
+/// @return true if read the file
+bool DISK_PARSER::read_file()
+{
+	int file_size = p_disk->get_file_size();
+	if ((int)m_buffer_size < file_size) {
+		return false;
+	}
+
+	memset(p_buffer, 0, m_buffer_size);
+	fio->Fseek(0, FILEIO::SEEKSET);
+	fio->Fread(p_buffer, file_size, 1);
+	return true;
+}
+
 /// @brief parse a floppy disk image
 /// @param[in] offset       : offset for one disk in d88 multi volume image
 /// @param[out] file_size_orig : original file size on disk image
 /// @param[out] file_offset    : offset for one disk
+/// @return true if valid disk
 bool DISK_PARSER::parse(int offset, int &file_size_orig, int &file_offset)
 {
 	bool rc = false;
-	int file_size = p_disk->get_file_size();
 	p_disk->set_image_type(DISK::IMAGE_TYPE_UNK);
 
 	// is this d88 format ?
 	if(UTILITY::check_file_extensions(p_file_path, _T(".d88"), _T(".d77"), NULL)) {
-		if (file_size < 0x20) {
-			// too small
-			return false;
-		}
-		fio->Fseek(offset + 0x1c, FILEIO::SEEKSET);
-		file_size = fio->FgetUint32_LE();
-		if (file_size > 0) {
-			file_size_orig = file_size;
-			fio->Fseek(offset, FILEIO::SEEKSET);
-			fio->Fread(p_buffer, file_size, 1);
-			file_offset = offset;
-
-			p_disk->set_file_size(file_size);
-			p_disk->set_image_type(DISK::IMAGE_TYPE_D88);
-			rc = true;
-		}
-		return rc;
+		return parse_d88(offset, file_size_orig, file_offset);
 	}
-
-	if(file_size <= 0 || (int)m_buffer_size < file_size) {
-		return false;
+	// is this hfe format ?
+	if(UTILITY::check_file_extensions(p_file_path, _T(".hfe"), NULL)) {
+		return parse_hfe(offset, file_size_orig, file_offset);
 	}
 
 	// parse standard image
@@ -893,15 +993,16 @@ bool DISK_PARSER::parse(int offset, int &file_size_orig, int &file_offset)
 		return true;
 	}
 
-	memset(p_buffer, 0, m_buffer_size);
-	fio->Fseek(0, FILEIO::SEEKSET);
-	fio->Fread(p_buffer, file_size, 1);
+	// read from the first of file
+	if (!read_file()) {
+		return false;
+	}
 
 	// check d88 format (temporary)
-	uint32_t *buffer_file_size = (uint32_t *)(&p_buffer[0x1c]);
-	if(Uint32_LE(*buffer_file_size) == (uint32_t)file_size) {
+	if (parse_single_d88(file_size_orig, file_offset)) {
 		return true;
 	}
+
 //	UTILITY::stprintf(n_file_path, _MAX_PATH, _T("%s.D88"), p_file_path);
 
 	// check file header

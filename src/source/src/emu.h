@@ -37,8 +37,6 @@
 #define WINDOW_HEIGHT SCREEN_HEIGHT_ASPECT
 #endif
 
-#define USE_SCREEN_MIX_SURFACE
-
 #define KEY_STATUS_SIZE 512
 
 #ifdef USE_MEDIA
@@ -57,6 +55,23 @@
 
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 #define MAX_JOYSTICKS	2
+
+enum en_joystick_selects {
+	SEL_JOY_NEXT = -1,
+	SEL_NOJOY = 0,
+	SEL_JOY2KEY,
+	SEL_JOY2PIAJOY,
+	SEL_JOY2PSGJOY
+};
+enum en_joystick_devices {
+	DEV_PIAJOY = 0,
+	DEV_PSGJOY
+};
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+#define MAX_JOYDEVICES	2
+#else
+#define MAX_JOYDEVICES	1
 #endif
 
 #ifdef USE_DEBUGGER
@@ -72,6 +87,7 @@ class DEVICE;
 class MsgBoard;
 #endif
 class CSurface;
+class CTexture;
 class CPixelFormat;
 class REC_VIDEO;
 class REC_AUDIO;
@@ -137,10 +153,10 @@ protected:
 
 	virtual void initialize_joystick();
 	virtual void release_joystick();
-	virtual void convert_joy_status(int num);
+	virtual void convert_joy_status(int dev, int num);
 
 	virtual void initialize_key2joy();
-	virtual void release_key2joy();
+	virtual void release_key2joy(int dev);
 
 	virtual void initialize_mouse(bool enable);
 //#ifdef USE_MOUSE_ABSOLUTE
@@ -186,19 +202,23 @@ protected:
 	int  key_mod;
 
 #ifdef USE_KEY2JOYSTICK
-#ifndef USE_PIAJOYSTICKBIT
-	/// @brief keycode to joystick position
-	uint32_t key2joy_map[MAX_JOYSTICKS][KEY_STATUS_SIZE];
-	/// @brief key to joystick #1, #2 status
-	uint32_t key2joy_status[MAX_JOYSTICKS][9];
+	struct st_key2joy {
+#ifndef USE_JOYSTICKBIT
+		/// @brief keycode to joystick position
+		uint32_t map[MAX_JOYSTICKS][KEY_STATUS_SIZE];
+		/// @brief key to joystick #1, #2 status
+		uint32_t status[MAX_JOYSTICKS][9];
 #else
-	/// @brief keycode to joystick position
-	uint32_t key2joy_map[KEY_STATUS_SIZE];
-	/// @brief key to joystick #1, #2 status
-	uint32_t key2joy_status[MAX_JOYSTICKS];
+		/// @brief keycode to joystick position
+		uint32_t map[KEY_STATUS_SIZE];
+		/// @brief key to joystick #1, #2 status
+		uint32_t status[MAX_JOYSTICKS];
 #endif
-	/// @brief enable key2joystick
-	bool key2joy_enabled;
+//		/// @brief enable key2joystick
+//		bool enabled;
+	} key2joy[MAX_JOYDEVICES];
+	/// @brief enable key2joystick device
+	int key2joy_curr_device;
 
 	const uint32_key_assign_t *key2joy_scancode;
 #endif
@@ -250,7 +270,7 @@ protected:
 	/// 1: reserved
 	uint32_t joy_status[MAX_JOYSTICKS][2];
 #endif
-#ifndef USE_PIAJOYSTICKBIT
+#ifndef USE_JOYSTICKBIT
 	/// @brief joystick keybind to array 
 	static const int joy_allow_map[16];
 #endif
@@ -262,9 +282,16 @@ protected:
 
 #ifdef USE_JOYSTICK
 	/// @brief joystick to joystick position
-	uint32_t joy2joy_map[MAX_JOYSTICKS][32];
-	uint32_t joy2joy_idx[32];
-	int joy2joy_map_size;
+	struct st_joy2joy {
+		int      map_size;
+		uint32_t map[MAX_JOYSTICKS][32];
+		uint32_t idx[32];
+	} joy2joy[MAX_JOYDEVICES];
+	/// @brief enable joy2joystick device
+	int joy2joy_curr_device;
+//	uint32_t joy2joy_map[MAX_JOYDEVICES][MAX_JOYSTICKS][32];
+//	uint32_t joy2joy_idx[MAX_JOYDEVICES][32];
+//	int joy2joy_map_size[MAX_JOYDEVICES];
 #ifdef USE_ANALOG_JOYSTICK
 	/// @brief analog mapping
 	int joy2joy_ana_map[MAX_JOYSTICKS][6];
@@ -312,6 +339,10 @@ protected:
 
 	CSurface *sufOrigin;
 
+#ifdef USE_RECORDING_SURFACE
+	CSurface *sufRecording;
+#endif
+
 #ifdef USE_SCREEN_ROTATE
 	// rotate buffer
 	CSurface *sufRotate;
@@ -323,12 +354,13 @@ protected:
 	CSurface *sufStretch2;
 #endif
 	CSurface *sufSource;
-#ifdef USE_SCREEN_MIX_SURFACE
 	CSurface *sufMixed;
-#endif
 
 	CMutex *mux_update_screen;
 	bool screen_changing;
+
+	/// drawing method @see DRAWING_METHOD_ENUMS
+	uint32_t enabled_drawing_method;
 
 	/// vm draw area
 	VmRectWH screen_size;
@@ -361,6 +393,13 @@ protected:
 	VmRectWH mixed_size;
 	VmSize mixed_ratio;
 
+	// screen size on vm
+	VmRectWH vm_screen_size;
+	// display area size on vm
+	VmSize vm_display_size;
+	// screen size on vm for caputure screen
+	VmRectWH vm_screen_size_for_rec;
+
 	// update flags
 #define DISABLE_SURFACE	1
 	int  disable_screen;
@@ -374,7 +413,7 @@ protected:
 	// screen mode
 	ScreenMode screen_mode;
 
-	int window_mode_power;
+	double window_mode_magnify;
 	WindowMode window_mode;
 
 	bool now_resizing;
@@ -710,8 +749,12 @@ public:
 #endif
 	/// @name screen menu for ui
 	//@{
+	uint32_t get_enabled_drawing_method() const;
+	void set_enabled_drawing_method(uint32_t flags);
+	void clear_enabled_drawing_method(uint32_t flags);
 	virtual void change_screen_mode(int mode);
 	virtual void change_maximize_window(int width, int height, bool maximize);
+	virtual void change_screen_resolution(int x, int y, int width, int height, int dpi);
 	void change_stretch_screen(int num);
 	int get_window_mode_count() const;
 	int get_display_device_count() const;
@@ -724,13 +767,14 @@ public:
 	void change_pixel_aspect(int mode);
 	int  get_pixel_aspect_count();
 	int  get_pixel_aspect(int mode, int *wratio, int *hratio);
+	virtual void set_screen_filter_type();
 	virtual void capture_screen();
 	virtual bool start_rec_video(int type, int fps_no, bool show_dialog);
 	void stop_rec_video();
 	void restart_rec_video();
 	virtual void record_rec_video();
 	void resize_rec_video(int num);
-	void change_rec_video_size(int num);
+	virtual void change_rec_video_size(int num);
 	int  get_rec_video_fps_num();
 	bool now_rec_video();
 	bool rec_video_enabled(int type);
@@ -739,24 +783,16 @@ public:
 #ifdef USE_SCANLINE
 	void change_screen_scanline(int num);
 #endif
-#ifdef USE_DIRECT3D
-	virtual void change_screen_use_direct3d(int num) {}
-#endif
+	virtual void change_drawing_method(int method) {}
 #ifdef USE_OPENGL
 	virtual void initialize_opengl() {}
 	virtual void release_opengl() {}
-	virtual void change_screen_use_opengl(int num) {}
-	virtual void change_opengl_attr() {}
-	virtual int now_use_opengl() const { return 0; }
 #endif
 #ifdef USE_AFTERIMAGE
 	void change_screen_afterimage(int num);
 #endif
 #ifdef USE_KEEPIMAGE
 	void change_screen_keepimage(int num);
-#endif
-#ifdef USE_DIRECT3D
-	virtual bool enabled_direct3d() const { return false; }
 #endif
 	//@}
 	/// @name sound menu for ui
@@ -798,8 +834,8 @@ public:
 	int  is_shown_message_board();
 	void change_use_joypad(int num);
 	bool is_enable_joypad(int num);
-	void toggle_enable_key2joy();
-	bool is_enable_key2joy();
+	void toggle_enable_key2joy(int dev);
+	bool is_enable_key2joy(int dev);
 
 	void modify_joytype();
 	void save_keybind();
@@ -840,23 +876,23 @@ public:
 	void modify_joy_threshold();
 	void modify_joy_mashing();
 
-	void clear_joy2joy_idx();
-	void set_joy2joy_idx(int pos, uint32_t joy_code);
+	void clear_joy2joy_idx(int dev);
+	void set_joy2joy_idx(int dev, int pos, uint32_t joy_code);
 
-	void clear_joy2joy_map();
-	void set_joy2joy_map(int num, int pos, uint32_t joy_code);
-//	uint32_t get_joy2joy_map(int num, int pos) const;
+	void clear_joy2joy_map(int dev);
+	void set_joy2joy_map(int dev, int num, int pos, uint32_t joy_code);
+//	uint32_t get_joy2joy_map(int dev, int num, int pos) const;
 
 	void set_joy2joy_ana_map(int num, int pos, uint32_t joy_code);
 
 	void clear_joy2joyk_map();
 	void set_joy2joyk_map(int num, int idx, uint32_t joy_code);
 
-	void clear_key2joy_map();
-	void set_key2joy_map(uint32_t key_code, int num, uint32_t joy_code);
-	uint8_t get_key2joy_map(uint32_t key_code) const;
-	inline bool key2joy_down(int code);
-	inline void key2joy_up(int code);
+	void clear_key2joy_map(int dev);
+	void set_key2joy_map(int dev, uint32_t key_code, int num, uint32_t joy_code);
+	uint8_t get_key2joy_map(int dev, uint32_t key_code) const;
+	inline bool key2joy_down(int dev, int code);
+	inline void key2joy_up(int dev, int code);
 
 	void clear_vm_key_status(uint8_t mask);
 	void vm_key_down(int code, uint8_t mask);
@@ -896,12 +932,12 @@ public:
 	//@{
 	virtual void resume_window_placement();
 	virtual bool create_screen(int disp_no, int x, int y, int width, int height, uint32_t flags) { return false; }
-	virtual void set_display_size(int width, int height, int power, bool now_window);
+	virtual void set_display_size(int width, int height, double magnify, bool now_window);
 	virtual void draw_screen();
 	void fill_gray();
-	virtual bool mix_screen();
+//	virtual bool mix_screen();
 #if defined(USE_WIN)
-	virtual void update_screen(HDC hdc) {}
+	virtual void update_screen(HWND hWnd, bool user_event) {}
 #else
 	virtual void update_screen() {}
 #endif
@@ -914,7 +950,8 @@ public:
 	void enum_window_mode(int max_width, int max_height);
 	void enum_screen_mode(uint32_t flags = 0);
 	void find_screen_mode();
-	virtual void set_window(int mode, int cur_width, int cur_height);
+	int change_screen_mode_number(int mode);
+	virtual void set_window(int mode, int cur_width, int cur_height, int dpi = 0);
 	void set_desktop_size(int width, int height, int bpp) {
 		desktop_size.w = width;
 		desktop_size.h = height;
@@ -928,24 +965,11 @@ public:
 	}
 	void lock_screen();
 	void unlock_screen();
-#ifdef USE_BITMAP
-	void reload_bitmap() {
-		first_invalidate = true;
-	}
-#endif
 	virtual bool create_offlinesurface() { return false; }
 	const CPixelFormat *get_pixel_format() const {
 		return pixel_format;
 	}
 
-#ifdef USE_OPENGL
-	virtual int  get_use_opengl() const { return 0; }
-	virtual void set_use_opengl(int val) {}
-#endif
-//	/// @return library specific value
-//	virtual void *get_screen() { return NULL; }
-//	/// @return library specific value
-//	virtual void *get_window() { return NULL; }
 	//@}
 	/// @name sound device procedures for host machine
 	//@{
@@ -1040,6 +1064,8 @@ public:
 	void get_rgbcolor(scrntype pixel, uint8_t *r, uint8_t *g, uint8_t *b);
 	scrntype map_rgbcolor(uint8_t r, uint8_t g, uint8_t b);
 	bool now_skip_frame();
+
+	virtual void set_vm_screen_size(int screen_width, int screen_height, int window_width, int window_height, int window_width_aspect, int window_height_aspect);
 	//@}
 	/// @name sound for vm
 	//@{
@@ -1113,6 +1139,7 @@ public:
 	/// @name for debug
 	//@{
 	uint64_t get_current_clock();
+	int      get_current_power();
 	virtual void sleep(uint32_t ms);
 	//@}
 

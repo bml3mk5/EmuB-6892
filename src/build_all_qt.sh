@@ -17,7 +17,7 @@ make_all() {
 make_linux_all() {
 	mkdir -p source/Qt/$2
 	cd source/Qt/$2
-	qtchooser -run-tool=qmake -qt=5 ../$PROJNAME.pro $3 $4
+	qtchooser -run-tool=qmake -qt=6 ../$PROJNAME.pro $3 $4
 	if [ "$1" = "" ]; then
 		make clean
 	fi

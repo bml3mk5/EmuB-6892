@@ -1032,9 +1032,11 @@ bool VIA::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return debug_write_reg(num, data);
 }
 
-void VIA::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void VIA::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
+	UTILITY::tcscpy(buffer, buffer_len, _T("MCS6522/MOS6522 ("));
+	UTILITY::tcscat(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], drb);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], dra);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], ddrb);

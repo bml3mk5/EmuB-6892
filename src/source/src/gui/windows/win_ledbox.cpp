@@ -13,6 +13,7 @@
 
 #include "win_ledbox.h"
 #include <windowsx.h>
+#include "../../config.h"
 
 //
 // for windows
@@ -33,6 +34,8 @@ LedBox::LedBox() : LedBoxBase()
 
 LedBox::~LedBox()
 {
+	release_d2d_surface();
+
 #if defined(USE_SDL) || defined(USE_SDL2) || defined(USE_WX)
 	if (hSufDC) ::DeleteDC(hSufDC);
 	if (hSufBmp) ::DeleteObject(hSufBmp);
@@ -50,6 +53,10 @@ void LedBox::show_dialog()
 	if (hLedBox) {
 		ShowWindow(hLedBox, (visible && !inside) ? SW_SHOWNORMAL : SW_HIDE);
 		PostMessage(hParent, WM_ACTIVATE, WA_ACTIVE, 0);
+
+		if (mD2DRender.GetRender() && (visible && !inside)) {
+			need_update_dialog();
+		}
 	}
 }
 
@@ -58,12 +65,13 @@ void LedBox::CreateDialogBox()
 	if (!enable) return;
 
 	hLedBox = CreateDialogParam(hInstance, MAKEINTRESOURCE(IDD_KBLEDBOX), hParent, LedBoxProc, (LPARAM)this);
+
+	create_d2d_surface();
 }
 
 INT_PTR CALLBACK LedBox::LedBoxProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
-	HWND hDCtl;
 	static POINT pStart;
 	LedBox *myObj;
 
@@ -88,8 +96,8 @@ INT_PTR CALLBACK LedBox::LedBoxProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 		}
 		return (INT_PTR)FALSE;
 	case WM_LBUTTONUP:
-		hDCtl = GetParent(hDlg);
-		SetActiveWindow(hDCtl);
+		myObj = (LedBox *)GetWindowLongPtr(hDlg, DWLP_USER);
+		myObj->activate_parent_window(hDlg);
 		return (INT_PTR)FALSE;
 #endif
 	case WM_COMMAND:
@@ -102,8 +110,8 @@ INT_PTR CALLBACK LedBox::LedBoxProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 #endif
 	case WM_ACTIVATE:
 		if (LOWORD(wParam) == WA_ACTIVE) {
-			hDCtl = GetParent(hDlg);
-			SetActiveWindow(hDCtl);
+			myObj = (LedBox *)GetWindowLongPtr(hDlg, DWLP_USER);
+			myObj->activate_parent_window(hDlg);
 		}
 		return (INT_PTR)FALSE;
 	case WM_PAINT:
@@ -123,8 +131,8 @@ INT_PTR CALLBACK LedBox::LedBoxProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 
 void LedBox::Move()
 {
-	WINDOWINFO wi;
-	WINDOWINFO wid;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
+	WINDOWINFO wid = { sizeof(WINDOWINFO) };
 
 	if (hLedBox) {
 		GetWindowInfo(hParent, &wi);
@@ -132,15 +140,18 @@ void LedBox::Move()
 		int x = wi.rcWindow.left + dist.x;
 		int y = wi.rcWindow.top + dist.y;
 		SetWindowPos(hLedBox, HWND_TOPMOST, x, y, 1, 1, SWP_NOSIZE | SWP_NOZORDER);
+		if (mD2DRender.GetRender()) {
+			draw_d2d_render();
+		}
 	}
 }
 
 /// param[in] place : bit0:1=right  bit1:1=bottom  bit4:1=fullscreen
 void LedBox::move_in_place(int place)
 {
-//	WINDOWINFO wt;
-	WINDOWINFO wi;
-	WINDOWINFO wid;
+//	WINDOWINFO wt = { sizeof(WINDOWINFO) };
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
+	WINDOWINFO wid = { sizeof(WINDOWINFO) };
 
 	if (hLedBox) {
 //		HWND hRoot = GetDesktopWindow();
@@ -172,8 +183,8 @@ void LedBox::move_in_place(int place)
 #ifdef NO_TITLEBAR
 void LedBox::mouse_move(HWND hDlg, const POINT &pStart, const LPARAM &lParam)
 {
-	WINDOWINFO wi;
-	WINDOWINFO wid;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
+	WINDOWINFO wid = { sizeof(WINDOWINFO) };
 
 	GetWindowInfo(hParent, &wi);
 	GetWindowInfo(hDlg, &wid);
@@ -182,14 +193,17 @@ void LedBox::mouse_move(HWND hDlg, const POINT &pStart, const LPARAM &lParam)
 	dist.x = wid.rcWindow.left - wi.rcWindow.left;
 	dist.y = wid.rcWindow.top - wi.rcWindow.top;
 	SetWindowPos(hDlg, HWND_TOPMOST, x, y, 1, 1, SWP_NOSIZE | SWP_NOZORDER);
+	if (mD2DRender.GetRender()) {
+		draw_d2d_render();
+	}
 }
 #endif
 
 #ifndef NO_TITLEBAR
 void LedBox::set_dist(HWND hDlg)
 {
-	WINDOWINFO wi;
-	WINDOWINFO wid;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
+	WINDOWINFO wid = { sizeof(WINDOWINFO) };
 
 	GetWindowInfo(hParent, &wi);
 	GetWindowInfo(hDlg, &wid);
@@ -200,7 +214,7 @@ void LedBox::set_dist(HWND hDlg)
 
 void LedBox::adjust_dialog_size(HWND hDlg)
 {
-	WINDOWINFO wi;
+	WINDOWINFO wi = { sizeof(WINDOWINFO) };
 	GetWindowInfo(hDlg, &wi);
 	int width = parent_pt.w + wi.rcWindow.right - wi.rcWindow.left - wi.rcClient.right + wi.rcClient.left;
 	int height = parent_pt.h + wi.rcWindow.bottom - wi.rcWindow.top - wi.rcClient.bottom + wi.rcClient.top;
@@ -221,21 +235,70 @@ void LedBox::adjust_dialog_size(HWND hDlg)
 #endif
 }
 
+void LedBox::activate_parent_window(HWND hDlg)
+{
+	HWND hDCtl = GetParent(hDlg);
+	SetActiveWindow(hDCtl);
+	if (mD2DRender.GetRender()) {
+		draw_d2d_render();
+	}
+}
+
 void LedBox::need_update_dialog()
 {
 	if (hLedBox) {
-		::InvalidateRect(hLedBox, NULL, TRUE);
-		::UpdateWindow(hLedBox);
+		if (mD2DRender.GetRender()) {
+			draw_d2d_render();
+		} else {
+			::InvalidateRect(hLedBox, NULL, TRUE);
+			::UpdateWindow(hLedBox);
+		}
 	}
 }
 
 void LedBox::update_dialog(HDC hdc)
 {
+	if (mD2DRender.GetRender()) {
+		draw_d2d_render();
+	} else {
 #if defined(USE_WIN)
-	::BitBlt(hdc, 0, 0, parent_pt.w, parent_pt.h, hMainDC, 0, 0, SRCCOPY);
+		::BitBlt(hdc, 0, 0, parent_pt.w, parent_pt.h, hMainDC, 0, 0, SRCCOPY);
 #elif defined(USE_SDL) || defined(USE_SDL2) || defined(USE_WX)
-	::SetDIBits(hdc, hSufBmp, 0, Height(), GetBuffer(), &bmiSuf, DIB_RGB_COLORS);
-	::BitBlt(hdc, 0, 0, parent_pt.w, parent_pt.h, hSufDC, 0, 0, SRCCOPY);
+		::SetDIBits(hdc, hSufBmp, 0, Height(), GetBuffer(), &bmiSuf, DIB_RGB_COLORS);
+		::BitBlt(hdc, 0, 0, parent_pt.w, parent_pt.h, hSufDC, 0, 0, SRCCOPY);
+#endif
+	}
+}
+
+bool LedBox::create_d2d_surface()
+{
+	if (!hLedBox) return true;
+
+#ifdef USE_DIRECT2D
+	gD2DFactory.CreateFactory();
+	mD2DRender.CreateRender(gD2DFactory, hLedBox, parent_pt.w, parent_pt.h, 0);
+	mD2DSurface.CreateSurface(mD2DRender, parent_pt.w, parent_pt.h);
+#endif
+	return true;
+}
+
+void LedBox::release_d2d_surface()
+{
+#ifdef USE_DIRECT2D
+	mD2DSurface.ReleaseSurface();
+	mD2DRender.ReleaseRender();
+	gD2DFactory.ReleaseFactory();
+#endif
+}
+
+void LedBox::draw_d2d_render()
+{
+#ifdef USE_DIRECT2D
+	mD2DSurface.Copy(*this);
+	mD2DRender.BeginDraw();
+	mD2DRender.FlipVertical();
+	mD2DRender.DrawBitmap(mD2DSurface);
+	mD2DRender.EndDraw();
 #endif
 }
 

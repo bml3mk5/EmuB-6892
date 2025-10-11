@@ -146,7 +146,6 @@ void CNchar::GetN(char *dst_str, int dst_len) const
 }
 /// @brief 文字列をセット(変換あり)
 /// @param[in] src_str ワイド文字
-/// @return true / false
 void CNchar::SetW(const wchar_t *src_str)
 {
 	int src_len = (int)wcslen(src_str);
@@ -283,7 +282,6 @@ void CWchar::term()
 
 /// @brief 文字列をセット(変換あり)
 /// @param[in] src_str 値
-/// @return true / false
 CWchar::CWchar(const char *src_str)
 {
 	init();
@@ -292,7 +290,6 @@ CWchar::CWchar(const char *src_str)
 /// @brief 文字列をセット(変換あり)
 /// @param[in] src_str 値
 /// @param[in] src_len 長さ
-/// @return true / false
 CWchar::CWchar(const char *src_str, int src_len)
 {
 	init();
@@ -300,7 +297,6 @@ CWchar::CWchar(const char *src_str, int src_len)
 }
 /// @brief 文字列をセット
 /// @param[in] src_str 値
-/// @return true / false
 void CWchar::Set(const wchar_t *src_str)
 {
 	CCharTemp<wchar_t>::Set(src_str, src_str ? (int)wcslen(src_str) : 0);
@@ -322,7 +318,6 @@ void CWchar::GetW(wchar_t *dst_str, int dst_len) const
 
 /// @brief 文字列をセット(変換あり)
 /// @param[in] src_str 値
-/// @return true / false
 void CWchar::SetN(const char *src_str)
 {
 	int src_len = (int)strlen(src_str);
@@ -331,7 +326,6 @@ void CWchar::SetN(const char *src_str)
 /// @brief 文字列をセット(変換あり)
 /// @param[in] src_str 値
 /// @param[in] src_len 長さ
-/// @return true / false
 void CWchar::SetN(const char *src_str, int src_len)
 {
 	CWchar buf(src_len);

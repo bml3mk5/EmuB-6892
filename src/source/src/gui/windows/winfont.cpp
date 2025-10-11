@@ -12,12 +12,13 @@
 #include "../../common.h"
 #include "../../cchar.h"
 #include "../../utility.h"
+#include "../../osd/windows/win_apiex.h"
 
 CFont::CFont()
 {
 	memset(&m_lf, 0, sizeof(LOGFONT));
 	hFont = NULL;
-	set_default_font();
+	set_default_font(NULL);
 	SetFontColor(0xffffffff);
 }
 
@@ -28,19 +29,18 @@ CFont::~CFont()
 
 /// @brief デフォルトフォントの設定
 /// @param [in] hWnd
-/// @param [in] font_name フォントファミリ名
-/// @param [in] font_size フォントサイズ
 /// @param [in] font_color フォントの色
-void CFont::SetDefaultFont(HWND hWnd, const _TCHAR *font_name, double font_size, COLORREF font_color)
+void CFont::SetDefaultFont(HWND hWnd, COLORREF font_color)
 {
-	set_default_font();
+	set_default_font(hWnd);
 	SetFontColor(font_color);
 }
 
 /// @brief デフォルトフォントの設定
-void CFont::set_default_font()
+void CFont::set_default_font(HWND hWnd)
 {
 	GetLogFontOnNonClientArea();
+	recalc_font_height(hWnd);
 	if (hFont != NULL) DeleteObject(hFont);
 	hFont = CreateFontIndirect(&m_lf);
 }
@@ -79,10 +79,10 @@ void CFont::SetLogFont(const LOGFONT *plf)
 }
 
 /// @brief 論理フォントの設定
-/// @param [in] hWnd
+/// @param [in] hWnd      ウィンドウ
 /// @param [in] font_name フォントファミリ名
 /// @param [in] font_size フォントサイズ
-/// @param [in] weight フォントの太さ
+/// @param [in] weight    フォントの太さ
 void CFont::SetLogFont(HWND hWnd, const _TCHAR *font_name, double font_size, LONG weight)
 {
 	if (font_name != NULL) {
@@ -101,8 +101,13 @@ void CFont::SetLogFont(HWND hWnd, const _TCHAR *font_name, double font_size, LON
 		m_lf.lfQuality = DEFAULT_QUALITY;				// 出力品質
 		m_lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;	// ピッチとファミリ
 	}
-	if (weight >= 0) m_lf.lfWeight = weight;				// フォントの太さ
-	if (font_size >= 0.0) m_lf.lfHeight = CalcHeightFromPoint(hWnd, font_size);	// 文字セルまたは文字の高さ
+	if (weight >= 0) {
+		m_lf.lfWeight = weight;						// フォントの太さ
+	}
+	if (font_size >= 0.0) {
+		m_lf.lfHeight = CalcHeightFromPoint(hWnd, font_size);	// 文字セルまたは文字の高さ
+	}
+	mDpi = (int)WIN_API_EX::GetDpiForWindow(hWnd);	// このウィンドウのDPI
 }
 
 /// @brief フォント名を取得
@@ -163,6 +168,12 @@ void CFont::GetLogFontOnNonClientArea()
 #endif
 	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
 	m_lf = ncm.lfMessageFont;
+
+	HDC hdc = GetDC(NULL);
+	// ディスプレイのデフォルトDPI
+	mDpi = GetDeviceCaps(hdc, LOGPIXELSY);
+	if (mDpi <= 0) mDpi = USER_DEFAULT_SCREEN_DPI;
+	ReleaseDC(NULL, hdc);
 }
 
 /// @brief 指定画面のフォントの幅と高さを得る
@@ -175,25 +186,44 @@ void CFont::GetFontSizeOnDC(HWND hWnd, SIZE *size)
 	ReleaseDC(hWnd, hdc);
 }
 
+/// @brief フォントサイズを再計算する
+void CFont::RecalcFontSize(HWND hWnd)
+{
+	recalc_font_height(hWnd);
+	if (hFont != NULL) DeleteObject(hFont);
+	hFont = CreateFontIndirect(&m_lf);
+}
+
+/// @brief フォントの高さを再計算する
+void CFont::recalc_font_height(HWND hWnd)
+{
+	// 指定したウィンドウのDPI
+	int windpi = (int)WIN_API_EX::GetDpiForWindow(hWnd);
+	m_lf.lfHeight = m_lf.lfHeight * (LONG)windpi / (LONG)mDpi;
+	mDpi = windpi;
+}
+
 /// @brief ポイントサイズから高さを計算
 LONG CFont::CalcHeightFromPoint(HWND hWnd, double font_size)
 {
-	HDC hdc = GetDC(hWnd);
-	int logdpiy = GetDeviceCaps(hdc, LOGPIXELSY);
-	if (logdpiy == 0) logdpiy = 96;
+//	HDC hdc = GetDC(hWnd);
+//	int logdpiy = GetDeviceCaps(hdc, LOGPIXELSY);
+//	if (logdpiy == 0) logdpiy = 96;
+//	ReleaseDC(hWnd, hdc);
+	int logdpiy = (int)WIN_API_EX::GetDpiForWindow(hWnd);
 	LONG nHeight = (LONG)(font_size * logdpiy / -72.0);
-	ReleaseDC(hWnd, hdc);
 	return nHeight;
 }
 
 /// @brief 高さからポイントサイズを計算
 double CFont::CalcPointFromHeight(HWND hWnd, LONG height)
 {
-	HDC hdc = GetDC(hWnd);
-	int logdpiy = GetDeviceCaps(hdc, LOGPIXELSY);
-	if (logdpiy == 0) logdpiy = 96;
+//	HDC hdc = GetDC(hWnd);
+//	int logdpiy = GetDeviceCaps(hdc, LOGPIXELSY);
+//	if (logdpiy == 0) logdpiy = 96;
+//	ReleaseDC(hWnd, hdc);
+	int logdpiy = (int)WIN_API_EX::GetDpiForWindow(hWnd);
 	double dSize = (double)height * -72.0 / logdpiy;
-	ReleaseDC(hWnd, hdc);
 	return dSize;
 }
 

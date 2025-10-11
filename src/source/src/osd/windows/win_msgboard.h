@@ -17,6 +17,7 @@
 #include "win_csurface.h"
 #include "win_ccolor.h"
 #include "win_d3d.h"
+#include "win_d2d.h"
 #include "../../gui/windows/winfont.h"
 #include "../../cmutex.h"
 #include "../../msgs.h"
@@ -59,6 +60,8 @@ private:
 	msg_data_t msg;
 	msg_data_t info;
 
+	CD2DSurface d2d_surface;
+
 #ifdef USE_SCREEN_D3D_TEXTURE
 	CD3DTexture tex_msg;
 	CD3DTexture tex_info;
@@ -71,8 +74,10 @@ private:
 
 	// 文字列出力
 	void draw(HDC hdc, msg_data_t &data);
-	void draw(LPDIRECT3DSURFACE9 suf, msg_data_t &data);
-	void draw(PDIRECT3DDEVICE9 device, msg_data_t &data, CD3DTexture &tex);
+	void draw(CD3DSurface &suf, msg_data_t &data);
+	void draw(CD3DDevice &device, msg_data_t &data, CD3DTexture &tex);
+	void draw(CD2DRender &render, msg_data_t &data);
+	void draw(CD2DBitmapRender &render, msg_data_t &data);
 	// 文字列をバックバッファに描画
 	void draw_text(msg_data_t &data);
 	void draw_text(HDC hdc, msg_data_t &data, int left, int top);
@@ -80,11 +85,11 @@ private:
 	void count_down(msg_data_t &data);
 
 public:
-	MsgBoard(HWND, EMU *);
+	MsgBoard(EMU *);
 	~MsgBoard();
 
 	// 初期化
-	void InitScreen(int width, int height);
+	void InitScreen(HWND hWnd, int width, int height);
 
 	// 表示
 	void SetVisible(bool val) {
@@ -124,15 +129,21 @@ public:
 
 	// 文字列出力
 	void Draw(HDC hdc);
-	void Draw(LPDIRECT3DSURFACE9 suf);
-	void Draw(PDIRECT3DDEVICE9 device);
+	void Draw(CD3DSurface &suf);
+	void Draw(CD3DDevice &device);
+	void Draw(CD2DRender &render);
+	void Draw(CD2DBitmapRender &render);
+
+	// サーフェース作成
+	HRESULT CreateD2DSurface(CD2DFactory &D2DFactory, CD2DRender &D2DRender);
+	void ReleaseD2DSurface();
 
 	// テクスチャ作成
-	HRESULT CreateTexture(PDIRECT3DDEVICE9 device);
+	HRESULT CreateTexture(CD3DDevice &device);
 	void ReleaseTexture();
 
 	// フォント取得
-	bool SetFont();
+	bool SetFont(HWND hWnd = NULL, bool outlog = true);
 	CFont *GetMsgFont() { return msg.font; }
 	CFont *GetInfoFont() { return info.font; }
 };

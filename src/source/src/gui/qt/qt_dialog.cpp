@@ -27,6 +27,10 @@ int MyTabWidget::addTab(QWidget *page, CMsg::Id labelid)
 	const char *label = CMSGV(labelid);
 	return QTabWidget::addTab(page, label);
 }
+int MyTabWidget::addTab(QWidget *page, const _TCHAR *label)
+{
+	return QTabWidget::addTab(page, QString(label));
+}
 
 //
 //

@@ -31,6 +31,8 @@ LedBoxBase::LedBoxBase() : CSurface()
 	dist_set[1].x = 2; dist_set[1].y = 2;
 	memset(&win_pt, 0, sizeof(win_pt));
 	memset(&parent_pt, 0, sizeof(parent_pt));
+	memset(&win_rec_pt, 0, sizeof(win_rec_pt));
+	memset(&parent_rec_pt, 0, sizeof(parent_rec_pt));
 
 	visible = false;
 	inside = false;
@@ -53,6 +55,8 @@ bool LedBoxBase::InitScreen()
 
 	parent_pt.w = led[LED_TYPE_BASE]->Width();
 	parent_pt.h = led[LED_TYPE_BASE]->Height();
+	parent_rec_pt.w = parent_pt.w;
+	parent_rec_pt.h = parent_pt.h;
 #ifdef USE_PERFORMANCE_METER
 	if (pConfig->show_pmeter) {
 		parent_pt.w += 108;
@@ -379,7 +383,7 @@ void LedBoxBase::SetPos(int left, int top, int right, int bottom, int place)
 	}
 
 #ifdef USE_SCREEN_D3D_TEXTURE
-	texture.SetD3DTexturePosition(parent_pt);
+	d3dtexture.SetD3DTexturePosition(parent_pt);
 #endif
 
 	move_in_place(place);
@@ -390,6 +394,30 @@ void LedBoxBase::SetPos(int left, int top, int right, int bottom, int place)
 void LedBoxBase::SetPos(int place)
 {
 	SetPos(win_pt.left, win_pt.top, win_pt.right, win_pt.bottom, place);
+	SetPosForRec(win_rec_pt.left, win_rec_pt.top, win_rec_pt.right, win_rec_pt.bottom);
+}
+
+void LedBoxBase::SetPosForRec(int left, int top, int right, int bottom)
+{
+	win_rec_pt.left = left;
+	win_rec_pt.top = top;
+	win_rec_pt.right = right;
+	win_rec_pt.bottom = bottom;
+
+	if (win_pt.place & 1) {
+		// base right
+		parent_rec_pt.x = right - parent_pt.w;
+	} else {
+		// base left
+		parent_rec_pt.x = left;
+	}
+	if (win_pt.place & 2) {
+		// base bottom
+		parent_rec_pt.y = bottom - parent_pt.h;
+	} else {
+		// base top
+		parent_rec_pt.y = top;
+	}
 }
 
 void LedBoxBase::Draw(HDC hdc)
@@ -400,30 +428,70 @@ void LedBoxBase::Draw(HDC hdc)
 	BitBlt(hdc, parent_pt.x, parent_pt.y, parent_pt.w, parent_pt.h, hMainDC, 0, 0, SRCCOPY);
 }
 
-void LedBoxBase::Draw(LPDIRECT3DSURFACE9 suf)
+void LedBoxBase::Draw(CD3DSurface &suf)
 {
-	if (!visible || !inside || !enable || !suf) return;
+#ifdef USE_DIRECT3D
+	if (!visible || !inside || !enable) return;
 
 	HDC hdc;
-	HRESULT hre = suf->GetDC(&hdc);
+	HRESULT hre = suf.GetDC(&hdc);
 	if (hre == D3D_OK) {
 		// copy to main context
 		BitBlt(hdc, parent_pt.x, parent_pt.y, parent_pt.w, parent_pt.h, hMainDC, 0, 0, SRCCOPY);
 	}
-	suf->ReleaseDC(hdc);
+	suf.ReleaseDC(hdc);
+#endif
 }
 
-bool LedBoxBase::Draw(PDIRECT3DDEVICE9 device)
+bool LedBoxBase::Draw(CD3DDevice &device)
 {
-#ifdef USE_SCREEN_D3D_TEXTURE
-	if (!visible || !inside || !enable || !device) return false;
+#if defined(USE_DIRECT3D) && defined(USE_SCREEN_D3D_TEXTURE)
+	if (!visible || !inside || !enable) return false;
 
-	texture.CopyD3DTextureFrom(this);
+	d3dtexture.CopyD3DTextureFrom(this);
 
-	return texture.DrawD3DTexture(device) == D3D_OK;
+	return d3dtexture.DrawD3DTexture(device) == D3D_OK;
 #else
 	return false;
 #endif
+}
+
+void LedBoxBase::Draw(CD2DRender &render)
+{
+#ifdef USE_DIRECT2D
+	if (!visible || !inside || !enable) return;
+
+	// copy to main context
+	d2dsurface.Copy(*this);
+	VmRectWH srcRect;
+	RECT_IN(srcRect, 0, 0, parent_pt.w, parent_pt.h);
+	VmRectWH dstRect;
+	RECT_IN(dstRect, parent_pt.x, win_pt.bottom - parent_pt.y - parent_pt.h, parent_pt.w, parent_pt.h);
+	render.DrawBitmap(d2dsurface, dstRect, srcRect);
+#endif /* USE_DIRECT2D */
+}
+
+void LedBoxBase::Draw(CD2DBitmapRender &render)
+{
+#ifdef USE_DIRECT2D
+	if (!visible || !inside || !enable) return;
+
+	// copy to main context
+	d2dsurface.Copy(*this);
+	VmRectWH srcRect;
+	RECT_IN(srcRect, 0, 0, parent_pt.w, parent_pt.h);
+	VmRectWH dstRect;
+	RECT_IN(dstRect, parent_pt.x, win_pt.bottom - parent_pt.y - parent_pt.h, parent_pt.w, parent_pt.h);
+	render.DrawBitmap(d2dsurface, dstRect, srcRect);
+#endif /* USE_DIRECT2D */
+}
+
+void LedBoxBase::DrawForRec(HDC hdc)
+{
+	if (!visible || !inside || !enable) return;
+
+	// copy to main context
+	BitBlt(hdc, parent_rec_pt.x, parent_rec_pt.y, parent_pt.w, parent_pt.h, hMainDC, 0, 0, SRCCOPY);
 }
 
 void LedBoxBase::SetMode(int val)
@@ -460,10 +528,20 @@ void LedBoxBase::GetDistance(VmPoint *ndist)
 	ndist[1].y = dist_set[1].y;
 }
 
-HRESULT LedBoxBase::CreateTexture(PDIRECT3DDEVICE9 pD3Device)
+HRESULT LedBoxBase::CreateD2DSurface(CD2DRender &D2DRender)
+{
+	return d2dsurface.CreateSurface(D2DRender, parent_pt.w, parent_pt.h);
+}
+
+void LedBoxBase::ReleaseD2DSurface()
+{
+	d2dsurface.ReleaseSurface();
+}
+
+HRESULT LedBoxBase::CreateTexture(CD3DDevice &D3DDevice)
 {
 #ifdef USE_SCREEN_D3D_TEXTURE
-	return texture.CreateD3DTexture(pD3Device, parent_pt.w, parent_pt.h);
+	return d3dtexture.CreateD3DTexture(D3DDevice, parent_pt.w, parent_pt.h);
 #else
 	return E_FAIL;
 #endif
@@ -472,6 +550,6 @@ HRESULT LedBoxBase::CreateTexture(PDIRECT3DDEVICE9 pD3Device)
 void LedBoxBase::ReleaseTexture()
 {
 #ifdef USE_SCREEN_D3D_TEXTURE
-	texture.ReleaseD3DTexture();
+	d3dtexture.ReleaseD3DTexture();
 #endif
 }

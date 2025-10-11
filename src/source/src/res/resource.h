@@ -217,21 +217,27 @@
 #define ID_SCREEN_PIXEL_ASPECT0         21066	// [original]
 #define ID_SCREEN_PIXEL_ASPECT1         21067	// [original]
 #define ID_SCREEN_PIXEL_ASPECT2         21068	// [original]
-#define ID_SCREEN_PIXEL_ASPECT_A        21069	// [original]
-#define ID_SCREEN_D3D_SYNC				21070	// [original]
-#define ID_SCREEN_D3D_ASYNC				21071	// [original]
-#define ID_SCREEN_D3D_A    				21072	// [original]
-#define ID_SCREEN_D3D_FILTER0			21073	// [original]
-#define ID_SCREEN_D3D_FILTER1			21074	// [original]
-#define ID_SCREEN_D3D_FILTER2			21075	// [original]
-#define ID_SCREEN_D3D_FILTER_A			21076	// [original]
-#define ID_SCREEN_OPENGL_SYNC			21077	// [original]
-#define ID_SCREEN_OPENGL_ASYNC			21078	// [original]
-#define ID_SCREEN_OPENGL_A    			21079	// [original]
-#define ID_SCREEN_OPENGL_FILTER0		21080	// [original]
-#define ID_SCREEN_OPENGL_FILTER1		21081	// [original]
-#define ID_SCREEN_OPENGL_FILTER2		21082	// [original]
-#define ID_SCREEN_OPENGL_FILTER_A		21083	// [original]
+#define ID_SCREEN_PIXEL_ASPECT3         21069	// [original]
+#define ID_SCREEN_PIXEL_ASPECT4         21070	// [original]
+#define ID_SCREEN_PIXEL_ASPECT_A        21071	// [original]
+#define ID_SCREEN_DEFAULT_DRAW_S		21072	// [original]
+#define ID_SCREEN_DEFAULT_DRAW_AS		21073	// [original]
+#define ID_SCREEN_DEFAULT_DRAW_SDB		21074	// [original]
+#define ID_SCREEN_DEFAULT_DRAW_ASDB		21075	// [original]
+#define ID_SCREEN_D2D_SYNC				21076	// [original]
+#define ID_SCREEN_D2D_ASYNC				21077	// [original]
+#define ID_SCREEN_D2D_SYNC_DB			21078	// [original]
+#define ID_SCREEN_D2D_ASYNC_DB			21079	// [original]
+#define ID_SCREEN_D3D_SYNC				21080	// [original]
+#define ID_SCREEN_D3D_ASYNC				21081	// [original]
+#define ID_SCREEN_OPENGL_SYNC			21082	// [original]
+#define ID_SCREEN_OPENGL_ASYNC			21083	// [original]
+#define ID_SCREEN_DRAWING_METHOD_A 		21084	// [original]
+
+#define ID_SCREEN_FILTER0               21086	// [original]
+#define ID_SCREEN_FILTER1               21087	// [original]
+#define ID_SCREEN_FILTER2               21088	// [original]
+#define ID_SCREEN_FILTER_A              21089	// [original]
 
 #define ID_SCREEN_VFRAME                21093	// [original]
 #define ID_SCREEN_FPS60                 21094	// [original]
@@ -276,55 +282,64 @@
 #define ID_OPTIONS_KEYBIND              21142
 #define ID_OPTIONS_JOYPAD0              21143
 #define ID_OPTIONS_JOYPAD1              21144
-#define ID_OPTIONS_JOYPAD_A             21145
-#define ID_OPTIONS_LIGHTPEN             21146
-#define ID_OPTIONS_MOUSE                21147
-#define ID_OPTIONS_VKEYBOARD            21148
-#define ID_OPTIONS_USE_DINPUT           21149
-#define ID_OPTIONS_LOOSEN_KEY           21150
-#define ID_OPTIONS_KEY2JOYPAD           21151
-#define ID_OPTIONS_JOYSETTING           21152
-#define ID_OPTIONS_PMETER				21153
-#define ID_OPTIONS_LOGGING              21154
+#define ID_OPTIONS_JOYPAD2              21145
+#define ID_OPTIONS_JOYPAD_A             21146
+#define ID_OPTIONS_LIGHTPEN             21147
+#define ID_OPTIONS_MOUSE                21148
+#define ID_OPTIONS_VKEYBOARD            21149
+#define ID_OPTIONS_USE_DINPUT           21150
+#define ID_OPTIONS_LOOSEN_KEY           21151
+#define ID_OPTIONS_KEY2JOYPAD0          21152
+#define ID_OPTIONS_KEY2JOYPAD1          21153
+#define ID_OPTIONS_KEY2JOYPAD2          21154
+#define ID_OPTIONS_JOYSETTING           21155
+#define ID_OPTIONS_PMETER				21156
+#define ID_OPTIONS_LOGGING              21157
 
-#define ID_PRINTER0_SAVE                21156
-#define ID_PRINTER0_PRINT               21157
-#define ID_PRINTER0_CLEAR               21158
-#define ID_PRINTER0_DIRECT              21159
-#define ID_PRINTER0_ONLINE              21160
-#define ID_PRINTER1_SAVE                21161
-#define ID_PRINTER1_PRINT               21162
-#define ID_PRINTER1_CLEAR               21163
-#define ID_PRINTER1_DIRECT              21164
-#define ID_PRINTER1_ONLINE              21165
-#define ID_PRINTER2_SAVE                21166
-#define ID_PRINTER2_PRINT               21167
-#define ID_PRINTER2_CLEAR               21168
-#define ID_PRINTER2_DIRECT              21169
-#define ID_PRINTER2_ONLINE              21170
+#define ID_PRINTER0_SAVE                21170
+#define ID_PRINTER0_PRINT               21171
+#define ID_PRINTER0_CLEAR               21172
+#define ID_PRINTER0_DIRECT              21173
+#define ID_PRINTER0_ONLINE              21174
+#define ID_PRINTER1_SAVE                21175
+#define ID_PRINTER1_PRINT               21176
+#define ID_PRINTER1_CLEAR               21177
+#define ID_PRINTER1_DIRECT              21178
+#define ID_PRINTER1_ONLINE              21179
+#define ID_PRINTER2_SAVE                21180
+#define ID_PRINTER2_PRINT               21181
+#define ID_PRINTER2_CLEAR               21182
+#define ID_PRINTER2_DIRECT              21183
+#define ID_PRINTER2_ONLINE              21184
 
-#define ID_COMM0_SERVER                 21171
-#define ID_COMM0_CONNECT                21172
-#define ID_COMM0_THROUGH                21173
-#define ID_COMM0_WILLECHO               21174
-#define ID_COMM0_BINARY                 21175
-#define ID_COMM1_SERVER                 21176
-#define ID_COMM1_CONNECT                21177
-#define ID_COMM1_THROUGH                21178
-#define ID_COMM1_WILLECHO               21179
-#define ID_COMM1_BINARY                 21180
+#define ID_COMM0_SERVER                 21190
+#define ID_COMM0_CONNECT                21191
+#define ID_COMM0_THROUGH                21192
+#define ID_COMM0_WILLECHO               21193
+#define ID_COMM0_BINARY                 21194
+#define ID_COMM1_SERVER                 21195
+#define ID_COMM1_CONNECT                21196
+#define ID_COMM1_THROUGH                21197
+#define ID_COMM1_WILLECHO               21198
+#define ID_COMM1_BINARY                 21199
 
-#define ID_COMM0_PORT1                  21181
-#define ID_COMM0_PORT_BOTTOM            21190
-#define ID_COMM1_PORT1                  21191
-#define ID_COMM1_PORT_BOTTOM            21200
+#define ID_COMM0_PORT1                  21201
+#define ID_COMM0_PORT_BOTTOM            21210
+#define ID_COMM1_PORT1                  21211
+#define ID_COMM1_PORT_BOTTOM            21220
 
-#define ID_SCREEN_FULLSCREEN0_01        21201	// 21201-21220
-#define ID_SCREEN_FULLSCREEN1_01        21221
-#define ID_SCREEN_FULLSCREEN2_01        21241
-#define ID_SCREEN_FULLSCREEN3_01        21261
-#define ID_SCREEN_FULLSCREEN4_01        21281
-#define ID_SCREEN_FULLSCREEN5_01        21301	// 21301-21320
+#define ID_SCREEN_FULLSCREEN0_01        21221	// 21221-21240
+#define ID_SCREEN_FULLSCREEN1_01        21241
+#define ID_SCREEN_FULLSCREEN2_01        21261
+#define ID_SCREEN_FULLSCREEN3_01        21281
+#define ID_SCREEN_FULLSCREEN4_01        21301
+#define ID_SCREEN_FULLSCREEN5_01        21321	// 21321-21340
+
+#define ID_WINDOW_SIZE1                 21951
+#define ID_WINDOW_SIZE2                 21952
+#define ID_WINDOW_SIZE3                 21953
+#define ID_WINDOW_SIZE4                 21954
+#define ID_WINDOW_SIZE5                 21955
 
 #define IDC_STATIC_0                    21960
 #define IDC_STATIC_1                    21961
@@ -960,6 +975,7 @@
 #define IDC_CHK_FDD_MOUNT1                      22030
 #define IDC_CHK_FDD_MOUNT2                      22031
 #define IDC_CHK_FDD_MOUNT3                      22032
+#define IDC_COMBO_POWER_STATE                   22033
 
 #define IDC_CHK_IOPORT1                         22041
 #define IDC_CHK_IOPORT2                         22042
@@ -1004,41 +1020,39 @@
 #define IDC_COMBO_DISPTMG                       22081
 #define IDC_COMBO_CURDISP                       22082
 #define IDC_COMBO_LED_POS                       22083
-#define IDC_COMBO_D3D_FILTER                    22084
-#define IDC_COMBO_OPENGL_FILTER                 22085
-#define IDC_SNAP_PATH                           22086
-#define IDC_FONT_FILE                           22087
-#define IDC_BTN_SNAP_PATH                       22088
-#define IDC_BTN_FONT_FILE                       22089
-#define IDC_HOSTNAME_NET0                       22090
-#define IDC_HOSTNAME_LPT0                       22091
-#define IDC_HOSTNAME_LPT1                       22092
-#define IDC_HOSTNAME_LPT2                       22093
-#define IDC_HOSTNAME_COM0                       22094
-#define IDC_HOSTNAME_COM1                       22095
-#define IDC_HOSTNAME_DBGR                       22096
-#define IDC_PORT_NET0                           22097
-#define IDC_PORT_LPT0                           22098
-#define IDC_PORT_LPT1                           22099
-#define IDC_PORT_LPT2                           22100
-#define IDC_PORT_COM0                           22101
-#define IDC_PORT_COM1                           22102
-#define IDC_PORT_DBGR                           22103
-#define IDC_DELAY_LPT0                          22104
-#define IDC_DELAY_LPT1                          22105
-#define IDC_DELAY_LPT2                          22106
-#define IDC_COMBO_COM0                          22107
-#define IDC_COMBO_COM1                          22108
-#define IDC_COMBO_UART_BAUDRATE                 22109
-#define IDC_COMBO_UART_DATABIT                  22110
-#define IDC_COMBO_UART_PARITY                   22111
-#define IDC_COMBO_UART_STOPBIT                  22112
-#define IDC_COMBO_UART_FLOWCTRL                 22113
+#define IDC_COMBO_SCREEN_FILTER                 22084
+#define IDC_SNAP_PATH                           22085
+#define IDC_FONT_FILE                           22086
+#define IDC_BTN_SNAP_PATH                       22087
+#define IDC_BTN_FONT_FILE                       22088
+#define IDC_HOSTNAME_NET0                       22089
+#define IDC_HOSTNAME_LPT0                       22090
+#define IDC_HOSTNAME_LPT1                       22091
+#define IDC_HOSTNAME_LPT2                       22092
+#define IDC_HOSTNAME_COM0                       22093
+#define IDC_HOSTNAME_COM1                       22094
+#define IDC_HOSTNAME_DBGR                       22095
+#define IDC_PORT_NET0                           22096
+#define IDC_PORT_LPT0                           22097
+#define IDC_PORT_LPT1                           22098
+#define IDC_PORT_LPT2                           22099
+#define IDC_PORT_COM0                           22100
+#define IDC_PORT_COM1                           22101
+#define IDC_PORT_DBGR                           22102
+#define IDC_DELAY_LPT0                          22103
+#define IDC_DELAY_LPT1                          22104
+#define IDC_DELAY_LPT2                          22105
+#define IDC_COMBO_COM0                          22106
+#define IDC_COMBO_COM1                          22107
+#define IDC_COMBO_UART_BAUDRATE                 22108
+#define IDC_COMBO_UART_DATABIT                  22109
+#define IDC_COMBO_UART_PARITY                   22110
+#define IDC_COMBO_UART_STOPBIT                  22111
+#define IDC_COMBO_UART_FLOWCTRL                 22112
 
-#define IDC_ROM_PATH                            22121
-#define IDC_BTN_ROM_PATH                        22122
-#define IDC_COMBO_D3D_USE                       22123
-#define IDC_COMBO_OPENGL_USE                    22124
+#define IDC_ROM_PATH                            22122
+#define IDC_BTN_ROM_PATH                        22123
+#define IDC_COMBO_DRAWING                       22124
 #define IDC_CHK_EXMEM							22125
 #define IDC_COMBO_EXMEM                         22126
 #define IDC_MSG_FONT_NAME_L                     22127
@@ -1071,39 +1085,45 @@
 #define IDC_COMBO_Z80BCARD_IRQ                  22154
 #define IDC_CHK_ADDRERR                         22155
 #define IDC_CHK_CLEAR_CPUREG                    22156
+#define IDC_CHK_DOUBLE_BUFFERING                22157
 #define IDD_KEYBIND                             114
 #define IDC_TAB1                                22001
-#define IDC_CUSTOM0                             22032
-#define IDC_CUSTOM1                             22033
-#define IDC_CUSTOM2                             22034
-#define IDC_CUSTOM3                             22035
-#define IDC_BTN_LOAD_DEFAULT                    22036
-#define IDC_BTN_LOAD_PRESET1                    22037
-#define IDC_BTN_LOAD_PRESET2                    22038
-#define IDC_BTN_LOAD_PRESET3                    22039
-#define IDC_BTN_LOAD_PRESET4                    22040
-#define IDC_BTN_SAVE_PRESET1                    22041
-#define IDC_BTN_SAVE_PRESET2                    22042
-#define IDC_BTN_SAVE_PRESET3                    22043
-#define IDC_BTN_SAVE_PRESET4                    22044
-#define IDC_CHK_COMBI1                          22045
-#define IDC_CHK_COMBI2                          22046
-#define IDC_CHK_COMBI3                          22047
-#define IDC_CHK_AXIS1                           22048
-#define IDC_CHK_AXIS2                           22049
-#define IDC_CHK_AXIS3                           22050
-#define IDC_CHK_AXIS4                           22051
-#define IDC_CHK_AXIS5                           22052
-#define IDC_CHK_AXIS6                           22053
-#define IDC_CHK_AXIS7                           22054
-#define IDC_CHK_AXIS8                           22055
-#define IDC_CHK_AXIS9                           22056
-#define IDC_CHK_AXIS10                          22057
-#define IDC_CHK_AXIS11                          22058
-#define IDC_CHK_AXIS12                          22059
-#define IDC_CHK_PIAJOY_NEGATIVE                 22060
-#define IDC_COMBO_PIAJOY_CONNTO                 22061
-#define IDC_CHK_PIAJOY_NOIRQ                    22062
+#define IDC_CUSTOM0                             22002
+#define IDC_CUSTOM1                             22003
+#define IDC_CUSTOM2                             22004
+#define IDC_CUSTOM3                             22005
+#define IDC_CUSTOM4                             22006
+#define IDC_CUSTOM5                             22007
+#define IDC_CUSTOM6                             22008
+#define IDC_BTN_LOAD_DEFAULT                    22009
+#define IDC_BTN_LOAD_PRESET1                    22010
+#define IDC_BTN_LOAD_PRESET2                    22011
+#define IDC_BTN_LOAD_PRESET3                    22012
+#define IDC_BTN_LOAD_PRESET4                    22013
+#define IDC_BTN_SAVE_PRESET1                    22014
+#define IDC_BTN_SAVE_PRESET2                    22015
+#define IDC_BTN_SAVE_PRESET3                    22016
+#define IDC_BTN_SAVE_PRESET4                    22017
+#define IDC_CHK_COMBI1                          22018
+#define IDC_CHK_COMBI2                          22019
+#define IDC_CHK_COMBI3                          22020
+#define IDC_CHK_AXIS1                           22021
+#define IDC_CHK_AXIS2                           22022
+#define IDC_CHK_AXIS3                           22023
+#define IDC_CHK_AXIS4                           22024
+#define IDC_CHK_AXIS5                           22025
+#define IDC_CHK_AXIS6                           22026
+#define IDC_CHK_AXIS7                           22027
+#define IDC_CHK_AXIS8                           22028
+#define IDC_CHK_AXIS9                           22029
+#define IDC_CHK_AXIS10                          22030
+#define IDC_CHK_AXIS11                          22031
+#define IDC_CHK_AXIS12                          22032
+#define IDC_CHK_PIAJOY_NEGATIVE                 22033
+#define IDC_COMBO_PIAJOY_CONNTO                 22034
+#define IDC_COMBO_PIAJOY_CONNT1                 22035
+#define IDC_CHK_PIAJOY_NOIRQ                    22036
+#define IDC_CHK_PSGJOY_NEGATIVE                 22037
 #define IDD_VOLUME                              115
 #define IDC_SLIDER_VOL1                         22045
 #define IDC_SLIDER_VOL2                         22046

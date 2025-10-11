@@ -21,7 +21,7 @@ namespace GUI_WIN
 {
 
 JoySettingBox::JoySettingBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_JOYSETTING, new_font, new_emu, new_gui)
+	: KeybindBaseBox(hInst, IDD_JOYSETTING, new_emu, new_gui)
 {
 }
 
@@ -39,12 +39,12 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CDialogBox::onInitDialog(message, wParam, lParam);
 
 	// create dialog
-	selected_tabctrl = 0;
+	m_selected_tabctrl = 0;
 
 	SIZE siz;
 	font->GetTextSize(hDlg, NULL, &siz);
 
-	// calcrate number of tabs
+	// calculate number of tabs
 	int max_rows = 6;
 	for(int tab_num=tab_offset; tab_num < KeybindData::JS_TABS_MAX; tab_num++) {
 		hCtrl =	CreateControl(NULL, _T("KeyBindCtrl"), IDC_CUSTOM0 + tab_num - tab_offset, 100, 180, WS_BORDER | WS_VSCROLL, 0, SM_CXVSCROLL);
@@ -53,7 +53,7 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 		kc->Init(emu, tab_num, font->GetFont());
 		kc->SetCellSize(siz.cx * 18 + padding * 2, siz.cy + padding * 2);
 		kc->MapDefaultVmKey();
-		kc->SetJoyMask(&enable_axes);
+		kc->SetJoyMask(&m_joy_mask);
 		kc->Update();
 
 		kc->SetTitleLabel(LABELS::keybind_col[tab_num][0], LABELS::keybind_col[tab_num][1]);
@@ -62,7 +62,7 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 			max_rows = kc->GetNumberOfRows();
 		}
 
-		kbctl.push_back(kc);
+		m_kbctl.push_back(kc);
 	}
 
 	//
@@ -77,7 +77,7 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	sz.cx = 80; sz.cy = 24;
 	int tx = 70;
 
-#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_PSGJOYSTICK) || defined(USE_KEY2JOYSTICK)
 //	CBox *hbox_joy = box_hall->AddBox(CBox::HorizontalBox, 0, margin);
 
 	int val = 0;
@@ -135,12 +135,13 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	tcitm.mask = TCIF_TEXT;
 
-	for(int tab_num=0; tab_num<(int)kbctl.size(); tab_num++) {
-		UTILITY::tcscpy(label, KBLABEL_MAXLEN, CMSGVM(LABELS::joysetting_tab[tab_num]));
+	for(int tab_num=0; tab_num<(int)m_kbctl.size(); tab_num++) {
+//		UTILITY::tcscpy(label, KBLABEL_MAXLEN, CMSGVM(LABELS::joysetting_tab[tab_num]));
+		UTILITY::stprintf(label, KBLABEL_MAXLEN, _T("%d"), tab_num + 1);
 		tcitm.pszText = label;
 		TabCtrl_InsertItem(hTabCtrl , tab_num , &tcitm);
 	}
-	TabCtrl_SetCurSel(hTabCtrl, selected_tabctrl);
+	TabCtrl_SetCurSel(hTabCtrl, m_selected_tabctrl);
 
 	//
 	// adjust control size
@@ -148,27 +149,48 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	// kb control
 	CBox *box_vall0 = NULL;
-	for(int tab_num=0; tab_num<(int)kbctl.size(); tab_num++) {
+	for(int tab_num=0; tab_num<(int)m_kbctl.size(); tab_num++) {
 		CBox *box_v = box_tab->AddBox(CBox::VerticalBox);
 		CBox *box_kb = box_v->AddBox(CBox::VerticalBox);
-		AdjustControl(box_kb, IDC_CUSTOM0 + tab_num, kbctl[tab_num]->GetWidth(), (max_rows + 1) * (siz.cy + padding * 2 + 4), SM_CXVSCROLL);
 
-		kbctl[tab_num]->AddCombiCheckButton(this, box_kb);
+		CreateStatic(box_kb, IDC_STATIC_10 + tab_num, LABELS::joysetting_tab[tab_num]);
 
+		AdjustControl(box_kb, IDC_CUSTOM0 + tab_num, m_kbctl[tab_num]->GetWidth(), (max_rows + 1) * (siz.cy + padding * 2 + 4), SM_CXVSCROLL);
+
+//		kbctl[tab_num]->AddCombiCheckButton(this, box_kb);
+
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+		if (tab_num + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOY) {
+# ifdef USE_JOYSTICKBIT
+			// check button
+			CBox *box_cbtn = box_kb->AddBox(CBox::VerticalBox);
+			CreateCheckBox(box_cbtn, IDC_CHK_PIAJOY_NEGATIVE, CMSGM(Signals_are_negative_logic), FLG_PIAJOY_NEGATIVE != 0);	
+//			CreateCheckBox(box_cbtn, IDC_COMBO_PIAJOY_CONNTO, CMSGM(Connect_to_standard_PIA_A_port), pConfig->piajoy_conn_to != 0);
+			CBox *hbox = box_cbtn->AddBox(CBox::HorizontalBox);
+			CreateStatic(hbox, IDC_STATIC_20, CMsg::Connect_to_);
+			for(int i=0; LABELS::joysetting_opts[i] != CMsg::End; i++) {
+				CreateRadioButton(hbox, IDC_COMBO_PIAJOY_CONNTO + i, LABELS::joysetting_opts[i], (i == 0));
+				CheckDlgButton(hDlg, IDC_COMBO_PIAJOY_CONNTO + i, pConfig->piajoy_conn_to == i);
+			}
+# else
+			CBox *box_cbtn = box_kb->AddBox(CBox::VerticalBox);
+			CreateCheckBox(box_cbtn, IDC_CHK_PIAJOY_NOIRQ, CMSGM(No_interrupt_caused_by_pressing_the_button), FLG_PIAJOY_NOIRQ != 0);	
+# endif
+		}
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+		if (tab_num + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOYB) {
+# ifdef USE_JOYSTICKBIT
+			// check button
+			CBox *box_cbtn = box_kb->AddBox(CBox::VerticalBox);
+			CreateCheckBox(box_cbtn, IDC_CHK_PSGJOY_NEGATIVE, CMSGM(Signals_are_negative_logic), FLG_PSGJOY_NEGATIVE != 0);	
+# endif
+		}
+#endif
 		if (tab_num == 0) {
 			box_vall0 = box_v;
 		}
 	}
-
-#ifdef USE_PIAJOYSTICKBIT
-	// check button
-	CBox *box_cbtn = box_vall0->AddBox(CBox::VerticalBox);
-	CreateCheckBox(box_cbtn, IDC_CHK_PIAJOY_NEGATIVE, CMSGM(Signals_are_negative_logic), FLG_PIAJOY_NEGATIVE != 0);	
-	CreateCheckBox(box_cbtn, IDC_COMBO_PIAJOY_CONNTO, CMSGM(Connect_to_standard_PIA_A_port), pConfig->piajoy_conn_to != 0);	
-#else
-	CBox *box_cbtn = box_vall0->AddBox(CBox::VerticalBox);
-	CreateCheckBox(box_cbtn, IDC_CHK_PIAJOY_NOIRQ, CMSGM(No_interrupt_caused_by_pressing_the_button), FLG_PIAJOY_NOIRQ != 0);	
-#endif
 
 	// buttons
 	CBox *box_hbtn = box_vall0->AddBox(CBox::HorizontalBox);
@@ -184,12 +206,7 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	// joypad
-	enable_axes = ~0;
-	CBox *hbox = box_vall->AddBox(CBox::HorizontalBox);
-	CreateCheckBox(hbox, IDC_CHK_AXIS3, CMsg::Enable_Z_axis, (enable_axes & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0);
-	CreateCheckBox(hbox, IDC_CHK_AXIS4, CMsg::Enable_R_axis, (enable_axes & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0);
-	CreateCheckBox(hbox, IDC_CHK_AXIS5, CMsg::Enable_U_axis, (enable_axes & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0);
-	CreateCheckBox(hbox, IDC_CHK_AXIS6, CMsg::Enable_V_axis, (enable_axes & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0);
+	create_dialog_footer(box_vall);
 
 	// tab control size
 
@@ -206,7 +223,7 @@ INT_PTR JoySettingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	box_all->Realize(*this);
 
-	select_tabctrl(selected_tabctrl);
+	select_tabctrl(m_selected_tabctrl);
 
 	delete box_all;
 
@@ -227,131 +244,11 @@ INT_PTR JoySettingBox::onVScroll(UINT message, WPARAM wParam, LPARAM lParam)
 	return (INT_PTR)TRUE;
 }
 
-INT_PTR JoySettingBox::onCommand(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch(LOWORD(wParam)) {
-	case IDOK:
-	case IDCANCEL:
-		if (LOWORD(wParam) == IDOK) {
-			onClickOk();
-		}
-		::EndDialog(hDlg, LOWORD(wParam));
-		return (INT_PTR)TRUE;
-
-	case IDC_BTN_LOAD_DEFAULT:
-		return onClickLoadDefault();
-
-	case IDC_BTN_LOAD_PRESET1:
-	case IDC_BTN_LOAD_PRESET2:
-	case IDC_BTN_LOAD_PRESET3:
-	case IDC_BTN_LOAD_PRESET4:
-		return onClickLoadPreset(LOWORD(wParam) - IDC_BTN_LOAD_PRESET1);
-
-	case IDC_BTN_SAVE_PRESET1:
-	case IDC_BTN_SAVE_PRESET2:
-	case IDC_BTN_SAVE_PRESET3:
-	case IDC_BTN_SAVE_PRESET4:
-		return onClickSavePreset(LOWORD(wParam) - IDC_BTN_SAVE_PRESET1);
-
-	case IDC_CHK_AXIS1:
-	case IDC_CHK_AXIS2:
-	case IDC_CHK_AXIS3:
-	case IDC_CHK_AXIS4:
-	case IDC_CHK_AXIS5:
-	case IDC_CHK_AXIS6:
-		return onClickAxis(LOWORD(wParam));
-	}
-	return (INT_PTR)FALSE;
-}
-
-INT_PTR JoySettingBox::onNotify(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	// change tab
-	LPNMHDR lpNmHdr = (NMHDR *)lParam;
-	int i;
-	if (lpNmHdr->idFrom == IDC_TAB1) {
-		switch (lpNmHdr->code) {
-		case TCN_SELCHANGE:
-			i = TabCtrl_GetCurSel(lpNmHdr->hwndFrom);
-			select_tabctrl(i);
-			break;
-		}
-	}
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR JoySettingBox::onMouseWheel(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	SendDlgItemMessage(hDlg, IDC_CUSTOM0 + selected_tabctrl, message, wParam, lParam);
-	return (INT_PTR)TRUE;
-}
-
-#if 0
-INT_PTR JoySettingBox::onControlColorStatic(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	HANDLE h = (HANDLE)GetStockObject(NULL_BRUSH);
-	SetBkMode((HDC)wParam, TRANSPARENT);
-	return (INT_PTR)h;
-}
-#endif
-
 INT_PTR JoySettingBox::onClickOk()
 {
-	for(int tab_num=0; tab_num<(int)kbctl.size(); tab_num++) {
-		kbctl[tab_num]->SetData();
-	}
+	KeybindBaseBox::onClickOk();
 
 	SetValue();
-
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR JoySettingBox::onClickLoadDefault()
-{
-	int tab_num = selected_tabctrl;
-
-	kbctl[tab_num]->LoadDefaultPreset();
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR JoySettingBox::onClickLoadPreset(int idx)
-{
-	int tab_num = selected_tabctrl;
-
-	kbctl[tab_num]->LoadPreset(idx);
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR JoySettingBox::onClickSavePreset(int idx)
-{
-	int tab_num = selected_tabctrl;
-
-	kbctl[tab_num]->SavePreset(idx);
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR JoySettingBox::onClickAxis(int id)
-{
-	uint32_t bits = 0;
-
-	switch(id) {
-	case IDC_CHK_AXIS3:
-		bits = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
-		break;
-	case IDC_CHK_AXIS4:
-		bits = (JOYCODE_R_UP | JOYCODE_R_DOWN);
-		break;
-	case IDC_CHK_AXIS5:
-		bits = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
-		break;
-	case IDC_CHK_AXIS6:
-		bits = (JOYCODE_V_UP | JOYCODE_V_DOWN);
-		break;
-	default:
-		break;
-	}
-
-	BIT_ONOFF(enable_axes, bits, (IsDlgButtonChecked(hDlg, id) != 0));
 
 	return (INT_PTR)TRUE;
 }
@@ -360,19 +257,50 @@ void JoySettingBox::select_tabctrl(int tab_num)
 {
 	HWND hCtrl;
 
-	selected_tabctrl = tab_num;
-	for(int i=0; i<(int)kbctl.size(); i++) {
+	m_selected_tabctrl = tab_num;
+	for(int i=0; i<(int)m_kbctl.size(); i++) {
 		hCtrl = GetDlgItem(hDlg, IDC_CUSTOM0 + i);
-		ShowWindow(hCtrl, i == selected_tabctrl ? SW_SHOW : SW_HIDE);
+		ShowWindow(hCtrl, i == m_selected_tabctrl ? SW_SHOW : SW_HIDE);
+		hCtrl = GetDlgItem(hDlg, IDC_STATIC_10 + i);
+		if (hCtrl) {
+			ShowWindow(hCtrl, i == m_selected_tabctrl ? SW_SHOW : SW_HIDE);
+		}
 	}
 
+#ifdef USE_PIAJOYSTICK
+	const int arr0[] = {
+# ifdef USE_JOYSTICKBIT
+		IDC_CHK_PIAJOY_NEGATIVE,
+		IDC_STATIC_20,
+		IDC_COMBO_PIAJOY_CONNTO,
+		IDC_COMBO_PIAJOY_CONNT1,
+# else
+		IDC_CHK_PIAJOY_NOIRQ,
+# endif
+		-1
+	};
+	for(int i=0; arr0[i]>=0; i++) {
+		hCtrl = GetDlgItem(hDlg, arr0[i]);
+		if (hCtrl) {
+			ShowWindow(hCtrl, m_selected_tabctrl + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOY ? SW_SHOW : SW_HIDE);
+		}
+	}
+#endif
+#ifdef USE_PSGJOYSTICK
+# ifdef USE_JOYSTICKBIT
+	hCtrl = GetDlgItem(hDlg, IDC_CHK_PSGJOY_NEGATIVE);
+	if (hCtrl) {
+		ShowWindow(hCtrl, m_selected_tabctrl + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOYB ? SW_SHOW : SW_HIDE);
+	}
+# endif
+#endif
 	for(int id=IDC_CHK_COMBI1; id<=IDC_CHK_COMBI3; id++) {
 		hCtrl = GetDlgItem(hDlg, id);
 		if (hCtrl) {
 			ShowWindow(hCtrl, SW_HIDE);
 		}
 	}
-	hCtrl = kbctl[tab_num]->GetCombiCheckButton();
+	hCtrl = m_kbctl[tab_num]->GetCombiCheckButton();
 	if (hCtrl) {
 		ShowWindow(hCtrl, SW_SHOW);
 	}
@@ -390,22 +318,34 @@ void JoySettingBox::SetValue()
 			int id = IDC_SLIDER_AXIS1 + i * 6 + k;
 			pConfig->joy_axis_threshold[i][k] = 10 - (int)SendDlgItemMessage(hDlg, id, TBM_GETPOS, 0, 0);
 		}
-#ifdef USE_JOYSTICK_TYPE
+# ifdef USE_JOYSTICK_TYPE
 		pConfig->joy_type[i] = (int)::SendDlgItemMessage(hDlg, IDC_COMBO_JOY1 + i, CB_GETCURSEL, 0, 0);
-#endif
+# endif
 	}
 	emu->modify_joy_mashing();
 	emu->modify_joy_threshold();
-#ifdef USE_JOYSTICK_TYPE
+# ifdef USE_JOYSTICK_TYPE
 	// will change joypad type in emu thread
 	emumsg.Send(EMUMSG_ID_MODIFY_JOYTYPE);
-#endif
-#ifdef USE_PIAJOYSTICKBIT
+# endif
+# if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+#  ifdef USE_JOYSTICKBIT
 	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, IsDlgButtonChecked(hDlg, IDC_CHK_PIAJOY_NEGATIVE) != 0);
-	pConfig->piajoy_conn_to = IsDlgButtonChecked(hDlg, IDC_COMBO_PIAJOY_CONNTO) != 0 ? 1 : 0;
-#else
+	for(int i=0; LABELS::joysetting_opts[i] != CMsg::End; i++) {
+		if (IsDlgButtonChecked(hDlg, IDC_COMBO_PIAJOY_CONNTO + i) == BST_CHECKED) {
+			pConfig->piajoy_conn_to = i;
+			break;
+		}
+	}
+#  else
 	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, IsDlgButtonChecked(hDlg, IDC_CHK_PIAJOY_NOIRQ) != 0);	
-#endif
+#  endif
+# endif
+# if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+#  ifdef USE_JOYSTICKBIT
+	BIT_ONOFF(pConfig->misc_flags, MSK_PSGJOY_NEGATIVE, IsDlgButtonChecked(hDlg, IDC_CHK_PSGJOY_NEGATIVE) != 0);
+#  endif
+# endif
 #endif
 }
 

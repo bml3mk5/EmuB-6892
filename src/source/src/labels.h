@@ -1,4 +1,4 @@
-﻿/** @file labels.h
+/** @file labels.h
 
 	Skelton for retropc emulator
 
@@ -12,11 +12,16 @@
 #define LABELS_H
 
 #include "common.h"
+#include "config.h"
 #include "msgs.h"
 
+/// @namespace LABELS
+/// @brief Defines Message List for User Interface
 namespace LABELS {
 
 extern const CMsg::Id tabs[];
+
+extern const CMsg::Id power_state[];
 
 extern const CMsg::Id io_port[];
 extern const uint8_t io_port_pos[];
@@ -32,15 +37,12 @@ extern const _TCHAR *wav_sampling_bits[];
 
 extern const _TCHAR *disp_skew[];
 
-#ifdef USE_DIRECT3D
-extern const CMsg::Id d3d_use[];
-extern const CMsg::Id d3d_filter[];
-#endif
+extern CMsg::Id drawing_method[10];
+extern uint8_t drawing_method_idx[10];
+int MakeDrawingMethodList(uint8_t enable_type);
+int GetDrawingMethodIndex(uint8_t drawing_method);
 
-#ifdef USE_OPENGL
-extern const CMsg::Id opengl_use[];
-extern const CMsg::Id opengl_filter[];
-#endif
+extern const CMsg::Id screen_filter[];
 
 extern const CMsg::Id led_show[];
 extern const CMsg::Id led_pos[];
@@ -89,10 +91,18 @@ extern const CMsg::Id volume[];
 extern const CMsg::Id keybind_col[][2];
 extern const CMsg::Id keybind_tab[];
 extern const CMsg::Id joysetting_tab[];
+#if defined(USE_PIAJOYSTICK) && defined(USE_JOYSTICKBIT)
+extern const CMsg::Id joysetting_opts[Config::PIAJOY_CONN_TO_MAX + 1];
+#endif
 extern const CMsg::Id keybind_btn[];
 extern const CMsg::Id keybind_combi[];
 
 extern const CMsg::Id joypad_axis[];
+
+extern const struct st_window_size {
+	CMsg::Id msg_id;
+	int percent;
+} window_size[];
 
 }; /* namespace LABELS */
 

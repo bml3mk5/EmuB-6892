@@ -62,7 +62,7 @@ extern EMU *emu;
 	for(int tab_num=tab_offset; tab_num<KeybindData::KB_TABS_MAX; tab_num++) {
 		CocoaTableView *tableView = [CocoaTableView createW:420 height:400 tabnum:tab_num cellWidth:120];
 		[tableViews addObject:tableView];
-		[tableView setJoyMask:&enable_axes];
+		[tableView setJoyMask:&joy_mask];
 	}
 
 	//
@@ -105,14 +105,8 @@ extern EMU *emu;
 		[btn setRelatedObject:[[CocoaButtonAttr alloc]initWithValue:0:i]];
 	}
 
-	// axes of joypad
-	
-	enable_axes = ~0;
-	CocoaLayout *hbox_joy = [box_all addBox:HorizontalBox];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_Z_axis index:2 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_R_axis index:3 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_U_axis index:4 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_V_axis index:5 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0];
+	// axis of joypad
+	[self createFooter:box_all];
 
 	// button
 
@@ -125,89 +119,10 @@ extern EMU *emu;
 	return self;
 }
 
-- (NSInteger)runModal
-{
-	return [NSApp runModalForWindow:self];
-}
-
-- (void)close
-{
-	[NSApp stopModalWithCode:NSModalResponseCancel];
-	[super close];
-}
-
 - (void)dialogOk:(id)sender
 {
-    // OK button is pushed
-	for(int tab=0; tab<[tableViews count]; tab++) {
-		CocoaTableView *tv = [tableViews objectAtIndex:tab];
-		[tv SetData];
-	}
-
-	emu->save_keybind();
-
-	[NSApp stopModalWithCode:NSModalResponseOK];
-	[super close];
-}
-
-- (void)dialogCancel:(id)sender
-{
-    // Cancel button is pushed
-	[self close];
-}
-
-- (void)loadDefaultPreset:(id)sender
-{
-//	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	int tab_num = [tabView selectedTabViewItemIndex];
-	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
-	NSTableView *view = [tv documentView];
-	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[tv LoadDefaultPresetData];
-	[view reloadData];
-}
-
-- (void)loadPreset:(id)sender
-{
-	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	int tab_num = [tabView selectedTabViewItemIndex];
-	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
-	NSTableView *view = [tv documentView];
-	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[tv LoadPresetData:attr.idx];
-	[view reloadData];
-}
-
-- (void)savePreset:(id)sender
-{
-	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	int tab_num = [tabView selectedTabViewItemIndex];
-	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
-	NSTableView *view = [tv documentView];
-	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[tv SavePresetData:attr.idx];
-	[view reloadData];
-}
-
-- (void)clickJoyAxis:(id)sender
-{
-	CocoaCheckBox *chk = (CocoaCheckBox *)sender;
-	Uint32 bits = 0;
-	switch([chk index]) {
-	case 2:
-		bits = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
-		break;
-	case 3:
-		bits = (JOYCODE_R_UP | JOYCODE_R_DOWN);
-		break;
-	case 4:
-		bits = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
-		break;
-	case 5:
-		bits = (JOYCODE_V_UP | JOYCODE_V_DOWN);
-		break;
-	}
-	BIT_ONOFF(enable_axes, bits, [chk state] == NSControlStateValueOn);
+	[self setData];
+	[super dialogOk:sender];
 }
 
 @end

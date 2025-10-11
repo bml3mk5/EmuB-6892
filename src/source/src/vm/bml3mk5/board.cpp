@@ -266,18 +266,84 @@ bool BOARD::debug_write_reg(uint32_t reg_num, uint32_t data)
 	return false;
 }
 
+static const _TCHAR *c_reg_names[] = {
+	_T("RES"),
+	_T("NMI"),
+	_T("IRQ"),
+	_T("FIRQ"),
+	_T("HALT"),
+	NULL
+};
+
 bool BOARD::debug_write_reg(const _TCHAR *reg, uint32_t data)
 {
-	return false;
+	uint32_t num = find_debug_reg_name(c_reg_names, reg);
+	return debug_write_reg(num, data);
 }
 
-void BOARD::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+const struct BOARD::st_signal_list BOARD::c_nmi_device_names[] = {
+	{ _T("TRACE"), SIG_NMI_TRACE_MASK },
+	{ _T("FDC"), SIG_NMI_FD_MASK },
+	{ _T("BREAK"), SIG_NMI_KEYBREAK_MASK },
+	{ NULL, 0 }
+};
+
+const struct BOARD::st_signal_list BOARD::c_irq_device_names[] = {
+	{ _T("KB"), SIG_IRQ_KEYBOARD_MASK },
+	{ _T("LPEN"), SIG_IRQ_LIGHTPEN_MASK },
+	{ _T("PIA-A"), SIG_IRQ_PIAA_MASK },
+	{ _T("PIA-B"), SIG_IRQ_PIAB_MASK },
+	{ _T("PIAEX-A"), SIG_IRQ_EXPIAA_MASK },
+	{ _T("PIAEX-B"), SIG_IRQ_EXPIAB_MASK },
+	{ _T("ACIA"), SIG_IRQ_ACIA_MASK },
+	{ _T("ACIAEX"), SIG_IRQ_EXACIA_MASK },
+	{ _T("PSG9"), SIG_IRQ_9PSG_MASK },
+	{ NULL, 0 }
+};
+
+const struct BOARD::st_signal_list BOARD::c_firq_device_names[] = {
+	{ _T("TIMER"), SIG_FIRQ_TIMER1_MASK },
+	{ NULL, 0 }
+};
+
+const struct BOARD::st_signal_list BOARD::c_halt_device_names[] = {
+	{ _T("FDD8"), SIG_HALT_FD_MASK },
+	{ NULL, 0 }
+};
+
+void BOARD::get_debug_signal_names(const struct st_signal_list *list, uint32_t value, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X\n"), 0, _T("RES "), now_wreset);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X\n"), 1, _T("NMI "), now_nmi);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X\n"), 2, _T("IRQ "), now_irq);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X\n"), 3, _T("FIRQ"), now_firq);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X\n"), 4, _T("HALT"), now_halt);
+	int list_max = 0;
+	for(int i=0; list[i].name != NULL; i++) {
+		list_max++;
+	}
+	int n=0;
+	for(int i=list_max-1; i >= 0; i--) {
+		if ((value & list[i].mask) == 0) {
+			continue;
+		}
+		UTILITY::tcscat(buffer, buffer_len, n == 0 ? _T(" (") : _T(","));
+		UTILITY::tcscat(buffer, buffer_len, list[i].name);
+		n++;
+	}
+	if (n > 0) {
+		UTILITY::tcscat(buffer, buffer_len, _T(")"));
+	}
+}
+
+void BOARD::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
+{
+	UTILITY::tcscpy(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(" Signals:"));
+	UTILITY::sntprintf(buffer, buffer_len, _T("\n %X(%-4s):%04X"), 0, c_reg_names[0], now_wreset);
+	UTILITY::sntprintf(buffer, buffer_len, _T("\n %X(%-4s):%04X"), 1, c_reg_names[1], now_nmi);
+	get_debug_signal_names(c_nmi_device_names, now_nmi, buffer, buffer_len);
+	UTILITY::sntprintf(buffer, buffer_len, _T("\n %X(%-4s):%04X"), 2, c_reg_names[2], now_irq);
+	get_debug_signal_names(c_irq_device_names, now_irq, buffer, buffer_len);
+	UTILITY::sntprintf(buffer, buffer_len, _T("\n %X(%-4s):%04X"), 3, c_reg_names[3], now_firq);
+	get_debug_signal_names(c_firq_device_names, now_firq, buffer, buffer_len);
+	UTILITY::sntprintf(buffer, buffer_len, _T("\n %X(%-4s):%04X"), 4, c_reg_names[4], now_halt);
+	get_debug_signal_names(c_halt_device_names, now_halt, buffer, buffer_len);
+	UTILITY::tcscat(buffer, buffer_len, _T("\n"));
 }
 #endif

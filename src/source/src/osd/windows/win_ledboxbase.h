@@ -15,6 +15,7 @@
 #include <windows.h>
 
 #include "win_d3d.h"
+#include "win_d2d.h"
 #include "../../common.h"
 #include "../../csurface.h"
 #include "../../cbitmap.h"
@@ -110,6 +111,8 @@ protected:
 		int place;
 	} win_pt;
 	VmRectWH    parent_pt;
+	VmRect		win_rec_pt;
+	VmRectWH    parent_rec_pt;
 
 	int			mode;
 	int         prev_mode;
@@ -119,8 +122,10 @@ protected:
 	bool        visible;
 	bool        inside;
 
+	CD2DSurface d2dsurface;
+
 #ifdef USE_SCREEN_D3D_TEXTURE
-	CD3DTexture texture;
+	CD3DTexture d3dtexture;
 #endif
 
 	bool create_bitmap(CBitmap **l, DWORD id);
@@ -144,15 +149,22 @@ public:
 	void SetMode(int);
 	void SetPos(int left, int top, int right, int bottom, int place);
 	void SetPos(int place);
+	void SetPosForRec(int left, int top, int right, int bottom);
 	void Draw(HDC);
-	void Draw(LPDIRECT3DSURFACE9);
-	bool Draw(PDIRECT3DDEVICE9);
+	void Draw(CD3DSurface &);
+	bool Draw(CD3DDevice &);
+	void Draw(CD2DRender &);
+	void Draw(CD2DBitmapRender &);
+	void DrawForRec(HDC);
 	void Update(uint64_t flag);
 
 	void SetDistance(int place, const VmPoint *ndist);
 	void GetDistance(VmPoint *ndist);
 
-	HRESULT CreateTexture(PDIRECT3DDEVICE9 pD3Device);
+	HRESULT CreateD2DSurface(CD2DRender &);
+	void ReleaseD2DSurface();
+
+	HRESULT CreateTexture(CD3DDevice &);
 	void ReleaseTexture();
 
 	/* for dialog box */

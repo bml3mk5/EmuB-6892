@@ -13,6 +13,9 @@
 #if defined(USE_SDL) || defined(USE_SDL2)
 #include <SDL.h>
 #elif defined(USE_QT)
+#ifdef Status
+#undef Status
+#endif
 #include <QImage>
 #endif
 

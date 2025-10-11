@@ -32,24 +32,27 @@ endif
 #ARCH:=-m64
 
 LOCALINCDIR:=/usr/local/include
-SDLLOCALINCDIR:=$(LOCALINCDIR)/SDL2
+SH_LOCALDIR:=/mingw64
+ST_LOCALDIR:=/D/Devel/mingw64
+#ST_LOCALDIR:=/mingw64
 
-WXDIR:=/d/Devel/sources/wxWidgets-3.1.0
+WXDIR:=/d/Devel/sources/wxWidgets-3.2.4
 WXCONFIG_SH:=$(WXDIR)/build_release_shared_unicode_x64/wx-config
 WXCONFIG_ST:=$(WXDIR)/build_release_static_unicode_x64/wx-config
 WXCONFIG_DBG:=$(WXDIR)/build_debug_static_unicode_x64/wx-config
 
-SDL_CFLAGS:=$(shell sdl2-config --cflags)
-
-st_exe: SDL_LDFLAGS:=$(shell sdl2-config --libs)
+st_exe: SDL_CFLAGS:=$(shell $(ST_LOCALDIR)/bin/sdl2-config --cflags)
+st_exe: SDL_LDFLAGS:=$(shell $(ST_LOCALDIR)/bin/sdl2-config --libs)
 st_exe: WX_CFLAGS:=$(shell $(WXCONFIG_ST) --cppflags)
 st_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_ST) --libs all --static)
 
-dbg_exe: SDL_LDFLAGS:=$(shell sdl2-config --libs)
+dbg_exe: SDL_CFLAGS:=$(shell $(ST_LOCALDIR)/bin/sdl2-config --cflags)
+dbg_exe: SDL_LDFLAGS:=$(shell $(ST_LOCALDIR)/bin/sdl2-config --libs)
 dbg_exe: WX_CFLAGS:=$(shell $(WXCONFIG_DBG) --cppflags --debug)
 dbg_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_DBG) --libs all --debug)
 
-sh_exe: SDL_LDFLAGS:=$(shell sdl2-config --libs)
+sh_exe: SDL_CFLAGS:=$(shell $(SH_LOCALDIR)/bin/sdl2-config --cflags)
+sh_exe: SDL_LDFLAGS:=$(shell $(SH_LOCALDIR)/bin/sdl2-config --libs)
 sh_exe: WX_CFLAGS:=$(shell $(WXCONFIG_SH) --cppflags)
 sh_exe: WX_LDFLAGS:=$(shell $(WXCONFIG_SH) --libs all)
 
@@ -57,7 +60,7 @@ SH_CFLAGS=$(ARCH) -Wall -O2 $(SDL_CFLAGS) $(WX_CFLAGS)
 ST_CFLAGS=$(ARCH) -Wall -O2 $(SDL_CFLAGS) $(WX_CFLAGS)
 DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(SDL_CFLAGS) $(WX_CFLAGS)
 
-LOCALLIBDIR:=/usr/local/lib
+LOCALLIBDIR:=$(ST_LOCALDIR)/lib
 SDLLIBS:=$(LOCALLIBDIR)/libSDL2main.a $(LOCALLIBDIR)/libSDL2.a
 LOCALLIBS:=
 MINGWLIBS:=-lole32 -lws2_32 -liphlpapi -lShlwapi -lopengl32 -lwinmm -lvfw32 -lgdiplus -limm32 -loleaut32 -lsetupapi -luuid
@@ -84,6 +87,7 @@ sh_exe: export LIBS:=$(SH_LIBS)
 sh_exe: export LDFLAGS:=$(SH_LDFLAGS)
 sh_exe: export CDEFS:=$(SH_CDEFS)
 sh_exe: export CFLAGS:=$(SH_CFLAGS)
+sh_exe: export CXXFLAGS:=$(SH_CFLAGS)
 sh_exe: export WX_CFLAGS:=$(WX_CFLAGS)
 
 st_exe: export INSTALLDIR:=$(ST_INSTALLDIR)
@@ -92,6 +96,7 @@ st_exe: export LIBS:=$(ST_LIBS)
 st_exe: export LDFLAGS:=$(ST_LDFLAGS)
 st_exe: export CDEFS:=$(ST_CDEFS)
 st_exe: export CFLAGS:=$(ST_CFLAGS)
+st_exe: export CXXFLAGS:=$(ST_CFLAGS)
 st_exe: export WX_CFLAGS:=$(WX_CFLAGS)
 
 dbg_exe: export INSTALLDIR:=$(DBG_INSTALLDIR)
@@ -100,6 +105,7 @@ dbg_exe: export LIBS:=$(DBG_LIBS)
 dbg_exe: export LDFLAGS:=$(DBG_LDFLAGS)
 dbg_exe: export CDEFS:=$(DBG_CDEFS)
 dbg_exe: export CFLAGS:=$(DBG_CFLAGS)
+dbg_exe: export CXXFLAGS:=$(DBG_CFLAGS)
 dbg_exe: export WX_CFLAGS:=$(WX_CFLAGS)
 
 sh_exe st_exe dbg_exe:

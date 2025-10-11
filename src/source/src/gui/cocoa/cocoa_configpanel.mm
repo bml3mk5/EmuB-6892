@@ -122,7 +122,15 @@ extern GUI *gui;
 		radFddType[i] = [CocoaRadioButton createI:hbox title:LABELS::fdd_type[i] index:i action:@selector(selectFddType:) value:emu->get_parami(VM::ParamFddType) == i];
 	}
 
-	chkPowerOff = [CocoaCheckBox createI:lbox title:CMsg::Enable_the_state_of_power_off action:nil value:pConfig->use_power_off];
+	// power status
+	bbox = [lbox addBox:BoxViewBox :0 :COCOA_DEFAULT_MARGIN :_T("Power")];
+	[CocoaBox createI:bbox :CMsg::Behavior_of_Power_On_Off :260 :1];
+	vbox = [bbox addBox:VerticalBox :0 :0 :_T("Power1")];
+	// power off
+	chkPowerOff = [CocoaCheckBox createI:vbox title:CMsg::Enable_the_state_of_power_off action:nil value:pConfig->use_power_off];
+	// power state when start up
+	[CocoaLabel createI:vbox title:CMsg::Power_State_When_Start_Up_];
+	popPowerState = [CocoaPopUpButton createI:vbox items:LABELS::power_state action:nil selidx:pConfig->power_state_when_start_up width:240];
 
 	//
 	rbox = [sbox addBox:VerticalBox :0 :0 :_T("modeR")];
@@ -157,19 +165,21 @@ extern GUI *gui;
 	sbox = [box_one addBox:HorizontalBox :0 :0 :_T("ScrnS")];
 	lbox = [sbox addBox:VerticalBox :0 :0 :_T("ScrnL")];
 
-	// OpenGL
-	bbox = [lbox addBox:BoxViewBox :0 :COCOA_DEFAULT_MARGIN :_T("OpenGLB")];
+	// Drawing
+	bbox = [lbox addBox:BoxViewBox :0 :COCOA_DEFAULT_MARGIN :_T("DrawB")];
 	[CocoaBox createI:bbox :CMsg::Drawing :260 :1];
 
-	vbox = [bbox addBox:VerticalBox :0 :0 :_T("OpenGLV")];
+	vbox = [bbox addBox:VerticalBox :0 :0 :_T("DrawV")];
 
-	hbox = [vbox addBox:HorizontalBox :MiddlePos :0 :_T("UseGLH")];
-	[CocoaLabel createI:hbox title:CMsg::Method_ASTERISK];
-	popUseOpenGL = [CocoaPopUpButton createI:hbox items:LABELS::opengl_use action:nil selidx:pConfig->use_opengl];
-
-	hbox = [vbox addBox:HorizontalBox :MiddlePos :0 :_T("GLFilH")];
+	// drawing method
+	LABELS::MakeDrawingMethodList(emu->get_enabled_drawing_method());
+	hbox = [vbox addBox:HorizontalBox :MiddlePos :0 :_T("MethodH")];
+	[CocoaLabel createI:hbox title:CMsg::Method];
+	popDrawingMethod = [CocoaPopUpButton createI:hbox items:LABELS::drawing_method action:nil selidx:LABELS::GetDrawingMethodIndex(pConfig->drawing_method)];
+	// screen filter
+	hbox = [vbox addBox:HorizontalBox :MiddlePos :0 :_T("FilterH")];
 	[CocoaLabel createI:hbox title:CMsg::Filter_Type];
-	popGLFilter = [CocoaPopUpButton createI:hbox items:LABELS::opengl_filter action:nil selidx:pConfig->gl_filter_type];
+	popScreenFilter = [CocoaPopUpButton createI:hbox items:LABELS::screen_filter action:nil selidx:pConfig->filter_type];
 
 	// CRTC skew
 	rbox = [sbox addBox:VerticalBox :0 :0 :_T("CRTCR")];
@@ -583,6 +593,9 @@ extern GUI *gui;
 
 	// set data
 	pConfig->use_power_off = ([chkPowerOff state] == NSControlStateValueOn);
+	// power state when start up
+	pConfig->power_state_when_start_up = (int)[popPowerState indexOfSelectedItem];
+
 #if defined(_MBS1)
 	emu->set_parami(VM::ParamSysMode,([radSysMode[0] state] == NSControlStateValueOn ? 1 : 0) | (pConfig->sys_mode & ~1));
 #endif
@@ -633,9 +646,8 @@ extern GUI *gui;
 	emu->set_parami(VM::ParamIOPort, val);
 #endif
 
-//	emu->set_parami(VM::ParamUseOpenGL, (int)[popUseOpenGL indexOfSelectedItem]);
-	pConfig->use_opengl = (int)[popUseOpenGL indexOfSelectedItem];
-	pConfig->gl_filter_type = [popGLFilter indexOfSelectedItem];
+	pConfig->drawing_method = LABELS::drawing_method_idx[[popDrawingMethod indexOfSelectedItem]];
+	pConfig->filter_type = [popScreenFilter indexOfSelectedItem];
 
 	pConfig->led_pos = [popLEDPosition indexOfSelectedItem];
 	pConfig->capture_type = [popCaptureType indexOfSelectedItem];
@@ -758,8 +770,7 @@ extern GUI *gui;
 	gui->ChangeLedBox((int)[popLEDShow indexOfSelectedItem]);
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
 	pConfig->save();
-	emu->change_opengl_attr();
-
+	emu->set_screen_filter_type();
 	emu->update_config();
 
 	// OK button is pushed

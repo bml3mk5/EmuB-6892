@@ -21,7 +21,7 @@
 #include "../utility.h"
 
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
-#ifndef USE_PIAJOYSTICKBIT
+#ifndef USE_JOYSTICKBIT
 ///
 const int EMU::joy_allow_map[16] = {
 	-1, 0, 1, -1, 2, 3, 4, -1, 5, 6, 7, -1, -1, -1, -1, -1
@@ -42,8 +42,10 @@ void EMU::EMU_INPUT()
 	vm_key_history = new FIFOINT(64);
 
 #ifdef USE_KEY2JOYSTICK
-	clear_key2joy_map();
-	memset(key2joy_status, 0, sizeof(key2joy_status));
+	for(int dev=0; dev<MAX_JOYDEVICES; dev++) {
+		clear_key2joy_map(dev);
+		memset(key2joy[dev].status, 0, sizeof(key2joy[dev].status));
+	}
 	key2joy_scancode = NULL;
 #endif
 
@@ -54,7 +56,9 @@ void EMU::EMU_INPUT()
 #endif
 
 #ifdef USE_JOYSTICK
-	clear_joy2joy_map();
+	for(int dev=0; dev<MAX_JOYDEVICES; dev++) {
+		clear_joy2joy_map(dev);
+	}
 	memset(joy2joy_status, 0, sizeof(joy2joy_status));
 	// joy_num = 0;
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
@@ -71,16 +75,31 @@ void EMU::EMU_INPUT()
 #endif
 }
 
+/// @brief Initialize input devices
 void EMU::initialize_input()
 {
 	logging->out_debug(_T("EMU::initialize_input"));
 
 #ifdef USE_KEY2JOYSTICK
-	key2joy_enabled = FLG_USEKEY2JOYSTICK ? true : false;
+	key2joy_curr_device = -1;
+# ifdef USE_KEY2PSGJOYSTICK
+	if (FLG_USEKEY2PSGJOY) key2joy_curr_device = DEV_PSGJOY;
+# endif
+# ifdef USE_KEY2PIAJOYSTICK
+	if (FLG_USEKEY2PIAJOY) key2joy_curr_device = DEV_PIAJOY;
+# endif
 #endif
 #ifdef USE_JOYSTICK
-	use_joystick = FLG_USEJOYSTICK_ALL ? true : false;
+	use_joystick = (FLG_USEJOYSTICK_ALL != 0);
+	joy2joy_curr_device = -1;
+# ifdef USE_PSGJOYSTICK
+	if (FLG_USEPSGJOYSTICK) joy2joy_curr_device = DEV_PSGJOY;
+# endif
+# ifdef USE_PIAJOYSTICK
+	if (FLG_USEPIAJOYSTICK) joy2joy_curr_device = DEV_PIAJOY;
+# endif
 #endif
+
 	// initialize joysticks
 	initialize_joystick();
 
@@ -108,6 +127,7 @@ void EMU::initialize_input()
 	key_mod = 0;
 }
 
+/// @brief Initialize joystick parameters
 void EMU::initialize_joystick()
 {
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
@@ -122,6 +142,7 @@ void EMU::initialize_joystick()
 #endif
 }
 
+/// @brief Initialize key 2 joystick parameters
 void EMU::initialize_key2joy()
 {
 #ifdef USE_KEY2JOYSTICK
@@ -129,10 +150,12 @@ void EMU::initialize_key2joy()
 #endif
 }
 
+/// @brief Reset joystick parameters
 void EMU::reset_joystick()
 {
 }
 
+/// @brief Reset key 2 joystick parameters
 void EMU::reset_key2joy()
 {
 #ifdef USE_KEY2JOYSTICK
@@ -140,6 +163,13 @@ void EMU::reset_key2joy()
 #endif
 }
 
+/// @brief Sets the threshold for using an analog axis as an on/off button.
+///
+/// @param[in] enable
+/// @param[in] mintd : minimum value
+/// @param[in] maxtd : maximum value
+/// @param[in] threshold
+/// @param[out] out
 void EMU::set_joy_range(bool enable, int mintd, int maxtd, int threshold, struct st_joy_range &out)
 {
 #ifdef USE_JOYSTICK
@@ -158,6 +188,10 @@ void EMU::set_joy_range(bool enable, int mintd, int maxtd, int threshold, struct
 #endif
 }
 
+/// @brief Sets the threshold for using an analog axis as an on/off button.
+///
+/// @param[in] threshold
+/// @param[out] out
 void EMU::set_joy_threshold(int threshold, struct st_joy_range &out)
 {
 #ifdef USE_JOYSTICK
@@ -174,6 +208,7 @@ void EMU::set_joy_threshold(int threshold, struct st_joy_range &out)
 #endif
 }
 
+/// @brief Release input devices
 void EMU::release_input()
 {
 	// release buffer
@@ -197,6 +232,7 @@ void EMU::release_input()
 #endif
 }
 
+/// @brief Release joystick devices
 void EMU::release_joystick()
 {
 #ifdef USE_JOYSTICK
@@ -211,24 +247,31 @@ void EMU::release_joystick()
 #endif
 }
 
-void EMU::release_key2joy()
+/// @brief Release key 2 joystick devices
+///
+/// @param[in] dev : device number
+void EMU::release_key2joy(int dev)
 {
 #ifdef USE_KEY2JOYSTICK
-	memset(key2joy_status, 0, sizeof(key2joy_status));
+	memset(key2joy[dev].status, 0, sizeof(key2joy[dev].status));
 #endif
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	memset(joy_status, 0, sizeof(joy_status));
 #endif
 }
 
-void EMU::convert_joy_status(int num)
+/// @brief Convert joystick status
+///
+/// @param[in] dev : device number
+/// @param[in] num : joystick number
+void EMU::convert_joy_status(int dev, int num)
 {
 #ifdef USE_JOYSTICK
 	// convert
-	for(int n = 0; n <= joy2joy_map_size && n < 32; n++) {
-		uint32_t code = joy2joy_map[num][n];
+	for(int n = 0; n <= joy2joy[dev].map_size && n < 32; n++) {
+		uint32_t code = joy2joy[dev].map[num][n];
 		if (joy2joy_status[num][0] & code) {
-			joy_status[num][0] |= joy2joy_idx[n];
+			joy_status[num][0] |= joy2joy[dev].idx[n];
 		}
 	}
 	joy_status[num][1] = joy2joy_status[num][1];
@@ -394,8 +437,8 @@ int EMU::key_down_up(uint8_t type, int code, long status)
 int EMU::key_down(int code, bool keep_frames)
 {
 #ifdef USE_KEY2JOYSTICK
-	if (key2joy_enabled) {
-		if (key2joy_down(code)) {
+	if (key2joy_curr_device >= 0) {
+		if (key2joy_down(key2joy_curr_device, code)) {
 			return code;
 		}
 	}
@@ -426,8 +469,8 @@ void EMU::key_up(int code, bool keep_frames)
 	}
 #endif
 #ifdef USE_KEY2JOYSTICK
-	if (key2joy_enabled) {
-		key2joy_up(code);
+	if (key2joy_curr_device >= 0) {
+		key2joy_up(key2joy_curr_device, code);
 	}
 #endif
 }
@@ -472,10 +515,10 @@ void EMU::vm_key_up(int code, uint8_t mask)
 void EMU::vkey_key_down(int code, uint8_t mask)
 {
 #ifdef USE_KEY2JOYSTICK
-	if (key2joy_enabled) {
+	if (key2joy_curr_device >= 0) {
 		for(int i=0; i<KEYBIND_ASSIGN; i++) {
 			int vk_code = key2joy_scancode[code].d[i];
-			if (key2joy_down(vk_code)) {
+			if (key2joy_down(key2joy_curr_device, vk_code)) {
 				return;
 			}
 		}
@@ -493,10 +536,10 @@ void EMU::vkey_key_up(int code, uint8_t mask)
 	vm_key_up(code, mask);
 
 #ifdef USE_KEY2JOYSTICK
-	if (key2joy_enabled) {
+	if (key2joy_curr_device >= 0) {
 		for(int i=0; i<KEYBIND_ASSIGN; i++) {
 			int vk_code = key2joy_scancode[code].d[i];
-			key2joy_up(vk_code);
+			key2joy_up(key2joy_curr_device, vk_code);
 		}
 	}
 #endif
@@ -554,7 +597,7 @@ void EMU::modify_joy_mashing()
 
 				int nn = 1 << (4 - pConfig->joy_mashing[i][k]);
 				if (n & nn) {
-#ifndef USE_PIAJOYSTICKBIT
+#ifndef USE_JOYSTICKBIT
 					joy_mashing_mask[i][n] &= ~(0x10000 << k);
 #else
 					joy_mashing_mask[i][n] &= ~(1 << k);
@@ -566,27 +609,34 @@ void EMU::modify_joy_mashing()
 #endif
 }
 
-void EMU::clear_joy2joy_idx()
+/// @brief clear the joypad button index
+/// @param[in] dev : device number
+void EMU::clear_joy2joy_idx(int dev)
 {
 #ifdef USE_JOYSTICK
-	memset(joy2joy_idx, 0, sizeof(joy2joy_idx));
+	memset(joy2joy[dev].idx, 0, sizeof(joy2joy[dev].idx));
 #endif
 }
 
-void EMU::set_joy2joy_idx(int pos, uint32_t joy_code)
+/// @brief set the joypad button index
+/// @param[in] dev : device number
+/// @param[in] pos : position of index
+/// @param[in] joy_code : joypad code
+void EMU::set_joy2joy_idx(int dev, int pos, uint32_t joy_code)
 {
 #ifdef USE_JOYSTICK
 	if (pos < 0 || pos >= 32) return;
-	joy2joy_idx[pos] = joy_code;
+	joy2joy[dev].idx[pos] = joy_code;
 #endif
 }
 
 /// @brief clear the joypad button mapping table
-void EMU::clear_joy2joy_map()
+/// @param[in] dev : device number
+void EMU::clear_joy2joy_map(int dev)
 {
 #ifdef USE_JOYSTICK
-	joy2joy_map_size = 0;
-	memset(joy2joy_map, 0, sizeof(joy2joy_map));
+	joy2joy[dev].map_size = 0;
+	memset(joy2joy[dev].map, 0, sizeof(joy2joy[dev].map));
 #ifdef USE_ANALOG_JOYSTICK
 	for(int i=0; i<2; i++) {
 		for(int n=0; n<6; n++) {
@@ -599,29 +649,41 @@ void EMU::clear_joy2joy_map()
 }
 
 /// @brief set the joypad button mapping table
-void EMU::set_joy2joy_map(int num, int pos, uint32_t joy_code)
+/// @param[in] dev : device number
+/// @param[in] num : host joypad number
+/// @param[in] pos : position of mapping table
+/// @param[in] joy_code : joypad code
+void EMU::set_joy2joy_map(int dev, int num, int pos, uint32_t joy_code)
 {
 #ifdef USE_JOYSTICK
 	if (num < 0 || num >= MAX_JOYSTICKS) return;
 	if (pos < 0 || pos >= 32) return;
-	joy2joy_map[num][pos] = joy_code;
-	if (joy_code != 0 && pos > joy2joy_map_size) joy2joy_map_size = pos;
+	joy2joy[dev].map[num][pos] = joy_code;
+	if (joy_code != 0 && pos > joy2joy[dev].map_size) joy2joy[dev].map_size = pos;
 #endif
 }
 
 #if 0
 /// @brief get the joypad button mapping table
-uint32_t EMU::get_joy2joy_map(int num, int pos) const
+/// @param[in] dev : device number
+/// @param[in] num : host joypad number
+/// @param[in] pos : position of mapping table
+/// @return joypad code
+uint32_t EMU::get_joy2joy_map(int dev, int num, int pos) const
 {
 #ifdef USE_JOYSTICK
 	if (num < 0 || num >= MAX_JOYSTICKS) return 0;
 	if (pos < 0 || pos >= 32) return 0;
-	return joy2joy_map[num][pos];
+	return joy2joy[dev].map[num][pos];
 #endif
 	return 0;
 }
 #endif
 
+/// @brief set the button mapping table for analog joystick
+/// @param[in] num : host joystick number
+/// @param[in] pos : position of mapping table
+/// @param[in] joy_code : joypad code
 void EMU::set_joy2joy_ana_map(int num, int pos, uint32_t joy_code)
 {
 #if defined(USE_JOYSTICK) && defined(USE_ANALOG_JOYSTICK)
@@ -685,24 +747,29 @@ void EMU::set_joy2joyk_map(int num, int idx, uint32_t joy_code)
 }
 
 /// @brief clear the key2joypad mapping table
-void EMU::clear_key2joy_map()
+/// @param[in] dev : device number
+void EMU::clear_key2joy_map(int dev)
 {
-#ifdef USE_KEY2JOYSTICK
-	memset(key2joy_map, 0, sizeof(key2joy_map));
+#ifdef USE_KEY2PIAJOYSTICK
+	memset(key2joy[dev].map, 0, sizeof(key2joy[dev].map));
 #endif
 }
 
 /// @brief set the key2joypad mapping table
-void EMU::set_key2joy_map(uint32_t key_code, int num, uint32_t joy_code)
+/// @param[in] dev : device number
+/// @param[in] key_code : host key code
+/// @param[in] num : host joypad number
+/// @param[in] joy_code : joypad code
+void EMU::set_key2joy_map(int dev, uint32_t key_code, int num, uint32_t joy_code)
 {
 #ifdef USE_KEY2JOYSTICK
 	if (0 < key_code && key_code < KEY_STATUS_SIZE) {
-#ifndef USE_PIAJOYSTICKBIT
+#ifndef USE_JOYSTICKBIT
 		if (joy_code & 0x80000000) {
 			joy_code &= 0x7fffffff;
 			joy_code = (0x10000 << joy_code);
 		}
-		key2joy_map[num][key_code] |= joy_code;
+		key2joy[dev].map[num][key_code] |= joy_code;
 #else
 		if (joy_code & 0x80000000) {
 			joy_code &= 0x7fffffff;
@@ -710,21 +777,24 @@ void EMU::set_key2joy_map(uint32_t key_code, int num, uint32_t joy_code)
 		} else {
 			joy_code = (1 << joy_code);
 		}
-		key2joy_map[key_code] |= joy_code;
+		key2joy[dev].map[key_code] |= joy_code;
 #endif
 	}
 #endif
 }
 
 /// @brief get the key2joypad mapping table
-uint8_t EMU::get_key2joy_map(uint32_t key_code) const
+/// @param[in] dev : device number
+/// @param[in] key_code : host key code
+/// @return joypad status
+uint8_t EMU::get_key2joy_map(int dev, uint32_t key_code) const
 {
 #ifdef USE_KEY2JOYSTICK
 	if (0 < key_code && key_code < KEY_STATUS_SIZE) {
-#ifndef USE_PIAJOYSTICKBIT
-		return key2joy_map[0][key_code];
+#ifndef USE_JOYSTICKBIT
+		return key2joy[dev].map[0][key_code];
 #else
-		return key2joy_map[key_code];
+		return key2joy[dev].map[key_code];
 #endif
 	}
 #endif
@@ -732,13 +802,15 @@ uint8_t EMU::get_key2joy_map(uint32_t key_code) const
 }
 
 /// @brief convert pressed key to joypad status
+/// @param[in] dev : device number
+/// @param[in] code : host key code
 /// @return true: key pressed
-bool EMU::key2joy_down(int code)
+bool EMU::key2joy_down(int dev, int code)
 {
 #ifdef USE_KEY2JOYSTICK
-# ifdef USE_PIAJOYSTICKBIT
-	if (key2joy_map[code]) {
-		key2joy_status[0] |= key2joy_map[code];
+# ifdef USE_JOYSTICKBIT
+	if (key2joy[dev].map[code]) {
+		key2joy[dev].status[0] |= key2joy[dev].map[code];
 		vm_key_down(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
 		return true;
 	}
@@ -746,11 +818,11 @@ bool EMU::key2joy_down(int code)
 # else
 	uint32_t joy_all = 0;
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
-		uint32_t joy_code = key2joy_map[i][code];
+		uint32_t joy_code = key2joy[dev].map[i][code];
 		uint32_t k = (joy_code & 0xf);
 		int kk = joy_allow_map[k];
-		if (kk >= 0) key2joy_status[i][kk] |= k;
-		key2joy_status[i][8] |= (joy_code & 0xfffffff0);
+		if (kk >= 0) key2joy[dev].status[i][kk] |= k;
+		key2joy[dev].status[i][8] |= (joy_code & 0xfffffff0);
 		joy_all |= joy_code;
 	}
 	vm_key_down(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
@@ -762,21 +834,23 @@ bool EMU::key2joy_down(int code)
 }
 
 /// @brief convert released key to joypad status
-void EMU::key2joy_up(int code)
+/// @param[in] dev : device number
+/// @param[in] code : host key code
+void EMU::key2joy_up(int dev, int code)
 {
 #ifdef USE_KEY2JOYSTICK
-# ifdef USE_PIAJOYSTICKBIT
-	if (key2joy_map[code]) {
-		key2joy_status[0] &= ~key2joy_map[code];
+# ifdef USE_JOYSTICKBIT
+	if (key2joy[dev].map[code]) {
+		key2joy[dev].status[0] &= ~key2joy[dev].map[code];
 		vm_key_up(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
 	}
 # else
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
-		uint32_t joy_code = key2joy_map[i][code];
+		uint32_t joy_code = key2joy[dev].map[i][code];
 		uint32_t k = (joy_code & 0xf);
 		int kk = joy_allow_map[k];
-		if (kk >= 0) key2joy_status[i][kk] &= ~k;
-		key2joy_status[i][8] &= ~(joy_code & 0xfffffff0);
+		if (kk >= 0) key2joy[dev].status[i][kk] &= ~k;
+		key2joy[dev].status[i][8] &= ~(joy_code & 0xfffffff0);
 	}
 	vm_key_up(vm_key_map[code], VM_KEY_STATUS_KEY2JOY);
 # endif

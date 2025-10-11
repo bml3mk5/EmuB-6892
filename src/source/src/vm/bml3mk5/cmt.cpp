@@ -1289,15 +1289,23 @@ bool CMT::debug_write_reg(uint32_t reg_num, uint32_t data)
 	return false;
 }
 
+static const _TCHAR *c_reg_names[] = {
+	_T("REMOTE"),
+	_T("BAUD_SEL"),
+	NULL
+};
+
 bool CMT::debug_write_reg(const _TCHAR *reg, uint32_t data)
 {
-	return false;
+	uint32_t num = find_debug_reg_name(c_reg_names, reg);
+	return debug_write_reg(num, data);
 }
 
-void CMT::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void CMT::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("REMOTE"), REG_REMOTE);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, _T("BAUD_SEL"), REG_BAUD_SEL);
+	UTILITY::tcscpy(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(" Registers:\n"));
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], REG_REMOTE);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], REG_BAUD_SEL);
 }
 #endif

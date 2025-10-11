@@ -160,6 +160,7 @@ VM::VM(EMU* parent_emu) : emu(parent_emu)
 #endif
 	key->set_context_pia(pia);
 	key->set_context_pia_ex2(pia_ex2);
+	key->set_context_psg(psg3[1]);
 
 	// memory
 	memory->set_context_cpu(cpu);
@@ -461,62 +462,76 @@ DEVICE *VM::get_memory(int index)
 }
 
 /// device names
-const struct VM::st_device_name_map VM::c_device_names_map[] = {
-	{ _T("PIA"), DNM_PIA },
-	{ _T("ACIA"), DNM_ACIA },
-	{ _T("CRTC"), DNM_CRTC },
-	{ _T("KB"), DNM_KEYBOARD },
-	{ _T("CMT"), DNM_CMT },
-	{ _T("TIMER"), DNM_TIMER },
-	{ _T("FDC3"), DNM_FDC3 },
-	{ _T("FDC5"), DNM_FDC5 },
-	{ _T("FDDUNIT"), DNM_FDDUNIT },
-	{ _T("BOARD"), DNM_BOARD },
-	{ _T("PSG60"), DNM_PSG60 },
-	{ _T("PSG61"), DNM_PSG61 },
-	{ _T("PSG90"), DNM_PSG90 },
-	{ _T("PSG91"), DNM_PSG91 },
-	{ _T("PSG92"), DNM_PSG92 },
-	{ _T("PIAEX"), DNM_PIAEX },
-	{ _T("ACIAEX"), DNM_ACIAEX },
-	{ _T("VIA"), DNM_VIA },
-	{ _T("PIAEX2"), DNM_PIAEX2 },
-	{ _T("RTC"), DNM_RTC },
-	{ _T("MSM58321"), DNM_MSM58321 },
-	{ _T("EVENT"), DNM_EVENT },
-	{ NULL, 0 }
+const struct VM::st_device_name_list VM::c_device_name_list[] = {
+	{ _T("PIA"), DEVTYPE_REG },
+	{ _T("ACIA"), DEVTYPE_REG },
+	{ _T("CRTC"), DEVTYPE_REG },
+	{ _T("KEYBOARD"), DEVTYPE_REG },
+	{ _T("CMT"), DEVTYPE_REG },
+	{ _T("TIMER"), DEVTYPE_REG },
+	{ _T("FDC3"), DEVTYPE_REG },
+	{ _T("FDC5"), DEVTYPE_REG },
+	{ _T("FDDUNIT"), DEVTYPE_REG },
+	{ _T("FDDINFO"), DEVTYPE_STATUS },
+	{ _T("FDD0"), DEVTYPE_STATUS },
+	{ _T("FDD1"), DEVTYPE_STATUS },
+	{ _T("FDD2"), DEVTYPE_STATUS },
+	{ _T("FDD3"), DEVTYPE_STATUS },
+	{ _T("BOARD"), DEVTYPE_REG },
+	{ _T("PSG60"), DEVTYPE_REG },
+	{ _T("PSG61"), DEVTYPE_REG },
+	{ _T("PSG90"), DEVTYPE_REG },
+	{ _T("PSG91"), DEVTYPE_REG },
+	{ _T("PSG92"), DEVTYPE_REG },
+	{ _T("PIAEX"), DEVTYPE_REG },
+	{ _T("ACIAEX"), DEVTYPE_REG },
+	{ _T("VIA"), DEVTYPE_REG },
+	{ _T("PIAEX2"), DEVTYPE_REG },
+	{ _T("RTC"), DEVTYPE_REG },
+	{ _T("MSM58321"), DEVTYPE_REG },
+	{ _T("EVENT"), DEVTYPE_STATUS },
+	{ NULL, DEVTYPE_ANY }
 };
 
 bool VM::get_debug_device_name(const _TCHAR *param, uint32_t *num, int *idx, const _TCHAR **name)
 {
-	int i = 0; 
-	for(; c_device_names_map[i].name != NULL; i++) {
-		if (_tcsicmp(param, c_device_names_map[i].name) == 0) {
-			if (num) *num = c_device_names_map[i].num;
+	int i = 0;
+	for(; c_device_name_list[i].name != NULL; i++) {
+		if (_tcsicmp(param, c_device_name_list[i].name) == 0) {
+			if (num) *num = i;
 			if (idx) *idx = i;
-			if (name) *name = c_device_names_map[i].name;
+			if (name) *name = c_device_name_list[i].name;
 			return true;
 		}
 	}
 	return false;
 }
 
-void VM::get_debug_device_names_str(_TCHAR *buffer, size_t buffer_len)
+#define INDENT_STR _T("    ")
+#define INDENT_LEN 4
+
+void VM::get_debug_device_names_str(int type, _TCHAR *buffer, size_t buffer_len)
 {
 	int i = 0;
-	int len = 2;
-	UTILITY::tcscpy(buffer, buffer_len, _T("  "));
-	for(; c_device_names_map[i].name != NULL; i++) {
-		if (i > 0) {
+	int n = 0;
+	int len = INDENT_LEN;
+	UTILITY::tcscpy(buffer, buffer_len, INDENT_STR);
+	for(; c_device_name_list[i].name != NULL; i++) {
+		if (c_device_name_list[i].type != type && c_device_name_list[i].type != DEVTYPE_ANY) {
+			continue;
+		}
+		if (n > 0) {
 			UTILITY::tcscat(buffer, buffer_len, _T(","));
 			len++;
 		}
-		int siz = (int)_tcslen(c_device_names_map[i].name);
+		int siz = (int)_tcslen(c_device_name_list[i].name);
 		if (len + siz >= 78) {
-			UTILITY::tcscat(buffer, buffer_len, _T("\n  "));
-			len = 2;
+			UTILITY::tcscat(buffer, buffer_len, _T("\n"));
+			UTILITY::tcscat(buffer, buffer_len, INDENT_STR);
+			len = INDENT_LEN;
 		}
-		UTILITY::tcscat(buffer, buffer_len, c_device_names_map[i].name);
+		UTILITY::tcscat(buffer, buffer_len, c_device_name_list[i].name);
+		n++;
 		len += siz;
 	}
 }
@@ -700,82 +715,90 @@ void VM::debug_regs_info(uint32_t num, _TCHAR *buffer, size_t buffer_len)
 	switch(num) {
 	case DNM_KEYBOARD:
 		// keyboard
-		if (key) key->debug_regs_info(buffer, buffer_len);
+		if (key) key->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_CRTC:
 		// crtc
-		if (crtc) crtc->debug_regs_info(buffer, buffer_len);
+		if (crtc) crtc->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_PIA:
 		// pia
-		if (pia) pia->debug_regs_info(buffer, buffer_len);
+		if (pia) pia->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_ACIA:
 		// acia
-		if (acia) acia->debug_regs_info(buffer, buffer_len);
+		if (acia) acia->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_FDC3:
 		// fdc3
-		if (fdc3) fdc3->debug_regs_info(buffer, buffer_len);
+		if (fdc3) fdc3->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_FDC5:
 		// fdc5
-		if (fdc5) fdc5->debug_regs_info(buffer, buffer_len);
+		if (fdc5) fdc5->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_CMT:
 		// cmt
-		if (cmt) cmt->debug_regs_info(buffer, buffer_len);
+		if (cmt) cmt->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_TIMER:
 		// timer
-		if (timer) timer->debug_regs_info(buffer, buffer_len);
+		if (timer) timer->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_FDDUNIT:
 		// fddunit
-		if (fdd) fdd->debug_regs_info(buffer, buffer_len);
+		if (fdd) fdd->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
+		break;
+	case DNM_FDDINFO:
+	case DNM_FDD0:
+	case DNM_FDD1:
+	case DNM_FDD2:
+	case DNM_FDD3:
+		// fddinfo
+		if (fdd) fdd->debug_status_info(num, buffer, buffer_len);
 		break;
 	case DNM_BOARD:
 		// board
-		if (board) board->debug_regs_info(buffer, buffer_len);
+		if (board) board->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_PSG60:
 	case DNM_PSG61:
 		// psg6x
-		if (psg3[num-DNM_PSG60]) psg3[num-DNM_PSG60]->debug_regs_info(buffer, buffer_len);
+		if (psg3[num-DNM_PSG60]) psg3[num-DNM_PSG60]->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_PSG90:
 	case DNM_PSG91:
 	case DNM_PSG92:
 		// psg9x
-		if (psg9[num-DNM_PSG90]) psg9[num-DNM_PSG90]->debug_regs_info(buffer, buffer_len);
+		if (psg9[num-DNM_PSG90]) psg9[num-DNM_PSG90]->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_PIAEX:
 		// pia_ex
-		if (pia_ex) pia_ex->debug_regs_info(buffer, buffer_len);
+		if (pia_ex) pia_ex->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_ACIAEX:
 		// acia_ex
-		if (acia_ex) acia_ex->debug_regs_info(buffer, buffer_len);
+		if (acia_ex) acia_ex->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_VIA:
 		// via
-		if (psg9_via) psg9_via->debug_regs_info(buffer, buffer_len);
+		if (psg9_via) psg9_via->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_PIAEX2:
 		// pia_ex2
-		if (pia_ex2) pia_ex2->debug_regs_info(buffer, buffer_len);
+		if (pia_ex2) pia_ex2->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_RTC:
 		// rtc
-		if (rtc) rtc->debug_regs_info(buffer, buffer_len);
+		if (rtc) rtc->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_MSM58321:
 		// msm58321
-		if (msm58321) msm58321->debug_regs_info(buffer, buffer_len);
+		if (msm58321) msm58321->debug_regs_info(c_device_name_list[num].name, buffer, buffer_len);
 		break;
 	case DNM_EVENT:
 		// event
-		if (event) event->debug_regs_info(buffer, buffer_len);
+		if (event) event->debug_status_info(buffer, buffer_len);
 		break;
 	}
 }

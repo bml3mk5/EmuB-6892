@@ -22,42 +22,42 @@ extern EMU *emu;
 - (id)init
 {
 	[super init];
-	
+
 	m_initialized = false;
 	m_buffer_size = 0;
 	p_buffer = NULL;
-	
+
 	int style = (int)[self styleMask];
 	style |= NSWindowStyleMaskResizable;
 	[self setStyleMask:style];
-	
+
 	[self setTitleById:CMsg::Log];
 	[self setShowsResizeIndicator:NO];
-	
+
 	CocoaView *view = [self contentView];
-	
+
 	CocoaLayout *box_all = [CocoaLayout create:view :VerticalBox :0 :COCOA_DEFAULT_MARGIN :_T("box_all")];
-	
+
 	txtPath = [CocoaTextView create:box_all edit:false hasvs:false hashs:false width:480 height:32];
-	
+
 	txtLog = [CocoaTextView create:box_all edit:false hasvs:true hashs:true width:480 height:320];
-	
+
 	CocoaLayout *hbox = [box_all addBox:HorizontalBox :0 :0 :_T("BTN")];
 	btnUpdate = [CocoaButton createI:hbox title:CMsg::Update action:@selector(dialogUpdate:) width:120];
 	btnClose = [CocoaButton createI:hbox title:CMsg::Close action:@selector(dialogClose:) width:120];
-	
+
 	[box_all realize:self];
-	
+
 	m_initialized = true;
-	
+
 	m_client_re = [self frame];
 	[self setMinSize:m_client_re.size];
 	[self adjustButtonControl];
 
 	[txtPath setString:[NSString stringWithUTF8String:logging->get_log_path()]];
-	
+
 	[self setDelegate:[[CocoaLoggingPanelDelegate alloc] initWithParent:self]];
-	
+
 	return self;
 }
 
@@ -104,19 +104,19 @@ extern EMU *emu;
 - (void)windowDidResize:(NSNotification *)notification
 {
 	NSRect re = [self frame];
-	
+
 	int s_w = re.size.width - m_client_re.size.width;
 	int s_h = re.size.height - m_client_re.size.height;
-	
+
 	m_client_re = re;
-	
+
 	re = [txtPath.parent frame];
 	re.size.width += s_w;
 	[txtPath.parent setFrame:re];
 	re = [txtPath frame];
 	re.size.width += s_w;
 	[txtPath setFrame:re];
-	
+
 	re = [txtLog.parent frame];
 	re.size.width += s_w;
 	re.size.height += s_h;

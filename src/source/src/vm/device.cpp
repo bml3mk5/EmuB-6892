@@ -730,6 +730,14 @@ uint32_t DEVICE::get_cpu_clock() const
 	return 1;
 }
 
+int DEVICE::get_current_power()
+{
+	if(event_manager == NULL) {
+		event_manager = vm->first_device->next_device;
+	}
+	return event_manager->get_current_power();
+}
+
 void DEVICE::set_number_of_cpu(int nums)
 {
 	if(event_manager == NULL) {
@@ -769,12 +777,7 @@ bool DEVICE::search_track(int channel)
 	return false;
 }
 
-uint8_t DEVICE::verify_track()
-{
-	return 0;
-}
-
-bool DEVICE::verify_track(int channel, int track)
+bool DEVICE::verify_track_number(int channel, int track)
 {
 	return false;
 }
@@ -784,32 +787,31 @@ int  DEVICE::get_current_track_number(int channel)
 	return 0;
 }
 
-uint8_t DEVICE::search_sector(int side, bool compare)
+void DEVICE::parse_sector(int channel)
+{
+}
+
+int  DEVICE::search_sector(int channel, int track_num, int sector_num, bool compare_side, int side_num)
 {
 	return 0;
 }
 
-int  DEVICE::search_sector(int channel)
+int  DEVICE::search_next_sector(int channel)
 {
 	return 0;
 }
 
-int  DEVICE::search_sector(int channel, int track, int sect, bool compare_side, int side)
+int  DEVICE::search_sector_and_get_clock(int channel, int track_num, int sector_num, bool compare_side, int side_num, int delay_clock, int timeout_round, int &arrive_clock, bool skip_unmatch)
 {
 	return 0;
 }
 
-bool DEVICE::make_track()
+int  DEVICE::search_next_sector_and_get_clock(int channel, int delay_clock, int timeout_round, int &arrive_clock)
 {
-	return false;
+	return 0;
 }
 
 bool DEVICE::make_track(int channel)
-{
-	return false;
-}
-
-bool DEVICE::parse_track()
 {
 	return false;
 }
@@ -824,32 +826,27 @@ int DEVICE::get_a_round_clock(int channel)
 	return 1;
 }
 
-int DEVICE::get_head_loading_clock(int channel)
+int DEVICE::get_head_loading_clock(int channel, int delay_time)
 {
 	return 1;
 }
 
-int DEVICE::get_index_hole_remain_clock()
+int DEVICE::get_index_hole_search_clock(int channel, int delay_time)
 {
 	return 1;
 }
 
-int DEVICE::calc_index_hole_search_clock(int channel)
+int DEVICE::get_index_hole_remain_clock(int delay_clock)
 {
 	return 1;
 }
 
-int DEVICE::get_clock_arrival_sector(int channel, int sect, int delay)
+int DEVICE::get_clock_arrival_sector(int channel, int sector, int delay_clock, int timeout_round)
 {
 	return 1;
 }
 
-int DEVICE::calc_sector_search_clock(int channel, int sect)
-{
-	return 1;
-}
-
-int DEVICE::calc_next_sector_clock(int channel)
+int DEVICE::get_clock_next_sector(int channel, int delay_clock, int timeout_round)
 {
 	return 1;
 }
@@ -1071,6 +1068,7 @@ uint32_t DEVICE::find_debug_reg_name(const _TCHAR *list[], const _TCHAR *name)
 }
 
 void DEVICE::debug_regs_info(_TCHAR *buffer, size_t buffer_len) {}
+void DEVICE::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len) {}
 void DEVICE::debug_regs_info(int type, _TCHAR *buffer, size_t buffer_len) {}
 bool DEVICE::get_debug_reg_ptr(_TCHAR *reg, size_t regsiz, void * &regptr, int &reglen)
 {

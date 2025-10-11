@@ -1,4 +1,4 @@
-﻿/** @file labels.cpp
+/** @file labels.cpp
 
 	Skelton for retropc emulator
 
@@ -9,9 +9,11 @@
 */
 
 #include "labels.h"
-#include "config.h"
 #include "rec_video_defs.h"
 #include "vm/vm_defs.h"
+#if defined(USE_QT)
+#include "osd/qt/qt_restrict.h"
+#endif
 
 namespace LABELS {
 
@@ -25,6 +27,14 @@ const CMsg::Id tabs[] = {
 #if defined(_MBS1)
 	CMsg::Sound,
 #endif
+	CMsg::End
+};
+
+/// Power state when start up
+const CMsg::Id power_state[] = {
+	CMsg::Inherit_the_state_when_shut_down,
+	CMsg::Always_power_on,
+	CMsg::Always_power_off,
 	CMsg::End
 };
 
@@ -149,26 +159,83 @@ const _TCHAR *disp_skew[] = {
 #endif
 };
 
-#ifdef USE_DIRECT3D
 /// drawing
-const CMsg::Id d3d_use[] = {
-	CMsg::Default, CMsg::Use_Direct3D_Sync, CMsg::Use_Direct3D_Async, CMsg::End
-};
-/// filter
-const CMsg::Id d3d_filter[] = {
-	CMsg::None_, CMsg::Point, CMsg::Linear, CMsg::End
-};
+CMsg::Id drawing_method[10];
+/// drawing index
+uint8_t drawing_method_idx[10];
+
+/// @param[in] enable_type
+int MakeDrawingMethodList(uint8_t enable_type)
+{
+	int idx = 0;
+
+#if defined(USE_SDL2) && !defined(USE_GTK)
+	drawing_method[idx] = CMsg::Default_Sync;
+	drawing_method_idx[idx] = DRAWING_METHOD_DEFAULT_S;
+	idx++;
+	drawing_method[idx] = CMsg::Default_Async;
+	drawing_method_idx[idx] = DRAWING_METHOD_DEFAULT_AS;
+	idx++;
+#else
+	drawing_method[idx] = CMsg::Default_Drawing;
+	drawing_method_idx[idx] = DRAWING_METHOD_DEFAULT_AS;
+	idx++;
+	drawing_method[idx] = CMsg::Default_Double_Buffering;
+	drawing_method_idx[idx] = DRAWING_METHOD_DEFAULT_ASDB;
+	idx++;
+#endif
+#ifdef USE_DIRECT2D
+	if (enable_type & DRAWING_METHOD_DIRECT2D_MASK) {
+		drawing_method[idx] = CMsg::Use_Direct2D_Sync;
+		drawing_method_idx[idx] = DRAWING_METHOD_DIRECT2D_S;
+		idx++;
+		drawing_method[idx] = CMsg::Use_Direct2D_Async;
+		drawing_method_idx[idx] = DRAWING_METHOD_DIRECT2D_AS;
+		idx++;
+	}
+#endif
+#ifdef USE_DIRECT3D
+	if (enable_type & DRAWING_METHOD_DIRECT3D_MASK) {
+		drawing_method[idx] = CMsg::Use_Direct3D_Sync;
+		drawing_method_idx[idx] = DRAWING_METHOD_DIRECT3D_S;
+		idx++;
+		drawing_method[idx] = CMsg::Use_Direct3D_Async;
+		drawing_method_idx[idx] = DRAWING_METHOD_DIRECT3D_AS;
+		idx++;
+	}
 #endif
 #ifdef USE_OPENGL
-/// drawing
-const CMsg::Id opengl_use[] = {
-	CMsg::Default, CMsg::Use_OpenGL_Sync, CMsg::Use_OpenGL_Async, CMsg::End
-};
-/// filter
-const CMsg::Id opengl_filter[] = {
-	CMsg::Nearest_Neighbour, CMsg::Linear, CMsg::End
-};
+	if (enable_type & DRAWING_METHOD_OPENGL_MASK) {
+		drawing_method[idx] = CMsg::Use_OpenGL_Sync;
+		drawing_method_idx[idx] = DRAWING_METHOD_OPENGL_S;
+		idx++;
+		drawing_method[idx] = CMsg::Use_OpenGL_Async;
+		drawing_method_idx[idx] = DRAWING_METHOD_OPENGL_AS;
+		idx++;
+	}
 #endif
+	drawing_method[idx] = CMsg::End;
+	drawing_method_idx[idx] = DRAWING_METHOD_INVALID;
+
+	return idx;
+}
+
+int GetDrawingMethodIndex(uint8_t drawing_method)
+{
+	int match = 0;
+	for(int i=0; i<10 && drawing_method_idx[i] != DRAWING_METHOD_INVALID; i++) {
+		if (drawing_method == drawing_method_idx[i]) {
+			match = i;
+			break;
+		}
+	}
+	return match;
+}
+
+/// filter
+const CMsg::Id screen_filter[] = {
+	CMsg::Nearest_Neighbor, CMsg::Bilinear, CMsg::End
+};
 
 /// show led box
 const CMsg::Id led_show[] = {
@@ -279,7 +346,7 @@ const CMsg::Id z80bcard_irq[] = {
 const char *datarec_exts = "l3;l3b;l3c;wav;t9x";
 
 /// extension of a floppy disk image
-const char *floppy_disk_exts = "d88;dsk;img;2d;2hd";
+const char *floppy_disk_exts = "d88;dsk;img;2d;2hd;hfe";
 const char *blank_floppy_disk_exts = "d88";
 
 /// extension of a hard disk image
@@ -298,7 +365,7 @@ const char *autokey_file_exts = "txt;bas;lpt";
 /// extension of a printing file
 const char *printing_file_exts = "lpt;txt;bas";
 
-	
+
 /// Volume labels
 const CMsg::Id volume[] = {
 	CMsg::Master,
@@ -337,6 +404,8 @@ const CMsg::Id keybind_col[][2] = {
 	{ CMsg::Level3_Key,	CMsg::JoypadVDIGIT },
 	{ CMsg::PIA_on_L3,	CMsg::JoypadVDIGIT },
 	{ CMsg::PIA_on_L3,  CMsg::BindVDIGIT },
+	{ CMsg::PSG_Port_on_L3,	CMsg::JoypadVDIGIT },
+	{ CMsg::PSG_Port_on_L3, CMsg::BindVDIGIT },
 #endif
 	{ CMsg::End, CMsg::End }
 };
@@ -355,11 +424,26 @@ const CMsg::Id joysetting_tab[] = {
 #if defined(USE_PIAJOYSTICK)
 	CMsg::Joypad_PIA_Type,
 #endif
-#if defined(USE_KEY2JOYSTICK)
-	CMsg::Key_to_Joypad,
+#if defined(USE_KEY2PIAJOYSTICK)
+	CMsg::Key_to_Joypad_PIA_Type,
+#endif
+#if defined(USE_PSGJOYSTICK)
+	CMsg::Joypad_PSG_Type,
+#endif
+#if defined(USE_KEY2PSGJOYSTICK)
+	CMsg::Key_to_Joypad_PSG_Type,
 #endif
 	CMsg::End
 };
+
+#if defined(USE_PIAJOYSTICK) && defined(USE_JOYSTICKBIT)
+/// Joysetting options
+const CMsg::Id joysetting_opts[Config::PIAJOY_CONN_TO_MAX + 1] = {
+	CMsg::Standard_PIA_A_port,
+	CMsg::Extended_PIA_B_port,
+	CMsg::End
+};
+#endif
 
 /// Keybind buttons
 const CMsg::Id keybind_btn[] = {
@@ -383,6 +467,8 @@ const CMsg::Id keybind_combi[] = {
 	CMsg::Recognize_as_another_key_when_pressed_two_buttons,
 	CMsg::Null,
 	CMsg::Null,
+	CMsg::Null,
+	CMsg::Null,
 	CMsg::End
 };
 
@@ -395,6 +481,16 @@ const CMsg::Id joypad_axis[] = {
 	CMsg::U_axis,
 	CMsg::V_axis,
 	CMsg::End
+};
+
+/// Window size for VKeyboard
+const struct st_window_size window_size[] = {
+	{ CMsg::Window_Size_x1_0, 100 },
+	{ CMsg::Null, 100 },
+	{ CMsg::Window_Size_x1_5, 150 },
+	{ CMsg::Window_Size_x2_0, 200 },
+	{ CMsg::Window_Size_x0_5,  50 },
+	{ CMsg::End, 0 }
 };
 
 }; /* namespace LABELS */

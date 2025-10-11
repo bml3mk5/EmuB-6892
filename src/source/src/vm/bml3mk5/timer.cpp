@@ -156,16 +156,24 @@ bool TIMER::debug_write_reg(uint32_t reg_num, uint32_t data)
 	return false;
 }
 
+static const _TCHAR *c_reg_names[] = {
+	_T("TIMER"),
+	_T("TIME_MASK"),
+	NULL
+};
+
 bool TIMER::debug_write_reg(const _TCHAR *reg, uint32_t data)
 {
-	return false;
+	uint32_t num = find_debug_reg_name(c_reg_names, reg);
+	return debug_write_reg(num, data);
 }
 
-void TIMER::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void TIMER::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, _T("TIMER"), timer_irq);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, _T("TIME_MASK"), REG_TIME_MASK);
+	UTILITY::tcscpy(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(" Registers:\n"));
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], timer_irq);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], REG_TIME_MASK);
 }
 #endif
 

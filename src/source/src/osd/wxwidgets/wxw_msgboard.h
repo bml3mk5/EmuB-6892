@@ -16,10 +16,14 @@
 #include "wxw_ccolor.h"
 #include "../../cmutex.h"
 #include "../../msgs.h"
+#ifdef USE_OPENGL
+#include "../opengl.h"
+#endif
 
 class EMU;
 class wxFont;
 class CSurface;
+class CTexture;
 class CPixelFormat;
 
 #define MSGBOARD_STR_SIZE	512
@@ -77,8 +81,13 @@ private:
 		_TCHAR buf[1024];
 	} sbuf_t;
 
+	// 基準位置の計算
+	inline void calc_place(msg_data_t &data, VmRectWH &reDst);
 	// 文字列出力
-	void draw(CSurface *screen, msg_data_t &data);
+	void draw(CSurface &screen, msg_data_t &data);
+#ifdef USE_OPENGL
+	void draw(COpenGLTexture &texture, msg_data_t &data);
+#endif
 	// 文字列をバックバッファに描画
 	void draw_text(msg_data_t &data);
 	void draw_text(CSurface *suf, msg_data_t &data, int left, int top);
@@ -132,7 +141,10 @@ public:
 	void DeleteInfo(CMsg::Id id);
 
 	// 文字列出力
-	void Draw(CSurface *screen);
+	void Draw(CSurface &screen);
+#ifdef USE_OPENGL
+	void Draw(COpenGLTexture &texture);
+#endif
 
 	// フォント設定
 	bool SetFont();

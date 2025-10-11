@@ -122,6 +122,9 @@ SOURCES +=\
 	../src/vm/device.cpp \
 	../src/vm/disk.cpp \
 	../src/vm/disk_parser.cpp \
+	../src/vm/disk_image.cpp \
+	../src/vm/diskd88_image.cpp \
+	../src/vm/diskhfe_image.cpp \
 	../src/vm/event.cpp \
 	../src/vm/hd46505.cpp \
 	../src/vm/mb8866.cpp \
@@ -185,12 +188,13 @@ HEADERS  +=\
 	../src/cptrlist.h \
 	../src/csurface.h \
 	../src/cpixfmt.h \
-	../src/d88_defs.h \
 	../src/debugger_bpoint.h \
 	../src/debugger_defs.h \
 	../src/debugger_socket.h \
 	../src/debugger_symbol.h \
 	../src/depend.h \
+	../src/diskd88_defs.h \
+	../src/diskhfe_defs.h \
 	../src/emu.h \
 	../src/emu_osd.h \
 	../src/emumsg.h \
@@ -225,6 +229,7 @@ HEADERS  +=\
 	../src/osd/qt/qt_main.h \
 	../src/osd/qt/qt_common.h \
 	../src/osd/qt/qt_debugger_console.h \
+	../src/osd/qt/qt_restrict.h \
 	../src/osd/screenmode.h \
 	../src/osd/vkeyboardbase.h \
 	../src/osd/windowmode.h \
@@ -271,6 +276,9 @@ HEADERS  +=\
 	../src/vm/device.h \
 	../src/vm/disk.h \
 	../src/vm/disk_parser.h \
+	../src/vm/disk_image.h \
+	../src/vm/diskd88_image.h \
+	../src/vm/diskhfe_image.h \
 	../src/vm/event.h \
 	../src/vm/floppy_defs.h \
 	../src/vm/hd46505.h \
@@ -341,7 +349,7 @@ FORMS    += \
 win32-msvc:LIBS += opengl32.lib user32.lib
 win32-g++:LIBS += -lopengl32 -luser32 -lvfw32
 macx:LIBS += -framework Cocoa -framework AVFoundation -framework CoreMedia -framework CoreVideo -framework CoreAudio
-linux:LIBS += -ldl
+linux:LIBS += -ldl -lGL
 
 DISTFILES += \
 	../src/res/windows/bml3mk5.ico \

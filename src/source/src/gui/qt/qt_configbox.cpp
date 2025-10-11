@@ -122,10 +122,17 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	griFddType->addItem(spc, 0, 3);
 
-	// Power Off
+	// Power On/Off
+	MyGroupBox *grpPowerOnOff = new MyGroupBox(CMsg::Behavior_of_Power_On_Off);
+	vbox0l->addWidget(grpPowerOnOff);
+	QVBoxLayout *vboxPwr = new QVBoxLayout(grpPowerOnOff);
 	chkPowerOff = new MyCheckBox(CMsg::Enable_the_state_of_power_off);
 	chkPowerOff->setChecked(pConfig->use_power_off);
-	vbox0l->addWidget(chkPowerOff);
+	vboxPwr->addWidget(chkPowerOff);
+	lbl = new MyLabel(CMsg::Power_State_When_Start_Up_);
+	vboxPwr->addWidget(lbl);
+	comPowerState = new MyComboBox(nullptr, LABELS::power_state, pConfig->power_state_when_start_up);
+	vboxPwr->addWidget(comPowerState);
 
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	vbox0l->addSpacerItem(spc);
@@ -180,30 +187,31 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	QHBoxLayout *hbox1 = new QHBoxLayout();
 	vbox1->addLayout(hbox1);
 
-	// opengl group
-	MyGroupBox *grpOpenGL = new MyGroupBox(CMsg::Drawing);
-	hbox1->addWidget(grpOpenGL);
+	// drawing
+	MyGroupBox *grpDrawing = new MyGroupBox(CMsg::Drawing);
+	hbox1->addWidget(grpDrawing);
 
-	QVBoxLayout *vboxOpenGL = new QVBoxLayout(grpOpenGL);
+	QVBoxLayout *vboxDrawing = new QVBoxLayout(grpDrawing);
 
-	// use opengl
-	QHBoxLayout *hboxUseOpenGL = new QHBoxLayout();
-	vboxOpenGL->addLayout(hboxUseOpenGL);
-	lbl = new MyLabel(CMsg::Method_ASTERISK);
-	hboxUseOpenGL->addWidget(lbl);
-	comUseOpenGL = new MyComboBox(nullptr, LABELS::opengl_use, pConfig->use_opengl);
-	hboxUseOpenGL->addWidget(comUseOpenGL);
+	// drawing method
+	LABELS::MakeDrawingMethodList(emu->get_enabled_drawing_method());
+	QHBoxLayout *hboxDrawingMethod = new QHBoxLayout();
+	vboxDrawing->addLayout(hboxDrawingMethod);
+	lbl = new MyLabel(CMsg::Method);
+	hboxDrawingMethod->addWidget(lbl);
+	comDrawingMethod = new MyComboBox(nullptr, LABELS::drawing_method, LABELS::GetDrawingMethodIndex(pConfig->drawing_method));
+	hboxDrawingMethod->addWidget(comDrawingMethod);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-	hboxUseOpenGL->addSpacerItem(spc);
-	// opengl filter
-	QHBoxLayout *hboxGLFilter = new QHBoxLayout();
-	vboxOpenGL->addLayout(hboxGLFilter);
+	hboxDrawingMethod->addSpacerItem(spc);
+	// screen filter
+	QHBoxLayout *hboxScreenFilter = new QHBoxLayout();
+	vboxDrawing->addLayout(hboxScreenFilter);
 	lbl = new MyLabel(CMsg::Filter_Type);
-	hboxGLFilter->addWidget(lbl);
-	comGLFilter = new MyComboBox(nullptr, LABELS::opengl_filter, pConfig->gl_filter_type);
-	hboxGLFilter->addWidget(comGLFilter);
+	hboxScreenFilter->addWidget(lbl);
+	comScreenFilter = new MyComboBox(nullptr, LABELS::screen_filter, pConfig->filter_type);
+	hboxScreenFilter->addWidget(comScreenFilter);
 	spc = new QSpacerItem(1,1,QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-	hboxGLFilter->addSpacerItem(spc);
+	hboxScreenFilter->addSpacerItem(spc);
 
 	// CRTC group
 	QGroupBox *grpCRTC = new MyGroupBox(CMsg::CRTC);
@@ -916,6 +924,7 @@ void MyConfigBox::setDatas()
 
 	// Power Off
 	pConfig->use_power_off = chkPowerOff->isChecked();
+	pConfig->power_state_when_start_up = comPowerState->currentIndex();
 	// MODE Switch
 #if defined(_MBS1)
 	int sys_mode = (pConfig->sys_mode & ~1);
@@ -944,10 +953,10 @@ void MyConfigBox::setDatas()
 
 	// Screen tab
 
-	// use opengl
-	pConfig->use_opengl = comUseOpenGL->currentIndex() & 0xff;
+	// drawing method
+	pConfig->drawing_method = LABELS::drawing_method_idx[comDrawingMethod->currentIndex()];
 	// opengl filter
-	pConfig->gl_filter_type = comGLFilter->currentIndex() & 0xff;
+	pConfig->filter_type = comScreenFilter->currentIndex() & 0xf;
 #if defined(_MBS1)
 	// CRTC disptmg
 	pConfig->disptmg_skew = static_cast<int8_t>(comCRTCdisptmg->currentIndex()) - 2;

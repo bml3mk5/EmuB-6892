@@ -15,6 +15,8 @@
 
 #include "../../emu.h"
 #include "../../utils.h"
+#include "../../labels.h"
+#include "../../res/resource.h"
 
 extern EMU *emu;
 
@@ -38,7 +40,7 @@ VKeyboard::~VKeyboard()
 void VKeyboard::Show(bool show)
 {
 	if (!win) return;
-	
+
 	Base::Show(show);
 
 	win->Show(show);
@@ -78,7 +80,11 @@ void VKeyboard::adjust_window_size()
 	if (!win) return;
 
 	// calc client size in the window
-	win->SetClientSize(pSurface->Width(), pSurface->Height());
+	wxSize sz(pSurface->Width(), pSurface->Height());
+	win->SetClientSize(sz);
+	sz.x = (int)(0.25 * sz.x + 0.5);
+	sz.y = (int)(0.25 * sz.y + 0.5);
+	win->SetMinClientSize(sz);
 }
 
 #if 0
@@ -119,7 +125,13 @@ void VKeyboard::need_update_window(PressedInfo_t *info, bool onoff)
 
 	need_update_window_base(info, onoff);
 
-	win->RefreshRect(wxRect(info->re.left, info->re.top, info->re.right - info->re.left, info->re.bottom - info->re.top));
+	wxRect re;
+	re.x = (int)(magnify_x * info->re.left + 0.5);
+	re.y = (int)(magnify_y * info->re.top + 0.5);
+	re.width = (int)(magnify_x * (info->re.right - info->re.left) + 0.5);
+	re.height = (int)(magnify_y * (info->re.bottom - info->re.top) + 0.5);
+
+	win->RefreshRect(re);
 }
 
 void VKeyboard::update_window()
@@ -133,7 +145,11 @@ void VKeyboard::paint_window(wxBitmap *bmp, wxRect &re)
 {
 	if (!pSurface) return;
 
-	VmRectWH s_re = { re.x, re.y, re.width, re.height };
+	VmRectWH s_re;
+	s_re.x = (int)((double)re.x / magnify_x + 0.5);
+	s_re.y = (int)((double)re.y / magnify_y + 0.5);
+	s_re.w = (int)((double)re.width / magnify_x + 0.5);
+	s_re.h = (int)((double)re.height / magnify_y + 0.5);
 	pSurface->Blit(s_re, *bmp, s_re);
 }
 
@@ -162,40 +178,63 @@ void VKeyboard::init_dialog(HWND hDlg)
 }
 #endif
 
+void VKeyboard::changing_size()
+{
+	int w = 1;
+	int h = 1;
+	win->GetClientSize(&w, &h);
+
+	magnify_x = (double)w / pSurface->Width();
+	magnify_y = (double)h / pSurface->Height();
+}
+
+void VKeyboard::change_size(double mag)
+{
+	magnify_x = mag;
+	magnify_y = mag;
+	int w = (int)(magnify_x * pSurface->Width() + 0.5);
+	int h = (int)(magnify_y * pSurface->Height() + 0.5);
+	win->SetClientSize(w, h);
+}
+
 } /* namespace Vkbd */
 
 // Attach Event
 BEGIN_EVENT_TABLE(MyVKeyboard, wxFrame)
 	EVT_CLOSE(MyVKeyboard::OnClose)
 	EVT_PAINT(MyVKeyboard::OnPaint)
+	EVT_SIZE(MyVKeyboard::OnSize)
 //	EVT_ERASE_BACKGROUND(MyVKeyboard::OnEraseBackground)
 	EVT_CHAR_HOOK(MyVKeyboard::OnCharHook)
 	EVT_KEY_DOWN(MyVKeyboard::OnKeyDown)
 	EVT_KEY_UP(MyVKeyboard::OnKeyUp)
 //	EVT_MOTION(MyPanel::OnMouseMotion)
-	EVT_LEFT_DOWN(MyVKeyboard::OnMouseDown)
-	EVT_LEFT_UP(MyVKeyboard::OnMouseUp)
+	EVT_LEFT_DOWN(MyVKeyboard::OnMouseLeftDown)
+	EVT_LEFT_UP(MyVKeyboard::OnMouseLeftUp)
 //	EVT_MIDDLE_DOWN(MyPanel::OnMouseDown)
 //	EVT_MIDDLE_UP(MyPanel::OnMouseDown)
-//	EVT_RIGHT_DOWN(MyPanel::OnMouseDown)
+	EVT_RIGHT_DOWN(MyVKeyboard::OnMouseRightDown)
 //	EVT_RIGHT_UP(MyPanel::OnMouseDown)
 //	EVT_MOUSE_AUX1_DOWN(MyPanel::OnMouseDown)
 //	EVT_MOUSE_AUX1_UP(MyPanel::OnMouseDown)
 //	EVT_MOUSE_AUX2_DOWN(MyPanel::OnMouseDown)
 //	EVT_MOUSE_AUX2_UP(MyPanel::OnMouseDown)
+	EVT_MENU_RANGE(ID_WINDOW_SIZE1, ID_WINDOW_SIZE4, MyVKeyboard::OnSelectMenu)
 END_EVENT_TABLE()
 
 MyVKeyboard::MyVKeyboard(wxWindow *parent, wxSize &sz, Vkbd::VKeyboard *vkbd)
 	: wxFrame(parent, IDD_VKEYBOARD, _T("Virtual Keyboard"), wxDefaultPosition, sz,
-		wxMINIMIZE_BOX | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN
+		wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER
 	)
 {
 	this->vkbd = vkbd;
 	this->bmp = new wxBitmap(sz, 24);	// 24bpp
+	this->popupMenu = NULL;
 }
 
 MyVKeyboard::~MyVKeyboard()
 {
+	delete popupMenu;
 	delete bmp;
 	vkbd->win = NULL;
 }
@@ -209,9 +248,14 @@ void MyVKeyboard::OnPaint(wxPaintEvent & WXUNUSED(event))
 		vkbd->paint_window(bmp, re);
 		upd++;
 	}
+	int dst_w = 1;
+	int dst_h = 1;
+	this->GetClientSize(&dst_w, &dst_h);
+	wxMemoryDC mdc(*bmp);
 	wxPaintDC dc(this);
-
-	dc.DrawBitmap(*bmp, 0, 0);
+//	dc.DrawBitmap(*bmp, 0, 0);
+	dc.StretchBlit(0, 0, dst_w, dst_h,
+		&mdc, 0, 0, bmp->GetWidth(), bmp->GetHeight());
 }
 
 void MyVKeyboard::OnClose(wxCloseEvent &event)
@@ -219,14 +263,19 @@ void MyVKeyboard::OnClose(wxCloseEvent &event)
 	vkbd->Close();
 }
 
-void MyVKeyboard::OnMouseDown(wxMouseEvent &event)
+void MyVKeyboard::OnMouseLeftDown(wxMouseEvent &event)
 {
 	vkbd->MouseDown(event.GetX(), event.GetY());
 }
 
-void MyVKeyboard::OnMouseUp(wxMouseEvent & WXUNUSED(event))
+void MyVKeyboard::OnMouseLeftUp(wxMouseEvent & WXUNUSED(event))
 {
 	vkbd->MouseUp();
+}
+
+void MyVKeyboard::OnMouseRightDown(wxMouseEvent &event)
+{
+	show_popup_menu(event.GetX(), event.GetY());
 }
 
 void MyVKeyboard::OnCharHook(wxKeyEvent &event)
@@ -246,6 +295,41 @@ void MyVKeyboard::OnKeyUp(wxKeyEvent &event)
 	short rawcode = (short)event.GetRawKeyCode();
 	long  rawflag = (long)event.GetRawKeyFlags();
 	emu->key_down_up(1, rawcode, (short)((rawflag & 0x1ff0000) >> 16));
+}
+
+void MyVKeyboard::OnSize(wxSizeEvent &event)
+{
+	vkbd->changing_size();
+	Refresh();
+}
+
+void MyVKeyboard::OnSelectMenu(wxCommandEvent &event)
+{
+	int num = event.GetId() - ID_WINDOW_SIZE1;
+	vkbd->change_size((double)LABELS::window_size[num].percent / 100.0);
+}
+
+void MyVKeyboard::create_popup_menu()
+{
+	if (popupMenu) return;
+
+	popupMenu = new wxMenu();
+	for(int i=0; LABELS::window_size[i].msg_id != CMsg::End; i++) {
+		if (LABELS::window_size[i].msg_id != CMsg::Null) {
+			popupMenu->Append(ID_WINDOW_SIZE1 + i, CMSGV(LABELS::window_size[i].msg_id)); 
+		} else {
+			popupMenu->AppendSeparator();
+		}
+	}
+}
+
+void MyVKeyboard::show_popup_menu(int x, int y)
+{
+	if (!popupMenu) {
+		create_popup_menu();
+	}
+
+	PopupMenu(popupMenu, x, y);
 }
 
 #endif /* WX_VKEYBOARD_H */

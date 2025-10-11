@@ -889,7 +889,10 @@
     <ClCompile Include="..\src\vm\debugger_base.cpp" />
     <ClCompile Include="..\src\vm\device.cpp" />
     <ClCompile Include="..\src\vm\disk.cpp" />
+    <ClCompile Include="..\src\vm\disk_image.cpp" />
     <ClCompile Include="..\src\vm\disk_parser.cpp" />
+    <ClCompile Include="..\src\vm\diskd88_image.cpp" />
+    <ClCompile Include="..\src\vm\diskhfe_image.cpp" />
     <ClCompile Include="..\src\vm\event.cpp" />
     <ClCompile Include="..\src\vm\fmgen\fmgen.cpp" />
     <ClCompile Include="..\src\vm\fmgen\fmtimer.cpp" />
@@ -930,12 +933,13 @@
     <ClInclude Include="..\src\cptrlist.h" />
     <ClInclude Include="..\src\csurface.h" />
     <ClInclude Include="..\src\curtime.h" />
-    <ClInclude Include="..\src\d88_defs.h" />
     <ClInclude Include="..\src\debugger_bpoint.h" />
     <ClInclude Include="..\src\debugger_defs.h" />
     <ClInclude Include="..\src\debugger_socket.h" />
     <ClInclude Include="..\src\debugger_symbol.h" />
     <ClInclude Include="..\src\depend.h" />
+    <ClInclude Include="..\src\diskd88_defs.h" />
+    <ClInclude Include="..\src\diskhfe_defs.h" />
     <ClInclude Include="..\src\emu.h" />
     <ClInclude Include="..\src\emu_osd.h" />
     <ClInclude Include="..\src\emumsg.h" />
@@ -1037,7 +1041,10 @@
     <ClInclude Include="..\src\vm\debugger_base.h" />
     <ClInclude Include="..\src\vm\device.h" />
     <ClInclude Include="..\src\vm\disk.h" />
+    <ClInclude Include="..\src\vm\disk_image.h" />
     <ClInclude Include="..\src\vm\disk_parser.h" />
+    <ClInclude Include="..\src\vm\diskd88_image.h" />
+    <ClInclude Include="..\src\vm\diskhfe_image.h" />
     <ClInclude Include="..\src\vm\event.h" />
     <ClInclude Include="..\src\vm\floppy_defs.h" />
     <ClInclude Include="..\src\vm\fmgen\diag.h" />

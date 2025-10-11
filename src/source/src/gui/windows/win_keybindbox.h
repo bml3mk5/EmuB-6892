@@ -13,7 +13,7 @@
 
 #include <windows.h>
 #include "win_keybindctrl.h"
-#include "win_dialogbox.h"
+//#include "win_dialogbox.h"
 #include <vector>
 
 class EMU;
@@ -24,25 +24,10 @@ namespace GUI_WIN
 /**
 	@brief Keybind dialog box
 */
-class KeybindBox : public CDialogBox
+class KeybindBox : public KeybindBaseBox
 {
 private:
-	std::vector<KeybindControl *> kbctl;
-
-	int selected_tabctrl;
-
-	uint32_t enable_axes;
-
 	INT_PTR onInitDialog(UINT message, WPARAM wParam, LPARAM lParam);
-	INT_PTR onCommand(UINT message, WPARAM wParam, LPARAM lParam);
-	INT_PTR onNotify(UINT message, WPARAM wParam, LPARAM lParam);
-	INT_PTR onMouseWheel(UINT message, WPARAM wParam, LPARAM lParam);
-//	INT_PTR onControlColorStatic(UINT, WPARAM, LPARAM);
-	INT_PTR onClickOk();
-	INT_PTR onClickLoadDefault();
-	INT_PTR onClickLoadPreset(int idx);
-	INT_PTR onClickSavePreset(int idx);
-	INT_PTR onClickAxis(int id);
 
 	void select_tabctrl(int tab_num);
 

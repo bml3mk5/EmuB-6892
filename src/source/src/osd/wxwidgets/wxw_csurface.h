@@ -33,6 +33,9 @@ protected:
 	wxAlphaPixelData *sufData;
 	void *sufBuffer;
 	CPixelFormat sufFmt;
+#if defined(__WXMSW__)
+	void *sufBufferFliped;
+#endif
 #if defined(__WXGTK__) && !defined(__WXGTK3__)
 	void *sufPixbuf;
 	bool pixbuf_modified;
@@ -58,9 +61,12 @@ public:
 	void Release();
 
 	scrntype *GetBuffer();
+	scrntype *GetBufferO();
+	scrntype *GetBufferOV();
 	scrntype *GetBuffer(int y);
 	void UngetBuffer();
 	int GetBufferSize();
+	void Invalidate();
 
 	bool IsEnable();
 
@@ -106,6 +112,7 @@ public:
 
 #endif
 	bool Flip();
+	bool FlipAndCRev();
 
 	void FillBlack();
 

@@ -123,23 +123,28 @@ enum IOPORT_POS {
 /// @ingroup Enums
 /// @brief bit mask of Config::misc_flags
 enum MISC_FLAG_MASKS {
-	MSK_SHOWLEDBOX		= 0x0001,	///< bit0: show led
-	MSK_SHOWMSGBOARD	= 0x0002,	///< bit1: show msg
-	MSK_USEJOYSTICK		= 0x0004,	///< bit2: use joystick
-	MSK_INSIDELEDBOX	= 0x0008,	///< bit3: inside led
-	MSK_LEDBOX_ALL		= 0x0009,
-	MSK_USELIGHTPEN		= 0x0010,	///< bit4: enable lightpen
-	MSK_USEMOUSE		= 0x0020,	///< bit5: enable mouse
-	MSK_USEPIAJOYSTICK	= 0x0040,	///< bit6: use pia joystick
-	MSK_USEJOYSTICK_ALL	= 0x0044,
-	MSK_SHOWMSG_UNDEFOP	= 0x0080,	///< bit7: show msg when undef opcode
-	MSK_SHOWMSG_ADDRERR	= 0x0100,	///< bit8: show msg when address error
-	MSK_USEKEY2JOYSTICK	= 0x0400,	///< bit10: use key to joystick
-	MSK_PIAJOY_ALL		= 0x0440,
-	MSK_SHOWDLG_ALL		= 0x05ff,
-	MSK_CLEAR_CPUREG	= 0x0800,	///< bit11: clear CPU registers at power on
-	MSK_PIAJOY_NOIRQ	= 0x2000,	///< bit13: no irq when pressed buttons (for mbs1)
-	MSK_PIAJOY_NEGATIVE = 0x4000,	///< bit14: pia joy signals are negative (for bml3mk5)
+	MSK_SHOWLEDBOX		= 0x00001,	///< bit0: show led
+	MSK_SHOWMSGBOARD	= 0x00002,	///< bit1: show msg
+	MSK_USEJOYSTICK		= 0x00004,	///< bit2: use joystick
+	MSK_INSIDELEDBOX	= 0x00008,	///< bit3: inside led
+	MSK_LEDBOX_ALL		= 0x00009,
+	MSK_USELIGHTPEN		= 0x00010,	///< bit4: enable lightpen
+	MSK_USEMOUSE		= 0x00020,	///< bit5: enable mouse
+	MSK_USEPIAJOYSTICK	= 0x00040,	///< bit6: use pia joystick
+	MSK_SHOWMSG_UNDEFOP	= 0x00080,	///< bit7: show msg when undef opcode
+	MSK_SHOWMSG_ADDRERR	= 0x00100,	///< bit8: show msg when address error
+	MSK_USEKEY2PIAJOY	= 0x00400,	///< bit10: use key to pia joystick
+	MSK_PIAJOY_ALL		= 0x00440,
+	MSK_SHOWDLG_ALL		= 0x005ff,
+	MSK_CLEAR_CPUREG	= 0x00800,	///< bit11: clear CPU registers at power on
+	MSK_PIAJOY_NOIRQ	= 0x02000,	///< bit13: no irq when pressed buttons (for mbs1)
+	MSK_PIAJOY_NEGATIVE = 0x04000,	///< bit14: pia joy signals are negative (for bml3mk5)
+	MSK_USEPSGJOYSTICK	= 0x10000,	///< bit16: use psg joystick
+	MSK_PSGJOY_NEGATIVE = 0x20000,	///< bit17: psg joy signals are negative (for bml3mk5)
+	MSK_USEKEY2PSGJOY	= 0x40000,	///< bit18: use key to psg joystick
+	MSK_PSGJOY_ALL		= 0x70000,
+	MSK_USEJOYSTICK_ALL	= 0x10044,
+	MSK_USEKEY2JOY_ALL	= 0x40400,
 };
 
 /// @ingroup Macros
@@ -155,11 +160,16 @@ enum MISC_FLAG_MASKS {
 #define FLG_USEJOYSTICK_ALL	(pConfig->misc_flags & MSK_USEJOYSTICK_ALL)
 #define FLG_SHOWMSG_UNDEFOP	(pConfig->misc_flags & MSK_SHOWMSG_UNDEFOP)
 #define FLG_SHOWMSG_ADDRERR	(pConfig->misc_flags & MSK_SHOWMSG_ADDRERR)
-#define FLG_USEKEY2JOYSTICK (pConfig->misc_flags & MSK_USEKEY2JOYSTICK)
+#define FLG_USEKEY2PIAJOY	(pConfig->misc_flags & MSK_USEKEY2PIAJOY)
 #define FLG_PIAJOY_ALL		(pConfig->misc_flags & MSK_PIAJOY_ALL)
 #define FLG_CLEAR_CPUREG	(pConfig->misc_flags & MSK_CLEAR_CPUREG)
 #define FLG_PIAJOY_NOIRQ	(pConfig->misc_flags & MSK_PIAJOY_NOIRQ)
 #define FLG_PIAJOY_NEGATIVE	(pConfig->misc_flags & MSK_PIAJOY_NEGATIVE)
+#define FLG_USEPSGJOYSTICK	(pConfig->misc_flags & MSK_USEPSGJOYSTICK)
+#define FLG_PSGJOY_NEGATIVE	(pConfig->misc_flags & MSK_PSGJOY_NEGATIVE)
+#define FLG_USEKEY2PSGJOY	(pConfig->misc_flags & MSK_USEKEY2PSGJOY)
+#define FLG_PSGJOY_ALL		(pConfig->misc_flags & MSK_PSGJOY_ALL)
+#define FLG_USEJOYSTICK_ALL	(pConfig->misc_flags & MSK_USEJOYSTICK_ALL)
 ///@}
 
 /// @ingroup Enums
@@ -188,6 +198,35 @@ enum ORIGINAL_MASKS {
 #define FLG_ORIG_FDINSERT	(pConfig->original & MSK_ORIG_FDINSERT)
 #define FLG_ORIG_FDDRQ		(pConfig->original & MSK_ORIG_FDDRQ)
 ///@}
+
+/// @ingroup Enums
+/// @brief value of Config::drawing_method
+enum DRAWING_METHOD_ENUMS {
+	DRAWING_METHOD_DEFAULT_AS    = 0x00,
+	DRAWING_METHOD_DEFAULT_S     = 0x01,
+	DRAWING_METHOD_DEFAULT_ASDB  = 0x02,
+	DRAWING_METHOD_DEFAULT_SDB   = 0x03,
+	DRAWING_METHOD_DIRECT2D_AS   = 0x08,
+	DRAWING_METHOD_DIRECT2D_S    = 0x09,
+	DRAWING_METHOD_DIRECT2D_ASDB = 0x0a,
+	DRAWING_METHOD_DIRECT2D_SDB  = 0x0b,
+	DRAWING_METHOD_DIRECT3D_AS   = 0x10,
+	DRAWING_METHOD_DIRECT3D_S    = 0x11,
+	DRAWING_METHOD_OPENGL_AS     = 0x20,
+	DRAWING_METHOD_OPENGL_S      = 0x21,
+	DRAWING_METHOD_INVALID       = 0xff,
+
+	DRAWING_METHOD_ALL_MASK      = 0xfc,
+	DRAWING_METHOD_SYNC_MASK     = 0x01,
+	DRAWING_METHOD_DBUFFER_MASK  = 0x02,
+	DRAWING_METHOD_DIRECT2D_MASK = 0x08,
+	DRAWING_METHOD_DIRECT3D_MASK = 0x10,
+	DRAWING_METHOD_OPENGL_MASK   = 0x20,
+
+	DRAWING_METHOD_DIRECT2D_MASK_EX = 0x0800,
+	DRAWING_METHOD_DIRECT3D_MASK_EX = 0x1000,
+	DRAWING_METHOD_OPENGL_MASK_EX   = 0x2000,
+};
 
 /// @ingroup Enums
 /// @brief bit mask of Config::option_fdd
@@ -275,8 +314,6 @@ public:
 private:
 	void Set(const CDirPath &) {}
 	void Set(const _TCHAR *, int) {}
-//	CDirPath &operator=(const CTchar &src);
-//	CDirPath &operator=(const _TCHAR *src_str);
 };
 
 /// file path
@@ -393,6 +430,7 @@ public:
 	int cpu_power;
 	bool now_power_off;
 	bool use_power_off;
+	int power_state_when_start_up;
 #ifdef USE_FD1
 	bool ignore_crc;
 	int  mount_fdd;
@@ -430,14 +468,8 @@ public:
 #ifdef USE_KEEPIMAGE
 	int  keepimage;
 #endif
-#ifdef USE_DIRECT3D
-	uint8_t use_direct3d;
-	uint8_t d3d_filter_type;
-#endif
-#ifdef USE_OPENGL
-	uint8_t use_opengl;
-	uint8_t gl_filter_type;
-#endif
+	uint8_t drawing_method;
+	uint8_t filter_type;
 
 #if defined(_BML3MK5) || defined(_MBS1)
 	uint8_t exram_size_num;
@@ -669,8 +701,16 @@ public:
 	int    joy_mashing[MAX_JOYSTICKS][KEYBIND_JOY_BUTTONS];
 	int    joy_axis_threshold[MAX_JOYSTICKS][6];
 #endif
-#ifdef USE_PIAJOYSTICKBIT
+#ifdef USE_PIAJOYSTICK
+#ifdef USE_JOYSTICKBIT
+	enum en_piajoy_conn_to {
+		PIAJOY_CONN_TO_STD_A = 0,
+		PIAJOY_CONN_TO_EXT_B,
+		PIAJOY_CONN_TO_MAX,
+	};
+	/// select output port  0:A port on PIA($FFC0-FFC1)  1:B port on EX PIA($FF62-$FF63)
 	int    piajoy_conn_to;
+#endif
 #endif
 
 #ifdef USE_PERFORMANCE_METER

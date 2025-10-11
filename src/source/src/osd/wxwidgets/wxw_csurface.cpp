@@ -29,6 +29,9 @@ CSurface::CSurface()
 	sufData = NULL;
 	sufBuffer = NULL;
 //	mux = NULL;
+#if defined(__WXMSW__)
+	sufBufferFliped = NULL;
+#endif
 #if defined(__WXGTK__) && !defined(__WXGTK3__)
 	sufPixbuf = NULL;
 	pixbuf_modified = false;
@@ -41,6 +44,9 @@ CSurface::CSurface(long width, long height)
 	sufData = NULL;
 	sufBuffer = NULL;
 //	mux = NULL;
+#if defined(__WXMSW__)
+	sufBufferFliped = NULL;
+#endif
 #if defined(__WXGTK__) && !defined(__WXGTK3__)
 	sufPixbuf = NULL;
 	pixbuf_modified = false;
@@ -55,6 +61,9 @@ CSurface::CSurface(long width, long height, const CPixelFormat &pixel_format)
 	sufData = NULL;
 	sufBuffer = NULL;
 //	mux = NULL;
+#if defined(__WXMSW__)
+	sufBufferFliped = NULL;
+#endif
 #if defined(__WXGTK__) && !defined(__WXGTK3__)
 	sufPixbuf = NULL;
 	pixbuf_modified = false;
@@ -69,6 +78,9 @@ CSurface::CSurface(long width, long height, CPixelFormat::FormatId force_format)
 	sufData = NULL;
 	sufBuffer = NULL;
 //	mux = NULL;
+#if defined(__WXMSW__)
+	sufBufferFliped = NULL;
+#endif
 #if defined(__WXGTK__) && !defined(__WXGTK3__)
 	sufPixbuf = NULL;
 	pixbuf_modified = false;
@@ -96,6 +108,9 @@ bool CSurface::Create(long width, long height, const CPixelFormat &pixel_format)
 		sufDc = new wxMemoryDC(*suf);
 #if defined(__WXMSW__)
 		sufData = new wxAlphaPixelData(*suf);
+#endif
+#if defined(__WXMSW__)
+		sufBufferFliped = new scrntype[suf->GetWidth() * suf->GetHeight()];
 #endif
 	}
 #if defined(__WXGTK__) && !defined(__WXGTK3__)
@@ -193,6 +208,12 @@ void CSurface::Release()
 //		delete mux;
 //		mux = NULL;
 //	}
+#if defined(__WXMSW__)
+	if (sufBufferFliped) {
+		delete [] sufBufferFliped;
+		sufBufferFliped = NULL;
+	}
+#endif
 #if defined(__WXGTK__) && !defined(__WXGTK3__)
 	if (sufPixbuf) {
 		g_object_unref(sufPixbuf);
@@ -272,6 +293,36 @@ scrntype *CSurface::GetBuffer()
 	return (scrntype *)sufBuffer;
 }
 
+scrntype *CSurface::GetBufferO()
+{
+#if defined(__WXMSW__)
+	GetBuffer();
+	Flip();
+	return (scrntype *)sufBufferFliped;
+#elif defined(__WXOSX__)
+	char *buffer = (char *)GetBuffer();
+	buffer++;
+	return (scrntype *)buffer;
+#else
+	return GetBuffer();
+#endif
+}
+
+scrntype *CSurface::GetBufferOV()
+{
+#if defined(__WXMSW__)
+	GetBuffer();
+	FlipAndCRev();
+	return (scrntype *)sufBufferFliped;
+#elif defined(__WXOSX__)
+	char *buffer = (char *)GetBuffer();
+	buffer++;
+	return (scrntype *)buffer;
+#else
+	return GetBuffer();
+#endif
+}
+
 scrntype *CSurface::GetBuffer(int y)
 {
 	scrntype *p = GetBuffer();
@@ -297,6 +348,18 @@ void CSurface::UngetBuffer()
 int CSurface::GetBufferSize()
 {
 	return suf->GetWidth() * suf->GetHeight() * suf->GetDepth() / 8;
+}
+
+void CSurface::Invalidate()
+{
+#if defined(__WXGTK__)
+# ifdef __WXGTK3__
+	wxDCImpl *impl = sufDc->GetImpl();
+	cairo_t *cr = (cairo_t *)impl->GetCairoContext();
+	cairo_surface_t *csuf = cairo_get_target(cr);
+	cairo_surface_mark_dirty(csuf);
+# endif
+#endif
 }
 
 bool CSurface::IsEnable()
@@ -577,23 +640,51 @@ bool CSurface::BlitFlipped(CSurface &src, VmRectWH &reSrc, CSurface &dst, VmRect
 
 bool CSurface::Flip()
 {
+#if defined(__WXMSW__)
 	int w = suf->GetWidth();
 	int h = suf->GetHeight();
-	int sy = h - 1;
-	int hh = (h >> 1);
-	scrntype *sp = GetBuffer();
-	scrntype *dp = sp;
-	sp += (sy * w);
-	for(int dy = 0; dy < hh; dy++) {
+//	int sy = h - 1;
+//	int hh = (h >> 1);
+	scrntype *sp = (scrntype *)suf->GetRawData(*sufData, suf->GetDepth());
+	scrntype *dp = (scrntype *)sufBufferFliped;
+//	sp += (sy * w);
+	for(int dy = 0; dy < h; dy++) {
 		for(int x = 0; x < w; x++) {
-			scrntype tmp = sp[x];
-			sp[x] = dp[x];
-			dp[x] = tmp;
+//			scrntype tmp = sp[x];
+//			sp[x] = dp[x];
+//			dp[x] = tmp;
+			dp[x] = sp[x];
 		}
 		sp -= w;
 		dp += w;
 	}
-	UngetBuffer();
+//	UngetBuffer();
+#endif
+	return true;
+}
+
+bool CSurface::FlipAndCRev()
+{
+#if defined(__WXMSW__)
+	int w = suf->GetWidth();
+	int h = suf->GetHeight();
+//	int sy = h - 1;
+//	int hh = (h >> 1);
+	scrntype *sp = (scrntype *)suf->GetRawData(*sufData, suf->GetDepth());
+	scrntype *dp = (scrntype *)sufBufferFliped;
+//	sp += (sy * w);
+	for(int dy = 0; dy < h; dy++) {
+		for(int x = 0; x < w; x++) {
+//			scrntype tmp = sp[x];
+//			sp[x] = dp[x];
+//			dp[x] = tmp;
+			dp[x] = ((sp[x] & 0xff) << 16) | (sp[x] & 0xff00ff00) | ((sp[x] & 0xff0000) >> 16);
+		}
+		sp -= w;
+		dp += w;
+	}
+//	UngetBuffer();
+#endif
 	return true;
 }
 

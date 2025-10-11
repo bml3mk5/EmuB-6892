@@ -53,19 +53,21 @@
 
 * 必要なライブラリ
 
-  * FFmpeg-4.x (https://ffmpeg.org/)
+  * FFmpeg-6.1.1 (https://ffmpeg.org/)
 
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+   (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
 
     * ヘッダファイルが必要です。
       includeフォルダにヘッダファイルを入れてください。
     * 64ビット版のsharedライブラリとincludeファイルは以下のサイトから入手できます。
       [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/)
-      にある ffmpeg-4.4.1-full_build-shared.7z をダウンロードします。
+      にある ffmpeg-6.1.1-full_build-shared.7z をダウンロードします。
+    * 上記にない場合はGithub内の以下にあります。
+      [CODEX FFMPEG Github](https://github.com/GyanD/codexffmpeg/releases/tag/6.1.1)
     * ヘッダファイルがあれば、32ビット版のビルドもできます。
-    * バージョン3のヘッダファイルでもビルドできます。
-    * バージョン5のヘッダファイルでもビルドできますが動作するかは未確認。
+    * バージョン5のヘッダファイルでもビルドできます。
+    * バージョン4のヘッダファイルでもビルドできますが動作するかは未確認。
 
 * mmf_loader
   * Microsoft Media Foundationを使用するためのDLLファイルを作成します。

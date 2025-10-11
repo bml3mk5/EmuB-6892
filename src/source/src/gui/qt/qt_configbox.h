@@ -55,6 +55,7 @@ private:
 	QCheckBox *chkIOPorts[IOPORT_NUMS];
 
 	QCheckBox *chkPowerOff;
+	MyComboBox *comPowerState;
 #if defined(_MBS1)
 	QRadioButton *radSysMode[2];
 	QCheckBox *chkDipSwitch;
@@ -62,8 +63,8 @@ private:
 	QCheckBox *chkModeSwitch;
 #endif
 
-	MyComboBox *comUseOpenGL;
-	MyComboBox *comGLFilter;
+	MyComboBox *comDrawingMethod;
+	MyComboBox *comScreenFilter;
 
 	MyComboBox *comCRTCdisptmg;
 	MyComboBox *comCRTCcurdisp;

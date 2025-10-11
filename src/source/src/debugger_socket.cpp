@@ -13,10 +13,15 @@
 #ifdef USE_DEBUGGER
 
 #include "emu.h"
+#include "osd/debugger_console.h"
 #include "logging.h"
 #include "config.h"
 #include "cmutex.h"
 #include "utility.h"
+
+#define DEBUGGER_SOCKET_SEND_MAX_BUFF DC_MAX_BUFFER_LEN
+#define DEBUGGER_SOCKET_RECV_MAX_BUFF 1024
+
 
 DebuggerSocket::DebuggerSocket(EMU *parent_emu, const char *identifier)
 	: DEVICE(parent_emu, identifier)
@@ -28,10 +33,10 @@ DebuggerSocket::DebuggerSocket(EMU *parent_emu, const char *identifier)
 	server_ch = -1;
 	connect = false;
 
-	memset(send_buff, 0, sizeof(send_buff));
+	send_buff = NULL;
 	send_buff_w_pos = 0;
 	send_buff_r_pos = 0;
-	memset(recv_buff, 0, sizeof(recv_buff));
+	recv_buff = NULL;
 	recv_buff_w_pos = 0;
 	recv_buff_r_pos = 0;
 
@@ -41,6 +46,22 @@ DebuggerSocket::DebuggerSocket(EMU *parent_emu, const char *identifier)
 DebuggerSocket::~DebuggerSocket()
 {
 	term_lock();
+
+	delete [] recv_buff;
+	delete [] send_buff;
+}
+
+void DebuggerSocket::allocate()
+{
+	// allocate buffer
+	if (!send_buff) {
+		send_buff = new uint8_t[DEBUGGER_SOCKET_SEND_MAX_BUFF];
+		memset(send_buff, 0, DEBUGGER_SOCKET_SEND_MAX_BUFF * sizeof(uint8_t));
+	}
+	if (!recv_buff) {
+		recv_buff = new uint8_t[DEBUGGER_SOCKET_RECV_MAX_BUFF];
+		memset(recv_buff, 0, DEBUGGER_SOCKET_RECV_MAX_BUFF * sizeof(uint8_t));
+	}
 }
 
 void DebuggerSocket::enable_server(bool enable)
@@ -161,7 +182,7 @@ uint8_t* DebuggerSocket::get_recvbuffer0(int ch, int* size0, int* size1, int* fl
 {
 	if (ch == client_ch) {
 		lock();
-		*size0 = (DEBUGGER_SOCKET_MAX_BUFF - recv_buff_w_pos);
+		*size0 = (DEBUGGER_SOCKET_RECV_MAX_BUFF - recv_buff_w_pos);
 		*size1 = 0;
 		return &recv_buff[recv_buff_w_pos];
 	} else {
@@ -234,7 +255,7 @@ void DebuggerSocket::write_data(const _TCHAR *data, int size)
 	send_buff_w_pos = 0;
 	// always treat data as 8bit char even if data is widechar
 	// convert lf to crlf
-	for(int i=0; i<size && send_buff_w_pos < DEBUGGER_SOCKET_MAX_BUFF; i++) {
+	for(int i=0; i<size && send_buff_w_pos < DEBUGGER_SOCKET_SEND_MAX_BUFF; i++) {
 		if (data[i] == 0x0a) {
 			send_buff[send_buff_w_pos++] = 0x0d;
 		}

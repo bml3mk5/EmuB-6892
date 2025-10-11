@@ -16,9 +16,9 @@
 #include "../../vm/vm_defs.h"
 
 #ifdef _DEBUG
-#define APP_FILEFLAGS	VS_FF_DEBUG
+#define APP_FILEFLAGS   VS_FF_DEBUG
 #else
-#define APP_FILEFLAGS	0
+#define APP_FILEFLAGS   0
 #endif
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -52,7 +52,7 @@ FONT 9, "Ms Shell Dlg"
 {
     ICON            IDI_ICON1, IDC_STATIC_1, 15, 20, 18, 21, SS_ICON
     LTEXT           APP_NAME, IDC_STATIC_2, 40, 10, 190, 10, SS_LEFT | SS_NOPREFIX
-	LTEXT           APP_COPYRIGHT, IDC_STATIC_3, 40, 78, 190, 21, SS_LEFT
+    LTEXT           APP_COPYRIGHT, IDC_STATIC_3, 40, 78, 190, 21, SS_LEFT
     DEFPUSHBUTTON   "OK", IDOK, 95, 92, 62, 14, WS_GROUP
 }
 
@@ -230,8 +230,8 @@ BEGIN
         MENUITEM "Eject",                       ID_CLOSE_FD1
         POPUP "New"
         BEGIN
-	        MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD1
-	        MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD1
+            MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD1
+            MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD1
         END
         MENUITEM SEPARATOR
         MENUITEM "Write Protect",               ID_WRITEPROTECT_FD1
@@ -253,8 +253,8 @@ BEGIN
         MENUITEM "Eject",                       ID_CLOSE_FD2
         POPUP "New"
         BEGIN
-	        MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD2
-	        MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD2
+            MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD2
+            MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD2
         END
         MENUITEM SEPARATOR
         MENUITEM "Write Protect",               ID_WRITEPROTECT_FD2
@@ -276,8 +276,8 @@ BEGIN
         MENUITEM "Eject",                       ID_CLOSE_FD3
         POPUP "New"
         BEGIN
-	        MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD3
-	        MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD3
+            MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD3
+            MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD3
         END
         MENUITEM SEPARATOR
         MENUITEM "Write Protect",               ID_WRITEPROTECT_FD3
@@ -299,8 +299,8 @@ BEGIN
         MENUITEM "Eject",                       ID_CLOSE_FD4
         POPUP "New"
         BEGIN
-	        MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD4
-	        MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD4
+            MENUITEM "Insert Blank 2D...",      ID_OPEN_BLANK_2D_FD4
+            MENUITEM "Insert Blank 2HD...",     ID_OPEN_BLANK_2HD_FD4
         END
         MENUITEM SEPARATOR
         MENUITEM "Write Protect",               ID_WRITEPROTECT_FD4
@@ -355,18 +355,18 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "Display",                 ID_SCREEN_DISPLAY_A
         END
-		POPUP "Aspect Ratio"
-		BEGIN
+        POPUP "Aspect Ratio"
+        BEGIN
             MENUITEM "Square",                  ID_SCREEN_PIXEL_ASPECT0
-	    END
+        END
         MENUITEM SEPARATOR
-		POPUP "Drawing Mode"
-		BEGIN
+        POPUP "Drawing Mode"
+        BEGIN
             MENUITEM "Full Draw\tAlt+S",        ID_SCREEN_SCANLINE0
             MENUITEM "Scanline\tAlt+S",         ID_SCREEN_SCANLINE1
             MENUITEM "Stripe\tAlt+S",           ID_SCREEN_SCANLINE2
             MENUITEM "Checker\tAlt+S",          ID_SCREEN_SCANLINE3
-	    END
+        END
         MENUITEM SEPARATOR
         MENUITEM "Afterimage1\tAlt+T",          ID_SCREEN_AFTERIMAGE1
         MENUITEM "Afterimage2\tAlt+T",          ID_SCREEN_AFTERIMAGE2
@@ -376,23 +376,34 @@ BEGIN
         MENUITEM "Keepimage2",                  ID_SCREEN_KEEPIMAGE2
 #endif
         MENUITEM SEPARATOR
+        POPUP "Drawing Method"
+        BEGIN
+#ifdef USE_SDL2
+            MENUITEM "Default(Sync)\tAlt+Y",        ID_SCREEN_DEFAULT_DRAW_S
+            MENUITEM "Default(Async)\tAlt+Y",       ID_SCREEN_DEFAULT_DRAW_AS
+#else
+            MENUITEM "Default Drawing\tAlt+Y",      ID_SCREEN_DEFAULT_DRAW_AS
+            MENUITEM "Default (Double Buffering)\tAlt+Y", ID_SCREEN_DEFAULT_DRAW_ASDB
+#endif
+#ifdef USE_DIRECT2D
+            MENUITEM "Use Direct2D(Sync)\tAlt+Y",   ID_SCREEN_D2D_SYNC
+            MENUITEM "Use Direct2D(Async)\tAlt+Y",  ID_SCREEN_D2D_ASYNC
+#endif
 #ifdef USE_DIRECT3D
-        MENUITEM "Use Direct3D(Sync)\tAlt+Y",   ID_SCREEN_D3D_SYNC
-        MENUITEM "Use Direct3D(Async)\tAlt+Y",  ID_SCREEN_D3D_ASYNC
-		POPUP "Direct3D Filter"
-		BEGIN
-            MENUITEM "None\tAlt+U",				ID_SCREEN_D3D_FILTER0
-            MENUITEM "Point\tAlt+U",			ID_SCREEN_D3D_FILTER1
-            MENUITEM "Linear\tAlt+U",			ID_SCREEN_D3D_FILTER2
-        END
+            MENUITEM "Use Direct3D(Sync)\tAlt+Y",   ID_SCREEN_D3D_SYNC
+            MENUITEM "Use Direct3D(Async)\tAlt+Y",  ID_SCREEN_D3D_ASYNC
 #endif
 #ifdef USE_OPENGL
-        MENUITEM "Use OpenGL(Sync)\tAlt+Y",     ID_SCREEN_OPENGL_SYNC
-        MENUITEM "Use OpenGL(Async)\tAlt+Y",    ID_SCREEN_OPENGL_ASYNC
-		POPUP "OpenGL Filter"
-		BEGIN
-            MENUITEM "Nearest Neighbour\tAlt+U",ID_SCREEN_OPENGL_FILTER0
-            MENUITEM "Linear\tAlt+U",			ID_SCREEN_OPENGL_FILTER1
+            MENUITEM "Use OpenGL(Sync)\tAlt+Y",     ID_SCREEN_OPENGL_SYNC
+            MENUITEM "Use OpenGL(Async)\tAlt+Y",    ID_SCREEN_OPENGL_ASYNC
+#endif
+        END
+#if defined(USE_DIRECT3D) || defined(USE_DIRECT2D) || defined(USE_OPENGL) || defined(USE_SDL2)
+        MENUITEM SEPARATOR
+        POPUP "Filter Type"
+        BEGIN
+            MENUITEM "Nearest Neighbor\tAlt+U", ID_SCREEN_FILTER0
+            MENUITEM "Bilinear\tAlt+U",         ID_SCREEN_FILTER1
         END
 #endif
     END
@@ -462,36 +473,36 @@ BEGIN
         POPUP "COM&0"
         BEGIN
             MENUITEM "Enable Server",           ID_COMM0_SERVER
-			POPUP "Connect"
-			BEGIN
-	            MENUITEM "Ethernet",            ID_COMM0_CONNECT
-			END
+            POPUP "Connect"
+            BEGIN
+                MENUITEM "Ethernet",            ID_COMM0_CONNECT
+            END
             MENUITEM SEPARATOR
             MENUITEM "Comm With Byte Data",     ID_COMM0_THROUGH
             MENUITEM SEPARATOR
-			POPUP "Options For Telnet"
-			BEGIN
+            POPUP "Options For Telnet"
+            BEGIN
                 MENUITEM "Binary Mode",         ID_COMM0_BINARY
-	            MENUITEM SEPARATOR
+                MENUITEM SEPARATOR
                 MENUITEM "Send WILL ECHO",      ID_COMM0_WILLECHO
-			END
+            END
         END
         POPUP "COM&1"
         BEGIN
             MENUITEM "Enable Server",           ID_COMM1_SERVER
             POPUP "Connect"
-			BEGIN
-	            MENUITEM "Ethernet",            ID_COMM1_CONNECT
-			END
+            BEGIN
+                MENUITEM "Ethernet",            ID_COMM1_CONNECT
+            END
             MENUITEM SEPARATOR
             MENUITEM "Comm With Byte Data",     ID_COMM1_THROUGH
             MENUITEM SEPARATOR
-			POPUP "Options For Telnet"
-			BEGIN
+            POPUP "Options For Telnet"
+            BEGIN
                 MENUITEM "Binary Mode",         ID_COMM0_BINARY
-	            MENUITEM SEPARATOR
+                MENUITEM SEPARATOR
                 MENUITEM "Send WILL ECHO",      ID_COMM1_WILLECHO
-			END
+            END
         END
     END
     POPUP "&Options"
@@ -507,17 +518,24 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Enable Lightpen\tAlt+Ctrl",   ID_OPTIONS_LIGHTPEN
 #endif
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_JOYSTICK)
         MENUITEM SEPARATOR
-#endif
-#ifdef USE_JOYSTICK
         MENUITEM "Use Joypad (Key Assigned)\tAlt+J",ID_OPTIONS_JOYPAD0
 #ifdef USE_PIAJOYSTICK
         MENUITEM "Use Joypad (PIA Type)\tAlt+J",ID_OPTIONS_JOYPAD1
 #endif
+#ifdef USE_PSGJOYSTICK
+        MENUITEM "Use Joypad (PSG Type)\tAlt+J",ID_OPTIONS_JOYPAD2
 #endif
-#ifdef USE_KEY2JOYSTICK
-        MENUITEM "Enable Key to Joypad",        ID_OPTIONS_KEY2JOYPAD
+#endif
+#if defined(USE_KEY2JOYSTICK)
+        MENUITEM SEPARATOR
+#ifdef USE_KEY2PIAJOYSTICK
+        MENUITEM "Enable Key to Joypad (PIA Type)", ID_OPTIONS_KEY2JOYPAD0
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+        MENUITEM "Enable Key to Joypad (PSG Type)", ID_OPTIONS_KEY2JOYPAD1
+#endif
 #endif
         MENUITEM SEPARATOR
 #ifdef USE_DIRECTINPUT

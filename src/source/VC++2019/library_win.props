@@ -3,7 +3,7 @@
   <PropertyGroup Label="UserMacros">
     <DevelopBase>\Devel\</DevelopBase>
     <DevelopDir>$(DevelopBase)vc\</DevelopDir>
-    <FFMpegIncludeDir>$(DevelopBase)include\ffmpeg441\</FFMpegIncludeDir>
+    <FFMpegIncludeDir>$(DevelopBase)include\ffmpeg611\</FFMpegIncludeDir>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>

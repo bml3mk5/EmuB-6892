@@ -74,6 +74,8 @@ private:
 	int view_height;
 	int view_top;
 
+	uint8_t next_drawing_method;
+
 	GdkWindow *sdl_window;
 	GtkWidget *widget_window;
 	GtkWidget *menubar;
@@ -229,11 +231,11 @@ private:
 	static void OnSelectKeepImage(GtkWidget *widget, gpointer user_data);
 	static void OnUpdateKeepImage(GtkWidget *widget, gpointer user_data);
 #endif
-#ifdef USE_OPENGL
-	static void OnSelectUseOpenGL(GtkWidget *widget, gpointer user_data);
-	static void OnUpdateUseOpenGL(GtkWidget *widget, gpointer user_data);
-	static void OnSelectOpenGLFilter(GtkWidget *widget, gpointer user_data);
-	static void OnUpdateOpenGLFilter(GtkWidget *widget, gpointer user_data);
+	static void OnSelectDrawingMethod(GtkWidget *widget, gpointer user_data);
+	static void OnUpdateDrawingMethod(GtkWidget *widget, gpointer user_data);
+#if defined(USE_OPENGL) || defined(USE_SDL2)
+	static void OnSelectScreenFilter(GtkWidget *widget, gpointer user_data);
+	static void OnUpdateScreenFilter(GtkWidget *widget, gpointer user_data);
 #endif
 
 	//
@@ -337,7 +339,7 @@ private:
 	GtkWidget *create_multi_volume_menu_item(GtkWidget *menu, const char *label, int drv, int num);
 	GtkWidget *create_comm_connect_menu(GtkWidget *menu, int drv);
 	GtkWidget *create_comm_connect_menu_item(GtkWidget *menu, const char *label, int drv, int num);
-	inline void add_accelerator(GtkWidget *menu_item, guint key);
+	void add_accelerator(GtkWidget *menu_item, guint key);
 
 	void modify_menu_open_flag(GtkWidget *menu, bool val);
 
@@ -376,6 +378,9 @@ public:
 #endif
 	/// post to GTK signal
 	virtual void PostCommandMessage(int id, void *data1 = NULL, void *data2 = NULL);
+
+	bool StoreDrawingMethod(uint8_t method);
+	bool RestoreDrawingMethod(uint8_t &method) const;
 #endif
 
 	virtual bool ShowAboutDialog();
@@ -439,6 +444,11 @@ public:
 		HARDDISK,
 		STATE
 	};
+
+	//
+	static GtkWidget *CreateMenuItem(GtkWidget *menu, const char *label, CbActivate cb_activate, CbShow cb_show = NULL, int drv = 0, int num = 0, gpointer user_data = 0);
+	static GtkWidget *CreateMenuItem(GtkWidget *menu, CMsg::Id labelid, CbActivate cb_activate, CbShow cb_show = NULL, int drv = 0, int num = 0, gpointer user_data = 0);
+	static GtkWidget *CreateSeparatorMenu(GtkWidget *menu);
 };
 
 #endif /* GUI_TYPE_GTK_X11 */

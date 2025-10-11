@@ -24,7 +24,7 @@ namespace GUI_WIN
 {
 
 SndFilterBox::SndFilterBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_SNDFILTERBOX, new_font, new_emu, new_gui)
+	: CDialogBox(hInst, IDD_SNDFILTERBOX, new_emu, new_gui)
 {
 }
 

@@ -115,12 +115,11 @@ private:
 	static void OnSelectRGBType(AG_Event *);
 	static void OnUpdateRGBType(AG_Event *);
 #endif
-#ifdef USE_OPENGL
-	static void OnSelectUseOpenGL(AG_Event *);
-	static void OnUpdateUseOpenGL(AG_Event *);
-	static void OnSelectOpenGLFilter(AG_Event *);
-	static void OnUpdateOpenGLFilter(AG_Event *);
-#endif
+	static void OnSelectDrawingMethod(AG_Event *);
+	static void OnUpdateDrawingMethod(AG_Event *);
+	static void OnSelectScreenFilter(AG_Event *);
+	static void OnUpdateScreenFilter(AG_Event *);
+
 	static void OnSelectLedBox(AG_Event *);
 	static void OnUpdateLedBox(AG_Event *);
 	static void OnSelectInsideLed(AG_Event *);

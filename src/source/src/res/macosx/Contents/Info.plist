@@ -20,11 +20,9 @@
 	<key>CFBundleExecutable</key>
 	<string>bml3mk5</string>
 	<key>CFBundleGetInfoString</key>
-	<string>HITACHI BASIC MASTER LEVEL3 MARK5 Emulator Version 2.0.5.2118, (c) 2012-2025 Common Source Code Project, Sasaji</string>
+	<string>HITACHI BASIC MASTER LEVEL3 MARK5 Emulator Version 2.1.0.2218, (c) 2012-2025 Common Source Code Project, Sasaji</string>
 	<key>CFBundleIconFile</key>
 	<string>bml3mk5</string>
-	<key>CFBundleIdentifier</key>
-	<string></string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
@@ -32,17 +30,17 @@
 		<string>jp</string>
 	</array>
 	<key>CFBundleLongVersionString</key>
-	<string>2.0.5.2118, (c) 2012-2025 Common Source Code Project, Sasaji</string>
+	<string>2.1.0.2218, (c) 2012-2025 Common Source Code Project, Sasaji</string>
 	<key>CFBundleName</key>
 	<string>bml3mk5</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.5.2118</string>
+	<string>2.1.0.2218</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.5.2118</string>
+	<string>2.1.0.2218</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.entertainment</string>
 	<key>LSUIPresentationMode</key>

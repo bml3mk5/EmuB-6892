@@ -17,8 +17,6 @@
 
 #ifdef USE_DEBUGGER
 
-#define DEBUGGER_SOCKET_MAX_BUFF 1024
-
 class CMutex;
 
 /**
@@ -33,10 +31,10 @@ private:
 	bool connect;
 
 //	bool now_receiving;
-	uint8_t send_buff[DEBUGGER_SOCKET_MAX_BUFF];
+	uint8_t *send_buff;
 	int send_buff_w_pos;
 	int send_buff_r_pos;
-	uint8_t recv_buff[DEBUGGER_SOCKET_MAX_BUFF];
+	uint8_t *recv_buff;
 	int recv_buff_w_pos;
 	int recv_buff_r_pos;
 
@@ -54,6 +52,7 @@ public:
 	DebuggerSocket(EMU *parent_emu, const char *identifier);
 	~DebuggerSocket();
 
+	void allocate();
 	void enable_server(bool enable);
 	void enable_connect();
 	void network_connected(int ch);

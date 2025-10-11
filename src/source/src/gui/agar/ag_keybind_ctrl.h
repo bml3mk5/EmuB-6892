@@ -46,9 +46,15 @@ public:
 		AG_TableCell *cell;
 	} selected;
 
+protected:
+	virtual void InitHeaderControl(AG_Box *vbox) {}
+	virtual void InitFooterControl(AG_Box *vbox);
+
+	virtual void SetDataInControls();
+
 public:
 	AG_KEYBIND_CTRL(AG_DLG *parent, int tab_num, AG_GUI_BASE *parent_gui);
-	~AG_KEYBIND_CTRL();
+	virtual ~AG_KEYBIND_CTRL();
 	void Init(EMU *emu, AG_Notebook *nb, const char *title);
 	void Final();
 	void AdjustColumnPosition();

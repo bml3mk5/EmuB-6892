@@ -11,7 +11,6 @@
 
 #include "gtk_joysetbox.h"
 #include "../../emumsg.h"
-#include "../../config.h"
 #include "../../msgs.h"
 #include "../../labels.h"
 #include "../gui_keybinddata.h"
@@ -88,7 +87,7 @@ bool JoySettingBox::Show(GtkWidget *parent_window)
 				scale[i][k] = NULL;
 				continue;
 			}
-			
+
 			hbox = create_hbox(svbox, cs);
 			CMsg::Id id = (CMsg::Id)cVmJoyLabels[kk].id;
 			lbl = create_label(hbox, id);
@@ -134,8 +133,10 @@ bool JoySettingBox::Show(GtkWidget *parent_window)
 
 		// add note(tab) to notebook
 		GtkWidget *vboxtab = create_vbox(NULL);
-		add_note(notebook, vboxtab, LABELS::joysetting_tab[tab_num-tab_offset]);
-//		vboxbox = create_vbox(vboxall);
+//		add_note(notebook, vboxtab, LABELS::joysetting_tab[tab_num-tab_offset]);
+		UTILITY::sprintf(label, sizeof(label), "%d", tab_num + 1 - tab_offset);
+		add_note(notebook, vboxtab, label);
+		create_label(vboxtab, LABELS::joysetting_tab[tab_num-tab_offset]);
 
 		kc->Create(this, vboxtab, tab_num, 280, 320
 			, G_CALLBACK(OnKeyDown), G_CALLBACK(OnDoubleClick), G_CALLBACK(OnFocusIn));
@@ -145,14 +146,26 @@ bool JoySettingBox::Show(GtkWidget *parent_window)
 			create_label(vboxtab, "");
 		}
 #endif
-	}
-
-#ifdef USE_PIAJOYSTICKBIT
-	chkPiaJoyNeg = create_check_box(vboxall, CMsg::Signals_are_negative_logic, FLG_PIAJOY_NEGATIVE != 0);
-	chkPiaJoyConn = create_check_box(vboxall, CMsg::Connect_to_standard_PIA_A_port, pConfig->piajoy_conn_to != 0);
-#else
-	chkPiaJoyNoIrq = create_check_box(vboxall, CMsg::No_interrupt_caused_by_pressing_the_button, FLG_PIAJOY_NOIRQ != 0);
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+		if (tab_num == Keybind::TAB_JOY2JOY) {
+# ifdef USE_JOYSTICKBIT
+			chkPiaJoyNeg = create_check_box(vboxtab, CMsg::Signals_are_negative_logic, FLG_PIAJOY_NEGATIVE != 0);
+			hbox = create_hbox(vboxtab, cs);
+			create_label(hbox, CMsg::Connect_to_);
+			create_radio_box(hbox, LABELS::joysetting_opts, Config::PIAJOY_CONN_TO_MAX, radPiaJoyConn, pConfig->piajoy_conn_to);
+# else
+			chkPiaJoyNoIrq = create_check_box(vboxtab, CMsg::No_interrupt_caused_by_pressing_the_button, FLG_PIAJOY_NOIRQ != 0);
+# endif
+		}
 #endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+		if (tab_num == Keybind::TAB_JOY2JOYB) {
+# ifdef USE_JOYSTICKBIT
+			chkPsgJoyNeg = create_check_box(vboxtab, CMsg::Signals_are_negative_logic, FLG_PSGJOY_NEGATIVE != 0);
+# endif
+		}
+#endif
+	}
 
 	hbox = create_hbox(vboxall, cs);
 	vbox = create_vbox(hbox, cs);
@@ -211,11 +224,18 @@ bool JoySettingBox::SetData()
 	// will change joypad type in emu thread
 	emumsg.Send(EMUMSG_ID_MODIFY_JOYTYPE);
 #endif
-#ifdef USE_PIAJOYSTICKBIT
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+# ifdef USE_JOYSTICKBIT
 	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, get_check_state(chkPiaJoyNeg));
-	pConfig->piajoy_conn_to = (get_check_state(chkPiaJoyConn) ? 1 : 0);
-#else
+	pConfig->piajoy_conn_to = get_radio_state_idx(radPiaJoyConn, Config::PIAJOY_CONN_TO_MAX);
+# else
 	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, get_check_state(chkPiaJoyNoIrq));
+# endif
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+# ifdef USE_JOYSTICKBIT
+	BIT_ONOFF(pConfig->misc_flags, MSK_PSGJOY_NEGATIVE, get_check_state(chkPsgJoyNeg));
+# endif
 #endif
 #endif
 	return true;

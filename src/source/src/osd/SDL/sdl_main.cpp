@@ -156,9 +156,7 @@ int main(int argc, char* argv[])
 
 #ifdef USE_SDL2
 	/* SDL 2 */
-#ifdef USE_OPENGL
-	emu->set_use_opengl(pConfig->use_opengl);
-#endif
+
 	// create window
 	emu->init_screen_mode();
 	if (!emu->create_screen(pConfig->disp_device_no, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {
@@ -191,9 +189,6 @@ int main(int argc, char* argv[])
 	video_flags |= SDL_ASYNCBLIT;
 #endif
 
-#ifdef USE_OPENGL
-	emu->set_use_opengl(pConfig->use_opengl);
-#endif
 	// create window
 	emu->init_screen_mode();
 	if (!emu->create_screen(pConfig->disp_device_no, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {

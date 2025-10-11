@@ -99,6 +99,8 @@ private:
 	};
 #pragma pack()
 
+	void warm_reset(bool por);
+
 	inline uint32_t RM16(uint32_t Addr);
 	inline void WM16(uint32_t Addr, pair32_t *p);
 

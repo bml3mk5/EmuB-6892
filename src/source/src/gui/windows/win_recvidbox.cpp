@@ -44,7 +44,7 @@ static const int video_type_ids[] = {
 	0 };
 
 RecVideoBox::RecVideoBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_RECVIDEOBOX, new_font, new_emu, new_gui)
+	: CDialogBox(hInst, IDD_RECVIDEOBOX, new_emu, new_gui)
 {
 	typnum = 0;
 	memset(codnums, 0, sizeof(codnums));
@@ -63,7 +63,11 @@ RecVideoBox::~RecVideoBox()
 INT_PTR RecVideoBox::Show(HWND hWnd, bool continuous)
 {
 	cont = continuous;
-	return (video_type_ids[0] ? ::DialogBoxParam(hInstance, MAKEINTRESOURCE(dialogId), hWnd, Proc, (LPARAM)this) : IDCANCEL);
+	if (!video_type_ids[0]) {
+		return IDCANCEL;
+	}
+//	return ::DialogBoxParam(hInstance, MAKEINTRESOURCE(dialogId), hWnd, Proc, (LPARAM)this);
+	return CDialogBox::Show(hWnd);
 }
 
 INT_PTR RecVideoBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)

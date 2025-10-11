@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	int status = 0;
 
 	GtkWidget *window = NULL;
-	GtkWidget *screen = NULL;
+//	GtkWidget *screen = NULL;
 
 #if defined(__linux__) || defined(__UNIX__)
 	// To use Xlib library on multi-thread, need invoke XInitThread() at first.
@@ -165,9 +165,7 @@ int main(int argc, char* argv[])
 
 #ifdef USE_SDL2
 	/* SDL2 */
-#ifdef USE_OPENGL
-	emu->set_use_opengl(pConfig->use_opengl);
-#endif
+
 	// create window
 	emu->init_screen_mode();
 	if (!emu->create_screen(pConfig->disp_device_no, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {
@@ -184,9 +182,6 @@ int main(int argc, char* argv[])
 	video_flags |= SDL_ASYNCBLIT;
 #endif
 
-#ifdef USE_OPENGL
-	emu->set_use_opengl(pConfig->use_opengl);
-#endif
 	// create window
 	emu->init_screen_mode();
 	if (!emu->create_screen(pConfig->disp_device_no, pConfig->window_position_x, pConfig->window_position_y, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT, video_flags)) {
@@ -196,9 +191,9 @@ int main(int argc, char* argv[])
 
 #endif /* !USE_SDL2 */
 
-	screen = ((EMU_OSD *)emu)->get_screen();
+//	screen = ((EMU_OSD *)emu)->get_screen();
 	window = ((EMU_OSD *)emu)->get_window();
-	if (screen) {
+	if (window) {
 		// connect signals
 		g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnExit), NULL);
 		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyDown), NULL);

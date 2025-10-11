@@ -259,7 +259,8 @@ void Config::initialize()
 
 	cpu_power = 1;
 	now_power_off = false;
-	use_power_off = false;
+	use_power_off = false;	// toggle power on / off state
+	power_state_when_start_up = 0;
 
 #ifdef USE_DIPSWITCH
 	dipswitch = DIPSWITCH_DEFAULT;
@@ -297,14 +298,12 @@ void Config::initialize()
 	bloss[1] = 96;
 #endif
 
-#ifdef USE_DIRECT3D
-	use_direct3d = 0;
-	d3d_filter_type = 0;
+#if defined(USE_WIN)
+	drawing_method = DRAWING_METHOD_DIRECT2D_AS;
+#else
+	drawing_method = DRAWING_METHOD_DEFAULT_AS;
 #endif
-#ifdef USE_OPENGL
-	use_opengl = 0;
-	gl_filter_type = 1;
-#endif
+	filter_type = 0;
 
 #ifdef USE_FD1
 	ignore_crc = true;
@@ -324,10 +323,14 @@ void Config::initialize()
 #elif defined(USE_MPC_68008)
 	io_port |= IOPORT_MSK_MPC68008;
 #endif
-#else
+#else /* BML3MK5 */
 	io_port = IOPORT_MSK_KANJI | IOPORT_MSK_PSG6;
 #endif
+
 	misc_flags = MSK_INSIDELEDBOX | MSK_SHOWMSGBOARD | MSK_SHOWLEDBOX | MSK_SHOWMSG_UNDEFOP;
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOY)
+	misc_flags |= MSK_PSGJOY_NEGATIVE;
+#endif
 #if defined(USE_MPC_68008)
 	misc_flags |= MSK_SHOWMSG_ADDRERR;
 #endif
@@ -483,7 +486,7 @@ void Config::initialize()
 			joy_axis_threshold[i][k] = 5;
 		}
 	}
-#ifdef USE_PIAJOYSTICKBIT
+#ifdef USE_JOYSTICKBIT
 	piajoy_conn_to = 0;
 #endif
 #endif
@@ -568,6 +571,21 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 	}
 	now_power_off = ini->GetBoolValue(SECTION_CONTROL, _T("NowPowerOff"), now_power_off);
 	use_power_off = ini->GetBoolValue(SECTION_CONTROL, _T("UsePowerOff"), use_power_off);
+	power_state_when_start_up = (int)ini->GetLongValue(SECTION_CONTROL, _T("PowerStateWhenStartUp"), power_state_when_start_up);
+	if (!use_power_off) {
+		now_power_off = false;
+	}
+	switch(power_state_when_start_up) {
+	case 1:
+		now_power_off = false;
+		break;
+	case 2:
+		now_power_off = use_power_off;
+		break;
+	default:
+		power_state_when_start_up = 0;
+		break;
+	}
 
 #ifdef USE_DIPSWITCH
 	dipswitch = (uint8_t)(ini->GetLongValue(SECTION_CONTROL, _T("DipSwitch"), dipswitch) & 0xff);
@@ -734,20 +752,40 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 		keepimage = (uint8_t)valuel;
 	}
 #endif
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("DrawingMethod"), drawing_method);
+	if (valuel == DRAWING_METHOD_DEFAULT_AS
+#if defined(USE_SDL2)
+	||	valuel == DRAWING_METHOD_DEFAULT_S
+#else
+	||	valuel == DRAWING_METHOD_DEFAULT_ASDB
+#endif
 #ifdef USE_DIRECT3D
-	valuel = ini->GetLongValue(SECTION_SCREEN, _T("UseDirect3D"), use_direct3d);
-	if (0 <= valuel && valuel <= 2) {
-		use_direct3d = (uint8_t)valuel;
-	}
-	ini->Delete(SECTION_SCREEN, _T("UseOpenGL"));	// not use in this app
+	 || valuel == DRAWING_METHOD_DIRECT3D_S
+	 || valuel == DRAWING_METHOD_DIRECT3D_AS
+#endif
+#ifdef USE_DIRECT2D
+	 || valuel == DRAWING_METHOD_DIRECT2D_AS
+	 || valuel == DRAWING_METHOD_DIRECT2D_ASDB
 #endif
 #ifdef USE_OPENGL
-	valuel = ini->GetLongValue(SECTION_SCREEN, _T("UseOpenGL"), use_opengl);
-	if (0 <= valuel && valuel <= 2) {
-		use_opengl = (uint8_t)valuel;
-	}
-	ini->Delete(SECTION_SCREEN, _T("UseDirect3D"));	// not use in this app
+	 || valuel == DRAWING_METHOD_OPENGL_S
+	 || valuel == DRAWING_METHOD_OPENGL_AS
 #endif
+	) {
+		drawing_method = (uint8_t)valuel;
+	}
+
+	ini->Delete(SECTION_SCREEN, _T("UseDirect3D"));	// no longer use this
+	ini->Delete(SECTION_SCREEN, _T("UseDirect2D"));	// no longer use this
+	ini->Delete(SECTION_SCREEN, _T("UseOpenGL"));	// no longer use this
+
+	valuel = ini->GetLongValue(SECTION_SCREEN, _T("FilterType"), filter_type);
+	if (0 <= valuel && valuel <= 1) {
+		filter_type = (uint8_t)valuel;
+	}
+	ini->Delete(SECTION_SCREEN, _T("GLFilterType"));	// no longer use this
+	ini->Delete(SECTION_SCREEN, _T("D3DFilterType"));	// no longer use this
+	ini->Delete(SECTION_SCREEN, _T("DoubleBuffering"));
 
 #if defined(_BML3MK5) || defined(_MBS1)
 	valuel = ini->GetLongValue(SECTION_SCREEN, _T("DisptmgSkew"), disptmg_skew);
@@ -774,20 +812,7 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 	if (0 <= valuel && valuel <= 1) {
 		screen_video_size = (uint8_t)valuel;
 	}
-#ifdef USE_DIRECT3D
-	valuel = ini->GetLongValue(SECTION_SCREEN, _T("D3DFilterType"), d3d_filter_type);
-	if (0 <= valuel && valuel <= 2) {
-		d3d_filter_type = (uint8_t)valuel;
-	}
-	ini->Delete(SECTION_SCREEN, _T("GLFilterType"));	// not use in this app
-#endif
-#ifdef USE_OPENGL
-	valuel = ini->GetLongValue(SECTION_SCREEN, _T("GLFilterType"), gl_filter_type);
-	if (0 <= valuel && valuel <= 1) {
-		gl_filter_type = (uint8_t)valuel;
-	}
-	ini->Delete(SECTION_SCREEN, _T("D3DFilterType"));	// not use in this app
-#endif
+
 	get_str_value(SECTION_SCREEN, _T("Language"), language);
 
 #if defined(_BML3MK5) || defined(_MBS1)
@@ -834,8 +859,22 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 		valueb = ini->GetBoolValue(SECTION_CONTROL, _T("UseJoystick"), FLG_USEJOYSTICK ? true : false);
 		misc_flags = valueb ? (misc_flags | MSK_USEJOYSTICK) : (misc_flags & ~MSK_USEJOYSTICK);
 	} else {
-		valuel = ini->GetLongValue(SECTION_CONTROL, _T("UseJoystick"), FLG_USEJOYSTICK ? 1 : (FLG_USEPIAJOYSTICK ? 2 : 0));
-		misc_flags = (valuel == 1 ? misc_flags | MSK_USEJOYSTICK : (valuel == 2 ? misc_flags | MSK_USEPIAJOYSTICK : misc_flags));
+		valuel = 0;
+		if (FLG_USEJOYSTICK) valuel = 1;
+#if defined(USE_PIAJOYSTICK)
+		else if (FLG_USEPIAJOYSTICK) valuel = 2;
+#endif
+#if defined(USE_PSGJOYSTICK)
+		else if (FLG_USEPSGJOYSTICK) valuel = 3;
+#endif
+		valuel = ini->GetLongValue(SECTION_CONTROL, _T("UseJoystick"), valuel);
+		if (valuel == 1) misc_flags |= MSK_USEJOYSTICK;
+#if defined(USE_PIAJOYSTICK)
+		else if (valuel == 2) misc_flags |= MSK_USEPIAJOYSTICK;
+#endif
+#if defined(USE_PSGJOYSTICK)
+		else if (valuel == 3) misc_flags |= MSK_USEPSGJOYSTICK;
+#endif
 	}
 
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
@@ -855,7 +894,7 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 			}
 		}
 	}
-#ifdef USE_PIAJOYSTICKBIT
+# ifdef USE_JOYSTICKBIT
 	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("PIAJoystickSigsNegative"), FLG_PIAJOY_NEGATIVE ? true : false);
 	BIT_ONOFF(misc_flags, MSK_PIAJOY_NEGATIVE, valueb);
 
@@ -863,15 +902,23 @@ bool Config::load_ini_file(const _TCHAR *ini_file)
 	if (0 <= valuel && valuel <= 1) {
 		piajoy_conn_to = (int)valuel;
 	}
-#else
+# else
 	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("PIAJoystickNoInterrupt"), FLG_PIAJOY_NOIRQ ? true : false);
 	BIT_ONOFF(misc_flags, MSK_PIAJOY_NOIRQ, valueb);
-#endif
+# endif
+# ifdef USE_JOYSTICKBIT
+	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("PSGJoystickSigsNegative"), FLG_PSGJOY_NEGATIVE ? true : false);
+	BIT_ONOFF(misc_flags, MSK_PIAJOY_NEGATIVE, valueb);
+# endif
 #endif
 
-#ifdef USE_KEY2JOYSTICK
-	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("EnableKey2Joystick"), FLG_USEKEY2JOYSTICK ? true : false);
-	BIT_ONOFF(misc_flags, MSK_USEKEY2JOYSTICK, valueb);
+#ifdef USE_KEY2PIAJOYSTICK
+	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("EnableKey2Joystick"), FLG_USEKEY2PIAJOY ? true : false);
+	BIT_ONOFF(misc_flags, MSK_USEKEY2PIAJOY, valueb);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	valueb = ini->GetBoolValue(SECTION_CONTROL, _T("EnableKey2PSGJoystick"), FLG_USEKEY2PSGJOY ? true : false);
+	BIT_ONOFF(misc_flags, MSK_USEKEY2PSGJOY, valueb);
 #endif
 
 #if defined(_MBS1)
@@ -1222,6 +1269,7 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	_TCHAR base_path[_MAX_PATH];
 	_TCHAR base_name[_MAX_PATH];
 	_TCHAR buf[_MAX_PATH];
+	long valuel;
 
 	if (ini == NULL) {
 		return;
@@ -1241,6 +1289,7 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	ini->SetLongValue(SECTION_CONTROL, _T("CpuPower"), cpu_power);
 	ini->SetBoolValue(SECTION_CONTROL, _T("NowPowerOff"), now_power_off);
 	ini->SetBoolValue(SECTION_CONTROL, _T("UsePowerOff"), use_power_off);
+	ini->SetLongValue(SECTION_CONTROL, _T("PowerStateWhenStartUp"), power_state_when_start_up);
 
 #ifdef USE_DIPSWITCH
 	ini->SetLongValue(SECTION_CONTROL, _T("DipSwitch"), dipswitch, NULL, true);
@@ -1264,7 +1313,7 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 		ini->SetBoolValue(section, _T("MountWhenStartUp"), (mount_fdd & (1 << i)) != 0);
 	}
 #endif
-	
+
 #ifdef USE_HD1
 	ini->SetValue(SECTION_HDD, _T("Path"), conv_from_npath(initial_hard_disk_path.Get()));
 	ini->SetLongValue(SECTION_HDD, _T("IgnoreDelay"), (option_hdd & MSK_DELAY_HD_MASK) >> MSK_DELAY_HD_SFT);
@@ -1349,14 +1398,8 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 #ifdef USE_KEEPIMAGE
 	ini->SetLongValue(SECTION_SCREEN, _T("KeepImage"), keepimage);
 #endif
-#ifdef USE_DIRECT3D
-	ini->SetLongValue(SECTION_SCREEN, _T("UseDirect3D"), use_direct3d);
-	ini->SetLongValue(SECTION_SCREEN, _T("D3DFilterType"), d3d_filter_type);
-#endif
-#ifdef USE_OPENGL
-	ini->SetLongValue(SECTION_SCREEN, _T("UseOpenGL"), use_opengl);
-	ini->SetLongValue(SECTION_SCREEN, _T("GLFilterType"), gl_filter_type);
-#endif
+	ini->SetLongValue(SECTION_SCREEN, _T("DrawingMethod"), drawing_method, NULL, true);
+	ini->SetLongValue(SECTION_SCREEN, _T("FilterType"), filter_type);
 
 	ini->SetLongValue(SECTION_SCREEN, _T("VideoSize"), screen_video_size);
 
@@ -1366,7 +1409,15 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 	ini->SetLongValue(SECTION_CONTROL, _T("OriginalSettings"), original, NULL, true);
 
 	ini->SetBoolValue(SECTION_CONTROL, _T("ShowMessage"), FLG_SHOWMSGBOARD ? true : false);
-	ini->SetLongValue(SECTION_CONTROL, _T("UseJoystick"), FLG_USEJOYSTICK ? 1 : (FLG_USEPIAJOYSTICK ? 2 : 0));
+	valuel = 0;
+	if (FLG_USEJOYSTICK) valuel = 1;
+#if defined(USE_PIAJOYSTICK)
+	else if (FLG_USEPIAJOYSTICK) valuel = 2;
+#endif
+#if defined(USE_PSGJOYSTICK)
+	else if (FLG_USEPSGJOYSTICK) valuel = 3;
+#endif
+	ini->SetLongValue(SECTION_CONTROL, _T("UseJoystick"), valuel);
 
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
@@ -1379,17 +1430,23 @@ void Config::save_ini_file(const _TCHAR *ini_file)
 			ini->SetLongValue(SECTION_CONTROL, key, joy_axis_threshold[i][k]);
 		}
 	}
-#ifdef USE_PIAJOYSTICKBIT
+# ifdef USE_JOYSTICKBIT
 	ini->SetBoolValue(SECTION_CONTROL, _T("PIAJoystickSigsNegative"), FLG_PIAJOY_NEGATIVE ? true : false);
 
 	ini->SetLongValue(SECTION_CONTROL, _T("PIAJoystickConnectTo"), piajoy_conn_to);
-#else
+# else
 	ini->SetBoolValue(SECTION_CONTROL, _T("PIAJoystickNoInterrupt"), FLG_PIAJOY_NOIRQ ? true : false);
-#endif
+# endif
+# ifdef USE_JOYSTICKBIT
+	ini->SetBoolValue(SECTION_CONTROL, _T("PSGJoystickSigsNegative"), FLG_PSGJOY_NEGATIVE ? true : false);
+# endif
 #endif
 
-#ifdef USE_KEY2JOYSTICK
-	ini->SetBoolValue(SECTION_CONTROL, _T("EnableKey2Joystick"), FLG_USEKEY2JOYSTICK ? true : false);
+#ifdef USE_KEY2PIAJOYSTICK
+	ini->SetBoolValue(SECTION_CONTROL, _T("EnableKey2Joystick"), FLG_USEKEY2PIAJOY ? true : false);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	ini->SetBoolValue(SECTION_CONTROL, _T("EnableKey2PSGJoystick"), FLG_USEKEY2PSGJOY ? true : false);
 #endif
 
 #if defined(_MBS1)

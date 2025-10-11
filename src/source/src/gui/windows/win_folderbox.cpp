@@ -36,7 +36,7 @@ FolderBox::~FolderBox()
 
 bool FolderBox::Show(const _TCHAR *title, _TCHAR *path, size_t len)
 {
-#if !defined(__MINGW32__)
+#if 1 // !defined(__MINGW32__)
 	HMODULE hShell = NULL;
 	DWORD ver = GetVersion();
 
@@ -51,7 +51,7 @@ bool FolderBox::Show(const _TCHAR *title, _TCHAR *path, size_t len)
 	if (F_SHCreateItemFromParsingName) {
 		return ShowIFileDialog(title, path, len);
 	} else
-#endif /* !__MINGW32__ */
+#endif
 	{
 		return ShowSHBrowseForFolder(title, path);
 	}
@@ -92,7 +92,7 @@ bool FolderBox::ShowSHBrowseForFolder(const _TCHAR *title, _TCHAR *path)
 bool FolderBox::ShowIFileDialog(const _TCHAR *title, _TCHAR *path, size_t len)
 {
     HRESULT hr = S_FALSE;
-#if !defined(__MINGW32__)
+#if 1 // !defined(__MINGW32__)
 	IFileOpenDialog *fileDialog = NULL;
 	IShellItem *folder;
 	FILEOPENDIALOGOPTIONS options;
@@ -130,7 +130,7 @@ bool FolderBox::ShowIFileDialog(const _TCHAR *title, _TCHAR *path, size_t len)
 		fileDialog->Release();
 
 	} while(0);
-#endif /* !__MINGW32__ */
+#endif
 	return (hr == S_OK);
 }
 

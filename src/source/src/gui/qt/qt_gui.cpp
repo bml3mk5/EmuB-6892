@@ -55,6 +55,7 @@ MainWindow *mainwindow = nullptr;
 GUI::GUI(int argc, char **argv, EMU *new_emu) :
 	GUI_BASE(argc, argv, new_emu)
 {
+	next_drawing_method = pConfig->drawing_method;
 }
 
 GUI::~GUI()
@@ -84,6 +85,18 @@ void GUI::UpdatedScreen()
 
 void GUI::ScreenModeChanged(bool UNUSED_PARAM(fullscreen))
 {
+}
+
+bool GUI::StoreDrawingMethod(uint8_t method)
+{
+	next_drawing_method = method;
+	return false;
+}
+
+bool GUI::RestoreDrawingMethod(uint8_t &method) const
+{
+	method = next_drawing_method;
+	return false;
 }
 
 void GUI::PreProcessEvent()
@@ -770,20 +783,32 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 	mn->addSeparator();
-	actionOpenGLSync = mn->addAction(CMSG(Use_OpenGL_Sync));
-	actionOpenGLSync->setCheckable(true);
-	connectWithNumber(actionOpenGLSync, SIGNAL(triggered()), this, SLOT(selectOpenGLSlot()), 1);
-	actionOpenGLAsync = mn->addAction(CMSG(Use_OpenGL_Async));
-	actionOpenGLAsync->setCheckable(true);
-	connectWithNumber(actionOpenGLAsync, SIGNAL(triggered()), this, SLOT(selectOpenGLSlot()), 2);
+	ms = mn->addMenu(CMSG(Drawing_Method));
+	{
+		actionDrawDefault = ms->addAction(CMSG(Default_Drawing));
+		actionDrawDefault->setCheckable(true);
+		connectWithNumber(actionDrawDefault, SIGNAL(triggered()), this, SLOT(selectDrawingMethodSlot()), DRAWING_METHOD_DEFAULT_AS);
+		actionDrawDouble = ms->addAction(CMSG(Default_Double_Buffering));
+		actionDrawDouble->setCheckable(true);
+		connectWithNumber(actionDrawDouble, SIGNAL(triggered()), this, SLOT(selectDrawingMethodSlot()), DRAWING_METHOD_DEFAULT_ASDB);
+		actionOpenGLSync = ms->addAction(CMSG(Use_OpenGL_Sync));
+		actionOpenGLSync->setCheckable(true);
+		connectWithNumber(actionOpenGLSync, SIGNAL(triggered()), this, SLOT(selectDrawingMethodSlot()), DRAWING_METHOD_OPENGL_S);
+		actionOpenGLAsync = ms->addAction(CMSG(Use_OpenGL_Async));
+		actionOpenGLAsync->setCheckable(true);
+		connectWithNumber(actionOpenGLAsync, SIGNAL(triggered()), this, SLOT(selectDrawingMethodSlot()), DRAWING_METHOD_OPENGL_AS);
+	}
 
-	ms = mn->addMenu(CMSG(OpenGL_Filter));
-	actionGLFNear = ms->addAction(CMSG(Nearest_Neighbour));
-	actionGLFNear->setCheckable(true);
-	connectWithNumber(actionGLFNear, SIGNAL(triggered()), this, SLOT(selectOpenGLFilterSlot()), 0);
-	actionGLFLinear = ms->addAction(CMSG(Linear));
-	actionGLFLinear->setCheckable(true);
-	connectWithNumber(actionGLFLinear, SIGNAL(triggered()), this, SLOT(selectOpenGLFilterSlot()), 1);
+	mn->addSeparator();
+	ms = mn->addMenu(CMSG(Filter_Type));
+	{
+		actionFilterNear = ms->addAction(CMSG(Nearest_Neighbor));
+		actionFilterNear->setCheckable(true);
+		connectWithNumber(actionFilterNear, SIGNAL(triggered()), this, SLOT(selectScreenFilterSlot()), 0);
+		actionFilterLinear = ms->addAction(CMSG(Bilinear));
+		actionFilterLinear->setCheckable(true);
+		connectWithNumber(actionFilterLinear, SIGNAL(triggered()), this, SLOT(selectScreenFilterSlot()), 1);
+	}
 
 	// sound menu
 	mn = mb->addMenu(CMSG(Sound));
@@ -893,20 +918,29 @@ MainWindow::MainWindow(QWidget *parent) :
 	actionMouse->setCheckable(true);
 #endif
 
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
-	mn->addSeparator();
-#endif
 #ifdef USE_JOYSTICK
+	mn->addSeparator();
 	actionUseJoypad[0] = mn->addAction(CMSG(Use_Joypad_Key_Assigned), this, SLOT(selectUseJoypadSlot()));
 	actionUseJoypad[0]->setCheckable(true);
 #ifdef USE_PIAJOYSTICK
 	actionUseJoypad[1] = mn->addAction(CMSG(Use_Joypad_PIA_Type), this, SLOT(selectUsePIAJoypadSlot()));
 	actionUseJoypad[1]->setCheckable(true);
 #endif
+#ifdef USE_PSGJOYSTICK
+	actionUseJoypad[2] = mn->addAction(CMSG(Use_Joypad_PSG_Type), this, SLOT(selectUsePSGJoypadSlot()));
+	actionUseJoypad[2]->setCheckable(true);
+#endif
 #endif
 #ifdef USE_KEY2JOYSTICK
-	actionKey2Joypad = mn->addAction(CMSG(Enable_Key_to_Joypad), this, SLOT(selectKey2JoypadSlot()));
-	actionKey2Joypad->setCheckable(true);
+	mn->addSeparator();
+#ifdef USE_KEY2PIAJOYSTICK
+	actionKey2Joypad[0] = mn->addAction(CMSG(Enable_Key_to_Joypad_PIA_Type), this, SLOT(selectKey2PIAJoypadSlot()));
+	actionKey2Joypad[0]->setCheckable(true);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	actionKey2Joypad[1] = mn->addAction(CMSG(Enable_Key_to_Joypad_PSG_Type), this, SLOT(selectKey2PSGJoypadSlot()));
+	actionKey2Joypad[1]->setCheckable(true);
+#endif
 #endif
 
 	mn->addSeparator();
@@ -1445,13 +1479,15 @@ void MainWindow::updateMenuScreenSlot()
 	actionAnalogRGB->setChecked(num == 1);
 #endif
 
-	num = gui->GetOpenGLMode();
-	actionOpenGLSync->setChecked(num == 1);
-	actionOpenGLAsync->setChecked(num == 2);
+	num = pConfig->drawing_method;
+	actionDrawDefault->setChecked(num == DRAWING_METHOD_DEFAULT_AS);
+	actionDrawDouble->setChecked(num == DRAWING_METHOD_DEFAULT_ASDB);
+	actionOpenGLSync->setChecked(num == DRAWING_METHOD_OPENGL_S);
+	actionOpenGLAsync->setChecked(num == DRAWING_METHOD_OPENGL_AS);
 
-	num = gui->GetOpenGLFilter();
-	actionGLFNear->setChecked(num == 0);
-	actionGLFLinear->setChecked(num == 1);
+	num = gui->GetScreenFilter();
+	actionFilterNear->setChecked(num == 0);
+	actionFilterLinear->setChecked(num == 1);
 }
 void MainWindow::updateMenuScreenRecordSlot()
 {
@@ -1582,17 +1618,17 @@ void MainWindow::selectRGBTypeSlot()
 	gui->ChangeRGBType(num);
 }
 #endif
-void MainWindow::selectOpenGLSlot()
+void MainWindow::selectDrawingMethodSlot()
 {
 	QAction *act = dynamic_cast<QAction *>(sender());
 	int num = act->data().toInt();
-	gui->ChangeUseOpenGL(num);
+	gui->ChangeDrawingMethod(num);
 }
-void MainWindow::selectOpenGLFilterSlot()
+void MainWindow::selectScreenFilterSlot()
 {
 	QAction *act = dynamic_cast<QAction *>(sender());
 	int num = act->data().toInt();
-	gui->ChangeOpenGLFilter(num);
+	gui->ChangeScreenFilter(num);
 }
 
 void MainWindow::updateMenuSoundSlot()
@@ -1790,10 +1826,18 @@ void MainWindow::updateMenuOptionsSlot()
 	show = gui->IsEnableJoypad(2);
 	actionUseJoypad[1]->setChecked(show);
 #endif
+#ifdef USE_PSGJOYSTICK
+	show = gui->IsEnableJoypad(3);
+	actionUseJoypad[2]->setChecked(show);
 #endif
-#ifdef USE_KEY2JOYSTICK
-	show = gui->IsEnableKey2Joypad();
-	actionKey2Joypad->setChecked(show);
+#endif
+#ifdef USE_KEY2PIAJOYSTICK
+	show = gui->IsEnableKey2Joypad(DEV_PIAJOY);
+	actionKey2Joypad[0]->setChecked(show);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	show = gui->IsEnableKey2Joypad(DEV_PSGJOY);
+	actionKey2Joypad[1]->setChecked(show);
 #endif
 #ifdef USE_LIGHTPEN
 	show = gui->IsEnableLightpen();
@@ -1837,16 +1881,30 @@ void MainWindow::selectShowPMeterSlot()
 #endif
 void MainWindow::selectUseJoypadSlot()
 {
-	gui->ChangeUseJoypad(1);
+	gui->ChangeUseJoypad(SEL_JOY2KEY);
 }
+#ifdef USE_PIAJOYSTICK
 void MainWindow::selectUsePIAJoypadSlot()
 {
-	gui->ChangeUseJoypad(2);
+	gui->ChangeUseJoypad(SEL_JOY2PIAJOY);
 }
-#ifdef USE_KEY2JOYSTICK
-void MainWindow::selectKey2JoypadSlot()
+#endif
+#ifdef USE_PSGJOYSTICK
+void MainWindow::selectUsePSGJoypadSlot()
 {
-	gui->ToggleEnableKey2Joypad();
+	gui->ChangeUseJoypad(SEL_JOY2PSGJOY);
+}
+#endif
+#ifdef USE_KEY2PIAJOYSTICK
+void MainWindow::selectKey2PIAJoypadSlot()
+{
+	gui->ToggleEnableKey2Joypad(DEV_PIAJOY);
+}
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+void MainWindow::selectKey2PSGJoypadSlot()
+{
+	gui->ToggleEnableKey2Joypad(DEV_PSGJOY);
 }
 #endif
 void MainWindow::selectJoySettingSlot()

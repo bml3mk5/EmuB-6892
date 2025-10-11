@@ -115,50 +115,129 @@ bool MsgBoard::SetFont()
 	return enable;
 }
 
+/// 基準位置の計算
+void MsgBoard::calc_place(msg_data_t &data, VmRectWH &reDst)
+{
+	if (data.place & 1) {
+		reDst.x = szWin.cx + data.pt.x - data.sz.cx;
+		reDst.w = data.sz.cx;
+	} else {
+		reDst.x = data.pt.x;
+		reDst.w = data.sz.cx;
+	}
+	if (data.place & 2) {
+		reDst.y = szWin.cy + data.pt.y - data.sz.cy;
+		reDst.h = data.sz.cy;
+	} else {
+		reDst.y = data.pt.y;
+		reDst.h = data.sz.cy;
+	}
+}
+
 /// 文字列出力
-void MsgBoard::draw(CSurface *screen, msg_data_t &data)
+void MsgBoard::draw(CSurface &screen, msg_data_t &data)
 {
 	VmRectWH reDst;
 
 	data.mux->lock();
 
 	if (!data.lists.empty()) {
-//		list_t::iterator it = data.lists.begin();
-
 		// 基準位置の計算
-		if (data.place & 1) {
-			reDst.x = szWin.cx + data.pt.x - data.sz.cx;
-			reDst.w = data.sz.cx;
-		} else {
-			reDst.x = data.pt.x;
-			reDst.w = data.sz.cx;
-		}
-		if (data.place & 2) {
-			reDst.y = szWin.cy + data.pt.y - data.sz.cy;
-			reDst.h = data.sz.cy;
-		} else {
-			reDst.y = data.pt.y;
-			reDst.h = data.sz.cy;
-		}
+		calc_place(data, reDst);
 
 		// メインコンテキストにメッセージをコピー
 #ifdef USE_BG_TRANSPARENT
 		draw_text(screen, data, reDst.x, reDst.y);
 #else
-		sMainSuf->Blit(data.re, *screen, reDst);
+		sMainSuf->Blit(data.re, screen, reDst);
 #endif
 	}
 
 	data.mux->unlock();
 }
 
-void MsgBoard::Draw(CSurface *screen)
+void MsgBoard::draw(QPainter *screen, msg_data_t &data)
+{
+	VmRectWH reDst;
+
+	data.mux->lock();
+
+	if (!data.lists.empty()) {
+		// 基準位置の計算
+		calc_place(data, reDst);
+
+		// メインコンテキストにメッセージをコピー
+#ifdef USE_BG_TRANSPARENT
+		draw_text(screen, data, reDst.x, reDst.y);
+#else
+		screen->drawImage(reDst.x, reDst.y, *(sMainSuf->Get()), data.re.x, data.re.y, reDst.w, reDst.h);
+//		sMainSuf->Blit(data.re, screen, reDst);
+#endif
+	}
+
+	data.mux->unlock();
+}
+
+#if defined(USE_OPENGL)
+void MsgBoard::draw(COpenGLTexture &texture, msg_data_t &data)
+{
+	VmRectWH reDst;
+
+	data.mux->lock();
+
+	if (!data.lists.empty()) {
+		// 基準位置の計算
+		calc_place(data, reDst);
+
+		// メインコンテキストにメッセージをコピー
+#ifdef USE_BG_TRANSPARENT
+		draw_text(screen, data, reDst.x, reDst.y);
+#else
+		scrntype *buf = sMainSuf->GetBuffer();
+		buf += data.re.y * sMainSuf->Width();
+
+		float pyl_l = (float)reDst.x * 2.0f / (float)(szWin.cx) - 1.0f;
+		float pyl_r = (float)(reDst.x + reDst.w) * 2.0f / (float)(szWin.cx) - 1.0f;
+		float pyl_t = 1.0f - (float)reDst.y * 2.0f / (float)(szWin.cy);
+		float pyl_b = 1.0f - (float)(reDst.y + reDst.h) * 2.0f / (float)(szWin.cy);
+
+		float tex_r = (float)(data.sz.cx) / (float)sMainSuf->Width();
+		float tex_b = (float)(data.sz.cy) / 64.0f;
+
+		texture.SetPos(pyl_l, pyl_t, pyl_r, pyl_b, 0.0f, 0.0f, tex_r, tex_b);
+		texture.Render(sMainSuf->Width(), 64, buf);
+#endif
+	}
+
+	data.mux->unlock();
+}
+#endif
+
+void MsgBoard::Draw(CSurface &screen)
 {
 	if (!enable || !visible) return;
 
 	draw(screen, msg);
 	draw(screen, info);
 }
+
+void MsgBoard::Draw(QPainter *screen)
+{
+	if (!enable || !visible) return;
+
+	draw(screen, msg);
+	draw(screen, info);
+}
+
+#if defined(USE_OPENGL)
+void MsgBoard::Draw(COpenGLTexture &texture)
+{
+	if (!enable || !visible) return;
+
+	draw(texture, msg);
+	draw(texture, info);
+}
+#endif
 
 /// 文字列をバックバッファに描画
 ///

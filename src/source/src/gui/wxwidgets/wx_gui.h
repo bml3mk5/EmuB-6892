@@ -137,7 +137,7 @@ private:
 	MyMenu *menuOptions;
 
 //	int opened_datarec_type;
-	bool enable_opengl;
+//	bool enable_opengl;
 
 	int fskip_remain;
 	int rec_fps_no;
@@ -191,7 +191,7 @@ public:
 #endif
 	void UpdateScreen();
 	void UpdateTitle(const void *result);
-	void ChangePanel(int is_opengl);
+	void ChangePanel(bool enable_opengl);
 
 	void Exit();
 	void Close();

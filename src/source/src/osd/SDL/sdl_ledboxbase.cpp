@@ -31,14 +31,24 @@ LedBoxBase::LedBoxBase() : CSurface()
 	dist_set[1].x = 2; dist_set[1].y = 2;
 	memset(&win_pt, 0, sizeof(win_pt));
 	memset(&parent_pt, 0, sizeof(parent_pt));
+	memset(&win_rec_pt, 0, sizeof(win_rec_pt));
+	memset(&parent_rec_pt, 0, sizeof(parent_rec_pt));
+	changed_position = false;
 
 	enable = false;
 	visible = false;
 	inside = false;
+
+#ifdef USE_GTK
+	cairosuf = new CCairoSurface();
+#endif
 }
 
 LedBoxBase::~LedBoxBase()
 {
+#ifdef USE_GTK
+	delete cairosuf;
+#endif
 	for(int i=0; i<LED_TYPE_END; i++) {
 		delete led[i];
 	}
@@ -152,6 +162,8 @@ bool LedBoxBase::InitScreen(const _TCHAR *res_path, CPixelFormat &pixel_format)
 
 	parent_pt.w = Width();
 	parent_pt.h = Height();
+	parent_rec_pt.w = parent_pt.w;
+	parent_rec_pt.h = parent_pt.h;
 
 	enable = true;
 	return enable;
@@ -181,6 +193,9 @@ bool LedBoxBase::create_surface(CPixelFormat &format)
 #endif
 	bool rc = Create(w, h, format);
 	if (!rc) return false;
+#ifdef USE_GTK
+	cairosuf->CreateC(*this, w, h);
+#endif
 
 #if defined(USE_SDL)
 	// See SDL_ConvertSurface source code
@@ -393,18 +408,105 @@ void LedBoxBase::SetPos(int left, int top, int right, int bottom, int place)
 	move_in_place(place);
 
 	win_pt.place = place;
+
+	changed_position = true;
 }
 
 void LedBoxBase::SetPos(int place)
 {
 	SetPos(win_pt.left, win_pt.top, win_pt.right, win_pt.bottom, place);
+	SetPosForRec(win_rec_pt.left, win_rec_pt.top, win_rec_pt.right, win_rec_pt.bottom);
+}
+
+void LedBoxBase::SetPosForRec(int left, int top, int right, int bottom)
+{
+	win_rec_pt.left = left;
+	win_rec_pt.top = top;
+	win_rec_pt.right = right;
+	win_rec_pt.bottom = bottom;
+
+	if (win_pt.place & 1) {
+		// base right
+		parent_rec_pt.x = right - parent_pt.w;
+	} else {
+		// base left
+		parent_rec_pt.x = left;
+	}
+	if (win_pt.place & 2) {
+		// base bottom
+		parent_rec_pt.y = bottom - parent_pt.h;
+	} else {
+		// base top
+		parent_rec_pt.y = top;
+	}
 }
 
 void LedBoxBase::Draw(CSurface &screen)
 {
 	if (!visible || !inside || !enable) return;
 
+	changed_position = false;
 	Blit(screen, parent_pt);
+}
+
+void LedBoxBase::Draw(SDL_Surface &screen)
+{
+	if (!visible || !inside || !enable) return;
+
+	changed_position = false;
+	Blit(screen, parent_pt);
+}
+
+#ifdef USE_GTK
+void LedBoxBase::Draw(cairo_t *screen)
+{
+	if (!visible || !inside || !enable) return;
+
+	changed_position = false;
+	cairosuf->BlitC(screen, parent_pt);
+	cairo_paint(screen);
+}
+#endif
+
+#if defined(USE_SDL2)
+void LedBoxBase::Draw(CTexture &texture)
+{
+	if (!visible || !inside || !enable) return;
+
+	changed_position = false;
+	SDL_Rect texture_re;
+	RECT_IN(texture_re, 0, 0, parent_pt.w, parent_pt.h);
+	SDL_UpdateTexture(texture.Get(), &texture_re, GetBuffer(), BytesPerLine());
+	SDL_RenderCopy(texture.Renderer(), texture.Get(), &texture_re, &parent_pt);
+}
+#endif
+#ifdef USE_OPENGL
+void LedBoxBase::Draw(COpenGLTexture &texture)
+{
+	if (!visible || !inside || !enable) return;
+
+	if (changed_position) {
+		float pyl_l = -1.0f;
+		float pyl_r = 1.0f;
+		if (win_pt.place & 1) pyl_l = 1.0f - (float)parent_pt.w * 2.0f / (float)(win_pt.right - win_pt.left);
+		else pyl_r = (float)parent_pt.w * 2.0f / (float)(win_pt.right - win_pt.left) - 1.0f;
+		float pyl_t = 1.0f;
+		float pyl_b = -1.0f;
+		if (win_pt.place & 2) pyl_t = (float)parent_pt.h * 2.0f / (float)(win_pt.bottom - win_pt.top) - 1.0f;
+		else pyl_b = 1.0f - (float)parent_pt.h * 2.0f / (float)(win_pt.bottom - win_pt.top);
+		texture.SetPos(pyl_l, pyl_t, pyl_r, pyl_b, 0.0f, 0.0f, 1.0f, 1.0f);
+		changed_position = false;
+	}
+	texture.Render(Width(), Height(), GetBuffer());
+}
+#endif
+
+void LedBoxBase::DrawForRec(CSurface &screen)
+{
+	if (!visible || !inside || !enable) return;
+
+	changed_position = false;
+	Blit(screen, parent_rec_pt);
 }
 
 void LedBoxBase::SetMode(int val)

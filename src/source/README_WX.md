@@ -80,7 +80,7 @@
 
    + ソースコードからビルドする場合
 
-     - wxWidgets-3.1.0
+     - wxWidgets-3.2.4
 
        * staticライブラリにする場合
 
@@ -96,15 +96,15 @@
              ../configure --with-osx_cocoa --disable-debug --enable-shared --enable-unicode
              make
 
-     - SDL2-2.0.8
+     - SDL2-2.28.5
 
            ./configure
            make
            make install
 
-     - FFmpeg-4.x (https://ffmpeg.org/)
+     - FFmpeg-6.1.1 (https://ffmpeg.org/)
 
-       (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+       (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
        コメントアウトする。)
 
        * ヘッダファイルが必要です。
@@ -116,7 +116,7 @@
 
    + Homebrewを使用する場合
 
-     - sdl2, wxwidgets, ffmpeg@4 をインストールしてください。
+     - sdl2, wxwidgets, ffmpeg@6 をインストールしてください。
 
 #### 2. コンパイル（コマンドラインを使用する場合）
 
@@ -166,17 +166,18 @@
 
  * ディストリビューションに付属する開発用ライブラリをインストール。
 
-   + DebianやUbuntu: Synapticパッケージマネージャもしくはapt-getでインストール
+   + DebianやUbuntu: Synapticパッケージマネージャもしくはaptでインストール
    + RedhatやFedora: Yumなどでインストール
 
    + 必要なライブラリ
      - コンパイラ: gcc, g++, make
-     - 画面系: libwxbase3.1-dev, libwxgtk3.1-gtk3-dev, libsdl2-dev
-     - 録画用: libavcodec58-dev, libavutil56-dev, libavformat58-dev, libswscale5-dev
+     - 画面系: libwxbase3.2-dev, libwxgtk3.2-gtk3-dev, libsdl2-dev
+     - 録画用: libavcodec60-dev, libavutil58-dev, libavformat60-dev, libswscale7-dev
+       (これらはffmpeg6のライブラリ)
 
  * コンパイルに必要なライブラリをインストールします。
 
-   + wxWidgets-3.0.x or -3.1.x
+   + wxWidgets-3.2.x
   
      - パッケージから：libwxgtk3-dev
 
@@ -196,7 +197,7 @@
              ../configure --with-gtk --disable-debug --enable-shared --enable-unicode
              make
 
-   + SDL2-2.0.8
+   + SDL2-2.28.5
      - 付属のパッケージからインストール。
 
      - ソースからインストールする場合
@@ -207,7 +208,7 @@
 
    + FFmpeg-4.x (https://ffmpeg.org/)
 
-     (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+     (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
      コメントアウトする。)
 
      * ヘッダファイルが必要です。
@@ -287,7 +288,7 @@
              ../configure --with-msw --disable-debug --enable-shared --enable-unicode
              make 
 
-   + SDL2-2.0.x
+   + SDL2-2.28.5
 
      - Development Librariesかソースからインストール
 
@@ -297,9 +298,9 @@
            make
            make install
 
-   + FFmpeg-4.x (https://ffmpeg.org/)
+   + FFmpeg-6.x (https://ffmpeg.org/)
 
-     (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+     (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
      コメントアウトする。)
 
      * ヘッダファイルが必要です。
@@ -345,33 +346,34 @@
 
 * 必要なライブラリをVC++でビルドします。
 
-  + wxWidgets-3.1.0
+  + wxWidgets-3.2.4
 
-    - wxWidgets-3.1.0.zipをダウンロードして適当なフォルダに展開。
-    - build\mswにあるwx_vc??.slnをVC++で開く。
-    - Debug/Releaseでソリューションをビルドすると、lib\vc_lib\に
+    - wxWidgets-3.2.4.zipをダウンロードして適当なフォルダに展開。
+    - build\\mswにあるwx_vc??.slnをVC++で開く。
+    - Debug/Releaseでソリューションをビルドすると、lib\\vc_lib\\に
       ライブラリが生成される。
 
-  + SDL2-2.0.x
+  + SDL2-2.28.5
 
     ソースからインストール
       VisualCフォルダにあるSDL.slnを使用してビルド。
       出来たdll,libはlib/Release/x86にコピーしておく。
 
-  + FFmpeg-4.x (https://ffmpeg.org/)
+  + FFmpeg-6.1.1 (https://ffmpeg.org/)
 
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+   (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
 
     * ヘッダファイルが必要です。
       includeフォルダにヘッダファイルを入れてください。
     * 64ビット版のsharedライブラリとincludeファイルは以下のサイトから入手できます。
       [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/)
-      にある ffmpeg-4.4.1-full_build-shared.7z をダウンロードします。
+      にある ffmpeg-6.1.1-full_build-shared.7z をダウンロードします。
+    * 上記にない場合はGithub内の以下にあります。
+      [CODEX FFMPEG Github](https://github.com/GyanD/codexffmpeg/releases/tag/6.1.1)
     * ヘッダファイルがあれば、32ビット版のビルドもできます。
-    * バージョン3のヘッダファイルでもビルドできます。
-    * バージョン5のヘッダファイルでもビルドできますが動作するかは未確認。
-
+    * バージョン5のヘッダファイルでもビルドできます。
+    * バージョン4のヘッダファイルでもビルドできますが動作するかは未確認。
 
 #### 2. コンパイル
 

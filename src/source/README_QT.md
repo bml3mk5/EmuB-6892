@@ -56,9 +56,9 @@
      * installを実行すると、リソースなどをビルドディレクトリにコピーします。
        システムディレクトリ(/usr/localなど)にインストールはしません。
 
- * FFmpeg-4.x (https://ffmpeg.org/)
+ * FFmpeg-6.1.1 (https://ffmpeg.org/)
 
-   (FFmpegを使用しない場合、src/rec_video_defs.hにある #define USE_REC_VIDEO_FFMPEG を
+   (FFmpegを使用しない場合、src/rec_video_defs.hにある \#define USE_REC_VIDEO_FFMPEG を
     コメントアウトする。)
 
    + ヘッダファイルが必要です。

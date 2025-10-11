@@ -19,20 +19,21 @@ class EMU;
 extern EMU *emu;
 
 #define WINDOW_MODE_MAX (ID_SCREEN_WINDOW8 - ID_SCREEN_WINDOW1 + 1)
+
 /// window size
 class CWindowMode
 {
 public:
 	CWindowMode();
-	CWindowMode(int power_, int width_, int height_);
+	CWindowMode(double magnify_, int width_, int height_);
 	~CWindowMode();
 
-	int power;	///< magnify
+	double magnify;	///< magnify
 	int width;	///< client width
 	int height;	///< client height
 
-	void Set(int power_, int width_, int height_);
-	bool Match(int power_, int width_, int height_) const;
+	void Set(double magnify_, int width_, int height_);
+	bool Match(double magnify_, int width_, int height_) const;
 };
 
 /// Manage window size list
@@ -45,7 +46,7 @@ public:
 	CWindowModes();
 
 	void Sort();
-	int Find(int power_, int width_, int height_) const;
+	int Find(double magnify_, int width_, int height_) const;
 };
 
 /**

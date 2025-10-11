@@ -23,6 +23,7 @@
 #include "../../msgboard.h"
 #endif
 #include "wxw_csurface.h"
+#include "../../labels.h"
 
 // ----------------------------------------------------------------------------
 // initialize
@@ -51,48 +52,40 @@ void EMU_OSD::sleep(uint32_t ms)
 	CDelay(ms);
 }
 
-#ifdef USE_OPENGL
-void EMU_OSD::change_screen_use_opengl(int num)
-{
-	CMsg::Id need_restart = CMsg::Null;
-	const CMsg::Id list[] = {
-		CMsg::OpenGL_OFF,
-		CMsg::OpenGL_ON_Sync,
-		CMsg::OpenGL_ON_Async,
-		CMsg::End
-	};
-
-#ifdef OPENGLONLY_ON_SDL2
-	if (num >= 0) {
-		pConfig->use_opengl = num;
-	} else {
-		pConfig->use_opengl = (pConfig->use_opengl + 1) % 3;
-		if (pConfig->use_opengl == 0) pConfig->use_opengl++;
-	}
-#else
-	if (num >= 0) {
-		pConfig->use_opengl = (pConfig->use_opengl == num) ? 0 : num;
-	} else {
-		pConfig->use_opengl = (pConfig->use_opengl + 1) % 3;
-	}
-#endif
-
-#ifndef OPENGL_IMMCHANGE
-	if (pConfig->use_opengl != next_use_opengl) {
-		need_restart = CMsg::LB_Need_restart_program_RB;
-	}
-#endif
-	out_infoc_x(list[pConfig->use_opengl], need_restart, 0);
-
-#ifdef OPENGL_IMMCHANGE
-	use_opengl = pConfig->use_opengl;
-	gui->GetMyFrame()->ChangePanel(use_opengl);
-#endif
-}
-#endif
-
 /// @return wxWindow * : main frame
 wxWindow *EMU_OSD::get_window()
 {
 	return gui->GetMyFrame();
+}
+
+void EMU_OSD::change_drawing_method(int method)
+{
+	int count = LABELS::MakeDrawingMethodList(enabled_drawing_method);
+	int idx;
+
+	uint8_t prev_method = pConfig->drawing_method;
+	if (method >= 0) {
+		idx = LABELS::GetDrawingMethodIndex((uint8_t)method);
+	} else {
+		idx = (LABELS::GetDrawingMethodIndex(prev_method) + 1) % count;
+	}
+	pConfig->drawing_method = LABELS::drawing_method_idx[idx];
+
+//	lock_screen();
+
+//	create_mixedsurface();
+
+//	unlock_screen();
+
+	set_ledbox_position(!is_fullscreen());
+
+	set_msgboard_position();
+
+	out_infoc_x(LABELS::drawing_method[idx], 0);
+
+	lock_screen();
+
+	gui->GetMyFrame()->ChangePanel((get_enabled_drawing_method() & DRAWING_METHOD_ALL_MASK) != 0);
+
+	unlock_screen();
 }

@@ -14,14 +14,13 @@
 //#include "../../emu_osd.h"
 #include "../../labels.h"
 //#include "../../utility.h"
-#include "../../keycode.h"
 #include <QKeyEvent>
 #include <QTimer>
 
 extern EMU *emu;
 
 MyKeybindBox::MyKeybindBox(QWidget *parent) :
-	QDialog(parent)
+	MyKeybindBaseBox(parent)
 //	ui(new Ui::MyKeybindBox)
 {
 	setWindowTitle(CMSG(Keybind));
@@ -88,31 +87,7 @@ MyKeybindBox::MyKeybindBox(QWidget *parent) :
 	vbox_btn->addSpacerItem(spc);
 
 	//
-
-	joy_mask = ~0;
-	hbox = new QHBoxLayout();
-	vbox_all->addLayout(hbox);
-	MyCheckBox *chk;
-	chk = new MyCheckBox(CMsg::Enable_Z_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 0);
-	chk->setChecked((joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0);
-	hbox->addWidget(chk);
-	chk = new MyCheckBox(CMsg::Enable_R_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 1);
-	chk->setChecked((joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0);
-	hbox->addWidget(chk);
-	chk = new MyCheckBox(CMsg::Enable_U_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 2);
-	chk->setChecked((joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0);
-	hbox->addWidget(chk);
-	chk = new MyCheckBox(CMsg::Enable_V_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 3);
-	chk->setChecked((joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0);
-	hbox->addWidget(chk);
+	createFooter(vbox_all);
 
 	QDialogButtonBox *btn = new QDialogButtonBox(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 	vbox_all->addWidget(btn, Qt::AlignRight);
@@ -131,68 +106,4 @@ void MyKeybindBox::setData()
 	}
 
 	emu->save_keybind();
-}
-
-void MyKeybindBox::accept()
-{
-	setData();
-
-	QDialog::accept();
-}
-
-void MyKeybindBox::update()
-{
-	int curr_tab = tabWidget->currentIndex();
-	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
-	if (!tables[curr_tab]) return;
-	tables[curr_tab]->update();
-	QDialog::update();
-}
-
-void MyKeybindBox::loadPreset()
-{
-	int num = sender()->property("num").toInt();
-	int curr_tab = tabWidget->currentIndex();
-	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
-	if (!tables[curr_tab]) return;
-	tables[curr_tab]->loadPreset(num);
-	update();
-}
-
-void MyKeybindBox::savePreset()
-{
-	int num = sender()->property("num").toInt();
-	int curr_tab = tabWidget->currentIndex();
-	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
-	if (!tables[curr_tab]) return;
-	tables[curr_tab]->savePreset(num);
-	update();
-}
-
-#if 0
-void MyKeybindBox::tabChanged(int index)
-{
-	curr_tab = index;
-}
-#endif
-
-void MyKeybindBox::toggleAxis(bool checked)
-{
-	int num = sender()->property("num").toInt();
-	uint32_t mask = 0;
-	switch(num) {
-	case 0:
-		mask = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
-		break;
-	case 1:
-		mask = (JOYCODE_R_UP | JOYCODE_R_DOWN);
-		break;
-	case 2:
-		mask = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
-		break;
-	case 3:
-		mask = (JOYCODE_V_UP | JOYCODE_V_DOWN);
-		break;
-	}
-	BIT_ONOFF(joy_mask, mask, checked);
 }

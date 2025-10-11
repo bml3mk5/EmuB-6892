@@ -10,6 +10,7 @@
 #define WIN_KEYBINDCONTROL_H
 
 #include <windows.h>
+#include "win_dialogbox.h"
 #include "../../common.h"
 #include "../../msgs.h"
 #include "../gui_keybinddata.h"
@@ -129,6 +130,34 @@ public:
 	int    Getheight() { return ctrl_height; };
 	int    GetCellWidth() { return cell_width; };
 	int    GetCellHeight() { return cell_height; };
+};
+
+/// @brief Keybind base box
+class KeybindBaseBox : public CDialogBox
+{
+protected:
+	std::vector<KeybindControl *> m_kbctl;
+
+	int m_selected_tabctrl;
+
+	uint32_t m_joy_mask;
+
+	void create_dialog_footer(CBox *box_all);
+
+	INT_PTR onCommand(UINT message, WPARAM wParam, LPARAM lParam);
+	INT_PTR onNotify(UINT message, WPARAM wParam, LPARAM lParam);
+	INT_PTR onMouseWheel(UINT message, WPARAM wParam, LPARAM lParam);
+//	INT_PTR onControlColorStatic(UINT, WPARAM, LPARAM);
+	virtual INT_PTR onClickOk();
+	INT_PTR onClickLoadDefault();
+	INT_PTR onClickLoadPreset(int idx);
+	INT_PTR onClickSavePreset(int idx);
+	INT_PTR onClickAxis(int id);
+
+	virtual void select_tabctrl(int tab_num) = 0;
+
+public:
+	KeybindBaseBox(HINSTANCE new_inst, DWORD new_id, EMU *new_emu, GUI *new_gui);
 };
 
 }; /* namespace GUI_WIN */

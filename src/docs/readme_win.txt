@@ -1,7 +1,7 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
-                                                             Version 2.0.5
-                                                                2025/04/29
+                                                             Version 2.1.0
+                                                                2025/10/12
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ==============================================================================
@@ -71,7 +71,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ● 動作確認環境
 ------------------------------------------------------------------------------
 
-  Windows10(64bit)
+  Windows11(AMD 64bit) / Windows10(Intel 64bit)
   Direct3D(DirectX9以上)が正常に動作すること。
 
   使用デバイス：キーボード、マウス、ジョイスティック
@@ -100,7 +100,8 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
                   いるROM。アドレス$F800 - $FFFF のイメージ。
                   L3から抜き出したL3 ROM BASICの場合で、5インチFDから起動する場合
                   必須。
-      MP1805.ROM: 3インチコンパクトフロッピーI/Fボード(型番:MP-1805)に搭載されて
+      MP1805.ROM: 3インチコンパクトフロッピーI/Fボード(型番:MP-1805)、または、
+                  5.25インチミニフロッピーI/Fボード(型番:MP-1800)に搭載されて
                   いるROM。アドレス$F800 - $FFFF のイメージ。
                   S1から抜き出したL3 ROM BASICの場合で、3インチFDから起動する場合
                   必須。
@@ -178,7 +179,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
    ・キャラクターフォントROMイメージがない場合は、toolフォルダにあるFONT.ROM
      ファイルで代用できます。
    ・漢字のROMイメージがない場合は、toolフォルダにあるmkkanjiを実行して、
-     KANJI.ROMファイルを作成できます。
+     疑似KANJI.ROMファイルを作成できます。
 
   3. ジョイスティックを使用する場合、予め接続しておいてください。
 
@@ -331,6 +332,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
         開いた場合、2番目のボリュームをFDD3で開きます。
 
   【注意】d88形式以外のディスクイメージは正しく読み込めない可能性があります。
+          詳細は「ディスクイメージについて」の項を参照ください。
 
   「A/B面に変更(Change Side to A/B)」..【3インチコンパクトFDD使用時のみ】
           ディスクのA面/B面を入れ替えます。
@@ -340,7 +342,8 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
         実際のディスクイメージファイルに保存されます。
 
   【注意】ベタのディスクイメージはデフォルトではd88形式に変換して保存します。
-        これは設定で変更できます。
+          ベタ形式のまま保存もできます。これは設定ダイアログの「テープFDD」
+          タブで変更できます。
 
   「新規(New)」 ................. 新規にディスクイメージを作成し開きます。
     「ブランク2Dを挿入(Insert Blank 2D)」 ... 5インチ2Dのディスクイメージ
@@ -356,6 +359,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 
   【注意】ホストOSの属性で読み込み専用にしている場合、このメニューからライト
           プロテクトを外すことはできません。
+  【注意】hfe形式は読み出し専用のためプロテクトを外すことはできません。
 
   「マルチボリューム(Multi Volume)」 ..........
           複数のディスクイメージが含まれるファイルの場合は、このメニューから
@@ -435,15 +439,33 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
   「残像モード2(Afterimage2)」 .. 残像モード２
           1フレーム残像が残ります。
 
-  「Direct3Dを使用(同期)(Use Direct3D(Sync))」..........
+  「描画方法(Drawing Method)」 .... 描画方法 サブメニュー
+    「デフォルト描画(Default Drawing)」..........
+          GDI+を使用して描画。画面内のメッセージやインジケータがちらつきます。
+    「デフォルト(ダブルバッファ)(Default (Double Buffering)」.......
+          GDI+を使用して描画。内部バッファで画面を合成してから出力。
+    「Direct2Dを使用(同期)(Use Direct3D(Sync))」..........
+          Direct2Dを使用してモニタのリフレッシュレートと同期しながら描画。
+    「Direct2Dを使用(非同期)(Use Direct3D(ASync))」.......
+          Direct2Dを使用してモニタのリフレッシュレートと同期せずに描画。
+    「Direct3Dを使用(同期)(Use Direct3D(Sync))」..........
           Direct3Dを使用してモニタのリフレッシュレートと同期しながら描画。
-  「Direct3Dを使用(非同期)(Use Direct3D(ASync))」.......
+    「Direct3Dを使用(非同期)(Use Direct3D(ASync))」.......
           Direct3Dを使用してモニタのリフレッシュレートと同期せずに描画。
-  「Direct3Dフィルタ(Direct3D Filter)」.......
-          Direct3Dを使用して描画する際のフィルタ種類。
 
-  【注意】グラフィックボードがDirect3Dに対応している必要があります。
-          対応していない場合このメニューは選択できません。
+  【注意】ホストOSやグラフィックボードがDirect2DやDirect3Dに対応している必要が
+          あります。対応していない場合その項目は選択できません。
+
+  「フィルタ種類(Filter Type)」.... フィルタ種類 サブメニュー
+    画面を拡大した時の補間方法を指定します。
+    「ニアレストネイバー(Nearest Neighbor)」.......
+          ギザギザが目立つ画面になります。
+    「バイリニア(Bilinear)」.......
+          滑らかになりますがすこしぼやけた画面になります。
+
+  【注意】デフォルト描画ではフィルタ種類は反映されず、常にニアレストネイバー
+          相当の表示になります。
+
 
 「サウンド(Sound)」メニュー
   「ボリューム...(Volume...)」 .. 音量を調節するダイアログが表示されます。
@@ -567,8 +589,16 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
           キーボードのキーに割り当てて使用します。
   「ジョイパッドを使用(PIA接続)」 .... ジョイスティックをPIAポートに接続した
           ものとして使用します。
-  「キーtoジョイパッド有効」 ......... キー入力をジョイスティックとして使用
-          します。
+  「ジョイパッドを使用(PSG接続)」 .... ジョイスティックをPSGポートに接続した
+          ものとして使用します。
+
+  【注意】PSGポートを使用する場合、設定ダイアログにて 6声PSG(6voice PSG) に
+          チェックを入れて再起動するか「パワーオン(Power On)」してください。
+
+  「キーtoジョイパッド有効(PIA接続)」.. キー入力をPIAポートに接続したジョイ
+          スティックとして使用します。
+  「キーtoジョイパッド有効(PSG接続)」.. キー入力をPSGポートに接続したジョイ
+          スティックとして使用します。
 
   「キー入力にDirectInputを使用」..... キー入力にDirectInputを使用します。
   「キー入力を鈍くする(ゲーム用)」 ... BASICで作られたゲームでキャラクタが進み
@@ -661,11 +691,8 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
     画面の余白を切る(Cutout Screen)        Alt + X (Stretch Screenと切替)
     残像モード1(Afterimage1)               Alt + T (Afterimage2と切替)
     残像モード2(Afterimage2)               Alt + T (Afterimage1と切替)
-    Direct3Dを使用(同期)(Use Direct3D(Sync))
-                                           Alt + Y (Direct3D Asyncと切替)
-    Direct3Dを使用(非同期)(Use Direct3D(ASync))
-                                           Alt + Y (Direct3D Syncと切替)
-    Direct3Dフィルタ(Direct3D Filter)      Alt + U
+    描画方法の切り替え                     Alt + Y
+    フィルタ種類の切り替え                 Alt + U
   サウンド(Sound)
     ボリューム...(Volume...)               Alt + V
   オプション(Options)
@@ -700,10 +727,10 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 
   アナログスティックを十字キーとして使用する場合にその感度を設定します。
 
-  ■ジョイパッド(PIA接続)(Joypad (PIA Type))
+  ■ 1. ジョイパッド(PIA接続)(Joypad (PIA Type))
 
-  ジョイスティックの十字キー、アナログスティックおよびボタン1～28を
-  拡張PIAカードのBポート($FF62-$FF63)または標準PIAのAポート($FFC0-$FFC1)の
+    ジョイスティックの十字キー、アナログスティックおよびボタン1～28を
+  標準PIAのAポート($FFC0-$FFC1)または拡張PIAカードのBポート($FF62-$FF63)の
   信号に対応付けします。
 
   枠内の変更したい部分にマウスカーソルを合わせクリックしてください。
@@ -722,29 +749,59 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
   【注意】このダイアログを開く前にメニューの「ジョイパッドを使用(PIA接続)」に
           チェックを入れて使用する状態にしてください。
 
-  ■キーtoジョイパッド(Key to Joypad)
+    ◆信号は負論理(Signals are negative logic)
 
-  キー入力をジョイスティックの方向キーやボタンとして使用します。
+      チェックをはずすとボタンを押したときポートの出力が"1"になります。
+      チェックをいれるとボタンを押したときポートの出力が"0"になります。
+
+    ◆接続先(Connect to )
+
+      信号の出力先を指定します。
+      ・標準PIAのAポート(Standard PIA A port) ... ($FFC0-$FFC1)
+      ・拡張PIAのBポート(Extended PIA B port) ... ($FF62-$FF63)
+
+  ■ 2. キーtoジョイパッド(PIA接続)(Key to Joypad (PIA Type))
+
+    キー入力をジョイスティックの方向キーやボタンとして使用します。
 
   枠内の変更したい部分にマウスカーソルを合わせクリックしてください。
   割り当てたいキーをキーボードから入力してください。
   割り当てたキーを消去するにはマウスの左ボタンをダブルクリックしてください。
 
-  ■信号は負論理(Signals are negative logic)
+    ◆ 1. ジョイパッド(PIA接続)(Joypad (PIA Type))の以下の設定がこちらにも適用
+      されます。
+      ・信号は負論理
+      ・接続先
 
-  チェックをはずすとボタンを押したときに"1"になります。
-  チェックをいれるとボタンを押したときに"0"になります。
+  ■ 3. ジョイパッド(PSG接続)(Joypad (PSG Type))
 
-  ■標準PIAのAポートに接続(Connect to standard PIA A port)
+    ジョイスティックの十字キー、アナログスティックおよびボタン1～28を
+  拡張PSG6声カードのポート($FF30)の信号に対応付けします。
+    ジョイスティックはPSG2番目のパラレルI/Oに接続した状態をエミュレートします。
 
-  チェックをはずすと拡張PIAカードのBポート($FF62-$FF63)に、
-  チェックをいれると標準PIAのAポート($FFC0-$FFC1)に接続します。
+  操作方法は1. ジョイパッド(PIA接続)(Joypad (PIA Type))を参照してください。
 
-  ■Z軸有効、R軸有効、U軸有効、V軸有効
+    ◆信号は負論理(Signals are negative logic)
+
+      チェックをはずすとボタンを押したときポートの出力が"1"になります。
+      チェックをいれるとボタンを押したときポートの出力が"0"になります。
+
+  ■ 4. キーtoジョイパッド(PSG接続)(Key to Joypad (PSG Type))
+
+    キー入力をジョイスティックの方向キーやボタンとして使用します。
+
+  操作方法は1. ジョイパッド(PIA接続)(Joypad (PIA Type))を参照してください。
+
+    ◆ 3. ジョイパッド(PSG接続)(Joypad (PSG Type))の以下の設定がこちらにも適用
+      されます。
+      ・信号は負論理
+
+  ■以下を一時的に無効にする：(Disable temporarily the following:)
+      Z軸(Z-axis)、R軸(R-axis)、U軸(U-axis)、V軸(V-axis)
 
     ジョイスティックによっては、アナログスティックが押しっぱなしになり割当てが
-  できない場合があります。このような場合は該当する軸のチェックをはずすことで
-  一時的にその軸の入力を無効にすることができます。
+  できない場合があります。このような場合は該当する軸のチェックを入れることで
+  このダイアログ内で一時的にその軸の入力を無効にすることができます。
 
 
   --------------------------------------------------------------------------
@@ -794,11 +851,12 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
   【注意】このダイアログを開く前にメニューの「ジョイパッドを使用(キー割当)」に
           チェックを入れて使用する状態にしてください。
 
-  ■Z軸有効、R軸有効、U軸有効、V軸有効
+  ■以下を一時的に無効にする：(Disable temporarily the following:)
+      Z軸(Z-axis)、R軸(R-axis)、U軸(U-axis)、V軸(V-axis)
 
     ジョイスティックによっては、アナログスティックが押しっぱなしになり割当てが
-  できない場合があります。このような場合は該当する軸のチェックをはずすことで
-  一時的にその軸の入力を無効にすることができます。
+  できない場合があります。このような場合は該当する軸のチェックを入れることで
+  このダイアログ内で一時的にその軸の入力を無効にすることができます。
 
 
   --------------------------------------------------------------------------
@@ -829,10 +887,15 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
     設定を反映させるには、このソフトを再起動するか、
     メニューの操作(Control) -> パワーオン(PowerOn) を行なってください。
 
-   ●パワーオフの状態を有効(Enable the state of power off)
-      チェックを入れると、メニューの操作(Control) -> パワーオン(PowerOn) で
-    パワーオン/オフの状態を切り替えることができるようになります。
-      チェックを外すと、常にパワーオン状態となります。
+   ●パワーオン/オフのふるまい(Behavior of Power On/Off)
+     ◆パワーオフの状態を有効(Enable the state of power off)
+       チェックを入れるとメニューの操作(Control) -> パワーオン(PowerOn) で
+     パワーオン/オフの状態を切り替えることができるようになります。
+       チェックを外すと、常にパワーオン状態となります。
+
+     ◆起動時の電源状態(Power State When Start Up)
+       このソフト起動時にパワーオンするかオフするかを選択します。
+     ※パワーオフの状態を有効にしていない場合は常にパワーオンになります。
 
    ●I/Oポートアドレス(I/O Port Address)
     どの周辺機器を有効にするかを指定します。
@@ -862,17 +925,30 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 
    ●描画(Drawing)
     方法(Method) : 画面描画方法を指定します。
-     デフォルト(Default)
-      ...... アプリケーションに任せる
-     Direct3Dを使用(同期)(Use Direct3D(sync))
-      ...... Direct3Dを使用する（リフレッシュレートと同期）
-     Direct3Dを使用(非同期)(Use Direct3D(async))
-      ...... Direct3Dを使用する（リフレッシュレートと非同期）
+     デフォルト描画(Default Drawing) ..........
+          GDI+を使用して描画。画面内のメッセージやインジケータがちらつきます。
+     デフォルト(ダブルバッファ)(Default (Double Buffering) .......
+          GDI+を使用して描画。内部バッファで画面を合成してから出力。
+     Direct2Dを使用(同期)(Use Direct3D(Sync)) ..........
+          Direct2Dを使用してモニタのリフレッシュレートと同期しながら描画。
+     Direct2Dを使用(非同期)(Use Direct3D(ASync)) .......
+          Direct2Dを使用してモニタのリフレッシュレートと同期せずに描画。
+     Direct3Dを使用(同期)(Use Direct3D(Sync)) ..........
+          Direct3Dを使用してモニタのリフレッシュレートと同期しながら描画。
+     Direct3Dを使用(非同期)(Use Direct3D(ASync)) .......
+          Direct3Dを使用してモニタのリフレッシュレートと同期せずに描画。
+
+  【注意】ホストOSやグラフィックボードがDirect2DやDirect3Dに対応している必要が
+          あります。対応していない場合その項目は選択できません。
+
     フィルタ種類(Filter Type) : 画面を拡大した時の補間方法を指定します。
-                               (Direct3Dを使用するにした時のみ有効)
-     なし(None) ................... 補間なし
-     点(Point) .................... 点補間
-     リニア(Linear) ............... バイリニア補間
+     ニアレストネイバー(Nearest Neighbor) .......
+          ギザギザが目立つ画面になります。
+     バイリニア(Bilinear) .......
+          滑らかになりますがすこしぼやけた画面になります。
+
+  【注意】デフォルト描画ではフィルタ種類は反映されず、常にニアレストネイバー
+          相当の表示になります。
 
    ●LED
     LEDインジケータを表示するか、画面内か画面外かを指定します。
@@ -1051,9 +1127,9 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ● 録画＆録音で使用するライブラリについて
 ------------------------------------------------------------------------------
 
-  media foundationは、Windows7以降で使用できます。
+  ◯ media foundationは、Windows7以降で使用できます。
 
-  ffmpegを使用する場合は、別途以下の要領でDLLライブラリを入手してください。
+  ◯ ffmpegを使用する場合は、別途以下の要領でDLLライブラリを入手してください。
 
   Windows:
 
@@ -1061,27 +1137,21 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
      64ビットバージョンは、
        https://www.gyan.dev/ffmpeg/builds/
      にある
-       ffmpeg-4.4.1-full_build-shared.7z をダウンロードします。
+       ffmpeg-6.1.1-full_build-shared.7z をダウンロードします。
      追記: 2024/10現在、Github内の以下にあります。
-       https://github.com/GyanD/codexffmpeg/releases/tag/4.4.1
+       https://github.com/GyanD/codexffmpeg/releases/tag/6.1.1
 
-     あるいは
-       https://github.com/tsukumijima/DTV-Builds/blob/master/FFmpeg-4.4-64bit-Shared.7z
-       から画面左の「・・・」を選択しダウンロードを選ぶ。
-
-     32ビットバージョンは、
-       https://github.com/tsukumijima/DTV-Builds/blob/master/FFmpeg-4.4-32bit-Shared.7z
-       から画面左の「・・・」を選択しダウンロードを選ぶ。
+     ※32ビットバージョンはありません。
 
   2. ダウンロードしたファイルから、以下のdllファイルを本ソフトと同じフォルダに
      入れるか、システムフォルダに入れてください。
-        avcodec-58.dll
-        avutil-56.dll
-        avformat-58.dll
-        swresample-3.dll
-        swscale-5.dll
+        avcodec-60.dll
+        avutil-58.dll
+        avformat-60.dll
+        swresample-4.dll
+        swscale-7.dll
 
-  （ソースファイルからビルドする場合は、ffmpeg-4.x.xを入手してください。）
+  （ソースファイルからビルドする場合は、ffmpeg-6.1.1を入手してください。）
    FFMpegのページ： http://www.ffmpeg.org/
 
 ------------------------------------------------------------------------------
@@ -1118,8 +1188,21 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
   --------------------------------------------------------------------------
  ○ ディスクイメージについて
 
+  読み込み可能なディスクイメージ形式：
+    d88(M88 Emulator)
+    hfe(HxC Floppy Emulator)
+    dsk(CPC DISK) ※未確認
+    fdi(Anex86 FDI) ※未確認
+    td0(Teledisk) ※未確認
+    ベタ
+  書込み可能なディスクイメージ形式：
+    d88(M88 Emulator)
+    ベタ
+
   d88形式での使用を前提にしています。
   ベタ形式はDISK BASIC標準のフォーマット以外は動作確認していません。
+
+  HxCフロッピーエミュレータで使用するhfe形式は読み出しのみ対応しています。
 
   【3インチコンパクトフロッピーディスク】
   ディスクイメージは片面単密度(1S) x 2となりますが、両面倍密度(2D)であれば
@@ -1137,6 +1220,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
      2ヘッド
     16セクタ/1トラック片面
    256バイト/セクタ
+   ※起動ディスクはトラック0サイド0が単密度になります。
 
   【8インチ標準フロッピーディスク】
   ディスクイメージは両面倍密度(2D)となります。
@@ -1145,6 +1229,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
      2ヘッド
     26セクタ/1トラック片面
    256バイト/セクタ
+   ※起動ディスクはトラック0サイド0が単密度になります。
 
 
   --------------------------------------------------------------------------
@@ -1211,12 +1296,13 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
  ○ ジョイスティック
 
     USB接続もので動作確認しています。
-    ジョイスティックからキー入力できる他に、拡張PIAカードのBポート($FF62-$FF63)
-   または標準PIAのAポート($FFC0-$FFC1)への接続をエミュレートします。
+    ジョイスティックからキー入力できる他、
+    ・拡張PIAカードのBポート($FF62-$FF63)
+    ・標準PIAのAポート($FFC0-$FFC1)
+    ・6重和音PSGカード($FF30-$FF33)のPSG1側に接続している状態
+    への接続をエミュレートします。
     本ソフト起動中にジョイスティックを抜き差しした場合は、一度、キー割り当て
    ダイアログで入力可能かを確認してください。
-    ※本ソフトではPSGの汎用ポートに接続するジョイスティックのエミュレートには
-      対応していません。
 
 
   --------------------------------------------------------------------------

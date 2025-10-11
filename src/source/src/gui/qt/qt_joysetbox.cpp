@@ -14,7 +14,6 @@
 //#include "../../utils.h"
 #include "../../msgs.h"
 #include "../../labels.h"
-#include "../../keycode.h"
 #include "../gui_keybinddata.h"
 #include "../../utility.h"
 #include <QVBoxLayout>
@@ -23,7 +22,7 @@
 extern EMU *emu;
 
 MyJoySettingBox::MyJoySettingBox(QWidget *parent) :
-	QDialog(parent)
+	MyKeybindBaseBox(parent)
 {
 	_TCHAR str[64];
 
@@ -35,6 +34,7 @@ MyJoySettingBox::MyJoySettingBox(QWidget *parent) :
 	QHBoxLayout *hbox_all = new QHBoxLayout(this);
 	vbox_all->addLayout(hbox_all);
 
+	MyLabel *lbl;
 	int lx = 80;
 	int sw = 100;
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
@@ -42,7 +42,7 @@ MyJoySettingBox::MyJoySettingBox(QWidget *parent) :
 		hbox_all->addLayout(vbox);
 
 		UTILITY::stprintf(str, 64, CMSGV(CMsg::JoypadVDIGIT), i + 1);
-		MyLabel *lbl = new MyLabel(str);
+		lbl = new MyLabel(str);
 		vbox->addWidget(lbl);
 
 
@@ -126,26 +126,51 @@ MyJoySettingBox::MyJoySettingBox(QWidget *parent) :
 		QWidget *titmWidget = new QWidget();
 		QVBoxLayout *vbox = new QVBoxLayout(titmWidget);
 		tables[tab_num]->setMinimumSize(300, 300);
-		vbox->addWidget(tables[tab_num]);
-		tabWidget->addTab(titmWidget, LABELS::joysetting_tab[tab_num]);
+//		tabWidget->addTab(titmWidget, LABELS::joysetting_tab[tab_num]);
+		UTILITY::stprintf(str, 64, _T("%d"), tab_num + 1);
+		tabWidget->addTab(titmWidget, str);
 
-		tables[tab_num]->addCombiCheckButton(vbox);
+		vbox->addWidget(new MyLabel(LABELS::joysetting_tab[tab_num]));
+
+		vbox->addWidget(tables[tab_num]);
+
+//		tables[tab_num]->addCombiCheckButton(vbox);
+
+#ifdef USE_PIAJOYSTICK
+		if (tab_num + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOY) {
+#ifdef USE_JOYSTICKBIT
+			// check box
+			chkPiaJoyNeg = new MyCheckBox(CMsg::Signals_are_negative_logic);
+			chkPiaJoyNeg->setChecked(FLG_PIAJOY_NEGATIVE != 0);
+			vbox->addWidget(chkPiaJoyNeg);
+			QHBoxLayout *hbox = new QHBoxLayout();
+			hbox->addWidget(new MyLabel(CMsg::Connect_to_));
+			for(int i=0; LABELS::joysetting_opts[i] != CMsg::End; i++) {
+				radPiaJoyConn[i] = new MyRadioButton(LABELS::joysetting_opts[i]);
+				radPiaJoyConn[i]->setChecked(pConfig->piajoy_conn_to == i);
+				hbox->addWidget(radPiaJoyConn[i]);
+			}
+			vbox->addLayout(hbox);
+#else
+			chkPiaJoyNoIrq = new MyCheckBox(CMsg::No_interrupt_caused_by_pressing_the_button);
+			chkPiaJoyNoIrq->setChecked(FLG_PIAJOY_NOIRQ != 0);
+			vbox->addWidget(chkPiaJoyNoIrq);
+#endif
+		}
+#endif
+#ifdef USE_PSGJOYSTICK
+		if (tab_num + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOYB) {
+#ifdef USE_JOYSTICKBIT
+			// check box
+			chkPsgJoyNeg = new MyCheckBox(CMsg::Signals_are_negative_logic);
+			chkPsgJoyNeg->setChecked(FLG_PSGJOY_NEGATIVE != 0);
+			vbox->addWidget(chkPsgJoyNeg);
+#endif
+		}
+#endif
 	}
 //	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
-#ifdef USE_PIAJOYSTICKBIT
-	// check box
-	chkPiaJoyNeg = new MyCheckBox(CMsg::Signals_are_negative_logic);
-	chkPiaJoyNeg->setChecked(FLG_PIAJOY_NEGATIVE != 0);
-	vbox_tab->addWidget(chkPiaJoyNeg);
-	chkPiaJoyConn = new MyCheckBox(CMsg::Connect_to_standard_PIA_A_port);
-	chkPiaJoyConn->setChecked(pConfig->piajoy_conn_to != 0);
-	vbox_tab->addWidget(chkPiaJoyConn);
-#else
-	chkPiaJoyNoIrq = new MyCheckBox(CMsg::No_interrupt_caused_by_pressing_the_button);
-	chkPiaJoyNoIrq->setChecked(FLG_PIAJOY_NOIRQ != 0);
-	vbox_tab->addWidget(chkPiaJoyNoIrq);
-#endif
 
 	// right button
 	char label[128];
@@ -173,31 +198,7 @@ MyJoySettingBox::MyJoySettingBox(QWidget *parent) :
 	}
 
 	//
-
-	joy_mask = ~0;
-	hbox = new QHBoxLayout();
-	vbox_tab->addLayout(hbox);
-	MyCheckBox *chk;
-	chk = new MyCheckBox(CMsg::Enable_Z_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 0);
-	chk->setChecked((joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0);
-	hbox->addWidget(chk);
-	chk = new MyCheckBox(CMsg::Enable_R_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 1);
-	chk->setChecked((joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0);
-	hbox->addWidget(chk);
-	chk = new MyCheckBox(CMsg::Enable_U_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 2);
-	chk->setChecked((joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0);
-	hbox->addWidget(chk);
-	chk = new MyCheckBox(CMsg::Enable_V_axis);
-	connect(chk, SIGNAL(toggled()), this, SLOT(clickAxis()));
-	chk->setProperty("num", 3);
-	chk->setChecked((joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0);
-	hbox->addWidget(chk);
+	createFooter(vbox_tab);
 
 #endif
 
@@ -212,7 +213,7 @@ MyJoySettingBox::~MyJoySettingBox()
 {
 }
 
-void MyJoySettingBox::SetData()
+void MyJoySettingBox::setData()
 {
 #if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
@@ -234,86 +235,22 @@ void MyJoySettingBox::SetData()
 
 	emu->save_keybind();
 #endif
-#ifdef USE_PIAJOYSTICKBIT
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+# ifdef USE_JOYSTICKBIT
 	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, chkPiaJoyNeg->isChecked());
-	pConfig->piajoy_conn_to = chkPiaJoyConn->isChecked() ? 1 : 0;
-#else
-	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, chkPiaJoyNoIrq->isChecked());
-#endif
-}
-
-void MyJoySettingBox::accept()
-{
-	SetData();
-	QDialog::accept();
-}
-
-void MyJoySettingBox::update()
-{
-	int curr_tab = tabWidget->currentIndex();
-	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
-	if (!tables[curr_tab]) return;
-	tables[curr_tab]->update();
-	QDialog::update();
-}
-
-void MyJoySettingBox::loadPreset()
-{
-	int num = sender()->property("num").toInt();
-	int curr_tab = tabWidget->currentIndex();
-	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
-	if (!tables[curr_tab]) return;
-	tables[curr_tab]->loadPreset(num);
-	update();
-}
-
-void MyJoySettingBox::savePreset()
-{
-	int num = sender()->property("num").toInt();
-	int curr_tab = tabWidget->currentIndex();
-	if (curr_tab < 0 || curr_tab >= (int)tables.size()) return;
-	if (!tables[curr_tab]) return;
-	tables[curr_tab]->savePreset(num);
-	update();
-}
-
-#if 0
-void MyJoySettingBox::tabChanged(int index)
-{
-	curr_tab = index;
-}
-#endif
-
-void MyJoySettingBox::toggleAxis(bool checked)
-{
-	int num = sender()->property("num").toInt();
-	uint32_t mask = 0;
-	switch(num) {
-	case 0:
-		mask = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
-		break;
-	case 1:
-		mask = (JOYCODE_R_UP | JOYCODE_R_DOWN);
-		break;
-	case 2:
-		mask = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
-		break;
-	case 3:
-		mask = (JOYCODE_V_UP | JOYCODE_V_DOWN);
-		break;
+	for(int i=0; LABELS::joysetting_opts[i] != CMsg::End; i++) {
+		if (radPiaJoyConn[i]->isChecked()) {
+			pConfig->piajoy_conn_to = i;
+			break;
+		}
 	}
-	BIT_ONOFF(joy_mask, mask, checked);
-}
-
-#if 0
-void MyJoySettingBox::moveSlider1(int num)
-{
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
-	QSlider *sli = dynamic_cast<QSlider *>(sender());
-	int i = sli->property("idx").toInt();
-	int k = sli->property("pos").toInt();
-
-	pConfig->joy_mashing[i][k] = num;
+# else
+	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, chkPiaJoyNoIrq->isChecked());
+# endif
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+# ifdef USE_JOYSTICKBIT
+	BIT_ONOFF(pConfig->misc_flags, MSK_PSGJOY_NEGATIVE, chkPsgJoyNeg->isChecked());
+# endif
 #endif
 }
-#endif

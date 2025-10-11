@@ -430,10 +430,10 @@ bool MSM58321::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return debug_write_reg(num, data);
 }
 
-void MSM58321::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void MSM58321::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
-
+	UTILITY::tcscpy(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(" Registers:\n"));
 	for(uint32_t i=0; i<16; i++) {
 		UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%-5s):%X"), i, c_reg_names[i], regs[i]);
 		if ((i % 7) == 6) UTILITY::tcscat(buffer, buffer_len, _T("\n"));

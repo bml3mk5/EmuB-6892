@@ -601,18 +601,20 @@ void EMU_OSD::update_joystick()
 				XINPUT_STATE state;
 				if (XInputGetState(joy_device[i].id, &state) == ERROR_SUCCESS) {
 					// digital button on/off
-					if((int)state.Gamepad.sThumbLY < joy_prm[i].y.mintd) joy_stat |= JOYCODE_UP;
-					if((int)state.Gamepad.sThumbLY > joy_prm[i].y.maxtd) joy_stat |= JOYCODE_DOWN;
+					// X: LEFT -32768 ... 32767 RIGHT
+					// Y: DOWN -32768 ... 32767 UP
+					if((int)state.Gamepad.sThumbLY < joy_prm[i].y.mintd) joy_stat |= JOYCODE_DOWN;
+					if((int)state.Gamepad.sThumbLY > joy_prm[i].y.maxtd) joy_stat |= JOYCODE_UP;
 					if((int)state.Gamepad.sThumbLX < joy_prm[i].x.mintd) joy_stat |= JOYCODE_LEFT;
 					if((int)state.Gamepad.sThumbLX > joy_prm[i].x.maxtd) joy_stat |= JOYCODE_RIGHT;
 
-					if((int)state.Gamepad.sThumbRY < joy_prm[i].r.mintd) joy_stat |= JOYCODE_R_UP;
-					if((int)state.Gamepad.sThumbRY > joy_prm[i].r.maxtd) joy_stat |= JOYCODE_R_DOWN;
+					if((int)state.Gamepad.sThumbRY < joy_prm[i].r.mintd) joy_stat |= JOYCODE_R_DOWN;
+					if((int)state.Gamepad.sThumbRY > joy_prm[i].r.maxtd) joy_stat |= JOYCODE_R_UP;
 					if((int)state.Gamepad.sThumbRX < joy_prm[i].z.mintd) joy_stat |= JOYCODE_Z_LEFT;
 					if((int)state.Gamepad.sThumbRX > joy_prm[i].z.maxtd) joy_stat |= JOYCODE_Z_RIGHT;
 
-					joy_stat |= ((state.Gamepad.wButtons & (0xf)) << 8);
-					joy_stat |= ((state.Gamepad.wButtons & (0xf000)) << 4);
+					joy_stat |= ((state.Gamepad.wButtons & (0xf)) << 8);	// DPAD
+					joy_stat |= ((state.Gamepad.wButtons & (0xf000)) << 4);	// A,B,X,Y buttons
 					joy_stat |= ((state.Gamepad.wButtons & (0x3f0)) << 16);
 
 #ifdef USE_ANALOG_JOYSTICK
@@ -707,28 +709,32 @@ void EMU_OSD::update_joystick()
 			}
 			joy2joy_status[i][0] = joy_stat;
 
-			// convert
-			convert_joy_status(i);
+			// convert joy to joy mapping
+			if (joy2joy_curr_device >= 0) {
+				convert_joy_status(joy2joy_curr_device, i);
+			}
 		}
 	}
 #endif
 #ifdef USE_KEY2JOYSTICK
-	if (key2joy_enabled) {
-#ifndef USE_PIAJOYSTICKBIT
+	if (key2joy_curr_device >= 0) {
+# ifndef USE_JOYSTICKBIT
 		// update key 2 joystick status
 		for(int i = 0; i < MAX_JOYSTICKS; i++) {
 			for(int k = 0; k < 9; k++) {
-				joy_status[i][0] |= key2joy_status[i][k];
+				joy_status[i][0] |= key2joy[key2joy_curr_device].status[i][k];
 			}
 		}
-#else
+# else
+		// update key 2 joystick status
 		for(int i = 0; i < MAX_JOYSTICKS; i++) {
-			joy_status[i][0] |= key2joy_status[i];
+			joy_status[i][0] |= key2joy[key2joy_curr_device].status[i];
 		}
-#endif
+# endif
 	}
 #endif
 #if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+	// If rapid fire is enabled, mask the joystick state.
 	for(int i = 0; i < MAX_JOYSTICKS; i++) {
 		joy_status[i][0] &= joy_mashing_mask[i][joy_mashing_count];
 	}
@@ -737,7 +743,7 @@ void EMU_OSD::update_joystick()
 #endif
 }
 
-/// @param[in] type bit0:0:down 1:up  bit1:0:WM_KEYDOWN/UP 1:direct_input  bit2:1:avail dinput
+/// @param[in] type   : bit0:0:down 1:up  bit1:0:WM_KEYDOWN/UP 1:direct_input  bit2:1:avail dinput
 /// @param[in] code   : VK key code
 /// @param[in] status : lParam (scan code etc.)
 int EMU_OSD::key_down_up(uint8_t type, int code, long status)
@@ -940,7 +946,7 @@ bool EMU_OSD::is_xinput_device(const GUID* pGuidProductFromDirectInput)
 
 			char devName[128];
 			UINT nameSize = 128;
-			
+
 			if (GetRawInputDeviceInfoA(list[i].hDevice, RIDI_DEVICENAME, devName, &nameSize) == ((UINT)-1)) {
 				continue;
 			}

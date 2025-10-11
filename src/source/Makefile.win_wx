@@ -84,6 +84,7 @@ sh_exe: export LIBS:=$(SH_LIBS)
 sh_exe: export LDFLAGS:=$(SH_LDFLAGS)
 sh_exe: export CDEFS:=$(SH_CDEFS)
 sh_exe: export CFLAGS:=$(SH_CFLAGS)
+sh_exe: export CXXFLAGS:=$(SH_CFLAGS)
 sh_exe: export WX_CFLAGS:=$(WX_CFLAGS)
 
 st_exe: export INSTALLDIR:=$(ST_INSTALLDIR)
@@ -92,6 +93,7 @@ st_exe: export LIBS:=$(ST_LIBS)
 st_exe: export LDFLAGS:=$(ST_LDFLAGS)
 st_exe: export CDEFS:=$(ST_CDEFS)
 st_exe: export CFLAGS:=$(ST_CFLAGS)
+st_exe: export CXXFLAGS:=$(ST_CFLAGS)
 st_exe: export WX_CFLAGS:=$(WX_CFLAGS)
 
 dbg_exe: export INSTALLDIR:=$(DBG_INSTALLDIR)
@@ -100,6 +102,7 @@ dbg_exe: export LIBS:=$(DBG_LIBS)
 dbg_exe: export LDFLAGS:=$(DBG_LDFLAGS)
 dbg_exe: export CDEFS:=$(DBG_CDEFS)
 dbg_exe: export CFLAGS:=$(DBG_CFLAGS)
+dbg_exe: export CXXFLAGS:=$(DBG_CFLAGS)
 dbg_exe: export WX_CFLAGS:=$(WX_CFLAGS)
 
 sh_exe st_exe dbg_exe:

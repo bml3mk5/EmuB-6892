@@ -547,6 +547,10 @@ bool GUI::ShowJoySettingDialog(void)
 	SystemPause(true);
 
 	int rc = dlg.ShowModal();
+	if (rc == wxID_OK) {
+//		save_config();
+		emu->save_keybind();
+	}
 	SystemPause(false);
 	return (rc == wxID_OK);
 }
@@ -575,9 +579,7 @@ bool GUI::ShowConfigureDialog(void)
 	int rc = dlg.ShowModal();
 	if (rc == wxID_OK) {
 		pConfig->save();
-#ifdef USE_OPENGL
-		emu->change_opengl_attr();
-#endif
+		emu->set_screen_filter_type();
 	}
 	SystemPause(false);
 	return (rc == wxID_OK);
@@ -742,7 +744,7 @@ MyFrame::MyFrame(MyApp *parent, EMU *new_emu, GUI_BASE *new_gui, int x, int y, i
 	panel = NULL;
 	glcanvas = NULL;
 
-	enable_opengl = false;
+	bool enable_opengl = false;
 
 	fskip_remain = 0;
 	rec_fps_no = -1;
@@ -819,11 +821,16 @@ MyFrame::MyFrame(MyApp *parent, EMU *new_emu, GUI_BASE *new_gui, int x, int y, i
 
 		enable_opengl = true;
 	}
-	emu->set_use_opengl(enable_opengl ? pConfig->use_opengl : 0);
+	if (enable_opengl) {
+		emu->set_enabled_drawing_method(DRAWING_METHOD_OPENGL_MASK);
+	} else {
+		emu->clear_enabled_drawing_method(DRAWING_METHOD_OPENGL_MASK);
+		pConfig->drawing_method = DRAWING_METHOD_DEFAULT_AS;
+	}
 #endif /* USE_OPENGL */
 
 	// select display panel
-	ChangePanel(pConfig->use_opengl);
+	ChangePanel(enable_opengl);
 
 	// Our MyFrame is the Top Window
     parent->SetTopWindow(this);
@@ -1087,12 +1094,19 @@ void MyFrame::CreateMenu(wxMenuBar *mb)
 	menuScreen->AppendRadioItemById(ID_SCREEN_ANALOG, CMsg::Analog_RGB);
 #endif
 	menuScreen->AppendSeparator();
-	menuScreen->AppendCheckItemById(ID_SCREEN_OPENGL_SYNC, CMsg::Use_OpenGL_Sync);
-	menuScreen->AppendCheckItemById(ID_SCREEN_OPENGL_ASYNC, CMsg::Use_OpenGL_Async);
 		ms = new MyMenu;
-		ms->AppendCheckItemById(ID_SCREEN_OPENGL_FILTER0, CMsg::Nearest_Neighbour);
-		ms->AppendCheckItemById(ID_SCREEN_OPENGL_FILTER1, CMsg::Linear);
-	menuScreen->AppendSubMenuById(ms, CMsg::OpenGL_Filter);
+		ms->AppendCheckItemById(ID_SCREEN_DEFAULT_DRAW_AS, CMsg::Default_Drawing);
+		ms->AppendCheckItemById(ID_SCREEN_DEFAULT_DRAW_ASDB, CMsg::Default_Double_Buffering);
+#ifdef USE_OPENGL
+		ms->AppendCheckItemById(ID_SCREEN_OPENGL_SYNC, CMsg::Use_OpenGL_Sync);
+		ms->AppendCheckItemById(ID_SCREEN_OPENGL_ASYNC, CMsg::Use_OpenGL_Async);
+#endif
+	menuScreen->AppendSubMenuById(ms, CMsg::Drawing_Method);
+	menuScreen->AppendSeparator();
+		ms = new MyMenu;
+		ms->AppendCheckItemById(ID_SCREEN_FILTER0, CMsg::Nearest_Neighbor);
+		ms->AppendCheckItemById(ID_SCREEN_FILTER1, CMsg::Bilinear);
+	menuScreen->AppendSubMenuById(ms, CMsg::Filter_Type);
     // add the screen menu to the menu bar
     mb->Append(menuScreen, CMSG(Screen));
 
@@ -1172,17 +1186,24 @@ void MyFrame::CreateMenu(wxMenuBar *mb)
 	menuOptions->AppendSeparator();
 	menuOptions->AppendCheckItemById(ID_OPTIONS_MOUSE, CMsg::Enable_Mouse);
 #endif
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
-	menuOptions->AppendSeparator();
-#endif
 #ifdef USE_JOYSTICK
+	menuOptions->AppendSeparator();
 	menuOptions->AppendCheckItemById(ID_OPTIONS_JOYPAD0, CMsg::Use_Joypad_Key_Assigned);
 #ifdef USE_PIAJOYSTICK
 	menuOptions->AppendCheckItemById(ID_OPTIONS_JOYPAD1, CMsg::Use_Joypad_PIA_Type);
 #endif
+#ifdef USE_PSGJOYSTICK
+	menuOptions->AppendCheckItemById(ID_OPTIONS_JOYPAD2, CMsg::Use_Joypad_PSG_Type);
+#endif
 #endif
 #ifdef USE_KEY2JOYSTICK
-	menuOptions->AppendCheckItemById(ID_OPTIONS_KEY2JOYPAD, CMsg::Enable_Key_to_Joypad);
+	menuOptions->AppendSeparator();
+#ifdef USE_KEY2PIAJOYSTICK
+	menuOptions->AppendCheckItemById(ID_OPTIONS_KEY2JOYPAD0, CMsg::Enable_Key_to_Joypad_PIA_Type);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	menuOptions->AppendCheckItemById(ID_OPTIONS_KEY2JOYPAD1, CMsg::Enable_Key_to_Joypad_PSG_Type);
+#endif
 #endif
 	menuOptions->AppendSeparator();
 	menuOptions->AppendCheckItemById(ID_OPTIONS_LOOSEN_KEY, CMsg::Loosen_Key_Stroke_Game);
@@ -1449,15 +1470,16 @@ void MyFrame::UpdateMenuScreen()
 	menuScreen->Check(ID_SCREEN_DIGITAL, gui->GetRGBTypeMode() == 0);
 	menuScreen->Check(ID_SCREEN_ANALOG, gui->GetRGBTypeMode() == 1);
 #endif
+	menuScreen->Check(ID_SCREEN_DEFAULT_DRAW_AS, pConfig->drawing_method == DRAWING_METHOD_DEFAULT_AS);
+	menuScreen->Check(ID_SCREEN_DEFAULT_DRAW_ASDB, pConfig->drawing_method == DRAWING_METHOD_DEFAULT_ASDB);
 #ifdef USE_OPENGL
-	menuScreen->Check(ID_SCREEN_OPENGL_SYNC, (pConfig->use_opengl == 1));
-	menuScreen->Check(ID_SCREEN_OPENGL_ASYNC, (pConfig->use_opengl == 2));
-#endif
+	menuScreen->Check(ID_SCREEN_OPENGL_SYNC, pConfig->drawing_method == DRAWING_METHOD_OPENGL_S);
+	menuScreen->Check(ID_SCREEN_OPENGL_ASYNC, pConfig->drawing_method == DRAWING_METHOD_OPENGL_AS);
+	bool enable_opengl = ((emu->get_enabled_drawing_method() & DRAWING_METHOD_OPENGL_MASK) != 0);
 	menuScreen->Enable(ID_SCREEN_OPENGL_SYNC, enable_opengl);
 	menuScreen->Enable(ID_SCREEN_OPENGL_ASYNC, enable_opengl);
-#ifdef USE_OPENGL
-	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_OPENGL_FILTER0, ID_SCREEN_OPENGL_FILTER1, gui->GetOpenGLFilter());
 #endif
+	SELECT_MENU_ITEM(menuScreen, ID_SCREEN_FILTER0, ID_SCREEN_FILTER1, gui->GetScreenFilter());
 }
 /// update sound menu status
 void MyFrame::UpdateMenuSound()
@@ -1539,6 +1561,9 @@ void MyFrame::UpdateMenuOptions()
 #ifdef USE_PIAJOYSTICK
 	menuOptions->Check(ID_OPTIONS_JOYPAD1, FLG_USEPIAJOYSTICK != 0);
 #endif
+#ifdef USE_PSGJOYSTICK
+	menuOptions->Check(ID_OPTIONS_JOYPAD2, FLG_USEPSGJOYSTICK != 0);
+#endif
 #endif
 #ifdef USE_LIGHTPEN
 	menuOptions->Check(ID_OPTIONS_LIGHTPEN, gui->IsEnableLightpen());
@@ -1546,8 +1571,11 @@ void MyFrame::UpdateMenuOptions()
 #ifdef USE_MOUSE
 	menuOptions->Check(ID_OPTIONS_MOUSE, gui->IsEnableMouse());
 #endif
-#ifdef USE_KEY2JOYSTICK
-	menuOptions->Check(ID_OPTIONS_KEY2JOYPAD, gui->IsEnableKey2Joypad());
+#ifdef USE_KEY2PIAJOYSTICK
+	menuOptions->Check(ID_OPTIONS_KEY2JOYPAD0, gui->IsEnableKey2Joypad(0));
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	menuOptions->Check(ID_OPTIONS_KEY2JOYPAD1, gui->IsEnableKey2Joypad(1));
 #endif
 	menuOptions->Check(ID_OPTIONS_LOOSEN_KEY, gui->IsLoosenKeyStroke());
 	menuOptions->Check(ID_OPTIONS_VKEYBOARD, gui->IsShownVirtualKeyboard());
@@ -1573,13 +1601,8 @@ void MyFrame::UpdateScreen()
 //	if (now_expanding_menu) return;
 
 #ifdef USE_OPENGL
-	if (enable_opengl
-#ifdef OPENGL_IMMCHANGE
-		&& pConfig->use_opengl != 0
-#else
-		&& emu && emu->now_use_opengl() != 0
-#endif
-	) {
+	if ((pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) != 0) 
+	{
 		glcanvas->Refresh();
 	} else
 #endif /* USE_OPENGL */
@@ -1603,19 +1626,29 @@ void MyFrame::UpdateTitle(const void *result)
 }
 
 /// change wxPanel and wxGLCanvas
-void MyFrame::ChangePanel(int is_opengl)
+void MyFrame::ChangePanel(bool enable_opengl)
 {
 #ifdef USE_OPENGL
-	if (enable_opengl && is_opengl != 0) {
-		if (panel) panel->Show(false);
-		if (glcanvas) glcanvas->SetFocus();
+	if (enable_opengl && (pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) != 0) {
+		if (panel) {
+			panel->Show(false);
+		}
+		if (glcanvas) {
+			glcanvas->Show(true);
+			glcanvas->SetFocus();
+		}
 	} else
 #endif /* USE_OPENGL */
 	{
 #ifdef USE_OPENGL
-		if (glcanvas) glcanvas->Show(false);
+		if (glcanvas) {
+			glcanvas->Show(false);
+		}
 #endif /* USE_OPENGL */
-		if (panel) panel->SetFocus();
+		if (panel) {
+			panel->Show(true);
+			panel->SetFocus();
+		}
 	}
 }
 
@@ -1641,7 +1674,7 @@ void MyFrame::SetFocus()
 	wxFrame::SetFocus();
 
 #ifdef USE_OPENGL
-	if (enable_opengl && pConfig->use_opengl != 0) {
+	if ((pConfig->drawing_method & DRAWING_METHOD_OPENGL_MASK) != 0) {
 		glcanvas->SetFocus();
 	} else
 #endif /* USE_OPENGL */

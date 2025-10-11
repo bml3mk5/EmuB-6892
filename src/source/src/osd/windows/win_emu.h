@@ -25,6 +25,7 @@
 #include "../../res/resource.h"
 #include "../windowmode.h"
 #include "win_screenmode.h"
+#include "win_d2d.h"
 #include "win_d3d.h"
 
 // DirectX
@@ -46,7 +47,8 @@
 #endif
 #endif
 
-#define WM_RESIZE  (WM_USER + 1)
+#define WM_RESIZE    (WM_USER + 1)
+#define WM_USERPAINT (WM_USER + 2)
 
 #include <dsound.h>
 #pragma comment(lib, "dxguid.lib")
@@ -56,12 +58,12 @@
 
 class Connection;
 
-#define WM_SOCKET0 (WM_USER + 2)
-#define WM_SOCKET1 (WM_USER + 3)
-#define WM_SOCKET2 (WM_USER + 4)
-#define WM_SOCKET3 (WM_USER + 5)
-#define WM_SOCKET4 (WM_USER + 6)
-#define WM_SOCKET5 (WM_USER + 7)
+#define WM_SOCKET0 (WM_USER + 3)
+#define WM_SOCKET1 (WM_USER + 4)
+#define WM_SOCKET2 (WM_USER + 5)
+#define WM_SOCKET3 (WM_USER + 6)
+#define WM_SOCKET4 (WM_USER + 7)
+#define WM_SOCKET5 (WM_USER + 8)
 #endif /* USE_SOCKET */
 
 #ifdef USE_UART
@@ -164,32 +166,59 @@ private:
 	void EMU_SCREEN();
 	void initialize_screen();
 	void release_screen();
-	void update_screen_dc(HDC hdc);
+	inline void mix_screen_dc();
+	inline void update_screen_dc(HDC hdc);
+	inline void calc_vm_screen_size();
+	inline void calc_vm_screen_size_sub(const VmRectWH &src_size, VmRectWH &vm_size);
+	inline void set_ledbox_position(bool now_window);
+	inline void set_msgboard_position();
+	bool create_mixedsurface();
+	bool create_recordingsurface();
+	void copy_surface_for_rec();
+
+#ifdef USE_DIRECT2D
+	void initialize_d2dfactory(HWND hWnd);
+	void create_d2drender(HWND hWnd);
+	void release_d2drender();
+	void terminate_d2dfactory();
+
+	inline void mix_screen_d2d();
+	inline void update_screen_d2d();
+	void create_d2dofflinesurface();
+	HRESULT create_d2dmixedsurface();
+	void reset_d2drender(HWND hWnd);
+#endif /* USE_DIRECT2D */
 
 #ifdef USE_DIRECT3D
 	void initialize_d3device(HWND hWnd);
-	HRESULT create_d3device(HWND hWnd);
+	void create_d3device(HWND hWnd);
 	void release_d3device();
 	void terminate_d3device();
 
-	void update_screen_d3d();
-#ifdef USE_SCREEN_D3D_TEXTURE
+	inline void mix_screen_d3d();
+	inline void update_screen_d3d();
+# ifdef USE_SCREEN_D3D_TEXTURE
 	inline void copy_d3dtex_dib(PDIRECT3DTEXTURE9 tex, scrntype *buf, bool to_dib);
-#else
+# else
 	inline void copy_d3dsuf_dib(PDIRECT3DSURFACE9 suf, scrntype *buf, bool to_dib);
-#endif
+# endif
 	void create_d3dofflinesurface();
+	HRESULT create_d3dmixedsurface();
 	HRESULT reset_d3device(HWND hWnd);
 	void set_d3dpresent_interval();
-#ifdef USE_SCREEN_D3D_TEXTURE
+# ifdef USE_SCREEN_D3D_TEXTURE
 	void set_d3d_viewport();
-#endif
-#endif
+# endif
+#endif /* USE_DIRECT3D */
+
 	//@}
 	/// @name screen private members
 	//@{
 	// screen settings
 	DWORD dwStyle;
+	DWORD dwExStyle;
+
+	int window_dest_dpi;			///< backup window position if go fullscreen
 
 #if defined(USE_WIN)
 	HWND hWindow;
@@ -201,38 +230,47 @@ private:
 
 	// screen buffer
 
+#ifdef USE_DIRECT2D
+	CD2DHwndRender		mD2DRender;
+	CD2DSurface			*pD2Dsource;
+	CD2DSurface			*pD2Dorigin;
+# ifdef USE_SCREEN_ROTATE
+	CD2DSurface			*pD2Drotate;
+# endif
+# ifdef USE_SCREEN_MIX_SURFACE
+	CD2DBitmapRender	*pD2Dmixrender;
+# endif
+#endif /* USE_DIRECT2D */
+
 #ifdef USE_DIRECT3D
-	PDIRECT3D9			pD3D;
-	D3DPRESENT_PARAMETERS	d3dpp;
-	D3DDISPLAYMODE			d3ddm;
-	PDIRECT3DDEVICE9	pD3Device;
-#ifdef USE_SCREEN_D3D_TEXTURE
+	CD3DDevice			mD3DDevice;
+# ifdef USE_SCREEN_D3D_TEXTURE
 	CD3DTexture			*pD3Dsource;
 	CD3DTexture			*pD3Dorigin;
-#ifdef USE_SCREEN_ROTATE
+#  ifdef USE_SCREEN_ROTATE
 	CD3DTexture			*pD3Drotate;
-#endif
-#else
+#  endif
+# else
 	CD3DSurface			*pD3Dsource;
 	CD3DSurface			*pD3Dorigin;
-#ifdef USE_SCREEN_ROTATE
+#  ifdef USE_SCREEN_ROTATE
 	CD3DSurface			*pD3Drotate;
-#endif
-#ifdef USE_SCREEN_D3D_MIX_SURFACE
+#  endif
+#  ifdef USE_SCREEN_D3D_MIX_SURFACE
 	CD3DSurface			*pD3Dmixsuf;
-#endif
-#endif
+#  endif
+	CD3DSurface			*pD3Dbacksuf;
+# endif
 
 	scrntype*			lpD3DBmp;
-	bool                lost_d3device;
-	bool                enable_direct3d;
 
 	RECT				reD3Dmix;
 	RECT				reD3Dsuf;
-#ifdef USE_SCREEN_D3D_TEXTURE
+# ifdef USE_SCREEN_D3D_TEXTURE
 	RECT				reD3Dply;
-#endif
-#endif
+# endif
+#endif /* USE_DIRECT3D */
+
 	//@}
 
 	// ----------------------------------------
@@ -358,13 +396,10 @@ public:
 	/// @name screen menu for ui
 	//@{
 	void capture_screen();
+	bool start_rec_video(int type, int fps_no, bool show_dialog);
 	void record_rec_video();
-#ifdef USE_DIRECT3D
-	void change_screen_use_direct3d(int num);
-#endif
-#ifdef USE_DIRECT3D
-	bool enabled_direct3d() const { return enable_direct3d; }
-#endif
+	void change_rec_video_size(int num);
+	void change_drawing_method(int method);
 	//@}
 
 	/// @name input device procedures for host machine
@@ -390,21 +425,25 @@ public:
 	//@{
 	void resume_window_placement();
 	bool create_screen(int disp_no, int x, int y, int width, int height, uint32_t flags);
-	void set_display_size(int width, int height, int power, bool now_window);
+	void set_display_size(int width, int height, double magnify, bool now_window);
 	void draw_screen();
-	bool mix_screen();
-	void update_screen(HDC hdc);
+//	bool mix_screen();
+	void update_screen(HWND hWnd, bool user_event);
 	void skip_screen(bool val) {
 		skip_frame = val;
 	}
 	void need_update_screen();
 
 	void set_client_pos(int dest_x, int dest_y, int client_width, int client_height, UINT flags);
-	void set_window(int mode, int cur_width, int cur_height);
+	void set_window(int mode, int cur_width, int cur_height, int dpi = 0);
+	void change_screen_resolution(int x, int y, int width, int height, int dpi);
 	bool create_offlinesurface();
 
+#ifdef USE_DIRECT2D
+	CD2DRender *get_d2drender() { return &mD2DRender; }
+#endif
 #ifdef USE_DIRECT3D
-	PDIRECT3DDEVICE9 get_d3device() { return pD3Device; }
+	CD3DDevice *get_d3device() { return &mD3DDevice; }
 #endif
 	/// @return HWND : handle of main window
 	HWND get_window() {
@@ -444,6 +483,7 @@ public:
 	//@{
 	scrntype* screen_buffer(int y);
 	int screen_buffer_offset();
+	void set_vm_screen_size(int screen_width, int screen_height, int window_width, int window_height, int window_width_aspect, int window_height_aspect);
 	//@}
 	/// @name sound for vm
 	//@{

@@ -13,9 +13,9 @@ FILEFLAGS       0x00000000
         {
             VALUE "FileVersion", APP_VERSION "\0"
 #ifdef USE_DEBUGGER
-			VALUE "ProductVersion", APP_VERSION ""PLATFORM" with Debugger\0"
+            VALUE "ProductVersion", APP_VERSION ""PLATFORM" with Debugger\0"
 #else
-			VALUE "ProductVersion", APP_VERSION ""PLATFORM"\0"
+            VALUE "ProductVersion", APP_VERSION ""PLATFORM"\0"
 #endif
             VALUE "FileDescription", APP_NAME "\0"
             VALUE "LegalCopyright", APP_COPYRIGHT "\0"

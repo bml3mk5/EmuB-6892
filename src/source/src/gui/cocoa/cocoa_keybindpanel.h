@@ -26,22 +26,11 @@
 /**
 	@brief Keybind dialog box
 */
-@interface CocoaKeybindPanel : CocoaBasePanel
+@interface CocoaKeybindPanel : CocoaKeybindBasePanel
 {
-	CocoaTabView *tabView;
-	NSMutableArray *tableViews;
-	Uint32 enable_axes;
 }
 - (id)init;
-- (NSInteger)runModal;
-- (void)close;
-- (void)dialogCancel:(id)sender;
 - (void)dialogOk:(id)sender;
-- (void)loadDefaultPreset:(id)sender;
-- (void)loadPreset:(id)sender;
-- (void)savePreset:(id)sender;
-- (void)clickJoyAxis:(id)sender;
-
 @end
 
 #endif /* COCOA_KEYBINDPANEL_H */

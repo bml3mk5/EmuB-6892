@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ja_JP">
+<TS version="2.1" language="ja_JP" sourcelanguage="_JP">
 <context>
     <name></name>
     <message>
@@ -44,32 +44,12 @@
         <translation type="vanished">OpenGLフィルタ</translation>
     </message>
     <message>
-        <source>Direct3D OFF</source>
-        <translation type="vanished">Direct3D OFF</translation>
-    </message>
-    <message>
-        <source>Direct3D ON (Sync)</source>
-        <translation type="vanished">Direct3D(同期)ON</translation>
-    </message>
-    <message>
-        <source>Direct3D ON (Async)</source>
-        <translation type="vanished">Direct3D(非同期)ON</translation>
+        <source>Drawing Method</source>
+        <translation type="vanished">描画方法</translation>
     </message>
     <message>
         <source>OpenGL</source>
         <translation type="vanished">OpenGL</translation>
-    </message>
-    <message>
-        <source>OpenGL OFF</source>
-        <translation type="vanished">OpenGL OFF</translation>
-    </message>
-    <message>
-        <source>OpenGL ON (Sync)</source>
-        <translation type="vanished">OpenGL(同期)ON</translation>
-    </message>
-    <message>
-        <source>OpenGL ON (Async)</source>
-        <translation type="vanished">OpenGL(非同期)ON</translation>
     </message>
     <message>
         <source> (Need restart program)</source>
@@ -363,12 +343,28 @@
         <translation type="vanished">ジョイパッド有効（PIA接続）</translation>
     </message>
     <message>
+        <source>Enable Joypad (PSG Type)</source>
+        <translation type="vanished">ジョイパッド有効（PSG接続）</translation>
+    </message>
+    <message>
         <source>Enable Key to Joypad</source>
         <translation type="vanished">キーtoジョイパッド有効</translation>
     </message>
     <message>
+        <source>Enable Key to Joypad (PIA Type)</source>
+        <translation type="vanished">キーtoジョイパッド有効（PIA接続）</translation>
+    </message>
+    <message>
+        <source>Enable Key to Joypad (PSG Type)</source>
+        <translation type="vanished">キーtoジョイパッド有効（PSG接続）</translation>
+    </message>
+    <message>
         <source>Disable Joypad</source>
         <translation type="vanished">ジョイパッド無効</translation>
+    </message>
+    <message>
+        <source>Disable Key to Joypad</source>
+        <translation type="vanished">キーtoジョイパッド無効</translation>
     </message>
     <message>
         <source>Enable Lightpen</source>
@@ -852,6 +848,70 @@
         <translation type="vanished">アナログRGB</translation>
     </message>
     <message>
+        <source>Default Drawing</source>
+        <translation type="vanished">デフォルト描画</translation>
+    </message>
+    <message>
+        <source>Default Drawing	Alt+Y</source>
+        <translation type="vanished">デフォルト描画	Alt+Y</translation>
+    </message>
+    <message>
+        <source>Default (Double Buffering)</source>
+        <translation type="vanished">デフォルト(ダブルバッファ)</translation>
+    </message>
+    <message>
+        <source>Default (Double Buffering)	Alt+Y</source>
+        <translation type="vanished">デフォルト(ダブルバッファ)	Alt+Y</translation>
+    </message>
+    <message>
+        <source>Default(Sync)</source>
+        <translation type="vanished">デフォルト(同期)</translation>
+    </message>
+    <message>
+        <source>Default(Sync)	Alt+Y</source>
+        <translation type="vanished">デフォルト(同期)	Alt+Y</translation>
+    </message>
+    <message>
+        <source>Default(Async)</source>
+        <translation type="vanished">デフォルト(非同期)</translation>
+    </message>
+    <message>
+        <source>Default(Async)	Alt+Y</source>
+        <translation type="vanished">デフォルト(非同期)	Alt+Y</translation>
+    </message>
+    <message>
+        <source>Use Direct2D</source>
+        <translation type="vanished">Direct2Dを使用</translation>
+    </message>
+    <message>
+        <source>Use Direct2D	Alt+Y</source>
+        <translation type="vanished">Direct2Dを使用	Alt+Y</translation>
+    </message>
+    <message>
+        <source>Use Direct2D (Double Buffering)</source>
+        <translation type="vanished">Direct2Dを使用(ダブルバッファ)</translation>
+    </message>
+    <message>
+        <source>Use Direct2D (Double Buffering)	Alt+Y</source>
+        <translation type="vanished">Direct2Dを使用(ダブルバッファ)	Alt+Y</translation>
+    </message>
+    <message>
+        <source>Use Direct2D(Sync)</source>
+        <translation type="vanished">Direct2Dを使用(同期)</translation>
+    </message>
+    <message>
+        <source>Use Direct2D(Sync)	Alt+Y</source>
+        <translation type="vanished">Direct2Dを使用(同期)	Alt+Y</translation>
+    </message>
+    <message>
+        <source>Use Direct2D(Async)</source>
+        <translation type="vanished">Direct2Dを使用(非同期)</translation>
+    </message>
+    <message>
+        <source>Use Direct2D(Async)	Alt+Y</source>
+        <translation type="vanished">Direct2Dを使用(非同期)	Alt+Y</translation>
+    </message>
+    <message>
         <source>Use Direct3D(Sync)</source>
         <translation type="vanished">Direct3Dを使用(同期)</translation>
     </message>
@@ -884,20 +944,20 @@
         <translation type="vanished">OpenGLを使用(非同期)	Alt+Y</translation>
     </message>
     <message>
-        <source>Nearest Neighbour</source>
+        <source>Nearest Neighbor</source>
         <translation type="vanished">ニアレストネイバー</translation>
     </message>
     <message>
-        <source>Nearest Neighbour	Alt+U</source>
+        <source>Nearest Neighbor	Alt+U</source>
         <translation type="vanished">ニアレストネイバー	Alt+U</translation>
     </message>
     <message>
-        <source>Linear</source>
-        <translation type="vanished">リニア</translation>
+        <source>Bilinear</source>
+        <translation type="vanished">バイリニア</translation>
     </message>
     <message>
-        <source>Linear	Alt+U</source>
-        <translation type="vanished">リニア	Alt+U</translation>
+        <source>Bilinear	Alt+U</source>
+        <translation type="vanished">バイリニア	Alt+U</translation>
     </message>
     <message>
         <source>Sound</source>
@@ -1050,6 +1110,14 @@
     <message>
         <source>Use Joypad (PIA Type)	Alt+J</source>
         <translation type="vanished">ジョイパッド使用（PIA接続）	Alt+J</translation>
+    </message>
+    <message>
+        <source>Use Joypad (PSG Type)</source>
+        <translation type="vanished">ジョイパッド使用（PSG接続）</translation>
+    </message>
+    <message>
+        <source>Use Joypad (PSG Type)	Alt+J</source>
+        <translation type="vanished">ジョイパッド使用（PSG接続）	Alt+J</translation>
     </message>
     <message>
         <source>Enable Lightpen	Alt+Ctrl</source>
@@ -1206,6 +1274,10 @@
     <message>
         <source>KANJI ROM  $FF75 - $FF76</source>
         <translation type="vanished">漢字ROM  $FF75 - $FF76</translation>
+    </message>
+    <message>
+        <source>KANJI ROM (JIS2)  $FF72 - $FF74</source>
+        <translation type="vanished">漢字ROM (JIS2)  $FF72 - $FF74</translation>
     </message>
     <message>
         <source>Ex PSG (for S1)  $FFE6,E7 ($FFEE,EF)</source>
@@ -1472,6 +1544,10 @@
     <message>
         <source>Connect interrupt signal of Z80B Card to (*)</source>
         <translation type="vanished">Z80Bカードの割り込み信号接続先 (*)</translation>
+    </message>
+    <message>
+        <source>Use double buffering when method is default.</source>
+        <translation type="vanished">方法がデフォルトの時ダブルバッファを使用</translation>
     </message>
     <message>
         <source>MsgBoard: OK</source>
@@ -2075,6 +2151,22 @@
         <extra-po-flags>c-format</extra-po-flags>
     </message>
     <message>
+        <source>bit 0</source>
+        <translation type="vanished">ビット 0</translation>
+    </message>
+    <message>
+        <source>bit 1</source>
+        <translation type="vanished">ビット 1</translation>
+    </message>
+    <message>
+        <source>bit 2</source>
+        <translation type="vanished">ビット 2</translation>
+    </message>
+    <message>
+        <source>bit 3</source>
+        <translation type="vanished">ビット 3</translation>
+    </message>
+    <message>
         <source>bit 4</source>
         <translation type="vanished">ビット 4</translation>
     </message>
@@ -2208,6 +2300,10 @@
         <translation type="vanished">V軸</translation>
     </message>
     <message>
+        <source>Disable temporarily the following:</source>
+        <translation type="vanished">以下を一時的に無効にする：</translation>
+    </message>
+    <message>
         <source>kanji</source>
         <translation type="vanished">漢字</translation>
     </message>
@@ -2321,6 +2417,10 @@
         <translation type="vanished">L3のPIA</translation>
     </message>
     <message>
+        <source>PSG Port on L3</source>
+        <translation type="vanished">L3のPSGポート</translation>
+    </message>
+    <message>
         <source>Keyboard</source>
         <translation type="vanished">キーボード</translation>
     </message>
@@ -2337,8 +2437,20 @@
         <translation type="vanished">ジョイパッド（PIA接続）</translation>
     </message>
     <message>
+        <source>Joypad (PSG Type)</source>
+        <translation type="vanished">ジョイパッド（PSG接続）</translation>
+    </message>
+    <message>
         <source>Key to Joypad</source>
         <translation type="vanished">キーtoジョイパッド</translation>
+    </message>
+    <message>
+        <source>Key to Joypad (PIA Type)</source>
+        <translation type="vanished">キーtoジョイパッド（PIA接続）</translation>
+    </message>
+    <message>
+        <source>Key to Joypad (PSG Type)</source>
+        <translation type="vanished">キーtoジョイパッド（PSG接続）</translation>
     </message>
     <message>
         <source>Joypad%d</source>
@@ -2352,6 +2464,22 @@
     <message>
         <source>Recognize as another key when pressed two buttons</source>
         <translation type="vanished">2つのボタンを押したとき、別のキーと認識する</translation>
+    </message>
+    <message>
+        <source>Connect to </source>
+        <translation type="vanished">接続先 </translation>
+    </message>
+    <message>
+        <source>Standard PIA A port</source>
+        <translation type="vanished">標準PIAのAポート</translation>
+    </message>
+    <message>
+        <source>Extended PIA B port</source>
+        <translation type="vanished">拡張PIAのBポート</translation>
+    </message>
+    <message>
+        <source>No interrupt caused by pressing the button</source>
+        <translation type="vanished">ボタンを押した時に割り込みを発生させない</translation>
     </message>
     <message>
         <source>Load Default</source>
@@ -2536,6 +2664,11 @@ PSG</translation>
     <message>
         <source>Floppy image on drive %d is saved as the new file: %s.</source>
         <translation type="vanished">ドライブ%dのフロッピーイメージは新しいファイル%sで保存されます。</translation>
+        <extra-po-flags>c-format</extra-po-flags>
+    </message>
+    <message>
+        <source>It&apos;s not supported to write to the floppy image on drive %d.</source>
+        <translation type="vanished">ドライブ%dのフロッピーイメージへの書き込みはサポートしていません。</translation>
         <extra-po-flags>c-format</extra-po-flags>
     </message>
     <message>
@@ -2804,6 +2937,22 @@ PSG</translation>
         <translation type="vanished">デフォルト</translation>
     </message>
     <message>
+        <source>Window Size x0.5</source>
+        <translation type="vanished">ウィンドウサイズ x0.5</translation>
+    </message>
+    <message>
+        <source>Window Size x1.0</source>
+        <translation type="vanished">ウィンドウサイズ x1.0</translation>
+    </message>
+    <message>
+        <source>Window Size x1.5</source>
+        <translation type="vanished">ウィンドウサイズ x1.5</translation>
+    </message>
+    <message>
+        <source>Window Size x2.0</source>
+        <translation type="vanished">ウィンドウサイズ x2.0</translation>
+    </message>
+    <message>
         <source>Preferences…</source>
         <translation type="vanished">環境設定...</translation>
     </message>
@@ -2861,3759 +3010,3914 @@ PSG</translation>
     <message>
         <location filename="../../src/msgs.cpp" line="28"/>
         <source>None</source>
-        <translation>なし</translation>
+        <translation type="unfinished">なし</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="29"/>
         <source>None	Alt+U</source>
-        <translation>なし	Alt+U</translation>
+        <translation type="unfinished">なし	Alt+U</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="30"/>
         <source>Point</source>
-        <translation>点</translation>
+        <translation type="unfinished">点</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="31"/>
         <source>Point	Alt+U</source>
-        <translation>ポイント	Alt+U</translation>
+        <translation type="unfinished">ポイント	Alt+U</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="32"/>
         <source>Memory Without Wait</source>
-        <translation>メモリウェイトなし</translation>
+        <translation type="unfinished">メモリウェイトなし</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="33"/>
         <source>Memory With Wait</source>
-        <translation>メモリウェイトあり</translation>
+        <translation type="unfinished">メモリウェイトあり</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="34"/>
         <source>Filter...</source>
-        <translation>フィルタ...</translation>
+        <translation type="unfinished">フィルタ...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="35"/>
         <source>Filter Type</source>
-        <translation>フィルタ種類</translation>
+        <translation type="unfinished">フィルタ種類</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="36"/>
         <source>Direct3D Filter</source>
-        <translation>Direct3Dフィルタ</translation>
+        <translation type="unfinished">Direct3Dフィルタ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="37"/>
         <source>OpenGL Filter</source>
-        <translation>OpenGLフィルタ</translation>
+        <translation type="unfinished">OpenGLフィルタ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="38"/>
-        <source>Direct3D OFF</source>
-        <translation>Direct3D OFF</translation>
+        <source>Drawing Method</source>
+        <translation type="unfinished">描画方法</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="39"/>
-        <source>Direct3D ON (Sync)</source>
-        <translation>Direct3D(同期)ON</translation>
+        <source>OpenGL</source>
+        <translation type="unfinished">OpenGL</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="40"/>
-        <source>Direct3D ON (Async)</source>
-        <translation>Direct3D(非同期)ON</translation>
+        <source> (Need restart program)</source>
+        <translation type="unfinished"> (プログラムの再起動が必要)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="41"/>
-        <source>OpenGL</source>
-        <translation>OpenGL</translation>
+        <source> (Need PowerOn)</source>
+        <translation type="unfinished"> (パワーオンが必要)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="42"/>
-        <source>OpenGL OFF</source>
-        <translation>OpenGL OFF</translation>
+        <source>* Need restart program.</source>
+        <translation type="unfinished">* プログラムの再起動が必要。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="43"/>
-        <source>OpenGL ON (Sync)</source>
-        <translation>OpenGL(同期)ON</translation>
+        <source>* Need restart program or &quot;PowerOn&quot;.</source>
+        <translation type="unfinished">* プログラムの再起動か&quot;パワーオン&quot;が必要。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="44"/>
-        <source>OpenGL ON (Async)</source>
-        <translation>OpenGL(非同期)ON</translation>
+        <source>CPU Speed</source>
+        <translation type="unfinished">CPUスピード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="45"/>
-        <source> (Need restart program)</source>
-        <translation> (プログラムの再起動が必要)</translation>
+        <source>CPU x0.5</source>
+        <translation type="unfinished">CPU 0.5倍</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="46"/>
-        <source> (Need PowerOn)</source>
-        <translation> (パワーオンが必要)</translation>
+        <source>CPU x1</source>
+        <translation type="unfinished">CPU 1倍</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="47"/>
-        <source>* Need restart program.</source>
-        <translation>* プログラムの再起動が必要。</translation>
+        <source>CPU x2</source>
+        <translation type="unfinished">CPU 2倍</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="48"/>
-        <source>* Need restart program or &quot;PowerOn&quot;.</source>
-        <translation>* プログラムの再起動か&quot;パワーオン&quot;が必要。</translation>
+        <source>CPU x4</source>
+        <translation type="unfinished">CPU 4倍</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="49"/>
-        <source>CPU Speed</source>
-        <translation>CPUスピード</translation>
+        <source>CPU x8</source>
+        <translation type="unfinished">CPU 8倍</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="50"/>
-        <source>CPU x0.5</source>
-        <translation>CPU 0.5倍</translation>
+        <source>CPU x16</source>
+        <translation type="unfinished">CPU 16倍</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="51"/>
-        <source>CPU x1</source>
-        <translation>CPU 1倍</translation>
+        <source>CPU x0.5	Alt+9</source>
+        <translation type="unfinished">CPU 0.5倍	Alt+9</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="52"/>
-        <source>CPU x2</source>
-        <translation>CPU 2倍</translation>
+        <source>CPU x1	Alt+1</source>
+        <translation type="unfinished">CPU 1倍	Alt+1</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="53"/>
-        <source>CPU x4</source>
-        <translation>CPU 4倍</translation>
+        <source>CPU x2	Alt+2</source>
+        <translation type="unfinished">CPU 2倍	Alt+2</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="54"/>
-        <source>CPU x8</source>
-        <translation>CPU 8倍</translation>
+        <source>CPU x4	Alt+3</source>
+        <translation type="unfinished">CPU 4倍	Alt+3</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="55"/>
-        <source>CPU x16</source>
-        <translation>CPU 16倍</translation>
+        <source>CPU x8	Alt+4</source>
+        <translation type="unfinished">CPU 8倍	Alt+4</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="56"/>
-        <source>CPU x0.5	Alt+9</source>
-        <translation>CPU 0.5倍	Alt+9</translation>
+        <source>CPU x16	Alt+5</source>
+        <translation type="unfinished">CPU 16倍	Alt+5</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="57"/>
-        <source>CPU x1	Alt+1</source>
-        <translation>CPU 1倍	Alt+1</translation>
+        <source>CPU x%d</source>
+        <translation type="unfinished">CPU %d倍</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="58"/>
-        <source>CPU x2	Alt+2</source>
-        <translation>CPU 2倍	Alt+2</translation>
+        <source>Synchronize Device Speed With CPU Speed</source>
+        <translation type="unfinished">デバイススピードをCPUスピードと同期</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="59"/>
-        <source>CPU x4	Alt+3</source>
-        <translation>CPU 4倍	Alt+3</translation>
+        <source>Asynchronize Device Speed With CPU Speed</source>
+        <translation type="unfinished">デバイススピードをCPUスピードと非同期</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="60"/>
-        <source>CPU x8	Alt+4</source>
-        <translation>CPU 8倍	Alt+4</translation>
+        <source>Checker Drawing</source>
+        <translation type="unfinished">市松模様で描画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="61"/>
-        <source>CPU x16	Alt+5</source>
-        <translation>CPU 16倍	Alt+5</translation>
+        <source>Stripe Drawing</source>
+        <translation type="unfinished">縞模様で描画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="62"/>
-        <source>CPU x%d</source>
-        <translation>CPU %d倍</translation>
+        <source>Scanline Drawing</source>
+        <translation type="unfinished">走査線描画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="63"/>
-        <source>Synchronize Device Speed With CPU Speed</source>
-        <translation>デバイススピードをCPUスピードと同期</translation>
+        <source>Full Drawing</source>
+        <translation type="unfinished">フル描画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="64"/>
-        <source>Asynchronize Device Speed With CPU Speed</source>
-        <translation>デバイススピードをCPUスピードと非同期</translation>
+        <source>Afterimage OFF</source>
+        <translation type="unfinished">残像モード OFF</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="65"/>
-        <source>Checker Drawing</source>
-        <translation>市松模様で描画</translation>
+        <source>Afterimage%d ON</source>
+        <translation type="unfinished">残像モード%d ON</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="66"/>
-        <source>Stripe Drawing</source>
-        <translation>縞模様で描画</translation>
+        <source>Keepimage OFF</source>
+        <translation type="unfinished">画面保持モード OFF</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="67"/>
-        <source>Scanline Drawing</source>
-        <translation>走査線描画</translation>
+        <source>Keepimage%d ON</source>
+        <translation type="unfinished">画面保持モード%d ON</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="68"/>
-        <source>Full Drawing</source>
-        <translation>フル描画</translation>
+        <source>Pause</source>
+        <translation type="unfinished">ポーズ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="69"/>
-        <source>Afterimage OFF</source>
-        <translation>残像モード OFF</translation>
+        <source>LED</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="70"/>
-        <source>Afterimage%d ON</source>
-        <translation>残像モード%d ON</translation>
+        <source>Show LED (Inside)</source>
+        <translation type="unfinished">LED表示(画面内)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="71"/>
-        <source>Keepimage OFF</source>
-        <translation>画面保持モード OFF</translation>
+        <source>Show LED (Outside)</source>
+        <translation type="unfinished">LED表示(画面外)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="72"/>
-        <source>Keepimage%d ON</source>
-        <translation>画面保持モード%d ON</translation>
+        <source>Show LED</source>
+        <translation type="unfinished">LED表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="73"/>
-        <source>Pause</source>
-        <translation>ポーズ</translation>
+        <source>Hide LED</source>
+        <translation type="unfinished">LED非表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="74"/>
-        <source>LED</source>
-        <translation></translation>
+        <source>LED is disable.</source>
+        <translation type="unfinished">LEDは無効です。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="75"/>
-        <source>Show LED (Inside)</source>
-        <translation>LED表示(画面内)</translation>
+        <source>Inside LED</source>
+        <translation type="unfinished">LEDは画面内</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="76"/>
-        <source>Show LED (Outside)</source>
-        <translation>LED表示(画面外)</translation>
+        <source>Outside LED</source>
+        <translation type="unfinished">LEDは画面外</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="77"/>
-        <source>Show LED</source>
-        <translation>LED表示</translation>
+        <source>Hide</source>
+        <translation type="unfinished">非表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="78"/>
-        <source>Hide LED</source>
-        <translation>LED非表示</translation>
+        <source>Show</source>
+        <translation type="unfinished">表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="79"/>
-        <source>LED is disable.</source>
-        <translation>LEDは無効です。</translation>
+        <source>Show Inside</source>
+        <translation type="unfinished">画面内表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="80"/>
-        <source>Inside LED</source>
-        <translation>LEDは画面内</translation>
+        <source>Show Outside</source>
+        <translation type="unfinished">画面外表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="81"/>
-        <source>Outside LED</source>
-        <translation>LEDは画面外</translation>
+        <source>Position</source>
+        <translation type="unfinished">位置</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="82"/>
-        <source>Hide</source>
-        <translation>非表示</translation>
+        <source>LeftTop</source>
+        <translation type="unfinished">左上</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="83"/>
-        <source>Show</source>
-        <translation>表示</translation>
+        <source>RightTop</source>
+        <translation type="unfinished">右上</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="84"/>
-        <source>Show Inside</source>
-        <translation>画面内表示</translation>
+        <source>LeftBottom</source>
+        <translation type="unfinished">左下</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="85"/>
-        <source>Show Outside</source>
-        <translation>画面外表示</translation>
+        <source>RightBottom</source>
+        <translation type="unfinished">右下</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="86"/>
-        <source>Position</source>
-        <translation>位置</translation>
+        <source>Capture Type</source>
+        <translation type="unfinished">キャプチャ種類</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="87"/>
-        <source>LeftTop</source>
-        <translation>左上</translation>
+        <source>Snapshot Path</source>
+        <translation type="unfinished">スナップショットパス</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="88"/>
-        <source>RightTop</source>
-        <translation>右上</translation>
+        <source>Font File (*)</source>
+        <translation type="unfinished">フォントファイル (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="89"/>
-        <source>LeftBottom</source>
-        <translation>左下</translation>
+        <source>Font Path</source>
+        <translation type="unfinished">フォントパス</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="90"/>
-        <source>RightBottom</source>
-        <translation>右下</translation>
+        <source>Folder...</source>
+        <translation type="unfinished">フォルダ...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="91"/>
-        <source>Capture Type</source>
-        <translation>キャプチャ種類</translation>
+        <source>Font...</source>
+        <translation type="unfinished">フォント...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="92"/>
-        <source>Snapshot Path</source>
-        <translation>スナップショットパス</translation>
+        <source>Message Font</source>
+        <translation type="unfinished">メッセージフォント</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="93"/>
-        <source>Font File (*)</source>
-        <translation>フォントファイル (*)</translation>
+        <source>Info Font</source>
+        <translation type="unfinished">情報フォント</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="94"/>
-        <source>Font Path</source>
-        <translation>フォントパス</translation>
+        <source>Menu Font (*)</source>
+        <translation type="unfinished">メニューフォント (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="95"/>
-        <source>Folder...</source>
-        <translation>フォルダ...</translation>
+        <source> Size</source>
+        <translation type="unfinished"> サイズ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="96"/>
-        <source>Font...</source>
-        <translation>フォント...</translation>
+        <source>Load Wav File from Tape</source>
+        <translation type="unfinished">テープからwavファイルロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="97"/>
-        <source>Message Font</source>
-        <translation>メッセージフォント</translation>
+        <source>Save Wav File to Tape</source>
+        <translation type="unfinished">テープにwavファイル保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="98"/>
-        <source>Info Font</source>
-        <translation>情報フォント</translation>
+        <source>Reverse Wave</source>
+        <translation type="unfinished">波形を反転</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="99"/>
-        <source>Menu Font (*)</source>
-        <translation>メニューフォント (*)</translation>
+        <source>Half Wave</source>
+        <translation type="unfinished">半波</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="100"/>
-        <source> Size</source>
-        <translation> サイズ</translation>
+        <source>Correct</source>
+        <translation type="unfinished">補正</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="101"/>
-        <source>Load Wav File from Tape</source>
-        <translation>テープからwavファイルロード</translation>
+        <source>COS Wave</source>
+        <translation type="unfinished">COS波</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="102"/>
-        <source>Save Wav File to Tape</source>
-        <translation>テープにwavファイル保存</translation>
+        <source>SIN Wave</source>
+        <translation type="unfinished">SIN波</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="103"/>
-        <source>Reverse Wave</source>
-        <translation>波形を反転</translation>
+        <source>Sample Rate</source>
+        <translation type="unfinished">サンプリング周波数</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="104"/>
-        <source>Half Wave</source>
-        <translation>半波</translation>
+        <source>Sample Bits</source>
+        <translation type="unfinished">ビットレート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="105"/>
-        <source>Correct</source>
-        <translation>補正</translation>
+        <source>Show Message</source>
+        <translation type="unfinished">メッセージ表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="106"/>
-        <source>COS Wave</source>
-        <translation>COS波</translation>
+        <source>Hide Message</source>
+        <translation type="unfinished">メッセージ非表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="107"/>
-        <source>SIN Wave</source>
-        <translation>SIN波</translation>
+        <source>Message board is disable.</source>
+        <translation type="unfinished">メッセージボードは無効です。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="108"/>
-        <source>Sample Rate</source>
-        <translation>サンプリング周波数</translation>
+        <source>Log</source>
+        <translation type="unfinished">ログ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="109"/>
-        <source>Sample Bits</source>
-        <translation>ビットレート</translation>
+        <source>Log...</source>
+        <translation type="unfinished">ログ...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="110"/>
-        <source>Show Message</source>
-        <translation>メッセージ表示</translation>
+        <source>Enable Joypad</source>
+        <translation type="unfinished">ジョイパッド有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="111"/>
-        <source>Hide Message</source>
-        <translation>メッセージ非表示</translation>
+        <source>Enable Joypad (Key Assigned)</source>
+        <translation type="unfinished">ジョイパッド有効（キー割当）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="112"/>
-        <source>Message board is disable.</source>
-        <translation>メッセージボードは無効です。</translation>
+        <source>Enable Joypad (PIA Type)</source>
+        <translation type="unfinished">ジョイパッド有効（PIA接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="113"/>
-        <source>Log</source>
-        <translation>ログ</translation>
+        <source>Enable Joypad (PSG Type)</source>
+        <translation type="unfinished">ジョイパッド有効（PSG接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="114"/>
-        <source>Log...</source>
-        <translation>ログ...</translation>
+        <source>Enable Key to Joypad</source>
+        <translation type="unfinished">キーtoジョイパッド有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="115"/>
-        <source>Enable Joypad</source>
-        <translation>ジョイパッド有効</translation>
+        <source>Enable Key to Joypad (PIA Type)</source>
+        <translation type="unfinished">キーtoジョイパッド有効（PIA接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="116"/>
-        <source>Enable Joypad (Key Assigned)</source>
-        <translation>ジョイパッド有効（キー割当）</translation>
+        <source>Enable Key to Joypad (PSG Type)</source>
+        <translation type="unfinished">キーtoジョイパッド有効（PSG接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="117"/>
-        <source>Enable Joypad (PIA Type)</source>
-        <translation>ジョイパッド有効（PIA接続）</translation>
+        <source>Disable Joypad</source>
+        <translation type="unfinished">ジョイパッド無効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="118"/>
-        <source>Enable Key to Joypad</source>
-        <translation>キーtoジョイパッド有効</translation>
+        <source>Disable Key to Joypad</source>
+        <translation type="unfinished">キーtoジョイパッド無効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="119"/>
-        <source>Disable Joypad</source>
-        <translation>ジョイパッド無効</translation>
+        <source>Enable Lightpen</source>
+        <translation type="unfinished">ライトペン有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="120"/>
-        <source>Enable Lightpen</source>
-        <translation>ライトペン有効</translation>
+        <source>Disable Lightpen</source>
+        <translation type="unfinished">ライトペン無効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="121"/>
-        <source>Disable Lightpen</source>
-        <translation>ライトペン無効</translation>
+        <source>Enable Mouse</source>
+        <translation type="unfinished">マウス有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="122"/>
-        <source>Enable Mouse</source>
-        <translation>マウス有効</translation>
+        <source>Disable Mouse</source>
+        <translation type="unfinished">マウス無効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="123"/>
-        <source>Disable Mouse</source>
-        <translation>マウス無効</translation>
+        <source>Enable DirectInput</source>
+        <translation type="unfinished">DirectInput有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="124"/>
-        <source>Enable DirectInput</source>
-        <translation>DirectInput有効</translation>
+        <source>Disable DirectInput</source>
+        <translation type="unfinished">DirectInput無効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="125"/>
-        <source>Disable DirectInput</source>
-        <translation>DirectInput無効</translation>
+        <source>(no label)</source>
+        <translation type="unfinished">(ラベルなし)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="126"/>
-        <source>(no label)</source>
-        <translation>(ラベルなし)</translation>
+        <source>Change Side to A</source>
+        <translation type="unfinished">A面に変更</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="127"/>
-        <source>Change Side to A</source>
-        <translation>A面に変更</translation>
+        <source>Change Side to B</source>
+        <translation type="unfinished">B面に変更</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="128"/>
-        <source>Change Side to B</source>
-        <translation>B面に変更</translation>
+        <source>Floppy Disk Drive</source>
+        <translation type="unfinished">フロッピーディスクドライブ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="129"/>
-        <source>Floppy Disk Drive</source>
-        <translation>フロッピーディスクドライブ</translation>
+        <source>Hard Disk Drive</source>
+        <translation type="unfinished">ハードディスクドライブ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="130"/>
-        <source>Hard Disk Drive</source>
-        <translation>ハードディスクドライブ</translation>
+        <source>When start up, mount disk at:</source>
+        <translation type="unfinished">起動時にマウントするディスク:</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="131"/>
-        <source>When start up, mount disk at:</source>
-        <translation>起動時にマウントするディスク:</translation>
+        <source>Ignore delays to find sector.</source>
+        <translation type="unfinished">セクタ検索時の遅延を無視する。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="132"/>
-        <source>Ignore delays to find sector.</source>
-        <translation>セクタ検索時の遅延を無視する。</translation>
+        <source>Ignore delays to seek track.</source>
+        <translation type="unfinished">トラックシーク時の遅延を無視する。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="133"/>
-        <source>Ignore delays to seek track.</source>
-        <translation>トラックシーク時の遅延を無視する。</translation>
+        <source>Suppress checking for density.</source>
+        <translation type="unfinished">密度のチェックを抑制する。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="134"/>
-        <source>Suppress checking for density.</source>
-        <translation>密度のチェックを抑制する。</translation>
+        <source>Suppress checking for media type.</source>
+        <translation type="unfinished">メディア種類のチェックを抑制する。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="135"/>
-        <source>Suppress checking for media type.</source>
-        <translation>メディア種類のチェックを抑制する。</translation>
+        <source>Save a plain disk image as it is.</source>
+        <translation type="unfinished">ベタディスクイメージをそのまま保存する。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="136"/>
-        <source>Save a plain disk image as it is.</source>
-        <translation>ベタディスクイメージをそのまま保存する。</translation>
+        <source>Drive</source>
+        <translation type="unfinished">ドライブ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="137"/>
-        <source>Drive</source>
-        <translation>ドライブ</translation>
+        <source>Select Drive</source>
+        <translation type="unfinished">ドライブ選択</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="138"/>
-        <source>Select Drive</source>
-        <translation>ドライブ選択</translation>
+        <source>FDD Type</source>
+        <translation type="unfinished">FDDタイプ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="139"/>
-        <source>FDD Type</source>
-        <translation>FDDタイプ</translation>
+        <source>FDD Type (*)</source>
+        <translation type="unfinished">FDDタイプ (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="140"/>
-        <source>FDD Type (*)</source>
-        <translation>FDDタイプ (*)</translation>
+        <source>Non FDD</source>
+        <translation type="unfinished">FDDなし</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="141"/>
-        <source>Non FDD</source>
-        <translation>FDDなし</translation>
+        <source>3inch compact FDD</source>
+        <translation type="unfinished">3インチコンパクトFDD</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="142"/>
-        <source>3inch compact FDD</source>
-        <translation>3インチコンパクトFDD</translation>
+        <source>3inch compact FDD (for L3)</source>
+        <translation type="unfinished">3インチコンパクトFDD(L3用)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="143"/>
-        <source>3inch compact FDD (for L3)</source>
-        <translation>3インチコンパクトFDD(L3用)</translation>
+        <source>5.25inch mini FDD</source>
+        <translation type="unfinished">5.25インチミニFDD</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="144"/>
-        <source>5.25inch mini FDD</source>
-        <translation>5.25インチミニFDD</translation>
+        <source>5.25inch mini FDD (2D Type)</source>
+        <translation type="unfinished">5.25インチミニFDD(2Dタイプ)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="145"/>
-        <source>5.25inch mini FDD (2D Type)</source>
-        <translation>5.25インチミニFDD(2Dタイプ)</translation>
+        <source>5.25inch mini FDD (2HD Type)</source>
+        <translation type="unfinished">5.25インチミニFDD(2HDタイプ)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="146"/>
-        <source>5.25inch mini FDD (2HD Type)</source>
-        <translation>5.25インチミニFDD(2HDタイプ)</translation>
+        <source>8inch standard FDD</source>
+        <translation type="unfinished">8インチ標準FDD</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="147"/>
-        <source>8inch standard FDD</source>
-        <translation>8インチ標準FDD</translation>
+        <source>Unsupported FDD</source>
+        <translation type="unfinished">サポートされていないFDD</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="148"/>
-        <source>Unsupported FDD</source>
-        <translation>サポートされていないFDD</translation>
+        <source>Control</source>
+        <translation type="unfinished">操作</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="149"/>
-        <source>Control</source>
-        <translation>操作</translation>
+        <source>PowerOn	Alt+F3</source>
+        <translation type="unfinished">パワーオン	Alt+F3</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="150"/>
-        <source>PowerOn	Alt+F3</source>
-        <translation>パワーオン	Alt+F3</translation>
+        <source>MODE Switch</source>
+        <translation type="unfinished">モードスイッチ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="151"/>
-        <source>MODE Switch</source>
-        <translation>モードスイッチ</translation>
+        <source>MODE Switch </source>
+        <translation type="unfinished">モードスイッチ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="152"/>
-        <source>MODE Switch </source>
-        <translation>モードスイッチ</translation>
+        <source>MODE Switch	Alt+M</source>
+        <translation type="unfinished">モードスイッチ	Alt+M</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="153"/>
-        <source>MODE Switch	Alt+M</source>
-        <translation>モードスイッチ	Alt+M</translation>
+        <source>Reset Switch</source>
+        <translation type="unfinished">リセットスイッチ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="154"/>
-        <source>Reset Switch</source>
-        <translation>リセットスイッチ</translation>
+        <source>Reset Switch	Alt+R</source>
+        <translation type="unfinished">リセットスイッチ	Alt+R</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="155"/>
-        <source>Reset Switch	Alt+R</source>
-        <translation>リセットスイッチ	Alt+R</translation>
+        <source>System Mode</source>
+        <translation type="unfinished">システムモード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="156"/>
-        <source>System Mode</source>
-        <translation>システムモード</translation>
+        <source>System Mode (*)</source>
+        <translation type="unfinished">システムモード (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="157"/>
-        <source>System Mode (*)</source>
-        <translation>システムモード (*)</translation>
+        <source>B Mode (L3)</source>
+        <translation type="unfinished">Bモード (L3)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="158"/>
-        <source>B Mode (L3)</source>
-        <translation>Bモード (L3)</translation>
+        <source>A Mode (S1)</source>
+        <translation type="unfinished">Aモード (S1)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="159"/>
-        <source>A Mode (S1)</source>
-        <translation>Aモード (S1)</translation>
+        <source>A Mode (S1)	Alt+M</source>
+        <translation type="unfinished">Aモード (S1)	Alt+M</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="160"/>
-        <source>A Mode (S1)	Alt+M</source>
-        <translation>Aモード (S1)	Alt+M</translation>
+        <source>B Mode (L3)	Alt+M</source>
+        <translation type="unfinished">Bモード (L3)	Alt+M</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="161"/>
-        <source>B Mode (L3)	Alt+M</source>
-        <translation>Bモード (L3)	Alt+M</translation>
+        <source>NEWON7</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="162"/>
-        <source>NEWON7</source>
-        <translation></translation>
+        <source>No FDD	Alt+F</source>
+        <translation type="unfinished">FDDなし	Alt+F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="163"/>
-        <source>No FDD	Alt+F</source>
-        <translation>FDDなし	Alt+F</translation>
+        <source>3inch compact FDD	Alt+F</source>
+        <translation type="unfinished">3インチコンパクトFDD	Alt+F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="164"/>
-        <source>3inch compact FDD	Alt+F</source>
-        <translation>3インチコンパクトFDD	Alt+F</translation>
+        <source>5.25inch mini FDD (2D Type)	Alt+F</source>
+        <translation type="unfinished">5.25インチミニFDD(2Dタイプ)	Alt+F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="165"/>
-        <source>5.25inch mini FDD (2D Type)	Alt+F</source>
-        <translation>5.25インチミニFDD(2Dタイプ)	Alt+F</translation>
+        <source>5.25inch mini FDD (2HD Type)	Alt+F</source>
+        <translation type="unfinished">5.25インチミニFDD(2HDタイプ)	Alt+F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="166"/>
-        <source>5.25inch mini FDD (2HD Type)	Alt+F</source>
-        <translation>5.25インチミニFDD(2HDタイプ)	Alt+F</translation>
+        <source>5.25inch mini FDD	Alt+F</source>
+        <translation type="unfinished">5.25インチミニFDD	Alt+F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="167"/>
-        <source>5.25inch mini FDD	Alt+F</source>
-        <translation>5.25インチミニFDD	Alt+F</translation>
+        <source>8inch standard FDD	Alt+F</source>
+        <translation type="unfinished">8インチ標準FDD	Alt+F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="168"/>
-        <source>8inch standard FDD	Alt+F</source>
-        <translation>8インチ標準FDD	Alt+F</translation>
+        <source>Pause	Alt+Q</source>
+        <translation type="unfinished">ポーズ	Alt+Q</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="169"/>
-        <source>Pause	Alt+Q</source>
-        <translation>ポーズ	Alt+Q</translation>
+        <source>Sync Devices With CPU Speed</source>
+        <translation type="unfinished">デバイスをCPUスピードと同期</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="170"/>
-        <source>Sync Devices With CPU Speed</source>
-        <translation>デバイスをCPUスピードと同期</translation>
+        <source>Sync Devices With CPU Speed	Alt+0</source>
+        <translation type="unfinished">デバイスをCPUスピードと同期	Alt+0</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="171"/>
-        <source>Sync Devices With CPU Speed	Alt+0</source>
-        <translation>デバイスをCPUスピードと同期	Alt+0</translation>
+        <source>Auto Key</source>
+        <translation type="unfinished">オートキー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="172"/>
-        <source>Auto Key</source>
-        <translation>オートキー</translation>
+        <source>Open</source>
+        <translation type="unfinished">開く</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="173"/>
-        <source>Open</source>
-        <translation>開く</translation>
+        <source>Open...</source>
+        <translation type="unfinished">開く...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="174"/>
-        <source>Open...</source>
-        <translation>開く...</translation>
+        <source>Paste</source>
+        <translation type="unfinished">貼り付け</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="175"/>
-        <source>Paste</source>
-        <translation>貼り付け</translation>
+        <source>Start</source>
+        <translation type="unfinished">開始</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="176"/>
-        <source>Start</source>
-        <translation>開始</translation>
+        <source>Stop</source>
+        <translation type="unfinished">停止</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="177"/>
-        <source>Stop</source>
-        <translation>停止</translation>
+        <source>Record Key</source>
+        <translation type="unfinished">キーを記録</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="178"/>
-        <source>Record Key</source>
-        <translation>キーを記録</translation>
+        <source>Play...	Alt+E</source>
+        <translation type="unfinished">再生...	Alt+E</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="179"/>
-        <source>Play...	Alt+E</source>
-        <translation>再生...	Alt+E</translation>
+        <source>Stop Playing</source>
+        <translation type="unfinished">再生を停止</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="180"/>
-        <source>Stop Playing</source>
-        <translation>再生を停止</translation>
+        <source>Record...</source>
+        <translation type="unfinished">記録...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="181"/>
-        <source>Record...</source>
-        <translation>記録...</translation>
+        <source>Stop Recording</source>
+        <translation type="unfinished">記録を停止</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="182"/>
-        <source>Stop Recording</source>
-        <translation>記録を停止</translation>
+        <source>Load State...</source>
+        <translation type="unfinished">状態をロード...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="183"/>
-        <source>Load State...</source>
-        <translation>状態をロード...</translation>
+        <source>Load State...	Alt+O</source>
+        <translation type="unfinished">状態をロード...	Alt+O</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="184"/>
-        <source>Load State...	Alt+O</source>
-        <translation>状態をロード...	Alt+O</translation>
+        <source>Save State...</source>
+        <translation type="unfinished">状態を保存...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="185"/>
-        <source>Save State...</source>
-        <translation>状態を保存...</translation>
+        <source>Recent State Files</source>
+        <translation type="unfinished">最近使用した状態ファイル</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="186"/>
-        <source>Recent State Files</source>
-        <translation>最近使用した状態ファイル</translation>
+        <source>Exit</source>
+        <translation type="unfinished">終了</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="187"/>
-        <source>Exit</source>
-        <translation>終了</translation>
+        <source>Exit	Alt+F4</source>
+        <translation type="unfinished">終了	Alt+F4</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="188"/>
-        <source>Exit	Alt+F4</source>
-        <translation>終了	Alt+F4</translation>
+        <source>Tape</source>
+        <translation type="unfinished">テープ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="189"/>
-        <source>Tape</source>
-        <translation>テープ</translation>
+        <source>Play...	Alt+F7</source>
+        <translation type="unfinished">再生...	Alt+F7</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="190"/>
-        <source>Play...	Alt+F7</source>
-        <translation>再生...	Alt+F7</translation>
+        <source>Rec...</source>
+        <translation type="unfinished">録音...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="191"/>
-        <source>Rec...</source>
-        <translation>録音...</translation>
+        <source>Eject</source>
+        <translation type="unfinished">取り出し</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="192"/>
-        <source>Eject</source>
-        <translation>取り出し</translation>
+        <source>Rewind</source>
+        <translation type="unfinished">巻き戻し</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="193"/>
-        <source>Rewind</source>
-        <translation>巻き戻し</translation>
+        <source>Rewind	Alt+F5</source>
+        <translation type="unfinished">巻き戻し	Alt+F5</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="194"/>
-        <source>Rewind	Alt+F5</source>
-        <translation>巻き戻し	Alt+F5</translation>
+        <source>F.F.</source>
+        <translation type="unfinished">早送り</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="195"/>
-        <source>F.F.</source>
-        <translation>早送り</translation>
+        <source>F.F.	Alt+F8</source>
+        <translation type="unfinished">早送り	Alt+F8</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="196"/>
-        <source>F.F.	Alt+F8</source>
-        <translation>早送り	Alt+F8</translation>
+        <source>Stop	Alt+F6</source>
+        <translation type="unfinished">停止	Alt+F6</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="197"/>
-        <source>Stop	Alt+F6</source>
-        <translation>停止	Alt+F6</translation>
+        <source>Real Mode</source>
+        <translation type="unfinished">リアルモード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="198"/>
-        <source>Real Mode</source>
-        <translation>リアルモード</translation>
+        <source>Recent Files</source>
+        <translation type="unfinished">最近使用したファイル</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="199"/>
-        <source>Recent Files</source>
-        <translation>最近使用したファイル</translation>
+        <source>Insert...	Alt+F%d</source>
+        <translation type="unfinished">挿入...	Alt+F%d</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="200"/>
-        <source>Insert...	Alt+F%d</source>
-        <translation>挿入...	Alt+F%d</translation>
+        <source>New</source>
+        <translation type="unfinished">新規</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="201"/>
-        <source>New</source>
-        <translation>新規</translation>
+        <source>Insert Blank 2D...</source>
+        <translation type="unfinished">ブランク2Dを挿入...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="202"/>
-        <source>Insert Blank 2D...</source>
-        <translation>ブランク2Dを挿入...</translation>
+        <source>Insert Blank 2HD...</source>
+        <translation type="unfinished">ブランク2HDを挿入...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="203"/>
-        <source>Insert Blank 2HD...</source>
-        <translation>ブランク2HDを挿入...</translation>
+        <source>Write Protect</source>
+        <translation type="unfinished">書き込み禁止</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="204"/>
-        <source>Write Protect</source>
-        <translation>書き込み禁止</translation>
+        <source>Multi Volume</source>
+        <translation type="unfinished">マルチボリューム</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="205"/>
-        <source>Multi Volume</source>
-        <translation>マルチボリューム</translation>
+        <source>FDD%d</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="206"/>
-        <source>FDD%d</source>
-        <translation></translation>
+        <source>Frame Rate</source>
+        <translation type="unfinished">フレームレート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="207"/>
-        <source>Frame Rate</source>
-        <translation>フレームレート</translation>
+        <source>Auto</source>
+        <translation type="unfinished">自動</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="208"/>
-        <source>Auto</source>
-        <translation>自動</translation>
+        <source>60fps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="209"/>
-        <source>60fps</source>
-        <translation></translation>
+        <source>30fps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="210"/>
-        <source>30fps</source>
-        <translation></translation>
+        <source>20fps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="211"/>
-        <source>20fps</source>
-        <translation></translation>
+        <source>15fps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="212"/>
-        <source>15fps</source>
-        <translation></translation>
+        <source>12fps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="213"/>
-        <source>12fps</source>
-        <translation></translation>
+        <source>10fps</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="214"/>
-        <source>10fps</source>
-        <translation></translation>
+        <source>Record Screen</source>
+        <translation type="unfinished">録画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="215"/>
-        <source>Record Screen</source>
-        <translation>録画</translation>
+        <source>Rec 60fps</source>
+        <translation type="unfinished">60fpsで録画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="216"/>
-        <source>Rec 60fps</source>
-        <translation>60fpsで録画</translation>
+        <source>Rec 30fps</source>
+        <translation type="unfinished">30fpsで録画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="217"/>
-        <source>Rec 30fps</source>
-        <translation>30fpsで録画</translation>
+        <source>Rec 20fps</source>
+        <translation type="unfinished">20fpsで録画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="218"/>
-        <source>Rec 20fps</source>
-        <translation>20fpsで録画</translation>
+        <source>Rec 15fps</source>
+        <translation type="unfinished">15fpsで録画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="219"/>
-        <source>Rec 15fps</source>
-        <translation>15fpsで録画</translation>
+        <source>Rec 12fps</source>
+        <translation type="unfinished">12fpsで録画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="220"/>
-        <source>Rec 12fps</source>
-        <translation>12fpsで録画</translation>
+        <source>Rec 10fps</source>
+        <translation type="unfinished">10fpsで録画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="221"/>
-        <source>Rec 10fps</source>
-        <translation>10fpsで録画</translation>
+        <source>Capture</source>
+        <translation type="unfinished">キャプチャ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="222"/>
-        <source>Capture</source>
-        <translation>キャプチャ</translation>
+        <source>Window</source>
+        <translation type="unfinished">ウィンドウ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="223"/>
-        <source>Window</source>
-        <translation>ウィンドウ</translation>
+        <source>Display</source>
+        <translation type="unfinished">ディスプレイ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="224"/>
-        <source>Display</source>
-        <translation>ディスプレイ</translation>
+        <source>Fullscreen</source>
+        <translation type="unfinished">フルスクリーン</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="225"/>
-        <source>Fullscreen</source>
-        <translation>フルスクリーン</translation>
+        <source>Stretch Screen</source>
+        <translation type="unfinished">画面を引き伸ばす</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="226"/>
-        <source>Stretch Screen</source>
-        <translation>画面を引き伸ばす</translation>
+        <source>Stretch Screen	Alt+X</source>
+        <translation type="unfinished">画面を引き伸ばす	Alt+X</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="227"/>
-        <source>Stretch Screen	Alt+X</source>
-        <translation>画面を引き伸ばす	Alt+X</translation>
+        <source>Cutout Screen</source>
+        <translation type="unfinished">画面の余白を切る</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="228"/>
-        <source>Cutout Screen</source>
-        <translation>画面の余白を切る</translation>
+        <source>Cutout Screen	Alt+X</source>
+        <translation type="unfinished">画面の余白を切る	Alt+X</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="229"/>
-        <source>Cutout Screen	Alt+X</source>
-        <translation>画面の余白を切る	Alt+X</translation>
+        <source>Aspect Ratio</source>
+        <translation type="unfinished">アスペクト比</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="230"/>
-        <source>Aspect Ratio</source>
-        <translation>アスペクト比</translation>
+        <source>Drawing Mode</source>
+        <translation type="unfinished">描画モード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="231"/>
-        <source>Drawing Mode</source>
-        <translation>描画モード</translation>
+        <source>Full Draw</source>
+        <translation type="unfinished">フル描画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="232"/>
-        <source>Full Draw</source>
-        <translation>フル描画</translation>
+        <source>Full Draw	Alt+S</source>
+        <translation type="unfinished">フル描画	Alt+S</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="233"/>
-        <source>Full Draw	Alt+S</source>
-        <translation>フル描画	Alt+S</translation>
+        <source>Scanline</source>
+        <translation type="unfinished">走査線</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="234"/>
-        <source>Scanline</source>
-        <translation>走査線</translation>
+        <source>Scanline	Alt+S</source>
+        <translation type="unfinished">走査線	Alt+S</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="235"/>
-        <source>Scanline	Alt+S</source>
-        <translation>走査線	Alt+S</translation>
+        <source>Stripe</source>
+        <translation type="unfinished">縞模様</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="236"/>
-        <source>Stripe</source>
-        <translation>縞模様</translation>
+        <source>Stripe	Alt+S</source>
+        <translation type="unfinished">縞模様	Alt+S</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="237"/>
-        <source>Stripe	Alt+S</source>
-        <translation>縞模様	Alt+S</translation>
+        <source>Checker</source>
+        <translation type="unfinished">市松模様</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="238"/>
-        <source>Checker</source>
-        <translation>市松模様</translation>
+        <source>Checker	Alt+S</source>
+        <translation type="unfinished">市松模様	Alt+S</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="239"/>
-        <source>Checker	Alt+S</source>
-        <translation>市松模様	Alt+S</translation>
+        <source>Afterimage1</source>
+        <translation type="unfinished">残像モード1</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="240"/>
-        <source>Afterimage1</source>
-        <translation>残像モード1</translation>
+        <source>Afterimage1	Alt+T</source>
+        <translation type="unfinished">残像モード1	Alt+T</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="241"/>
-        <source>Afterimage1	Alt+T</source>
-        <translation>残像モード1	Alt+T</translation>
+        <source>Afterimage2</source>
+        <translation type="unfinished">残像モード2</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="242"/>
-        <source>Afterimage2</source>
-        <translation>残像モード2</translation>
+        <source>Afterimage2	Alt+T</source>
+        <translation type="unfinished">残像モード2	Alt+T</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="243"/>
-        <source>Afterimage2	Alt+T</source>
-        <translation>残像モード2	Alt+T</translation>
+        <source>Keepimage1</source>
+        <translation type="unfinished">画面保持モード1</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="244"/>
-        <source>Keepimage1</source>
-        <translation>画面保持モード1</translation>
+        <source>Keepimage2</source>
+        <translation type="unfinished">画面保持モード2</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="245"/>
-        <source>Keepimage2</source>
-        <translation>画面保持モード2</translation>
+        <source>Digital RGB</source>
+        <translation type="unfinished">デジタルRGB</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="246"/>
-        <source>Digital RGB</source>
-        <translation>デジタルRGB</translation>
+        <source>Analog RGB</source>
+        <translation type="unfinished">アナログRGB</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="247"/>
-        <source>Analog RGB</source>
-        <translation>アナログRGB</translation>
+        <source>Default Drawing</source>
+        <translation type="unfinished">デフォルト描画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="248"/>
-        <source>Use Direct3D(Sync)</source>
-        <translation>Direct3Dを使用(同期)</translation>
+        <source>Default Drawing	Alt+Y</source>
+        <translation type="unfinished">デフォルト描画	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="249"/>
-        <source>Use Direct3D(Sync)	Alt+Y</source>
-        <translation>Direct3Dを使用(同期)	Alt+Y</translation>
+        <source>Default (Double Buffering)</source>
+        <translation type="unfinished">デフォルト(ダブルバッファ)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="250"/>
-        <source>Use Direct3D(Async)</source>
-        <translation>Direct3Dを使用(非同期)</translation>
+        <source>Default (Double Buffering)	Alt+Y</source>
+        <translation type="unfinished">デフォルト(ダブルバッファ)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="251"/>
-        <source>Use Direct3D(Async)	Alt+Y</source>
-        <translation>Direct3Dを使用(非同期)	Alt+Y</translation>
+        <source>Default(Sync)</source>
+        <translation type="unfinished">デフォルト(同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="252"/>
-        <source>Use OpenGL(Sync)</source>
-        <translation>OpenGLを使用(同期)</translation>
+        <source>Default(Sync)	Alt+Y</source>
+        <translation type="unfinished">デフォルト(同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="253"/>
-        <source>Use OpenGL(Sync)	Alt+Y</source>
-        <translation>OpenGLを使用(同期)	Alt+Y</translation>
+        <source>Default(Async)</source>
+        <translation type="unfinished">デフォルト(非同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="254"/>
-        <source>Use OpenGL(Async)</source>
-        <translation>OpenGLを使用(非同期)</translation>
+        <source>Default(Async)	Alt+Y</source>
+        <translation type="unfinished">デフォルト(非同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="255"/>
-        <source>Use OpenGL(Async)	Alt+Y</source>
-        <translation>OpenGLを使用(非同期)	Alt+Y</translation>
+        <source>Use Direct2D</source>
+        <translation type="unfinished">Direct2Dを使用</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="256"/>
-        <source>Nearest Neighbour</source>
-        <translation>ニアレストネイバー</translation>
+        <source>Use Direct2D	Alt+Y</source>
+        <translation type="unfinished">Direct2Dを使用	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="257"/>
-        <source>Nearest Neighbour	Alt+U</source>
-        <translation>ニアレストネイバー	Alt+U</translation>
+        <source>Use Direct2D (Double Buffering)</source>
+        <translation type="unfinished">Direct2Dを使用(ダブルバッファ)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="258"/>
-        <source>Linear</source>
-        <translation>リニア</translation>
+        <source>Use Direct2D (Double Buffering)	Alt+Y</source>
+        <translation type="unfinished">Direct2Dを使用(ダブルバッファ)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="259"/>
-        <source>Linear	Alt+U</source>
-        <translation>リニア	Alt+U</translation>
+        <source>Use Direct2D(Sync)</source>
+        <translation type="unfinished">Direct2Dを使用(同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="260"/>
-        <source>Sound</source>
-        <translation>サウンド</translation>
+        <source>Use Direct2D(Sync)	Alt+Y</source>
+        <translation type="unfinished">Direct2Dを使用(同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="261"/>
-        <source>Volume...</source>
-        <translation>ボリューム...</translation>
+        <source>Use Direct2D(Async)</source>
+        <translation type="unfinished">Direct2Dを使用(非同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="262"/>
-        <source>Volume...	Alt+V</source>
-        <translation>ボリューム...	Alt+V</translation>
+        <source>Use Direct2D(Async)	Alt+Y</source>
+        <translation type="unfinished">Direct2Dを使用(非同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="263"/>
-        <source>Record Sound</source>
-        <translation>録音</translation>
+        <source>Use Direct3D(Sync)</source>
+        <translation type="unfinished">Direct3Dを使用(同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="264"/>
-        <source>Frequency</source>
-        <translation>周波数</translation>
+        <source>Use Direct3D(Sync)	Alt+Y</source>
+        <translation type="unfinished">Direct3Dを使用(同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="265"/>
-        <source>2000Hz</source>
-        <translation></translation>
+        <source>Use Direct3D(Async)</source>
+        <translation type="unfinished">Direct3Dを使用(非同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="266"/>
-        <source>4000Hz</source>
-        <translation></translation>
+        <source>Use Direct3D(Async)	Alt+Y</source>
+        <translation type="unfinished">Direct3Dを使用(非同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="267"/>
-        <source>8000Hz</source>
-        <translation></translation>
+        <source>Use OpenGL(Sync)</source>
+        <translation type="unfinished">OpenGLを使用(同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="268"/>
-        <source>11025Hz</source>
-        <translation></translation>
+        <source>Use OpenGL(Sync)	Alt+Y</source>
+        <translation type="unfinished">OpenGLを使用(同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="269"/>
-        <source>22050Hz</source>
-        <translation></translation>
+        <source>Use OpenGL(Async)</source>
+        <translation type="unfinished">OpenGLを使用(非同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="270"/>
-        <source>44100Hz</source>
-        <translation></translation>
+        <source>Use OpenGL(Async)	Alt+Y</source>
+        <translation type="unfinished">OpenGLを使用(非同期)	Alt+Y</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="271"/>
-        <source>48000Hz</source>
-        <translation></translation>
+        <source>Nearest Neighbor</source>
+        <translation type="unfinished">ニアレストネイバー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="272"/>
-        <source>96000Hz</source>
-        <translation></translation>
+        <source>Nearest Neighbor	Alt+U</source>
+        <translation type="unfinished">ニアレストネイバー	Alt+U</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="273"/>
-        <source>Latency</source>
-        <translation>待ち時間</translation>
+        <source>Bilinear</source>
+        <translation type="unfinished">バイリニア</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="274"/>
-        <source>50msec.</source>
-        <translation>50ミリ秒</translation>
+        <source>Bilinear	Alt+U</source>
+        <translation type="unfinished">バイリニア	Alt+U</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="275"/>
-        <source>75msec.</source>
-        <translation>75ミリ秒</translation>
+        <source>Sound</source>
+        <translation type="unfinished">サウンド</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="276"/>
-        <source>100msec.</source>
-        <translation>100ミリ秒</translation>
+        <source>Volume...</source>
+        <translation type="unfinished">ボリューム...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="277"/>
-        <source>200msec.</source>
-        <translation>200ミリ秒</translation>
+        <source>Volume...	Alt+V</source>
+        <translation type="unfinished">ボリューム...	Alt+V</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="278"/>
-        <source>300msec.</source>
-        <translation>300ミリ秒</translation>
+        <source>Record Sound</source>
+        <translation type="unfinished">録音</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="279"/>
-        <source>400msec.</source>
-        <translation>400ミリ秒</translation>
+        <source>Frequency</source>
+        <translation type="unfinished">周波数</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="280"/>
-        <source>Start...</source>
-        <translation>開始...</translation>
+        <source>2000Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="281"/>
-        <source>Devices</source>
-        <translation>デバイス</translation>
+        <source>4000Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="282"/>
-        <source>Save</source>
-        <translation>保存</translation>
+        <source>8000Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="283"/>
-        <source>Save...</source>
-        <translation>保存...</translation>
+        <source>11025Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="284"/>
-        <source>Print to mpprinter</source>
-        <translation>mpprinterに印刷</translation>
+        <source>22050Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="285"/>
-        <source>Clear</source>
-        <translation>クリア</translation>
+        <source>44100Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="286"/>
-        <source>Direct Send to mpprinter</source>
-        <translation>mpprinterに直接送信</translation>
+        <source>48000Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="287"/>
-        <source>Send to mpprinter concurrently</source>
-        <translation>mpprinterに同時送信</translation>
+        <source>96000Hz</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="288"/>
-        <source>Online</source>
-        <translation>オンライン</translation>
+        <source>Latency</source>
+        <translation type="unfinished">待ち時間</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="289"/>
-        <source>Enable Server</source>
-        <translation>サーバを有効</translation>
+        <source>50msec.</source>
+        <translation type="unfinished">50ミリ秒</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="290"/>
-        <source>Connect</source>
-        <translation>接続</translation>
+        <source>75msec.</source>
+        <translation type="unfinished">75ミリ秒</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="291"/>
-        <source>Ethernet</source>
-        <translation>イーサネット</translation>
+        <source>100msec.</source>
+        <translation type="unfinished">100ミリ秒</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="292"/>
-        <source>Comm With Byte Data</source>
-        <translation>バイトデータで通信</translation>
+        <source>200msec.</source>
+        <translation type="unfinished">200ミリ秒</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="293"/>
-        <source>Options For Telnet</source>
-        <translation>Telnet用オプション</translation>
+        <source>300msec.</source>
+        <translation type="unfinished">300ミリ秒</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="294"/>
-        <source>Binary Mode</source>
-        <translation>バイナリモード</translation>
+        <source>400msec.</source>
+        <translation type="unfinished">400ミリ秒</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="295"/>
-        <source>Send WILL ECHO</source>
-        <translation>WILL ECHO 送信</translation>
+        <source>Start...</source>
+        <translation type="unfinished">開始...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="296"/>
-        <source>Options</source>
-        <translation>オプション</translation>
+        <source>Devices</source>
+        <translation type="unfinished">デバイス</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="297"/>
-        <source>Show LED	Alt+L</source>
-        <translation>LEDを表示	Alt+L</translation>
+        <source>Save</source>
+        <translation type="unfinished">保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="298"/>
-        <source>Inside LED	Alt+L</source>
-        <translation>LEDは画面内	Alt+L</translation>
+        <source>Save...</source>
+        <translation type="unfinished">保存...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="299"/>
-        <source>Show Message	Alt+Z</source>
-        <translation>メッセージを表示	Alt+Z</translation>
+        <source>Print to mpprinter</source>
+        <translation type="unfinished">mpprinterに印刷</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="300"/>
-        <source>Show Performance Meter</source>
-        <translation>パフォーマンスメータ表示</translation>
+        <source>Clear</source>
+        <translation type="unfinished">クリア</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="301"/>
-        <source>Use DirectInput</source>
-        <translation>DirectInputを使用</translation>
+        <source>Direct Send to mpprinter</source>
+        <translation type="unfinished">mpprinterに直接送信</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="302"/>
-        <source>Use Joypad (Key Assigned)</source>
-        <translation>ジョイパッド使用（キー割当）</translation>
+        <source>Send to mpprinter concurrently</source>
+        <translation type="unfinished">mpprinterに同時送信</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="303"/>
-        <source>Use Joypad (Key Assigned)	Alt+J</source>
-        <translation>ジョイパッド使用（キー割当）	Alt+J</translation>
+        <source>Online</source>
+        <translation type="unfinished">オンライン</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="304"/>
-        <source>Use Joypad (PIA Type)</source>
-        <translation>ジョイパッド使用（PIA接続）</translation>
+        <source>Enable Server</source>
+        <translation type="unfinished">サーバを有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="305"/>
-        <source>Use Joypad (PIA Type)	Alt+J</source>
-        <translation>ジョイパッド使用（PIA接続）	Alt+J</translation>
+        <source>Connect</source>
+        <translation type="unfinished">接続</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="306"/>
-        <source>Enable Lightpen	Alt+Ctrl</source>
-        <translation>ライトペン有効	Alt+Ctrl</translation>
+        <source>Ethernet</source>
+        <translation type="unfinished">イーサネット</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="307"/>
-        <source>Use Mouse	Alt+Ctrl</source>
-        <translation>マウスを使用	Alt+Ctrl</translation>
+        <source>Comm With Byte Data</source>
+        <translation type="unfinished">バイトデータで通信</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="308"/>
-        <source>Loosen Key Stroke (For Game)</source>
-        <translation>キー入力を鈍くする(ゲーム用)</translation>
+        <source>Options For Telnet</source>
+        <translation type="unfinished">Telnet用オプション</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="309"/>
-        <source>Keybind</source>
-        <translation>キー割り当て</translation>
+        <source>Binary Mode</source>
+        <translation type="unfinished">バイナリモード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="310"/>
-        <source>Keybind...</source>
-        <translation>キー割り当て...</translation>
+        <source>Send WILL ECHO</source>
+        <translation type="unfinished">WILL ECHO 送信</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="311"/>
-        <source>Keybind...	Alt+K</source>
-        <translation>キー割り当て...	Alt+K</translation>
+        <source>Options</source>
+        <translation type="unfinished">オプション</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="312"/>
-        <source>Virtual Keyboard</source>
-        <translation>仮想キーボード</translation>
+        <source>Show LED	Alt+L</source>
+        <translation type="unfinished">LEDを表示	Alt+L</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="313"/>
-        <source>Virtual Keyboard...</source>
-        <translation>仮想キーボード...</translation>
+        <source>Inside LED	Alt+L</source>
+        <translation type="unfinished">LEDは画面内	Alt+L</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="314"/>
-        <source>Start Debugger</source>
-        <translation>デバッガを開始</translation>
+        <source>Show Message	Alt+Z</source>
+        <translation type="unfinished">メッセージを表示	Alt+Z</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="315"/>
-        <source>Start Debugger	Alt+D</source>
-        <translation>デバッガを開始	Alt+D</translation>
+        <source>Show Performance Meter</source>
+        <translation type="unfinished">パフォーマンスメータ表示</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="316"/>
-        <source>Stop Debugger</source>
-        <translation>デバッガを停止</translation>
+        <source>Use DirectInput</source>
+        <translation type="unfinished">DirectInputを使用</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="317"/>
-        <source>Configure</source>
-        <translation>設定</translation>
+        <source>Use Joypad (Key Assigned)</source>
+        <translation type="unfinished">ジョイパッド使用（キー割当）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="318"/>
-        <source>Configure...</source>
-        <translation>設定...</translation>
+        <source>Use Joypad (Key Assigned)	Alt+J</source>
+        <translation type="unfinished">ジョイパッド使用（キー割当）	Alt+J</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="319"/>
-        <source>Configure...	Alt+C</source>
-        <translation>設定...	Alt+C</translation>
+        <source>Use Joypad (PIA Type)</source>
+        <translation type="unfinished">ジョイパッド使用（PIA接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="320"/>
-        <source>Joypad Setting</source>
-        <translation>ジョイパッド設定</translation>
+        <source>Use Joypad (PIA Type)	Alt+J</source>
+        <translation type="unfinished">ジョイパッド使用（PIA接続）	Alt+J</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="321"/>
-        <source>Joypad Setting...</source>
-        <translation>ジョイパッド設定...</translation>
+        <source>Use Joypad (PSG Type)</source>
+        <translation type="unfinished">ジョイパッド使用（PSG接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="322"/>
-        <source>64KB</source>
-        <translation></translation>
+        <source>Use Joypad (PSG Type)	Alt+J</source>
+        <translation type="unfinished">ジョイパッド使用（PSG接続）	Alt+J</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="323"/>
-        <source>128KB</source>
-        <translation></translation>
+        <source>Enable Lightpen	Alt+Ctrl</source>
+        <translation type="unfinished">ライトペン有効	Alt+Ctrl</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="324"/>
-        <source>256KB</source>
-        <translation></translation>
+        <source>Use Mouse	Alt+Ctrl</source>
+        <translation type="unfinished">マウスを使用	Alt+Ctrl</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="325"/>
-        <source>512KB</source>
-        <translation></translation>
+        <source>Loosen Key Stroke (For Game)</source>
+        <translation type="unfinished">キー入力を鈍くする(ゲーム用)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="326"/>
-        <source>NMI</source>
-        <translation></translation>
+        <source>Keybind</source>
+        <translation type="unfinished">キー割り当て</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="327"/>
-        <source>IRQ</source>
-        <translation></translation>
+        <source>Keybind...</source>
+        <translation type="unfinished">キー割り当て...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="328"/>
-        <source>FIRQ</source>
-        <translation></translation>
+        <source>Keybind...	Alt+K</source>
+        <translation type="unfinished">キー割り当て...	Alt+K</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="329"/>
-        <source> (Now </source>
-        <translation> (現在 </translation>
+        <source>Virtual Keyboard</source>
+        <translation type="unfinished">仮想キーボード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="330"/>
-        <source> (Now)</source>
-        <translation> (現在)</translation>
+        <source>Virtual Keyboard...</source>
+        <translation type="unfinished">仮想キーボード...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="331"/>
-        <source>Help</source>
-        <translation>ヘルプ</translation>
+        <source>Start Debugger</source>
+        <translation type="unfinished">デバッガを開始</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="332"/>
-        <source>About...</source>
-        <translation>バージョン情報...</translation>
+        <source>Start Debugger	Alt+D</source>
+        <translation type="unfinished">デバッガを開始	Alt+D</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="333"/>
-        <source>Mode</source>
-        <translation>モード</translation>
+        <source>Stop Debugger</source>
+        <translation type="unfinished">デバッガを停止</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="334"/>
-        <source>Screen</source>
-        <translation>画面</translation>
+        <source>Configure</source>
+        <translation type="unfinished">設定</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="335"/>
-        <source>Tape, FDD</source>
-        <translation>テープ, FDD</translation>
+        <source>Configure...</source>
+        <translation type="unfinished">設定...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="336"/>
-        <source>FDD, HDD</source>
-        <translation></translation>
+        <source>Configure...	Alt+C</source>
+        <translation type="unfinished">設定...	Alt+C</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="337"/>
-        <source>Network</source>
-        <translation>ネットワーク</translation>
+        <source>Joypad Setting</source>
+        <translation type="unfinished">ジョイパッド設定</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="338"/>
-        <source>CPU, Memory</source>
-        <translation>CPU, メモリ</translation>
+        <source>Joypad Setting...</source>
+        <translation type="unfinished">ジョイパッド設定...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="339"/>
-        <source>PowerOff</source>
-        <translation>パワーオフ</translation>
+        <source>64KB</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="340"/>
-        <source>PowerOn</source>
-        <translation>パワーオン</translation>
+        <source>128KB</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="341"/>
-        <source>Enable the state of power off</source>
-        <translation>パワーオフの状態を有効</translation>
+        <source>256KB</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="342"/>
-        <source>I/O Port Address (*)</source>
-        <translation>I/Oポートアドレス (*)</translation>
+        <source>512KB</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="343"/>
-        <source>5.25inch FDC  $FF00 - $FF04</source>
-        <translation>5.25インチFDC  $FF00 - $FF04</translation>
+        <source>NMI</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="344"/>
-        <source>3inch FDC  $FF18 - $FF20</source>
-        <translation>3インチFDC  $FF18 - $FF20</translation>
+        <source>IRQ</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="345"/>
-        <source>3inch FDC (for L3)  $FF18 - $FF20</source>
-        <translation>3インチFDC (L3用)  $FF18 - $FF20</translation>
+        <source>FIRQ</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="346"/>
-        <source>6voice PSG  $FF30 - $FF33</source>
-        <translation>6声PSG  $FF30 - $FF33</translation>
+        <source> (Now </source>
+        <translation type="unfinished"> (現在 </translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="347"/>
-        <source>6voice PSG (for L3)  $FF30 - $FF33</source>
-        <translation>6声PSG (L3用)  $FF30 - $FF33</translation>
+        <source> (Now)</source>
+        <translation type="unfinished"> (現在)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="348"/>
-        <source>Ex LPT Port  $FF3C - $FF3F</source>
-        <translation>拡張プリンタポート  $FF3C - $FF3F</translation>
+        <source>Help</source>
+        <translation type="unfinished">ヘルプ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="349"/>
-        <source>Ex COM Port  $FF40 - $FF41</source>
-        <translation>拡張通信ポート  $FF40 - $FF41</translation>
+        <source>About...</source>
+        <translation type="unfinished">バージョン情報...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="350"/>
-        <source>9voice PSG  $FF70 - $FF7F</source>
-        <translation>9声PSG  $FF70 - $FF7F</translation>
+        <source>Mode</source>
+        <translation type="unfinished">モード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="351"/>
-        <source>9voice PSG (for L3)  $FF70 - $FF7F</source>
-        <translation>9声PSG (L3用)  $FF70 - $FF7F</translation>
+        <source>Screen</source>
+        <translation type="unfinished">画面</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="352"/>
-        <source>KANJI ROM  $FF75 - $FF76</source>
-        <translation>漢字ROM  $FF75 - $FF76</translation>
+        <source>Tape, FDD</source>
+        <translation type="unfinished">テープ, FDD</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="353"/>
-        <source>Ex PSG (for S1)  $FFE6,E7 ($FFEE,EF)</source>
-        <translation>拡張PSG (S1用)  $FFE6,E7 ($FFEE,EF)</translation>
+        <source>FDD, HDD</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="354"/>
-        <source>OS-9 Ex Card  $FE11</source>
-        <translation>OS-9拡張カード  $FE11</translation>
+        <source>Network</source>
+        <translation type="unfinished">ネットワーク</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="355"/>
-        <source>Communication Card  $FF77</source>
-        <translation>通信カード  $FF77</translation>
+        <source>CPU, Memory</source>
+        <translation type="unfinished">CPU, メモリ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="356"/>
-        <source>Keyboard  $FFE0 - $FFE1</source>
-        <translation>キーボード  $FFE0 - $FFE1</translation>
+        <source>PowerOff</source>
+        <translation type="unfinished">パワーオフ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="357"/>
-        <source>Mouse  $FFDC - $FFDF</source>
-        <translation>マウス  $FFDC - $FFDF</translation>
+        <source>PowerOn</source>
+        <translation type="unfinished">パワーオン</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="358"/>
-        <source>FM Synth Card (OPN/A)  $FF1E,1F ($FF16,17)</source>
-        <translation>FM音源カード(OPN/A)  $FF1E,1F ($FF16,17)</translation>
+        <source>Enable the state of power off</source>
+        <translation type="unfinished">パワーオフの状態を有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="359"/>
-        <source>Disable ROM BASIC (Limelight)  $FFCE</source>
-        <translation>ROM BASIC無効(来夢来人)  $FFCE</translation>
+        <source>I/O Port Address (*)</source>
+        <translation type="unfinished">I/Oポートアドレス (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="360"/>
-        <source>Disable IG  $FFE9</source>
-        <translation>IG無効  $FFE9</translation>
+        <source>5.25inch FDC  $FF00 - $FF04</source>
+        <translation type="unfinished">5.25インチFDC  $FF00 - $FF04</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="361"/>
-        <source>Disable IG (Limelight)  $FFE9</source>
-        <translation>IG無効(来夢来人)  $FFE9</translation>
+        <source>3inch FDC  $FF18 - $FF20</source>
+        <translation type="unfinished">3インチFDC  $FF18 - $FF20</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="362"/>
-        <source>Real Time Clock  $FF38-$FF3A</source>
-        <translation>リアルタイムクロック  $FF38-$FF3A</translation>
+        <source>3inch FDC (for L3)  $FF18 - $FF20</source>
+        <translation type="unfinished">3インチFDC (L3用)  $FF18 - $FF20</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="363"/>
-        <source>Z80B Card  $FF7F</source>
-        <translation>Z80Bカード  $FF7F</translation>
+        <source>6voice PSG  $FF30 - $FF33</source>
+        <translation type="unfinished">6声PSG  $FF30 - $FF33</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="364"/>
-        <source>MPC-68008  $FE1A - $FE1B</source>
-        <translation>MPC-68008  $FE1A - $FE1B</translation>
+        <source>6voice PSG (for L3)  $FF30 - $FF33</source>
+        <translation type="unfinished">6声PSG (L3用)  $FF30 - $FF33</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="365"/>
-        <source>DIP Switch (*)</source>
-        <translation>DIPスイッチ (*)</translation>
+        <source>Ex LPT Port  $FF3C - $FF3F</source>
+        <translation type="unfinished">拡張プリンタポート  $FF3C - $FF3F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="366"/>
-        <source>Drawing</source>
-        <translation>描画</translation>
+        <source>Ex COM Port  $FF40 - $FF41</source>
+        <translation type="unfinished">拡張通信ポート  $FF40 - $FF41</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="367"/>
-        <source>Method</source>
-        <translation>方法</translation>
+        <source>9voice PSG  $FF70 - $FF7F</source>
+        <translation type="unfinished">9声PSG  $FF70 - $FF7F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="368"/>
-        <source>Method (*)</source>
-        <translation>方法 (*)</translation>
+        <source>9voice PSG (for L3)  $FF70 - $FF7F</source>
+        <translation type="unfinished">9声PSG (L3用)  $FF70 - $FF7F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="369"/>
-        <source>Use (*)</source>
-        <translation>使用する (*)</translation>
+        <source>KANJI ROM  $FF75 - $FF76</source>
+        <translation type="unfinished">漢字ROM  $FF75 - $FF76</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="370"/>
-        <source>CRTC</source>
-        <translation></translation>
+        <source>KANJI ROM (JIS2)  $FF72 - $FF74</source>
+        <translation type="unfinished">漢字ROM (JIS2)  $FF72 - $FF74</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="371"/>
-        <source>Disptmg Skew</source>
-        <translation>Disptmgスキュー</translation>
+        <source>Ex PSG (for S1)  $FFE6,E7 ($FFEE,EF)</source>
+        <translation type="unfinished">拡張PSG (S1用)  $FFE6,E7 ($FFEE,EF)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="372"/>
-        <source>Curdisp Skew</source>
-        <translation>Curdispスキュー</translation>
+        <source>OS-9 Ex Card  $FE11</source>
+        <translation type="unfinished">OS-9拡張カード  $FE11</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="373"/>
-        <source>Curdisp Skew (L3 Only)</source>
-        <translation>Curdispスキュー(L3のみ有効)</translation>
+        <source>Communication Card  $FF77</source>
+        <translation type="unfinished">通信カード  $FF77</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="374"/>
-        <source>BMP</source>
-        <translation></translation>
+        <source>Keyboard  $FFE0 - $FFE1</source>
+        <translation type="unfinished">キーボード  $FFE0 - $FFE1</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="375"/>
-        <source>PNG</source>
-        <translation></translation>
+        <source>Mouse  $FFDC - $FFDF</source>
+        <translation type="unfinished">マウス  $FFDC - $FFDF</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="376"/>
-        <source>OFF</source>
-        <translation></translation>
+        <source>FM Synth Card (OPN/A)  $FF1E,1F ($FF16,17)</source>
+        <translation type="unfinished">FM音源カード(OPN/A)  $FF1E,1F ($FF16,17)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="377"/>
-        <source>ON</source>
-        <translation></translation>
+        <source>Disable ROM BASIC (Limelight)  $FFCE</source>
+        <translation type="unfinished">ROM BASIC無効(来夢来人)  $FFCE</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="378"/>
-        <source>OK</source>
-        <translation></translation>
+        <source>Disable IG  $FFE9</source>
+        <translation type="unfinished">IG無効  $FFE9</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="379"/>
-        <source>Cancel</source>
-        <translation>キャンセル</translation>
+        <source>Disable IG (Limelight)  $FFE9</source>
+        <translation type="unfinished">IG無効(来夢来人)  $FFE9</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="380"/>
-        <source>Close</source>
-        <translation>閉じる</translation>
+        <source>Real Time Clock  $FF38-$FF3A</source>
+        <translation type="unfinished">リアルタイムクロック  $FF38-$FF3A</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="381"/>
-        <source>No</source>
-        <translation>いいえ</translation>
+        <source>Z80B Card  $FF7F</source>
+        <translation type="unfinished">Z80Bカード  $FF7F</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="382"/>
-        <source>Yes</source>
-        <translation>はい</translation>
+        <source>MPC-68008  $FE1A - $FE1B</source>
+        <translation type="unfinished">MPC-68008  $FE1A - $FE1B</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="383"/>
-        <source>Yes(sync)</source>
-        <translation>はい(同期)</translation>
+        <source>DIP Switch (*)</source>
+        <translation type="unfinished">DIPスイッチ (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="384"/>
-        <source>Yes(async)</source>
-        <translation>はい(非同期)</translation>
+        <source>Drawing</source>
+        <translation type="unfinished">描画</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="385"/>
-        <source>Update</source>
-        <translation>更新</translation>
+        <source>Method</source>
+        <translation type="unfinished">方法</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="386"/>
-        <source>Enable</source>
-        <translation>有効</translation>
+        <source>Method (*)</source>
+        <translation type="unfinished">方法 (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="387"/>
-        <source>Hostname</source>
-        <translation>ホスト名</translation>
+        <source>Use (*)</source>
+        <translation type="unfinished">使用する (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="388"/>
-        <source>LPT%d</source>
-        <translation></translation>
+        <source>CRTC</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="389"/>
-        <source>COM%d</source>
-        <translation></translation>
+        <source>Disptmg Skew</source>
+        <translation type="unfinished">Disptmgスキュー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="390"/>
-        <source>LPT%d Hostname</source>
-        <translation>LPT%d ホスト名</translation>
+        <source>Curdisp Skew</source>
+        <translation type="unfinished">Curdispスキュー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="391"/>
-        <source>COM%d Hostname</source>
-        <translation>COM%d ホスト名</translation>
+        <source>Curdisp Skew (L3 Only)</source>
+        <translation type="unfinished">Curdispスキュー(L3のみ有効)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="392"/>
-        <source> Port</source>
-        <translation>ポート</translation>
+        <source>BMP</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="393"/>
-        <source> Print Delay</source>
-        <translation> 印刷遅延</translation>
+        <source>PNG</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="394"/>
-        <source>msec.</source>
-        <translation>ミリ秒</translation>
+        <source>OFF</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="395"/>
-        <source>S:300baud/F:1200baud</source>
-        <translation>S:300ボー/F:1200ボー</translation>
+        <source>ON</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="396"/>
-        <source>S:600baud/F:2400baud</source>
-        <translation>S:600ボー/F:2400ボー</translation>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="397"/>
-        <source>S:1200baud/F:4800baud</source>
-        <translation>S:1200ボー/F:4800ボー</translation>
+        <source>Cancel</source>
+        <translation type="unfinished">キャンセル</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="398"/>
-        <source>S:2400baud/F:9600baud</source>
-        <translation>S:2400ボー/F:9600ボー</translation>
+        <source>Close</source>
+        <translation type="unfinished">閉じる</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="399"/>
-        <source>Connectable host to Debugger</source>
-        <translation>デバッガに接続可能なホスト</translation>
+        <source>No</source>
+        <translation type="unfinished">いいえ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="400"/>
-        <source>Settings of serial ports on host</source>
-        <translation>ホスト上のシリアルポートの設定</translation>
+        <source>Yes</source>
+        <translation type="unfinished">はい</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="401"/>
-        <source>Need re-connect to serial port when modified this.</source>
-        <translation>これを変更した場合はシリアルポートの再接続が必要です。</translation>
+        <source>Yes(sync)</source>
+        <translation type="unfinished">はい(同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="402"/>
-        <source>Baud Rate</source>
-        <translation>ボーレート</translation>
+        <source>Yes(async)</source>
+        <translation type="unfinished">はい(非同期)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="403"/>
-        <source>Data Bit</source>
-        <translation>データビット</translation>
+        <source>Update</source>
+        <translation type="unfinished">更新</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="404"/>
-        <source>Parity</source>
-        <translation>パリティ</translation>
+        <source>Enable</source>
+        <translation type="unfinished">有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="405"/>
-        <source>Odd</source>
-        <translation>奇数</translation>
+        <source>Hostname</source>
+        <translation type="unfinished">ホスト名</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="406"/>
-        <source>Even</source>
-        <translation>偶数</translation>
+        <source>LPT%d</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="407"/>
-        <source>Stop Bit</source>
-        <translation>ストップビット</translation>
+        <source>COM%d</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="408"/>
-        <source>Flow Control</source>
-        <translation>フロー制御</translation>
+        <source>LPT%d Hostname</source>
+        <translation type="unfinished">LPT%d ホスト名</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="409"/>
-        <source>Xon/Xoff</source>
-        <translation></translation>
+        <source>COM%d Hostname</source>
+        <translation type="unfinished">COM%d ホスト名</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="410"/>
-        <source>Hardware</source>
-        <translation>ハードウェア</translation>
+        <source> Port</source>
+        <translation type="unfinished">ポート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="411"/>
-        <source>ROM Path</source>
-        <translation>ROMパス</translation>
+        <source> Print Delay</source>
+        <translation type="unfinished"> 印刷遅延</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="412"/>
-        <source>ROM Path (*)</source>
-        <translation>ROMパス (*)</translation>
+        <source>msec.</source>
+        <translation type="unfinished">ミリ秒</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="413"/>
-        <source>Use Extended Memory (64KB)</source>
-        <translation>拡張メモリ(64KB)を使用する</translation>
+        <source>S:300baud/F:1200baud</source>
+        <translation type="unfinished">S:300ボー/F:1200ボー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="414"/>
-        <source>Extended RAM (*)</source>
-        <translation>拡張RAM (*)</translation>
+        <source>S:600baud/F:2400baud</source>
+        <translation type="unfinished">S:600ボー/F:2400ボー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="415"/>
-        <source>No wait to access the main memory.</source>
-        <translation>メインメモリのアクセスをウェイトなしにする。</translation>
+        <source>S:1200baud/F:4800baud</source>
+        <translation type="unfinished">S:1200ボー/F:4800ボー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="416"/>
-        <source>Show message when the CPU fetches undefined opcode.</source>
-        <translation>CPUが未定義命令を読み込んだ時にメッセージを表示する。</translation>
+        <source>S:2400baud/F:9600baud</source>
+        <translation type="unfinished">S:2400ボー/F:9600ボー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="417"/>
-        <source>Show message when the address error occured in MC68008.</source>
-        <translation>MC68008でアドレスエラーが発生した時にメッセージを表示する。</translation>
+        <source>Connectable host to Debugger</source>
+        <translation type="unfinished">デバッガに接続可能なホスト</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="418"/>
-        <source>Clear CPU registers at power on.</source>
-        <translation>パワーオン時にCPUのレジスタをクリアする。</translation>
+        <source>Settings of serial ports on host</source>
+        <translation type="unfinished">ホスト上のシリアルポートの設定</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="419"/>
-        <source>FM Synthesis Card (*)</source>
-        <translation>FM音源カード (*)</translation>
+        <source>Need re-connect to serial port when modified this.</source>
+        <translation type="unfinished">これを変更した場合はシリアルポートの再接続が必要です。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="420"/>
-        <source>Extended PSG Port (*)</source>
-        <translation>拡張PSGポート (*)</translation>
+        <source>Baud Rate</source>
+        <translation type="unfinished">ボーレート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="421"/>
-        <source>I/O ports are $FF1E - $FF1F and $FF16 - $FF17.</source>
-        <translation>I/Oポートは $FF1E - $FF1F, $FF16 - $FF17。</translation>
+        <source>Data Bit</source>
+        <translation type="unfinished">データビット</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="422"/>
-        <source>I/O ports are $FFE6 - $FFE7 and $FFEE - $FFEF.</source>
-        <translation>I/Oポートは $FFE6 - $FFE7, $FFEE - $FFEF。</translation>
+        <source>Parity</source>
+        <translation type="unfinished">パリティ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="423"/>
-        <source>Clock</source>
-        <translation>クロック</translation>
+        <source>Odd</source>
+        <translation type="unfinished">奇数</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="424"/>
-        <source>Connect interrupt signal of FM synthesis to (*)(**)</source>
-        <translation>FM音源の割り込み信号接続先 (*)(**)</translation>
+        <source>Even</source>
+        <translation type="unfinished">偶数</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="425"/>
-        <source>Sound chip</source>
-        <translation>音源チップ</translation>
+        <source>Stop Bit</source>
+        <translation type="unfinished">ストップビット</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="426"/>
-        <source>** This is the common setting both FM synthesis card and extended PSG port.</source>
-        <translation>** これはFM音源カードと拡張PSGポートの共通の設定です。</translation>
+        <source>Flow Control</source>
+        <translation type="unfinished">フロー制御</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="427"/>
-        <source>Connect interrupt signal of Z80B Card to (*)</source>
-        <translation>Z80Bカードの割り込み信号接続先 (*)</translation>
+        <source>Xon/Xoff</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="428"/>
-        <source>Use double buffering when method is default.</source>
-        <translation>方法がデフォルトの時ダブルバッファを使用</translation>
+        <source>Hardware</source>
+        <translation type="unfinished">ハードウェア</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="429"/>
-        <source>MsgBoard: OK</source>
-        <translation>MsgBoard: OK</translation>
+        <source>ROM Path</source>
+        <translation type="unfinished">ROMパス</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="430"/>
-        <source>MsgBoard: Failed</source>
-        <translation>MsgBoard: 失敗</translation>
+        <source>ROM Path (*)</source>
+        <translation type="unfinished">ROMパス (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="431"/>
-        <source>MsgBoard: Use &quot;%s&quot; for %s.</source>
-        <translation>MsgBoard: &quot;%s&quot;を%s用に使用します。</translation>
+        <source>Use Extended Memory (64KB)</source>
+        <translation type="unfinished">拡張メモリ(64KB)を使用する</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="432"/>
-        <source>MsgBoard: Couldn&apos;t load font %s.</source>
-        <translation>MsgBoard: フォント %s をロードできませんでした。</translation>
+        <source>Extended RAM (*)</source>
+        <translation type="unfinished">拡張RAM (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="433"/>
-        <source>MsgBoard: Couldn&apos;t find fonts for %s.</source>
-        <translation>MsgBoard: %s用のフォントが見つかりませんでした。</translation>
+        <source>No wait to access the main memory.</source>
+        <translation type="unfinished">メインメモリのアクセスをウェイトなしにする。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="434"/>
-        <source>MsgBoard: Couldn&apos;t load font &quot;%s&quot; for message.</source>
-        <translation>MsgBoard: フォント&quot;%s&quot;をメッセージ用にロードできませんでした。</translation>
+        <source>Show message when the CPU fetches undefined opcode.</source>
+        <translation type="unfinished">CPUが未定義命令を読み込んだ時にメッセージを表示する。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="435"/>
-        <source>MsgBoard: Couldn&apos;t load font &quot;%s&quot; for info.</source>
-        <translation>MsgBoard: フォント&quot;%s&quot;を情報用にロードできませんでした。</translation>
+        <source>Show message when the address error occured in MC68008.</source>
+        <translation type="unfinished">MC68008でアドレスエラーが発生した時にメッセージを表示する。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="436"/>
-        <source>info</source>
-        <translation>情報</translation>
+        <source>Clear CPU registers at power on.</source>
+        <translation type="unfinished">パワーオン時にCPUのレジスタをクリアする。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="437"/>
-        <source>message</source>
-        <translation>メッセージ</translation>
+        <source>FM Synthesis Card (*)</source>
+        <translation type="unfinished">FM音源カード (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="438"/>
-        <source>Select a folder to save snapshot images.</source>
-        <translation>スナップショットを保存するフォルダを選択してください。</translation>
+        <source>Extended PSG Port (*)</source>
+        <translation type="unfinished">拡張PSGポート (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="439"/>
-        <source>Select a font file for showing messages.</source>
-        <translation>メッセージ表示用のフォントファイルを選択してください。</translation>
+        <source>I/O ports are $FF1E - $FF1F and $FF16 - $FF17.</source>
+        <translation type="unfinished">I/Oポートは $FF1E - $FF1F, $FF16 - $FF17。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="440"/>
-        <source>Select a font folder for showing messages.</source>
-        <translation>メッセージ表示用のフォントがあるフォルダを選択してください。</translation>
+        <source>I/O ports are $FFE6 - $FFE7 and $FFEE - $FFEF.</source>
+        <translation type="unfinished">I/Oポートは $FFE6 - $FFE7, $FFEE - $FFEF。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="441"/>
-        <source>Select a folder containing the rom images.</source>
-        <translation>ROMイメージのあるフォルダを選択してください。</translation>
+        <source>Clock</source>
+        <translation type="unfinished">クロック</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="442"/>
-        <source>Select a font.</source>
-        <translation>フォントを選択してください。</translation>
+        <source>Connect interrupt signal of FM synthesis to (*)(**)</source>
+        <translation type="unfinished">FM音源の割り込み信号接続先 (*)(**)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="443"/>
-        <source>File...</source>
-        <translation>ファイル...</translation>
+        <source>Sound chip</source>
+        <translation type="unfinished">音源チップ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="444"/>
-        <source>File Type :</source>
-        <translation>ファイル種類:</translation>
+        <source>** This is the common setting both FM synthesis card and extended PSG port.</source>
+        <translation type="unfinished">** これはFM音源カードと拡張PSGポートの共通の設定です。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="445"/>
-        <source>Play Data Recorder Tape</source>
-        <translation>テープを再生</translation>
+        <source>Connect interrupt signal of Z80B Card to (*)</source>
+        <translation type="unfinished">Z80Bカードの割り込み信号接続先 (*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="446"/>
-        <source>Record Data Recorder Tape</source>
-        <translation>テープに録音</translation>
+        <source>Use double buffering when method is default.</source>
+        <translation type="unfinished">方法がデフォルトの時ダブルバッファを使用</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="447"/>
-        <source>Play [</source>
-        <translation>再生 [</translation>
+        <source>MsgBoard: OK</source>
+        <translation type="unfinished">MsgBoard: OK</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="448"/>
-        <source>Play...</source>
-        <translation>再生...</translation>
+        <source>MsgBoard: Failed</source>
+        <translation type="unfinished">MsgBoard: 失敗</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="449"/>
-        <source>Rec [</source>
-        <translation>録音 [</translation>
+        <source>MsgBoard: Use &quot;%s&quot; for %s.</source>
+        <translation type="unfinished">MsgBoard: &quot;%s&quot;を%s用に使用します。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="450"/>
-        <source>Open Floppy Disk %d</source>
-        <translation>フロッピー%dを開く</translation>
+        <source>MsgBoard: Couldn&apos;t load font %s.</source>
+        <translation type="unfinished">MsgBoard: フォント %s をロードできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="451"/>
-        <source>FDD</source>
-        <translation>FDD</translation>
+        <source>MsgBoard: Couldn&apos;t find fonts for %s.</source>
+        <translation type="unfinished">MsgBoard: %s用のフォントが見つかりませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="452"/>
-        <source>New Floppy Disk %d</source>
-        <translation>新規フロッピー%d</translation>
+        <source>MsgBoard: Couldn&apos;t load font &quot;%s&quot; for message.</source>
+        <translation type="unfinished">MsgBoard: フォント&quot;%s&quot;をメッセージ用にロードできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="453"/>
-        <source>Insert [</source>
-        <translation>挿入 [</translation>
+        <source>MsgBoard: Couldn&apos;t load font &quot;%s&quot; for info.</source>
+        <translation type="unfinished">MsgBoard: フォント&quot;%s&quot;を情報用にロードできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="454"/>
-        <source>Insert...</source>
-        <translation>挿入...</translation>
+        <source>info</source>
+        <translation type="unfinished">情報</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="455"/>
-        <source>HDD</source>
-        <translation>HDD</translation>
+        <source>message</source>
+        <translation type="unfinished">メッセージ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="456"/>
-        <source>Open Hard Disk %d</source>
-        <translation>ハードディスク%dを開く</translation>
+        <source>Select a folder to save snapshot images.</source>
+        <translation type="unfinished">スナップショットを保存するフォルダを選択してください。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="457"/>
-        <source>New Hard Disk %d</source>
-        <translation>新規ハードディスク%d</translation>
+        <source>Select a font file for showing messages.</source>
+        <translation type="unfinished">メッセージ表示用のフォントファイルを選択してください。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="458"/>
-        <source>Mount [</source>
-        <translation>マウント [</translation>
+        <source>Select a font folder for showing messages.</source>
+        <translation type="unfinished">メッセージ表示用のフォントがあるフォルダを選択してください。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="459"/>
-        <source>Mount...</source>
-        <translation>マウント...</translation>
+        <source>Select a folder containing the rom images.</source>
+        <translation type="unfinished">ROMイメージのあるフォルダを選択してください。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="460"/>
-        <source>Unmount</source>
-        <translation>アンマウント</translation>
+        <source>Select a font.</source>
+        <translation type="unfinished">フォントを選択してください。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="461"/>
-        <source>Open HuCARD</source>
-        <translation></translation>
+        <source>File...</source>
+        <translation type="unfinished">ファイル...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="462"/>
-        <source>Open Cartridge</source>
-        <translation></translation>
+        <source>File Type :</source>
+        <translation type="unfinished">ファイル種類:</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="463"/>
-        <source>Open Quick Disk</source>
-        <translation></translation>
+        <source>Play Data Recorder Tape</source>
+        <translation type="unfinished">テープを再生</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="464"/>
-        <source>Open Media</source>
-        <translation></translation>
+        <source>Record Data Recorder Tape</source>
+        <translation type="unfinished">テープに録音</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="465"/>
-        <source>Load RAM Pack Cartridge</source>
-        <translation></translation>
+        <source>Play [</source>
+        <translation type="unfinished">再生 [</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="466"/>
-        <source>Load Memory Dump</source>
-        <translation></translation>
+        <source>Play...</source>
+        <translation type="unfinished">再生...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="467"/>
-        <source>Save RAM Pack Cartridge</source>
-        <translation></translation>
+        <source>Rec [</source>
+        <translation type="unfinished">録音 [</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="468"/>
-        <source>Save Memory Dump</source>
-        <translation></translation>
+        <source>Open Floppy Disk %d</source>
+        <translation type="unfinished">フロッピー%dを開く</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="469"/>
-        <source>Open Text File</source>
-        <translation>テキストファイルを開く</translation>
+        <source>FDD</source>
+        <translation type="unfinished">FDD</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="470"/>
-        <source>Save Status Data</source>
-        <translation>状態を保存</translation>
+        <source>New Floppy Disk %d</source>
+        <translation type="unfinished">新規フロッピー%d</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="471"/>
-        <source>Load Status Data</source>
-        <translation>状態データをロード</translation>
+        <source>Insert [</source>
+        <translation type="unfinished">挿入 [</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="472"/>
-        <source>Play Recorded Keys</source>
-        <translation>記録したキー情報を再生</translation>
+        <source>Insert...</source>
+        <translation type="unfinished">挿入...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="473"/>
-        <source>Record Input Keys</source>
-        <translation>入力キーを記録</translation>
+        <source>HDD</source>
+        <translation type="unfinished">HDD</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="474"/>
-        <source>Save Printing Data</source>
-        <translation>印刷データを保存</translation>
+        <source>Open Hard Disk %d</source>
+        <translation type="unfinished">ハードディスク%dを開く</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="475"/>
-        <source>Supported Files</source>
-        <translation>サポートファイル</translation>
+        <source>New Hard Disk %d</source>
+        <translation type="unfinished">新規ハードディスク%d</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="476"/>
-        <source>All Files</source>
-        <translation>全てのファイル</translation>
+        <source>Mount [</source>
+        <translation type="unfinished">マウント [</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="477"/>
-        <source>File</source>
-        <translation>ファイル</translation>
+        <source>Mount...</source>
+        <translation type="unfinished">マウント...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="478"/>
-        <source>Supported Files (*.ttf;*.otf)</source>
-        <translation>サポートファイル (*.ttf;*.otf)</translation>
+        <source>Unmount</source>
+        <translation type="unfinished">アンマウント</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="479"/>
-        <source>Supported Files (*.cas;*.cmt;*.t88)</source>
-        <translation>テープファイル (*.cas;*.cmt;*.t88)</translation>
+        <source>Open HuCARD</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="480"/>
-        <source>Supported Files (*.cas;*.cmt)</source>
-        <translation>テープファイル (*.cas;*.cmt)</translation>
+        <source>Open Cartridge</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="481"/>
-        <source>Supported Files (*.wav;*.cas;*.tap)</source>
-        <translation>テープファイル (*.wav;*.cas;*.tap)</translation>
+        <source>Open Quick Disk</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="482"/>
-        <source>Supported Files (*.wav;*.cas;*.mzt;*.m12)</source>
-        <translation>テープファイル (*.wav;*.cas;*.mzt;*.m12)</translation>
+        <source>Open Media</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="483"/>
-        <source>Supported Files (*.l3;*.l3b;*.l3c;*.wav;*.t9x)</source>
-        <translation>テープファイル (*.l3;*.l3b;*.l3c;*.wav;*.t9x)</translation>
+        <source>Load RAM Pack Cartridge</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="484"/>
-        <source>Supported Files (*.wav;*.cas)</source>
-        <translation>テープファイル (*.wav;*.cas)</translation>
+        <source>Load Memory Dump</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="485"/>
-        <source>L3 File (*.l3)</source>
-        <translation>L3ファイル (*.l3)</translation>
+        <source>Save RAM Pack Cartridge</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="486"/>
-        <source>L3B File (*.l3b)</source>
-        <translation>L3Bファイル (*.l3b)</translation>
+        <source>Save Memory Dump</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="487"/>
-        <source>L3C File (*.l3c)</source>
-        <translation>L3Cファイル (*.l3c)</translation>
+        <source>Open Text File</source>
+        <translation type="unfinished">テキストファイルを開く</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="488"/>
-        <source>Wave File (*.wav)</source>
-        <translation>Waveファイル (*.wav)</translation>
+        <source>Save Status Data</source>
+        <translation type="unfinished">状態を保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="489"/>
-        <source>T9X File (*.t9x)</source>
-        <translation></translation>
+        <source>Load Status Data</source>
+        <translation type="unfinished">状態データをロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="490"/>
-        <source>Supported Files (*.d88;*.d77;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</source>
-        <translation>サポートファイル (*.d88;*.d77;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</translation>
+        <source>Play Recorded Keys</source>
+        <translation type="unfinished">記録したキー情報を再生</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="491"/>
-        <source>Supported Files (*.d88;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</source>
-        <translation>サポートファイル (*.d88;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</translation>
+        <source>Record Input Keys</source>
+        <translation type="unfinished">入力キーを記録</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="492"/>
-        <source>Supported Files (*.d88;*.d77)</source>
-        <translation>ディスクファイル (*.d88;*.d77)</translation>
+        <source>Save Printing Data</source>
+        <translation type="unfinished">印刷データを保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="493"/>
-        <source>Supported Files (*.d88)</source>
-        <translation>ディスクファイル (*.d88)</translation>
+        <source>Supported Files</source>
+        <translation type="unfinished">サポートファイル</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="494"/>
-        <source>Supported Files (*.txt;*.bas;*.lpt)</source>
-        <translation>テキストファイル (*.txt;*.bas;*.lpt)</translation>
+        <source>All Files</source>
+        <translation type="unfinished">全てのファイル</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="495"/>
-        <source>Supported Files (*.l3r)</source>
-        <translation>レジュームファイル (*.l3r)</translation>
+        <source>File</source>
+        <translation type="unfinished">ファイル</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="496"/>
-        <source>Supported Files (*.l3k)</source>
-        <translation>キー情報ファイル (*.l3k)</translation>
+        <source>Supported Files (*.ttf;*.otf)</source>
+        <translation type="unfinished">サポートファイル (*.ttf;*.otf)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="497"/>
-        <source>Supported Files (*.lpt)</source>
-        <translation>印刷ファイル (*.lpt)</translation>
+        <source>Supported Files (*.cas;*.cmt;*.t88)</source>
+        <translation type="unfinished">テープファイル (*.cas;*.cmt;*.t88)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="498"/>
-        <source>Supported Files (*.rom;*.bin;*.hex;*.gg;*.col)</source>
-        <translation>サポートファイル (*.rom;*.bin;*.hex;*.gg;*.col)</translation>
+        <source>Supported Files (*.cas;*.cmt)</source>
+        <translation type="unfinished">テープファイル (*.cas;*.cmt)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="499"/>
-        <source>Supported Files (*.rom;*.bin;*.hex;*.sms)</source>
-        <translation>サポートファイル (*.rom;*.bin;*.hex;*.sms)</translation>
+        <source>Supported Files (*.wav;*.cas;*.tap)</source>
+        <translation type="unfinished">テープファイル (*.wav;*.cas;*.tap)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="500"/>
-        <source>Supported Files (*.rom;*.bin;*.hex;*.60)</source>
-        <translation>サポートファイル (*.rom;*.bin;*.hex;*.60)</translation>
+        <source>Supported Files (*.wav;*.cas;*.mzt;*.m12)</source>
+        <translation type="unfinished">テープファイル (*.wav;*.cas;*.mzt;*.m12)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="501"/>
-        <source>Supported Files (*.rom;*.bin;*.hex;*.pce)</source>
-        <translation>サポートファイル (*.rom;*.bin;*.hex;*.pce)</translation>
+        <source>Supported Files (*.l3;*.l3b;*.l3c;*.wav;*.t9x)</source>
+        <translation type="unfinished">テープファイル (*.l3;*.l3b;*.l3c;*.wav;*.t9x)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="502"/>
-        <source>Supported Files (*.rom;*.bin;*.hex)</source>
-        <translation>サポートファイル (*.rom;*.bin;*.hex)</translation>
+        <source>Supported Files (*.wav;*.cas)</source>
+        <translation type="unfinished">テープファイル (*.wav;*.cas)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="503"/>
-        <source>Supported Files (*.mzt;*.q20;*.qdf)</source>
-        <translation>サポートファイル (*.mzt;*.q20;*.qdf)</translation>
+        <source>L3 File (*.l3)</source>
+        <translation type="unfinished">L3ファイル (*.l3)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="504"/>
-        <source>Supported Files (*.bin)</source>
-        <translation>サポートファイル (*.bin)</translation>
+        <source>L3B File (*.l3b)</source>
+        <translation type="unfinished">L3Bファイル (*.l3b)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="505"/>
-        <source>Supported Files (*.ram;*.bin;*.hex)</source>
-        <translation>サポートファイル (*.ram;*.bin;*.hex)</translation>
+        <source>L3C File (*.l3c)</source>
+        <translation type="unfinished">L3Cファイル (*.l3c)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="506"/>
-        <source>All Files (*.*)</source>
-        <translation>全てのファイル (*.*)</translation>
+        <source>Wave File (*.wav)</source>
+        <translation type="unfinished">Waveファイル (*.wav)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="507"/>
-        <source>(Pause)</source>
-        <translation>(ポーズ)</translation>
+        <source>T9X File (*.t9x)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="508"/>
-        <source>num INS/DEL</source>
-        <translation>テンキー INS/DEL</translation>
+        <source>Supported Files (*.d88;*.d77;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</source>
+        <translation type="unfinished">サポートファイル (*.d88;*.d77;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="509"/>
-        <source>KATA/HIRA</source>
-        <translation>KATA/HIRA</translation>
+        <source>Supported Files (*.d88;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</source>
+        <translation type="unfinished">サポートファイル (*.d88;*.td0;*.imd;*.img;*.dsk;*.fdi;*.hdm;*.tfd;*.xdf;*.2d;*.2hd;*.sf7)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="510"/>
-        <source>HENKAN</source>
-        <translation>変換</translation>
+        <source>Supported Files (*.d88;*.d77)</source>
+        <translation type="unfinished">ディスクファイル (*.d88;*.d77)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="511"/>
-        <source>MUHENKAN</source>
-        <translation>無変換</translation>
+        <source>Supported Files (*.d88)</source>
+        <translation type="unfinished">ディスクファイル (*.d88)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="512"/>
-        <source>Allow RIGHT</source>
-        <translation>→</translation>
+        <source>Supported Files (*.txt;*.bas;*.lpt)</source>
+        <translation type="unfinished">テキストファイル (*.txt;*.bas;*.lpt)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="513"/>
-        <source>Allow LEFT</source>
-        <translation>←</translation>
+        <source>Supported Files (*.l3r)</source>
+        <translation type="unfinished">レジュームファイル (*.l3r)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="514"/>
-        <source>Allow UP</source>
-        <translation>↑</translation>
+        <source>Supported Files (*.l3k)</source>
+        <translation type="unfinished">キー情報ファイル (*.l3k)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="515"/>
-        <source>Allow DOWN</source>
-        <translation>↓</translation>
+        <source>Supported Files (*.lpt)</source>
+        <translation type="unfinished">印刷ファイル (*.lpt)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="516"/>
-        <source>SPACE</source>
-        <translation>スペース</translation>
+        <source>Supported Files (*.rom;*.bin;*.hex;*.gg;*.col)</source>
+        <translation type="unfinished">サポートファイル (*.rom;*.bin;*.hex;*.gg;*.col)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="517"/>
-        <source>num ,</source>
-        <translation>テンキー ,</translation>
+        <source>Supported Files (*.rom;*.bin;*.hex;*.sms)</source>
+        <translation type="unfinished">サポートファイル (*.rom;*.bin;*.hex;*.sms)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="518"/>
-        <source>num *</source>
-        <translation>テンキー *</translation>
+        <source>Supported Files (*.rom;*.bin;*.hex;*.60)</source>
+        <translation type="unfinished">サポートファイル (*.rom;*.bin;*.hex;*.60)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="519"/>
-        <source>num +</source>
-        <translation>テンキー +</translation>
+        <source>Supported Files (*.rom;*.bin;*.hex;*.pce)</source>
+        <translation type="unfinished">サポートファイル (*.rom;*.bin;*.hex;*.pce)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="520"/>
-        <source>num ?</source>
-        <translation>テンキー ?</translation>
+        <source>Supported Files (*.rom;*.bin;*.hex)</source>
+        <translation type="unfinished">サポートファイル (*.rom;*.bin;*.hex)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="521"/>
-        <source>num -</source>
-        <translation>テンキー -</translation>
+        <source>Supported Files (*.mzt;*.q20;*.qdf)</source>
+        <translation type="unfinished">サポートファイル (*.mzt;*.q20;*.qdf)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="522"/>
-        <source>num .</source>
-        <translation>テンキー .</translation>
+        <source>Supported Files (*.bin)</source>
+        <translation type="unfinished">サポートファイル (*.bin)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="523"/>
-        <source>num /</source>
-        <translation>テンキー /</translation>
+        <source>Supported Files (*.ram;*.bin;*.hex)</source>
+        <translation type="unfinished">サポートファイル (*.ram;*.bin;*.hex)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="524"/>
-        <source>num enter</source>
-        <translation>テンキー enter</translation>
+        <source>All Files (*.*)</source>
+        <translation type="unfinished">全てのファイル (*.*)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="525"/>
-        <source>num =</source>
-        <translation>テンキー =</translation>
+        <source>(Pause)</source>
+        <translation type="unfinished">(ポーズ)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="526"/>
-        <source>num 0</source>
-        <translation>テンキー 0</translation>
+        <source>num INS/DEL</source>
+        <translation type="unfinished">テンキー INS/DEL</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="527"/>
-        <source>num %c</source>
-        <translation>テンキー %c</translation>
+        <source>KATA/HIRA</source>
+        <translation type="unfinished">KATA/HIRA</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="528"/>
-        <source>num %d</source>
-        <translation>テンキー %d</translation>
+        <source>HENKAN</source>
+        <translation type="unfinished">変換</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="529"/>
-        <source>PF%d</source>
-        <translation></translation>
+        <source>MUHENKAN</source>
+        <translation type="unfinished">無変換</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="530"/>
-        <source>space</source>
-        <translation>スペース</translation>
+        <source>Allow RIGHT</source>
+        <translation type="unfinished">→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="531"/>
-        <source>up</source>
-        <translation>↑</translation>
+        <source>Allow LEFT</source>
+        <translation type="unfinished">←</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="532"/>
-        <source>up+right</source>
-        <translation>↑→</translation>
+        <source>Allow UP</source>
+        <translation type="unfinished">↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="533"/>
-        <source>right</source>
-        <translation>→</translation>
+        <source>Allow DOWN</source>
+        <translation type="unfinished">↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="534"/>
-        <source>down+right</source>
-        <translation>↓→</translation>
+        <source>SPACE</source>
+        <translation type="unfinished">スペース</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="535"/>
-        <source>down</source>
-        <translation>↓</translation>
+        <source>num ,</source>
+        <translation type="unfinished">テンキー ,</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="536"/>
-        <source>down+left</source>
-        <translation>←↓</translation>
+        <source>num *</source>
+        <translation type="unfinished">テンキー *</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="537"/>
-        <source>left</source>
-        <translation>←</translation>
+        <source>num +</source>
+        <translation type="unfinished">テンキー +</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="538"/>
-        <source>up+left</source>
-        <translation>←↑</translation>
+        <source>num ?</source>
+        <translation type="unfinished">テンキー ?</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="539"/>
-        <source>YA up</source>
-        <translation>別 ↑</translation>
+        <source>num -</source>
+        <translation type="unfinished">テンキー -</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="540"/>
-        <source>YA up+right</source>
-        <translation>別 ↑→</translation>
+        <source>num .</source>
+        <translation type="unfinished">テンキー .</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="541"/>
-        <source>YA right</source>
-        <translation>別 →</translation>
+        <source>num /</source>
+        <translation type="unfinished">テンキー /</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="542"/>
-        <source>YA down+right</source>
-        <translation>別 ↓→</translation>
+        <source>num enter</source>
+        <translation type="unfinished">テンキー enter</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="543"/>
-        <source>YA down</source>
-        <translation>別 ↓</translation>
+        <source>num =</source>
+        <translation type="unfinished">テンキー =</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="544"/>
-        <source>YA down+left</source>
-        <translation>別 ←↓</translation>
+        <source>num 0</source>
+        <translation type="unfinished">テンキー 0</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="545"/>
-        <source>YA left</source>
-        <translation>別 ←</translation>
+        <source>num %c</source>
+        <translation type="unfinished">テンキー %c</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="546"/>
-        <source>YA up+left</source>
-        <translation>別 ←↑</translation>
+        <source>num %d</source>
+        <translation type="unfinished">テンキー %d</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="547"/>
-        <source>Y up</source>
-        <translation>Y ↑</translation>
+        <source>PF%d</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="548"/>
-        <source>YX up+right</source>
-        <translation>YX ↑→</translation>
+        <source>space</source>
+        <translation type="unfinished">スペース</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="549"/>
-        <source>X right</source>
-        <translation>X →</translation>
+        <source>up</source>
+        <translation type="unfinished">↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="550"/>
-        <source>YX down+right</source>
-        <translation>YX ↓→</translation>
+        <source>up+right</source>
+        <translation type="unfinished">↑→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="551"/>
-        <source>Y down</source>
-        <translation>Y ↓</translation>
+        <source>right</source>
+        <translation type="unfinished">→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="552"/>
-        <source>YX down+left</source>
-        <translation>YX ←↓</translation>
+        <source>down+right</source>
+        <translation type="unfinished">↓→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="553"/>
-        <source>X left</source>
-        <translation>X ←</translation>
+        <source>down</source>
+        <translation type="unfinished">↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="554"/>
-        <source>YX up+left</source>
-        <translation>YX ←↑</translation>
+        <source>down+left</source>
+        <translation type="unfinished">←↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="555"/>
-        <source>R up</source>
-        <translation>R ↑</translation>
+        <source>left</source>
+        <translation type="unfinished">←</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="556"/>
-        <source>RZ up+right</source>
-        <translation>RZ ↑→</translation>
+        <source>up+left</source>
+        <translation type="unfinished">←↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="557"/>
-        <source>Z right</source>
-        <translation>Z →</translation>
+        <source>YA up</source>
+        <translation type="unfinished">別 ↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="558"/>
-        <source>RZ down+right</source>
-        <translation>RZ ↓→</translation>
+        <source>YA up+right</source>
+        <translation type="unfinished">別 ↑→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="559"/>
-        <source>R down</source>
-        <translation>R ↓</translation>
+        <source>YA right</source>
+        <translation type="unfinished">別 →</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="560"/>
-        <source>RZ down+left</source>
-        <translation>RZ ←↓</translation>
+        <source>YA down+right</source>
+        <translation type="unfinished">別 ↓→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="561"/>
-        <source>Z left</source>
-        <translation>Z ←</translation>
+        <source>YA down</source>
+        <translation type="unfinished">別 ↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="562"/>
-        <source>RZ up+left</source>
-        <translation>RZ ←↑</translation>
+        <source>YA down+left</source>
+        <translation type="unfinished">別 ←↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="563"/>
-        <source>V up</source>
-        <translation>V ↑</translation>
+        <source>YA left</source>
+        <translation type="unfinished">別 ←</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="564"/>
-        <source>VU up+right</source>
-        <translation>VU ↑→</translation>
+        <source>YA up+left</source>
+        <translation type="unfinished">別 ←↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="565"/>
-        <source>U right</source>
-        <translation>U →</translation>
+        <source>Y up</source>
+        <translation type="unfinished">Y ↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="566"/>
-        <source>VU down+right</source>
-        <translation>VU ↓→</translation>
+        <source>YX up+right</source>
+        <translation type="unfinished">YX ↑→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="567"/>
-        <source>V down</source>
-        <translation>V ↓</translation>
+        <source>X right</source>
+        <translation type="unfinished">X →</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="568"/>
-        <source>VU down+left</source>
-        <translation>VU ←↓</translation>
+        <source>YX down+right</source>
+        <translation type="unfinished">YX ↓→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="569"/>
-        <source>U left</source>
-        <translation>U ←</translation>
+        <source>Y down</source>
+        <translation type="unfinished">Y ↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="570"/>
-        <source>VU up+left</source>
-        <translation>VU ←↑</translation>
+        <source>YX down+left</source>
+        <translation type="unfinished">YX ←↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="571"/>
-        <source>POV up</source>
-        <translation>POV ↑</translation>
+        <source>X left</source>
+        <translation type="unfinished">X ←</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="572"/>
-        <source>POV up+right</source>
-        <translation>POV ↑→</translation>
+        <source>YX up+left</source>
+        <translation type="unfinished">YX ←↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="573"/>
-        <source>POV right</source>
-        <translation>POV →</translation>
+        <source>R up</source>
+        <translation type="unfinished">R ↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="574"/>
-        <source>POV down+right</source>
-        <translation>POV ↓→</translation>
+        <source>RZ up+right</source>
+        <translation type="unfinished">RZ ↑→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="575"/>
-        <source>POV down</source>
-        <translation>POV ↓</translation>
+        <source>Z right</source>
+        <translation type="unfinished">Z →</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="576"/>
-        <source>POV down+left</source>
-        <translation>POV ←↓</translation>
+        <source>RZ down+right</source>
+        <translation type="unfinished">RZ ↓→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="577"/>
-        <source>POV left</source>
-        <translation>POV ←</translation>
+        <source>R down</source>
+        <translation type="unfinished">R ↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="578"/>
-        <source>POV up+left</source>
-        <translation>POV ←↑</translation>
+        <source>RZ down+left</source>
+        <translation type="unfinished">RZ ←↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="579"/>
-        <source>button</source>
-        <translation>ボタン</translation>
+        <source>Z left</source>
+        <translation type="unfinished">Z ←</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="580"/>
-        <source>button A</source>
-        <translation>ボタンA</translation>
+        <source>RZ up+left</source>
+        <translation type="unfinished">RZ ←↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="581"/>
-        <source>button B</source>
-        <translation>ボタンB</translation>
+        <source>V up</source>
+        <translation type="unfinished">V ↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="582"/>
-        <source>button %c</source>
-        <translation>ボタン %c</translation>
+        <source>VU up+right</source>
+        <translation type="unfinished">VU ↑→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="583"/>
-        <source>trigger A</source>
-        <translation>トリガA</translation>
+        <source>U right</source>
+        <translation type="unfinished">U →</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="584"/>
-        <source>trigger B</source>
-        <translation>トリガB</translation>
+        <source>VU down+right</source>
+        <translation type="unfinished">VU ↓→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="585"/>
-        <source>trigger %c</source>
-        <translation>トリガ%c</translation>
+        <source>V down</source>
+        <translation type="unfinished">V ↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="586"/>
-        <source>bit 0</source>
-        <translation>ビット 0</translation>
+        <source>VU down+left</source>
+        <translation type="unfinished">VU ←↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="587"/>
-        <source>bit 1</source>
-        <translation>ビット 1</translation>
+        <source>U left</source>
+        <translation type="unfinished">U ←</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="588"/>
-        <source>bit 2</source>
-        <translation>ビット 2</translation>
+        <source>VU up+left</source>
+        <translation type="unfinished">VU ←↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="589"/>
-        <source>bit 3</source>
-        <translation>ビット 3</translation>
+        <source>POV up</source>
+        <translation type="unfinished">POV ↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="590"/>
-        <source>bit 4</source>
-        <translation>ビット 4</translation>
+        <source>POV up+right</source>
+        <translation type="unfinished">POV ↑→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="591"/>
-        <source>bit 5</source>
-        <translation>ビット 5</translation>
+        <source>POV right</source>
+        <translation type="unfinished">POV →</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="592"/>
-        <source>bit 6</source>
-        <translation>ビット 6</translation>
+        <source>POV down+right</source>
+        <translation type="unfinished">POV ↓→</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="593"/>
-        <source>bit 7</source>
-        <translation>ビット 7</translation>
+        <source>POV down</source>
+        <translation type="unfinished">POV ↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="594"/>
-        <source>bit %d</source>
-        <translation>ビット %d</translation>
+        <source>POV down+left</source>
+        <translation type="unfinished">POV ←↓</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="595"/>
-        <source>Left Analog X</source>
-        <translation>左アナログX</translation>
+        <source>POV left</source>
+        <translation type="unfinished">POV ←</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="596"/>
-        <source>Left Analog Y</source>
-        <translation>左アナログY</translation>
+        <source>POV up+left</source>
+        <translation type="unfinished">POV ←↑</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="597"/>
-        <source>Right Analog X</source>
-        <translation>右アナログX</translation>
+        <source>button</source>
+        <translation type="unfinished">ボタン</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="598"/>
-        <source>Right Analog Y</source>
-        <translation>右アナログY</translation>
+        <source>button A</source>
+        <translation type="unfinished">ボタンA</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="599"/>
-        <source>Analog X</source>
-        <translation>アナログX</translation>
+        <source>button B</source>
+        <translation type="unfinished">ボタンB</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="600"/>
-        <source>Analog Y</source>
-        <translation>アナログY</translation>
+        <source>button %c</source>
+        <translation type="unfinished">ボタン %c</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="601"/>
-        <source>Analog Z</source>
-        <translation>アナログZ</translation>
+        <source>trigger A</source>
+        <translation type="unfinished">トリガA</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="602"/>
-        <source>Analog R</source>
-        <translation>アナログR</translation>
+        <source>trigger B</source>
+        <translation type="unfinished">トリガB</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="603"/>
-        <source>Analog U</source>
-        <translation>アナログU</translation>
+        <source>trigger %c</source>
+        <translation type="unfinished">トリガ%c</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="604"/>
-        <source>Analog V</source>
-        <translation>アナログV</translation>
+        <source>bit 0</source>
+        <translation type="unfinished">ビット 0</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="605"/>
-        <source>Analog X (Rev.)</source>
-        <translation>アナログX (反転)</translation>
+        <source>bit 1</source>
+        <translation type="unfinished">ビット 1</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="606"/>
-        <source>Analog Y (Rev.)</source>
-        <translation>アナログY (反転)</translation>
+        <source>bit 2</source>
+        <translation type="unfinished">ビット 2</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="607"/>
-        <source>Analog Z (Rev.)</source>
-        <translation>アナログZ (反転)</translation>
+        <source>bit 3</source>
+        <translation type="unfinished">ビット 3</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="608"/>
-        <source>Analog R (Rev.)</source>
-        <translation>アナログR (反転)</translation>
+        <source>bit 4</source>
+        <translation type="unfinished">ビット 4</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="609"/>
-        <source>Analog U (Rev.)</source>
-        <translation>アナログU (反転)</translation>
+        <source>bit 5</source>
+        <translation type="unfinished">ビット 5</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="610"/>
-        <source>Analog V (Rev.)</source>
-        <translation>アナログV (反転)</translation>
+        <source>bit 6</source>
+        <translation type="unfinished">ビット 6</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="611"/>
-        <source>Enable X-axis</source>
-        <translation>X軸有効</translation>
+        <source>bit 7</source>
+        <translation type="unfinished">ビット 7</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="612"/>
-        <source>Enable Y-axis</source>
-        <translation>Y軸有効</translation>
+        <source>bit %d</source>
+        <translation type="unfinished">ビット %d</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="613"/>
-        <source>Enable Z-axis</source>
-        <translation>Z軸有効</translation>
+        <source>Left Analog X</source>
+        <translation type="unfinished">左アナログX</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="614"/>
-        <source>Enable R-axis</source>
-        <translation>R軸有効</translation>
+        <source>Left Analog Y</source>
+        <translation type="unfinished">左アナログY</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="615"/>
-        <source>Enable U-axis</source>
-        <translation>U軸有効</translation>
+        <source>Right Analog X</source>
+        <translation type="unfinished">右アナログX</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="616"/>
-        <source>Enable V-axis</source>
-        <translation>V軸有効</translation>
+        <source>Right Analog Y</source>
+        <translation type="unfinished">右アナログY</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="617"/>
-        <source>X-axis</source>
-        <translation>X軸</translation>
+        <source>Analog X</source>
+        <translation type="unfinished">アナログX</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="618"/>
-        <source>Y-axis</source>
-        <translation>Y軸</translation>
+        <source>Analog Y</source>
+        <translation type="unfinished">アナログY</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="619"/>
-        <source>Z-axis</source>
-        <translation>Z軸</translation>
+        <source>Analog Z</source>
+        <translation type="unfinished">アナログZ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="620"/>
-        <source>R-axis</source>
-        <translation>R軸</translation>
+        <source>Analog R</source>
+        <translation type="unfinished">アナログR</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="621"/>
-        <source>U-axis</source>
-        <translation>U軸</translation>
+        <source>Analog U</source>
+        <translation type="unfinished">アナログU</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="622"/>
-        <source>V-axis</source>
-        <translation>V軸</translation>
+        <source>Analog V</source>
+        <translation type="unfinished">アナログV</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="623"/>
-        <source>kanji</source>
-        <translation>漢字</translation>
+        <source>Analog X (Rev.)</source>
+        <translation type="unfinished">アナログX (反転)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="624"/>
-        <source>henkan</source>
-        <translation>変換</translation>
+        <source>Analog Y (Rev.)</source>
+        <translation type="unfinished">アナログY (反転)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="625"/>
-        <source>muhenkan</source>
-        <translation>無変換</translation>
+        <source>Analog Z (Rev.)</source>
+        <translation type="unfinished">アナログZ (反転)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="626"/>
-        <source>katakana</source>
-        <translation>カタカナ</translation>
+        <source>Analog R (Rev.)</source>
+        <translation type="unfinished">アナログR (反転)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="627"/>
-        <source>eisu</source>
-        <translation>英数</translation>
+        <source>Analog U (Rev.)</source>
+        <translation type="unfinished">アナログU (反転)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="628"/>
-        <source>kana</source>
-        <translation>カナ</translation>
+        <source>Analog V (Rev.)</source>
+        <translation type="unfinished">アナログV (反転)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="629"/>
-        <source>right shift</source>
-        <translation>右shift</translation>
+        <source>Enable X-axis</source>
+        <translation type="unfinished">X軸有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="630"/>
-        <source>left shift</source>
-        <translation>左shift</translation>
+        <source>Enable Y-axis</source>
+        <translation type="unfinished">Y軸有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="631"/>
-        <source>right ctrl</source>
-        <translation>右ctrl</translation>
+        <source>Enable Z-axis</source>
+        <translation type="unfinished">Z軸有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="632"/>
-        <source>left ctrl</source>
-        <translation>左ctrl</translation>
+        <source>Enable R-axis</source>
+        <translation type="unfinished">R軸有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="633"/>
-        <source>right option</source>
-        <translation>右option</translation>
+        <source>Enable U-axis</source>
+        <translation type="unfinished">U軸有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="634"/>
-        <source>right alt</source>
-        <translation>右alt</translation>
+        <source>Enable V-axis</source>
+        <translation type="unfinished">V軸有効</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="635"/>
-        <source>left option</source>
-        <translation>左option</translation>
+        <source>X-axis</source>
+        <translation type="unfinished">X軸</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="636"/>
-        <source>left alt</source>
-        <translation>左alt</translation>
+        <source>Y-axis</source>
+        <translation type="unfinished">Y軸</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="637"/>
-        <source>right command</source>
-        <translation>右command</translation>
+        <source>Z-axis</source>
+        <translation type="unfinished">Z軸</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="638"/>
-        <source>right meta</source>
-        <translation>右meta</translation>
+        <source>R-axis</source>
+        <translation type="unfinished">R軸</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="639"/>
-        <source>left command</source>
-        <translation>左command</translation>
+        <source>U-axis</source>
+        <translation type="unfinished">U軸</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="640"/>
-        <source>left meta</source>
-        <translation>左meta</translation>
+        <source>V-axis</source>
+        <translation type="unfinished">V軸</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="641"/>
-        <source>right win</source>
-        <translation>右win</translation>
+        <source>Disable temporarily the following:</source>
+        <translation type="unfinished">以下を一時的に無効にする：</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="642"/>
-        <source>left win</source>
-        <translation>左win</translation>
+        <source>kanji</source>
+        <translation type="unfinished">漢字</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="643"/>
-        <source>Next</source>
-        <translation>次</translation>
+        <source>henkan</source>
+        <translation type="unfinished">変換</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="644"/>
-        <source>Prev</source>
-        <translation>前</translation>
+        <source>muhenkan</source>
+        <translation type="unfinished">無変換</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="645"/>
-        <source>Bind</source>
-        <translation>割り当て</translation>
+        <source>katakana</source>
+        <translation type="unfinished">カタカナ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="646"/>
-        <source>Bind%d</source>
-        <translation>割り当て%d</translation>
+        <source>eisu</source>
+        <translation type="unfinished">英数</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="647"/>
-        <source>S1 Key</source>
-        <translation>S1のキー</translation>
+        <source>kana</source>
+        <translation type="unfinished">カナ</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="648"/>
-        <source>PIA on S1</source>
-        <translation>S1のPIA</translation>
+        <source>right shift</source>
+        <translation type="unfinished">右shift</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="649"/>
-        <source>Level3 Key</source>
-        <translation>Level3のキー</translation>
+        <source>left shift</source>
+        <translation type="unfinished">左shift</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="650"/>
-        <source>PIA on L3</source>
-        <translation>L3のPIA</translation>
+        <source>right ctrl</source>
+        <translation type="unfinished">右ctrl</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="651"/>
-        <source>Keyboard</source>
-        <translation>キーボード</translation>
+        <source>left ctrl</source>
+        <translation type="unfinished">左ctrl</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="652"/>
-        <source>Joypad</source>
-        <translation>ジョイパッド</translation>
+        <source>right option</source>
+        <translation type="unfinished">右option</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="653"/>
-        <source>Joypad (Key Assigned)</source>
-        <translation>ジョイパッド（キー割当）</translation>
+        <source>right alt</source>
+        <translation type="unfinished">右alt</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="654"/>
-        <source>Joypad (PIA Type)</source>
-        <translation>ジョイパッド（PIA接続）</translation>
+        <source>left option</source>
+        <translation type="unfinished">左option</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="655"/>
-        <source>Key to Joypad</source>
-        <translation>キーtoジョイパッド</translation>
+        <source>left alt</source>
+        <translation type="unfinished">左alt</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="656"/>
-        <source>Joypad%d</source>
-        <translation>ジョイパッド%d</translation>
+        <source>right command</source>
+        <translation type="unfinished">右command</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="657"/>
-        <source>Signals are negative logic</source>
-        <translation>信号は負論理</translation>
+        <source>right meta</source>
+        <translation type="unfinished">右meta</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="658"/>
-        <source>Recognize as another key when pressed two buttons</source>
-        <translation>2つのボタンを押したとき、別のキーと認識する</translation>
+        <source>left command</source>
+        <translation type="unfinished">左command</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="659"/>
-        <source>Connect to standard PIA A port</source>
-        <translation>標準PIAのAポートに接続する</translation>
+        <source>left meta</source>
+        <translation type="unfinished">左meta</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="660"/>
-        <source>Load Default</source>
-        <translation>デフォルトをロード</translation>
+        <source>right win</source>
+        <translation type="unfinished">右win</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="661"/>
-        <source>Load Preset 1</source>
-        <translation>プリセット1をロード</translation>
+        <source>left win</source>
+        <translation type="unfinished">左win</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="662"/>
-        <source>Load Preset 2</source>
-        <translation>プリセット2をロード</translation>
+        <source>Next</source>
+        <translation type="unfinished">次</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="663"/>
-        <source>Load Preset 3</source>
-        <translation>プリセット3をロード</translation>
+        <source>Prev</source>
+        <translation type="unfinished">前</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="664"/>
-        <source>Load Preset 4</source>
-        <translation>プリセット4をロード</translation>
+        <source>Bind</source>
+        <translation type="unfinished">割り当て</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="665"/>
-        <source>Load Preset %d</source>
-        <translation>プリセット%dをロード</translation>
+        <source>Bind%d</source>
+        <translation type="unfinished">割り当て%d</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="666"/>
-        <source>Save Preset 1</source>
-        <translation>プリセット1に保存</translation>
+        <source>S1 Key</source>
+        <translation type="unfinished">S1のキー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="667"/>
-        <source>Save Preset 2</source>
-        <translation>プリセット2に保存</translation>
+        <source>PIA on S1</source>
+        <translation type="unfinished">S1のPIA</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="668"/>
-        <source>Save Preset 3</source>
-        <translation>プリセット3に保存</translation>
+        <source>Level3 Key</source>
+        <translation type="unfinished">Level3のキー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="669"/>
-        <source>Save Preset 4</source>
-        <translation>プリセット4に保存</translation>
+        <source>PIA on L3</source>
+        <translation type="unfinished">L3のPIA</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="670"/>
-        <source>Save Preset %d</source>
-        <translation>プリセット%dに保存</translation>
+        <source>PSG Port on L3</source>
+        <translation type="unfinished">L3のPSGポート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="671"/>
-        <source>Button Mashing Speed</source>
-        <translation>連射スピード</translation>
+        <source>Keyboard</source>
+        <translation type="unfinished">キーボード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="672"/>
-        <source>Analog to Digital Threshold</source>
-        <translation>アナログ→デジタル しきい値</translation>
+        <source>Joypad</source>
+        <translation type="unfinished">ジョイパッド</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="673"/>
-        <source>Analog to Digital Sensitivity</source>
-        <translation>アナログ→デジタル 感度</translation>
+        <source>Joypad (Key Assigned)</source>
+        <translation type="unfinished">ジョイパッド（キー割当）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="674"/>
-        <source>Volume</source>
-        <translation>ボリューム</translation>
+        <source>Joypad (PIA Type)</source>
+        <translation type="unfinished">ジョイパッド（PIA接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="675"/>
-        <source>Master</source>
-        <translation>マスター</translation>
+        <source>Joypad (PSG Type)</source>
+        <translation type="unfinished">ジョイパッド（PSG接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="676"/>
-        <source>Beep</source>
-        <translation></translation>
+        <source>Key to Joypad</source>
+        <translation type="unfinished">キーtoジョイパッド</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="677"/>
-        <source>PSG</source>
-        <translation></translation>
+        <source>Key to Joypad (PIA Type)</source>
+        <translation type="unfinished">キーtoジョイパッド（PIA接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="678"/>
-        <source>6voice
-PSG</source>
-        <translation>6声
-PSG</translation>
+        <source>Key to Joypad (PSG Type)</source>
+        <translation type="unfinished">キーtoジョイパッド（PSG接続）</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="679"/>
-        <source>9voice
-PSG</source>
-        <translation>9声
-PSG</translation>
+        <source>Joypad%d</source>
+        <translation type="unfinished">ジョイパッド%d</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="680"/>
-        <source>Relay</source>
-        <translation>リレー</translation>
+        <source>Signals are negative logic</source>
+        <translation type="unfinished">信号は負論理</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="681"/>
-        <source>CMT</source>
-        <translation></translation>
+        <source>Recognize as another key when pressed two buttons</source>
+        <translation type="unfinished">2つのボタンを押したとき、別のキーと認識する</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="682"/>
-        <source>ExPSG
-FM</source>
-        <translation></translation>
+        <source>Connect to </source>
+        <translation type="unfinished">接続先 </translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="683"/>
-        <source>ExPSG
-SSG</source>
-        <translation></translation>
+        <source>Standard PIA A port</source>
+        <translation type="unfinished">標準PIAのAポート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="684"/>
-        <source>ExPSG
-ADPCM</source>
-        <translation></translation>
+        <source>Extended PIA B port</source>
+        <translation type="unfinished">拡張PIAのBポート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="685"/>
-        <source>ExPSG
-Rhythm</source>
-        <translation></translation>
+        <source>No interrupt caused by pressing the button</source>
+        <translation type="unfinished">ボタンを押した時に割り込みを発生させない</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="686"/>
-        <source>OPN
-FM</source>
-        <translation></translation>
+        <source>Load Default</source>
+        <translation type="unfinished">デフォルトをロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="687"/>
-        <source>OPN
-SSG</source>
-        <translation></translation>
+        <source>Load Preset 1</source>
+        <translation type="unfinished">プリセット1をロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="688"/>
-        <source>OPNA
-ADPCM</source>
-        <translation></translation>
+        <source>Load Preset 2</source>
+        <translation type="unfinished">プリセット2をロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="689"/>
-        <source>OPNA
-Rhythm</source>
-        <translation></translation>
+        <source>Load Preset 3</source>
+        <translation type="unfinished">プリセット3をロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="690"/>
-        <source>Mute</source>
-        <translation>ミュート</translation>
+        <source>Load Preset 4</source>
+        <translation type="unfinished">プリセット4をロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="691"/>
-        <source>PSG (like AY-3-8910)</source>
-        <translation>PSG (AY-3-8910相当)</translation>
+        <source>Load Preset %d</source>
+        <translation type="unfinished">プリセット%dをロード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="692"/>
-        <source>OPN (like YM2203)</source>
-        <translation>OPN (YM2203相当)</translation>
+        <source>Save Preset 1</source>
+        <translation type="unfinished">プリセット1に保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="693"/>
-        <source>OPNA (like YM2608)</source>
-        <translation>OPNA (YM2608相当)</translation>
+        <source>Save Preset 2</source>
+        <translation type="unfinished">プリセット2に保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="694"/>
-        <source>PSG (like AY-3-8910) Clock: 1MHz</source>
-        <translation>PSG (AY-3-8910相当) クロック:1MHz</translation>
+        <source>Save Preset 3</source>
+        <translation type="unfinished">プリセット3に保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="695"/>
-        <source>PSG (like AY-3-8910) Clock: 2MHz</source>
-        <translation>PSG (AY-3-8910相当) クロック:2MHz</translation>
+        <source>Save Preset 4</source>
+        <translation type="unfinished">プリセット4に保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="696"/>
-        <source>OPN (like YM2203) Clock: 2MHz</source>
-        <translation>OPN (YM2203相当) クロック:2MHz</translation>
+        <source>Save Preset %d</source>
+        <translation type="unfinished">プリセット%dに保存</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="697"/>
-        <source>OPN (like YM2203) Clock: 3.58MHz</source>
-        <translation>OPN (YM2203相当) クロック:3.58MHz</translation>
+        <source>Button Mashing Speed</source>
+        <translation type="unfinished">連射スピード</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="698"/>
-        <source>OPN (like YM2203) Clock: 4MHz</source>
-        <translation>OPN (YM2203相当) クロック:4MHz</translation>
+        <source>Analog to Digital Threshold</source>
+        <translation type="unfinished">アナログ→デジタル しきい値</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="699"/>
-        <source>OPNA (like YM2608) Clock: 4MHz</source>
-        <translation>OPNA (YM2608相当) クロック:4MHz</translation>
+        <source>Analog to Digital Sensitivity</source>
+        <translation type="unfinished">アナログ→デジタル 感度</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="700"/>
-        <source>OPNA (like YM2608) Clock: 8MHz</source>
-        <translation>OPNA (YM2608相当) クロック:8MHz</translation>
+        <source>Volume</source>
+        <translation type="unfinished">ボリューム</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="701"/>
-        <source>%s was loaded.</source>
-        <translation>%sがロードされました。</translation>
+        <source>Master</source>
+        <translation type="unfinished">マスター</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="702"/>
-        <source>%s couldn&apos;t be loaded.</source>
-        <translation>%sをロードできませんでした。</translation>
+        <source>Beep</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="703"/>
-        <source>%s is invalid file.</source>
-        <translation>%sは不正なファイルです。</translation>
+        <source>PSG</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="704"/>
-        <source>%s is invalid version.</source>
-        <translation>%sは不正なバージョンです。</translation>
+        <source>6voice
+PSG</source>
+        <translation type="unfinished">6声
+PSG</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="705"/>
-        <source>%s is old version.</source>
-        <translation>%sは古いバージョンです。</translation>
+        <source>9voice
+PSG</source>
+        <translation type="unfinished">9声
+PSG</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="706"/>
-        <source>%s was saved.</source>
-        <translation>%sが保存されました。</translation>
+        <source>Relay</source>
+        <translation type="unfinished">リレー</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="707"/>
-        <source>%s couldn&apos;t be saved.</source>
-        <translation>%sを保存できませんでした。</translation>
+        <source>CMT</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="708"/>
-        <source>%s is not compatible. use default setting.</source>
-        <translation>%sは互換がありません。デフォルト設定を使用します。</translation>
+        <source>ExPSG
+FM</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="709"/>
-        <source>Floppy image couldn&apos;t be opened.</source>
-        <translation>フロッピーイメージをオープンできませんでした。</translation>
+        <source>ExPSG
+SSG</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="710"/>
-        <source>Floppy image on drive %d couldn&apos;t be opened.</source>
-        <translation>ドライブ%dのフロッピーイメージをオープンできませんでした。</translation>
+        <source>ExPSG
+ADPCM</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="711"/>
-        <source>Floppy image on drive %d couldn&apos;t be saved.</source>
-        <translation>ドライブ%dのフロッピーイメージを保存できませんでした。</translation>
+        <source>ExPSG
+Rhythm</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="712"/>
-        <source>Floppy image on drive %d is saved as the new file: %s.</source>
-        <translation>ドライブ%dのフロッピーイメージは新しいファイル%sで保存されます。</translation>
+        <source>OPN
+FM</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="713"/>
-        <source>There is the same floppy disk in drive %d and %d.</source>
-        <translation>ドライブ%dと%dに同じフロッピーディスクが入っています。</translation>
+        <source>OPN
+SSG</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="714"/>
-        <source>The density in track %d, side %d is different from specified one.</source>
-        <translation>トラック%d, サイド%dの密度が指定されたものと異なります。</translation>
+        <source>OPNA
+ADPCM</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="715"/>
-        <source>The media type in drive %d is different from specified one.</source>
-        <translation>ドライブ%dのメディア種類が指定されたものと異なります。</translation>
+        <source>OPNA
+Rhythm</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="716"/>
-        <source>Tape image couldn&apos;t be opened.</source>
-        <translation>テープイメージをオープンできませんでした。</translation>
+        <source>Mute</source>
+        <translation type="unfinished">ミュート</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="717"/>
-        <source>Tape image couldn&apos;t be saved.</source>
-        <translation>テープイメージを保存できませんでした。</translation>
+        <source>PSG (like AY-3-8910)</source>
+        <translation type="unfinished">PSG (AY-3-8910相当)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="718"/>
-        <source>Print image couldn&apos;t be saved.</source>
-        <translation>印刷イメージを保存できませんでした。</translation>
+        <source>OPN (like YM2203)</source>
+        <translation type="unfinished">OPN (YM2203相当)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="719"/>
-        <source>Status image couldn&apos;t be saved.</source>
-        <translation>状態イメージを保存できませんでした。</translation>
+        <source>OPNA (like YM2608)</source>
+        <translation type="unfinished">OPNA (YM2608相当)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="720"/>
-        <source>Status image couldn&apos;t be loaded.</source>
-        <translation>状態イメージをロードできませんでした。</translation>
+        <source>PSG (like AY-3-8910) Clock: 1MHz</source>
+        <translation type="unfinished">PSG (AY-3-8910相当) クロック:1MHz</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="721"/>
-        <source>Load State: Cannot open.</source>
-        <translation>状態ロード：オープンできません。</translation>
+        <source>PSG (like AY-3-8910) Clock: 2MHz</source>
+        <translation type="unfinished">PSG (AY-3-8910相当) クロック:2MHz</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="722"/>
-        <source>Load State: Unsupported file.</source>
-        <translation>状態ロード：サポートされていないファイルです。</translation>
+        <source>OPN (like YM2203) Clock: 2MHz</source>
+        <translation type="unfinished">OPN (YM2203相当) クロック:2MHz</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="723"/>
-        <source>Load State: Invalid version.</source>
-        <translation>状態ロード：不正なバージョン。</translation>
+        <source>OPN (like YM2203) Clock: 3.58MHz</source>
+        <translation type="unfinished">OPN (YM2203相当) クロック:3.58MHz</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="724"/>
-        <source>Load State: No longer support a status file for %s.</source>
-        <translation>状態ロード：%s用の状態ファイルはもうサポートされません。</translation>
+        <source>OPN (like YM2203) Clock: 4MHz</source>
+        <translation type="unfinished">OPN (YM2203相当) クロック:4MHz</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="725"/>
-        <source>Auto key file couldn&apos;t be opened.</source>
-        <translation>オートキーファイルをオープンできませんでした。</translation>
+        <source>OPNA (like YM2608) Clock: 4MHz</source>
+        <translation type="unfinished">OPNA (YM2608相当) クロック:4MHz</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="726"/>
-        <source>Record key file couldn&apos;t be saved.</source>
-        <translation>キー記録ファイルを保存できませんでした。</translation>
+        <source>OPNA (like YM2608) Clock: 8MHz</source>
+        <translation type="unfinished">OPNA (YM2608相当) クロック:8MHz</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="727"/>
-        <source>%s is %d bytes smaller than assumed one.</source>
-        <translation>%sは想定されているものより%dバイト小さいサイズです。</translation>
+        <source>%s was loaded.</source>
+        <translation type="unfinished">%sがロードされました。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="728"/>
-        <source>%s is different image from assumed one.</source>
-        <translation>%sは想定されているものとイメージが異なります。</translation>
+        <source>%s couldn&apos;t be loaded.</source>
+        <translation type="unfinished">%sをロードできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="729"/>
-        <source>This is not record key file.</source>
-        <translation>これはキー記録ファイルではありません。</translation>
+        <source>%s is invalid file.</source>
+        <translation type="unfinished">%sは不正なファイルです。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="730"/>
-        <source>Record key file is invalid version.</source>
-        <translation>キー記録ファイルは不正なバージョンです。</translation>
+        <source>%s is invalid version.</source>
+        <translation type="unfinished">%sは不正なバージョンです。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="731"/>
-        <source>Record key file has invalid parameter.</source>
-        <translation>キー記録ファイルに不正なパラメータがあります。</translation>
+        <source>%s is old version.</source>
+        <translation type="unfinished">%sは古いバージョンです。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="732"/>
-        <source>The record key file is not supported.</source>
-        <translation>キー記録ファイルはサポートされていません。</translation>
+        <source>%s was saved.</source>
+        <translation type="unfinished">%sが保存されました。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="733"/>
-        <source>The record key file for %s is no longer supported.</source>
-        <translation>%s用のキー記録ファイルはもうサポートされません。</translation>
+        <source>%s couldn&apos;t be saved.</source>
+        <translation type="unfinished">%sを保存できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="734"/>
-        <source>The version of the emulator used for recording is %d.%d.%d.</source>
-        <translation>記録に使用したエミュレータのバージョンは%d.%d.%dです。</translation>
+        <source>%s is not compatible. use default setting.</source>
+        <translation type="unfinished">%sは互換がありません。デフォルト設定を使用します。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="735"/>
-        <source>Couldn&apos;t start recording audio.</source>
-        <translation>録音を開始できませんでした。</translation>
+        <source>Floppy image couldn&apos;t be opened.</source>
+        <translation type="unfinished">フロッピーイメージをオープンできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="736"/>
-        <source>Couldn&apos;t start recording video.</source>
-        <translation>録画を開始できませんでした。</translation>
+        <source>Floppy image on drive %d couldn&apos;t be opened.</source>
+        <translation type="unfinished">ドライブ%dのフロッピーイメージをオープンできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="737"/>
-        <source>Now saving video file...</source>
-        <translation>ビデオファイルを保存中...</translation>
+        <source>Floppy image on drive %d couldn&apos;t be saved.</source>
+        <translation type="unfinished">ドライブ%dのフロッピーイメージを保存できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="738"/>
-        <source>Video file was saved.</source>
-        <translation>ビデオファイルが保存されました。</translation>
+        <source>Floppy image on drive %d is saved as the new file: %s.</source>
+        <translation type="unfinished">ドライブ%dのフロッピーイメージは新しいファイル%sで保存されます。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="739"/>
-        <source>Screen was saved successfully.</source>
-        <translation>画面が正常に保存されました。</translation>
+        <source>It&apos;s not supported to write to the floppy image on drive %d.</source>
+        <translation type="unfinished">ドライブ%dのフロッピーイメージへの書き込みはサポートしていません。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="740"/>
-        <source>Select a sample rate on sound menu in advance.</source>
-        <translation>あらかじめサウンドメニューでサンプルレートを選択してください。</translation>
+        <source>There is the same floppy disk in drive %d and %d.</source>
+        <translation type="unfinished">ドライブ%dと%dに同じフロッピーディスクが入っています。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="741"/>
-        <source>You can set properties after pressing start button.</source>
-        <translation>開始ボタンを押した後に設定できます。</translation>
+        <source>The density in track %d, side %d is different from specified one.</source>
+        <translation type="unfinished">トラック%d, サイド%dの密度が指定されたものと異なります。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="742"/>
-        <source>! Need install library.</source>
-        <translation>! ライブラリをインストールする必要があります。</translation>
+        <source>The media type in drive %d is different from specified one.</source>
+        <translation type="unfinished">ドライブ%dのメディア種類が指定されたものと異なります。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="743"/>
-        <source>Codec Type</source>
-        <translation>コーデック</translation>
+        <source>Tape image couldn&apos;t be opened.</source>
+        <translation type="unfinished">テープイメージをオープンできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="744"/>
-        <source>Quality</source>
-        <translation>品質</translation>
+        <source>Tape image couldn&apos;t be saved.</source>
+        <translation type="unfinished">テープイメージを保存できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="745"/>
-        <source>Max (368Kbps)</source>
-        <translation>最大 (368Kbps)</translation>
+        <source>Print image couldn&apos;t be saved.</source>
+        <translation type="unfinished">印刷イメージを保存できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="746"/>
-        <source>High (256Kbps)</source>
-        <translation>高 (256Kbps)</translation>
+        <source>Status image couldn&apos;t be saved.</source>
+        <translation type="unfinished">状態イメージを保存できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="747"/>
-        <source>Normal (128Kbps)</source>
-        <translation>普通 (128Kbps)</translation>
+        <source>Status image couldn&apos;t be loaded.</source>
+        <translation type="unfinished">状態イメージをロードできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="748"/>
-        <source>Low (96Kbps)</source>
-        <translation>低 (96Kbps)</translation>
+        <source>Load State: Cannot open.</source>
+        <translation type="unfinished">状態ロード：オープンできません。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="749"/>
-        <source>Min (64Kbps)</source>
-        <translation>最小 (64Kbps)</translation>
+        <source>Load State: Unsupported file.</source>
+        <translation type="unfinished">状態ロード：サポートされていないファイルです。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="750"/>
-        <source>Max (50Mbps)</source>
-        <translation>最大 (50Mbps)</translation>
+        <source>Load State: Invalid version.</source>
+        <translation type="unfinished">状態ロード：不正なバージョン。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="751"/>
-        <source>High (10Mbps)</source>
-        <translation>高 (10Mbps)</translation>
+        <source>Load State: No longer support a status file for %s.</source>
+        <translation type="unfinished">状態ロード：%s用の状態ファイルはもうサポートされません。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="752"/>
-        <source>Normal (1Mbps)</source>
-        <translation>普通 (1Mbps)</translation>
+        <source>Auto key file couldn&apos;t be opened.</source>
+        <translation type="unfinished">オートキーファイルをオープンできませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="753"/>
-        <source>Low (500Kbps)</source>
-        <translation>低 (500Kbps)</translation>
+        <source>Record key file couldn&apos;t be saved.</source>
+        <translation type="unfinished">キー記録ファイルを保存できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="754"/>
-        <source>Min (100Kbps)</source>
-        <translation>最小 (100Kbps)</translation>
+        <source>%s is %d bytes smaller than assumed one.</source>
+        <translation type="unfinished">%sは想定されているものより%dバイト小さいサイズです。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="755"/>
-        <source>Max</source>
-        <translation>最大</translation>
+        <source>%s is different image from assumed one.</source>
+        <translation type="unfinished">%sは想定されているものとイメージが異なります。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="756"/>
-        <source>High</source>
-        <translation>高</translation>
+        <source>This is not record key file.</source>
+        <translation type="unfinished">これはキー記録ファイルではありません。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="757"/>
-        <source>Normal</source>
-        <translation>普通</translation>
+        <source>Record key file is invalid version.</source>
+        <translation type="unfinished">キー記録ファイルは不正なバージョンです。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="758"/>
-        <source>Middle</source>
-        <translation>中</translation>
+        <source>Record key file has invalid parameter.</source>
+        <translation type="unfinished">キー記録ファイルに不正なパラメータがあります。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="759"/>
-        <source>Low</source>
-        <translation>低</translation>
+        <source>The record key file is not supported.</source>
+        <translation type="unfinished">キー記録ファイルはサポートされていません。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="760"/>
-        <source>Min</source>
-        <translation>最小</translation>
+        <source>The record key file for %s is no longer supported.</source>
+        <translation type="unfinished">%s用のキー記録ファイルはもうサポートされません。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="761"/>
-        <source>Debugger was started.</source>
-        <translation>デバッガを開始しました。</translation>
+        <source>The version of the emulator used for recording is %d.%d.%d.</source>
+        <translation type="unfinished">記録に使用したエミュレータのバージョンは%d.%d.%dです。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="762"/>
-        <source>Cannot start debugger.</source>
-        <translation>デバッガを開始できません。</translation>
+        <source>Couldn&apos;t start recording audio.</source>
+        <translation type="unfinished">録音を開始できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="763"/>
-        <source>Debugger was stopped.</source>
-        <translation>デバッガを停止しました。</translation>
+        <source>Couldn&apos;t start recording video.</source>
+        <translation type="unfinished">録画を開始できませんでした。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="764"/>
-        <source>Save to: %s</source>
-        <translation>保存先: %s</translation>
+        <source>Now saving video file...</source>
+        <translation type="unfinished">ビデオファイルを保存中...</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="765"/>
-        <source>About bml3mk5</source>
-        <translation>bml3mk5について</translation>
+        <source>Video file was saved.</source>
+        <translation type="unfinished">ビデオファイルが保存されました。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="766"/>
-        <source>About mbs1</source>
-        <translation>mbs1について</translation>
+        <source>Screen was saved successfully.</source>
+        <translation type="unfinished">画面が正常に保存されました。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="767"/>
-        <source>Hide bml3mk5</source>
-        <translation>bml3mk5を隠す</translation>
+        <source>Select a sample rate on sound menu in advance.</source>
+        <translation type="unfinished">あらかじめサウンドメニューでサンプルレートを選択してください。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="768"/>
-        <source>Hide mbs1</source>
-        <translation>mbs1を隠す</translation>
+        <source>You can set properties after pressing start button.</source>
+        <translation type="unfinished">開始ボタンを押した後に設定できます。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="769"/>
-        <source>Quit bml3mk5</source>
-        <translation>bml3mk5を終了</translation>
+        <source>! Need install library.</source>
+        <translation type="unfinished">! ライブラリをインストールする必要があります。</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="770"/>
-        <source>Quit mbs1</source>
-        <translation>mbs1を終了</translation>
+        <source>Codec Type</source>
+        <translation type="unfinished">コーデック</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="771"/>
-        <source>Hide Others</source>
-        <translation>ほかを隠す</translation>
+        <source>Quality</source>
+        <translation type="unfinished">品質</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="772"/>
-        <source>Show All</source>
-        <translation>すべてを表示</translation>
+        <source>Max (368Kbps)</source>
+        <translation type="unfinished">最大 (368Kbps)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="773"/>
-        <source>Services</source>
-        <translation>サービス</translation>
+        <source>High (256Kbps)</source>
+        <translation type="unfinished">高 (256Kbps)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="774"/>
-        <source>Preferences...</source>
-        <translation>環境設定...</translation>
+        <source>Normal (128Kbps)</source>
+        <translation type="unfinished">普通 (128Kbps)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="775"/>
-        <source>Language (*)</source>
-        <translation>言語 (*)</translation>
+        <source>Low (96Kbps)</source>
+        <translation type="unfinished">低 (96Kbps)</translation>
     </message>
     <message>
         <location filename="../../src/msgs.cpp" line="776"/>
+        <source>Min (64Kbps)</source>
+        <translation type="unfinished">最小 (64Kbps)</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="777"/>
+        <source>Max (50Mbps)</source>
+        <translation type="unfinished">最大 (50Mbps)</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="778"/>
+        <source>High (10Mbps)</source>
+        <translation type="unfinished">高 (10Mbps)</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="779"/>
+        <source>Normal (1Mbps)</source>
+        <translation type="unfinished">普通 (1Mbps)</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="780"/>
+        <source>Low (500Kbps)</source>
+        <translation type="unfinished">低 (500Kbps)</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="781"/>
+        <source>Min (100Kbps)</source>
+        <translation type="unfinished">最小 (100Kbps)</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="782"/>
+        <source>Max</source>
+        <translation type="unfinished">最大</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="783"/>
+        <source>High</source>
+        <translation type="unfinished">高</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="784"/>
+        <source>Normal</source>
+        <translation type="unfinished">普通</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="785"/>
+        <source>Middle</source>
+        <translation type="unfinished">中</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="786"/>
+        <source>Low</source>
+        <translation type="unfinished">低</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="787"/>
+        <source>Min</source>
+        <translation type="unfinished">最小</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="788"/>
+        <source>Debugger was started.</source>
+        <translation type="unfinished">デバッガを開始しました。</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="789"/>
+        <source>Cannot start debugger.</source>
+        <translation type="unfinished">デバッガを開始できません。</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="790"/>
+        <source>Debugger was stopped.</source>
+        <translation type="unfinished">デバッガを停止しました。</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="791"/>
+        <source>Save to: %s</source>
+        <translation type="unfinished">保存先: %s</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="792"/>
+        <source>About bml3mk5</source>
+        <translation type="unfinished">bml3mk5について</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="793"/>
+        <source>About mbs1</source>
+        <translation type="unfinished">mbs1について</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="794"/>
+        <source>Hide bml3mk5</source>
+        <translation type="unfinished">bml3mk5を隠す</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="795"/>
+        <source>Hide mbs1</source>
+        <translation type="unfinished">mbs1を隠す</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="796"/>
+        <source>Quit bml3mk5</source>
+        <translation type="unfinished">bml3mk5を終了</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="797"/>
+        <source>Quit mbs1</source>
+        <translation type="unfinished">mbs1を終了</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="798"/>
+        <source>Hide Others</source>
+        <translation type="unfinished">ほかを隠す</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="799"/>
+        <source>Show All</source>
+        <translation type="unfinished">すべてを表示</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="800"/>
+        <source>Services</source>
+        <translation type="unfinished">サービス</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="801"/>
+        <source>Preferences...</source>
+        <translation type="unfinished">環境設定...</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="802"/>
+        <source>Language (*)</source>
+        <translation type="unfinished">言語 (*)</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="803"/>
         <source>Default</source>
-        <translation>デフォルト</translation>
+        <translation type="unfinished">デフォルト</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="804"/>
+        <source>Window Size x0.5</source>
+        <translation type="unfinished">ウィンドウサイズ x0.5</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="805"/>
+        <source>Window Size x1.0</source>
+        <translation type="unfinished">ウィンドウサイズ x1.0</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="806"/>
+        <source>Window Size x1.5</source>
+        <translation type="unfinished">ウィンドウサイズ x1.5</translation>
+    </message>
+    <message>
+        <location filename="../../src/msgs.cpp" line="807"/>
+        <source>Window Size x2.0</source>
+        <translation type="unfinished">ウィンドウサイズ x2.0</translation>
     </message>
 </context>
 <context>
@@ -6621,22 +6925,22 @@ Rhythm</source>
     <message>
         <location filename="../../src/gui/qt/qt_gui.ui" line="14"/>
         <source>MainWindow</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/gui/qt/qt_gui.ui" line="29"/>
         <source>Exit</source>
-        <translation>終了</translation>
+        <translation type="unfinished">終了</translation>
     </message>
     <message>
-        <location filename="../../src/gui/qt/qt_gui.cpp" line="822"/>
+        <location filename="../../src/gui/qt/qt_gui.cpp" line="847"/>
         <source>LPT</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/gui/qt/qt_gui.cpp" line="843"/>
+        <location filename="../../src/gui/qt/qt_gui.cpp" line="868"/>
         <source>COM</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6644,20 +6948,20 @@ Rhythm</source>
     <message>
         <location filename="../../src/gui/qt/qt_aboutbox.ui" line="14"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MyConfigBox</name>
     <message>
-        <location filename="../../src/gui/qt/qt_configbox.cpp" line="508"/>
+        <location filename="../../src/gui/qt/qt_configbox.cpp" line="510"/>
         <source>LPT</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/gui/qt/qt_configbox.cpp" line="534"/>
+        <location filename="../../src/gui/qt/qt_configbox.cpp" line="536"/>
         <source>COM</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6665,22 +6969,22 @@ Rhythm</source>
     <message>
         <location filename="../../src/gui/qt/qt_keybindbox.ui" line="14"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/gui/qt/qt_keybindbox.ui" line="35"/>
         <source>Tab 1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/gui/qt/qt_keybindbox.ui" line="40"/>
         <source>Tab 2</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/gui/qt/qt_keybindbox.ui" line="48"/>
         <source>PushButton</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

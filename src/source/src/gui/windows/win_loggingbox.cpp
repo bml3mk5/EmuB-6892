@@ -11,6 +11,7 @@
 #include <WindowsX.h>
 #include "../../emu.h"
 #include "win_gui.h"
+#include "../../osd/windows/win_apiex.h"
 #include "../../logging.h"
 #include "../../labels.h"
 #include "../../utility.h"
@@ -19,11 +20,11 @@ namespace GUI_WIN
 {
 
 LoggingBox::LoggingBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_LOGGING, new_font, new_emu, new_gui)
+	: CDialogBox(hInst, IDD_LOGGING, new_emu, new_gui)
 {
 	p_buffer = NULL;
 	m_buffer_size = 0;
-	m_initialized  = false;
+	m_initialized = false;
 }
 
 LoggingBox::~LoggingBox()
@@ -53,12 +54,16 @@ void LoggingBox::Free()
 
 INT_PTR LoggingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	m_initialized  = false;
+	m_initialized = false;
 
 	CDialogBox::onInitDialog(message, wParam, lParam);
 
 	const _TCHAR *onechar = _T("m");
 	SIZE siz = { 0, 0 };
+
+	int dpi = WIN_API_EX::GetDpiForWindow(hDlg);
+	int w = 480 * dpi / USER_DEFAULT_SCREEN_DPI;
+	int h = 320 * dpi / USER_DEFAULT_SCREEN_DPI;
 
 	// edit box
 	font->GetTextSize(hDlg, onechar, &siz);
@@ -66,9 +71,9 @@ INT_PTR LoggingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	// layout
 	CBox *box_all = new CBox(CBox::VerticalBox, 0, 1);
 	// file
-	CreateTextControl(box_all, IDC_TEXT_LOGPATH, false, true, 480, siz.cy + 4);
+	CreateTextControl(box_all, IDC_TEXT_LOGPATH, false, true, w, siz.cy + 4);
 	// text
-	CreateTextControl(box_all, IDC_TEXT_LOG, true, true, 480, 320);
+	CreateTextControl(box_all, IDC_TEXT_LOG, true, true, w, h);
 	// button
 	CBox *box_btn = new CBox(CBox::HorizontalBox, CBox::CenterPos, padding);
 	box_all->AddBox(box_btn);
@@ -87,7 +92,7 @@ INT_PTR LoggingBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	// buttons
 	AdjustButtonPosition();
 
-	m_initialized  = true;
+	m_initialized = true;
 
 	return (INT_PTR)TRUE;
 }
@@ -120,19 +125,7 @@ INT_PTR LoggingBox::onSize(UINT message, WPARAM wParam, LPARAM lParam)
 	RECT re;
 	GetClientRect(hDlg, &re);
 
-	int s_w = re.right - re.left - m_client_re.right + m_client_re.left;
-	int s_h = re.bottom - re.top - m_client_re.bottom + m_client_re.top;
-
-	m_client_re = re;
-
-	// path
-	GetWindowRect(GetDlgItem(hDlg, IDC_TEXT_LOGPATH), &re);
-	SetWindowPos(GetDlgItem(hDlg, IDC_TEXT_LOGPATH), HWND_TOP, 0, 0, re.right - re.left + s_w, re.bottom - re.top, SWP_NOMOVE | SWP_NOZORDER);
-	// log
-	GetWindowRect(GetDlgItem(hDlg, IDC_TEXT_LOG), &re);
-	SetWindowPos(GetDlgItem(hDlg, IDC_TEXT_LOG), HWND_TOP, 0, 0, re.right - re.left + s_w, re.bottom - re.top + s_h, SWP_NOMOVE | SWP_NOZORDER);
-	// buttons
-	AdjustButtonPosition();
+	SetSize(re);
 
 	return (INT_PTR)FALSE;
 }
@@ -146,14 +139,38 @@ INT_PTR LoggingBox::onMinMaxInfo(UINT message, WPARAM wParam, LPARAM lParam)
 	return (INT_PTR)FALSE;
 }
 
-void LoggingBox::AdjustButtonPosition()
+void LoggingBox::SetSize(RECT &re)
+{
+	int w = re.right - re.left;
+	int h = re.bottom - re.top;
+
+	m_client_re = re;
+
+	// path
+	GetWindowRect(GetDlgItem(hDlg, IDC_TEXT_LOGPATH), &re);
+	int s_h = re.bottom - re.top;
+	SetWindowPos(GetDlgItem(hDlg, IDC_TEXT_LOGPATH), HWND_TOP, 0, 0, w, s_h, SWP_NOMOVE | SWP_NOZORDER);
+	// buttons
+	int b_h = AdjustButtonPosition();
+	// log
+//	GetWindowRect(GetDlgItem(hDlg, IDC_TEXT_LOG), &re);
+	SetWindowPos(GetDlgItem(hDlg, IDC_TEXT_LOG), HWND_TOP, 0, 0, w, h - s_h - b_h, SWP_NOMOVE | SWP_NOZORDER);
+}
+
+/// @return The height of buttons area
+int LoggingBox::AdjustButtonPosition()
 {
 	RECT re;
 
 	GetWindowRect(GetDlgItem(hDlg, IDC_BTN_UPDATE), &re);
-	SetWindowPos(GetDlgItem(hDlg, IDC_BTN_UPDATE), HWND_TOP, 4, m_client_re.bottom - re.bottom + re.top - 4, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	int yl = m_client_re.bottom - re.bottom + re.top - 4;
+	SetWindowPos(GetDlgItem(hDlg, IDC_BTN_UPDATE), HWND_TOP, 4, yl, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	GetWindowRect(GetDlgItem(hDlg, IDOK), &re);
-	SetWindowPos(GetDlgItem(hDlg, IDOK), HWND_TOP, m_client_re.right - re.right + re.left - 4, m_client_re.bottom - re.bottom + re.top - 4, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	int yr = m_client_re.bottom - re.bottom + re.top - 4;
+	SetWindowPos(GetDlgItem(hDlg, IDOK), HWND_TOP, m_client_re.right - re.right + re.left - 4, yr, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	int h = yl > yr ? yl : yr;
+	h = m_client_re.bottom - h + padding * 2;
+	return h;
 }
 
 void LoggingBox::SetData()

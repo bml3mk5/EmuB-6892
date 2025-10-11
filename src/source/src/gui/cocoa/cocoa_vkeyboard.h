@@ -17,6 +17,7 @@
 #endif /* __OBJC__ */
 
 #include "../vkeyboard.h"
+#include "cocoa_gui.h"
 
 #ifdef __OBJC__
 
@@ -37,6 +38,7 @@ namespace Vkbd {
 - (NSBitmapImageRep *)allocBuffer;
 - (void)copyBuffer;
 - (void)copyBufferPart:(NSRect)re;
+//- (void)viewWillStartLiveResize;
 @end
 
 /**
@@ -45,19 +47,31 @@ namespace Vkbd {
 @interface CocoaVKeyboard : NSWindow
 {
 	Vkbd::VKeyboard *vkeyboard;
+	CocoaMenu *popupMenu;
+	NSSize sufSize;
 }
 - (id)initWithSurface:(Vkbd::VKeyboard *)obj surface:(SDL_Surface *)suf;
 - (void)close;
 - (void)setDist;
 - (void)mouseDown:(NSEvent *)theEvent;
 - (void)mouseUp:(NSEvent *)theEvent;
+- (void)rightMouseDown:(NSEvent *)theEvent;
 - (void)keyDown:(NSEvent *)theEvent;
 - (void)keyUp:(NSEvent *)theEvent;
+- (void)changingWindow:(int)num :(NSSize *)size;
+- (void)createPopupMenu;
+- (void)showPopupMenu;
+- (void)selectPopupMenuItem:(id)sender;
 @end
 
-//@interface CocoaVKeyboardDelegate : NSObject <NSWindowDelegate>
-//- (void)windowDidMove:(NSNotification *)notification;
-//@end
+/**
+	@brief Virtual keyboard window delegate
+*/
+@interface CocoaVKeyboardDelegate : NSObject <NSWindowDelegate>
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize;
+- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize;
+- (void)windowDidExitFullScreen:(NSNotification *)notification;
+@end
 
 void vkeyboard_set_owner_window(NSWindow *owner);
 
@@ -79,7 +93,6 @@ private:
 	void *parentWin;
 #endif
 
-	void adjust_window_size();
 	void need_update_window(PressedInfo_t *, bool);
 	void update_window();
 
@@ -95,6 +108,9 @@ public:
 	void PostClose();
 
 	void SetDist();
+
+	void adjust_window_size(double mag);
+	void set_magnify(double magx, double magy);
 };
 
 } /* namespace Vkbd */

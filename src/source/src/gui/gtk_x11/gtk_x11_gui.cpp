@@ -102,6 +102,7 @@ GUI::GUI(int argc, char **argv, EMU *new_emu)
 	view_width = 0;
 	view_height = 0;
 	view_top = 0;
+	next_drawing_method = pConfig->drawing_method;
 	sdl_window = NULL;
 	widget_window = NULL;
 	menubar = NULL;
@@ -450,7 +451,7 @@ int GUI::CreateMenu()
 	GtkWidget *menu;
 	GtkWidget *submenu;
 	GtkWidget *subsubmenu;
-//	GtkWidget *item;
+	GtkWidget *item;
 //	GSList *group = NULL;
 	char name[128];
 
@@ -646,13 +647,22 @@ int GUI::CreateMenu()
 		create_radio_menu_item(menu, CMsg::Digital_RGB, OnSelectRGBType, OnUpdateRGBType, 0, 0);
 		create_radio_menu_item(menu, CMsg::Analog_RGB, OnSelectRGBType, OnUpdateRGBType, 0, 1);
 #endif
-#ifdef USE_OPENGL
 		create_separator_menu(menu);
-		create_check_menu_item(menu, CMsg::Use_OpenGL_Sync, OnSelectUseOpenGL, OnUpdateUseOpenGL, 0, 1, GDK_KEY_Y);
-		create_check_menu_item(menu, CMsg::Use_OpenGL_Async, OnSelectUseOpenGL, OnUpdateUseOpenGL, 0, 2, GDK_KEY_Y);
-		submenu = create_sub_menu(menu, CMsg::OpenGL_Filter);
-			create_radio_menu_item(submenu, CMsg::Nearest_Neighbour, OnSelectOpenGLFilter, OnUpdateOpenGLFilter, 0, 0, GDK_KEY_U);
-			create_radio_menu_item(submenu, CMsg::Linear, OnSelectOpenGLFilter, OnUpdateOpenGLFilter, 0, 1, GDK_KEY_U);
+		submenu = create_sub_menu(menu, CMsg::Drawing_Method);
+			create_check_menu_item(submenu, CMsg::Default_Drawing, OnSelectDrawingMethod, OnUpdateDrawingMethod, 0, DRAWING_METHOD_DEFAULT_AS, GDK_KEY_Y);
+			create_check_menu_item(submenu, CMsg::Default_Double_Buffering, OnSelectDrawingMethod, OnUpdateDrawingMethod, 0, DRAWING_METHOD_DEFAULT_ASDB, GDK_KEY_Y);
+#ifdef USE_OPENGL
+			bool gl_enable = ((emu->get_enabled_drawing_method() & DRAWING_METHOD_OPENGL_MASK) != 0);
+			item = create_check_menu_item(submenu, CMsg::Use_OpenGL_Sync, OnSelectDrawingMethod, OnUpdateDrawingMethod, 0, DRAWING_METHOD_OPENGL_S, GDK_KEY_Y);
+			gtk_widget_set_sensitive(item, gl_enable);
+			item = create_check_menu_item(submenu, CMsg::Use_OpenGL_Async, OnSelectDrawingMethod, OnUpdateDrawingMethod, 0, DRAWING_METHOD_OPENGL_AS, GDK_KEY_Y);
+			gtk_widget_set_sensitive(item, gl_enable);
+#endif
+#if defined(USE_OPENGL) || defined(USE_SDL2)
+		create_separator_menu(menu);
+		submenu = create_sub_menu(menu, CMsg::Filter_Type);
+			create_radio_menu_item(submenu, CMsg::Nearest_Neighbor, OnSelectScreenFilter, OnUpdateScreenFilter, 0, 0, GDK_KEY_U);
+			create_radio_menu_item(submenu, CMsg::Bilinear, OnSelectScreenFilter, OnUpdateScreenFilter, 0, 1, GDK_KEY_U);
 #endif
 	}
 	menu = create_sub_menu(menubar, CMsg::Sound);
@@ -734,17 +744,24 @@ int GUI::CreateMenu()
 		create_separator_menu(menu);
 		create_check_menu_item(menu, CMsg::Enable_Mouse, OnSelectEnableMouse, OnUpdateEnableMouse, 0, 0, GDK_KEY_Control_L);
 #endif
-#if defined(USE_JOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_JOYSTICK)
 		create_separator_menu(menu);
-#endif
-#ifdef USE_JOYSTICK
-		create_check_menu_item(menu, CMsg::Use_Joypad_Key_Assigned, OnSelectUseJoypad, OnUpdateUseJoypad, 0, 1, GDK_KEY_J);
+		create_check_menu_item(menu, CMsg::Use_Joypad_Key_Assigned, OnSelectUseJoypad, OnUpdateUseJoypad, 0, SEL_JOY2KEY, GDK_KEY_J);
 #ifdef USE_PIAJOYSTICK
-		create_check_menu_item(menu, CMsg::Use_Joypad_PIA_Type, OnSelectUseJoypad, OnUpdateUseJoypad, 0, 2, GDK_KEY_J);
+		create_check_menu_item(menu, CMsg::Use_Joypad_PIA_Type, OnSelectUseJoypad, OnUpdateUseJoypad, 0, SEL_JOY2PIAJOY, GDK_KEY_J);
+#endif
+#ifdef USE_PSGJOYSTICK
+		create_check_menu_item(menu, CMsg::Use_Joypad_PSG_Type, OnSelectUseJoypad, OnUpdateUseJoypad, 0, SEL_JOY2PSGJOY, GDK_KEY_J);
 #endif
 #endif
-#ifdef USE_KEY2JOYSTICK
-		create_check_menu_item(menu, CMsg::Enable_Key_to_Joypad, OnSelectEnableKey2Joypad, OnUpdateEnableKey2Joypad, 0, 0, 0);
+#if defined(USE_KEY2JOYSTICK)
+		create_separator_menu(menu);
+#ifdef USE_KEY2PIAJOYSTICK
+		create_check_menu_item(menu, CMsg::Enable_Key_to_Joypad_PIA_Type, OnSelectEnableKey2Joypad, OnUpdateEnableKey2Joypad, 0, DEV_PIAJOY, 0);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+		create_check_menu_item(menu, CMsg::Enable_Key_to_Joypad_PSG_Type, OnSelectEnableKey2Joypad, OnUpdateEnableKey2Joypad, 0, DEV_PSGJOY, 0);
+#endif
 #endif
 		create_separator_menu(menu);
 		create_check_menu_item(menu, CMsg::Loosen_Key_Stroke_Game, OnSelectLoosenKeyStroke, OnUpdateLoosenKeyStroke, 0, 0, 0);
@@ -770,9 +787,7 @@ int GUI::CreateMenu()
 	gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
 
 #ifdef USE_GTK
-	GtkWidget *screen = ((EMU_OSD *)emu)->get_screen();
-	gtk_box_pack_start(GTK_BOX(vbox), screen, TRUE, TRUE, 0);
-	g_object_ref(G_OBJECT(screen));
+	((EMU_OSD *)emu)->attach_widgets_to(vbox);
 
 //	const GtkTargetEntry targets[] = {
 //			{ "text/uri-list", 0, 0 },
@@ -893,6 +908,18 @@ void GUI::PostCommandMessage(int id, void *data1, void *data2)
 		, data1
 		, data2
 	);
+}
+
+bool GUI::StoreDrawingMethod(uint8_t method)
+{
+	next_drawing_method = method;
+	return true;
+}
+
+bool GUI::RestoreDrawingMethod(uint8_t &method) const
+{
+	method = next_drawing_method;
+	return true;
 }
 #endif
 
@@ -1566,28 +1593,39 @@ void GUI::cb_realize(GtkWidget *widget, gpointer user_data)
 //
 //
 //
-GtkWidget *GUI::create_menu_item(GtkWidget *menu, const char *label, CbActivate cb_activate, CbShow cb_show, int drv, int num, guint key)
+GtkWidget *GUI::CreateMenuItem(GtkWidget *menu, const char *label, CbActivate cb_activate, CbShow cb_show, int drv, int num, gpointer user_data)
 {
 	GtkWidget *item;
 	item = gtk_menu_item_new_with_mnemonic(label);
 	gtk_container_add(GTK_CONTAINER(menu), item);
-	add_accelerator(item, key);
 
 	if (cb_activate != NULL) {
-		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(cb_activate), (gpointer)this);
+		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(cb_activate), user_data);
 	}
 	if (cb_show != NULL) {
-		g_signal_connect(G_OBJECT(item), "user-show", G_CALLBACK(cb_show), (gpointer)this);
+		g_signal_connect(G_OBJECT(item), "user-show", G_CALLBACK(cb_show), user_data);
 	}
 	g_object_set_data(G_OBJECT(item), "drv", (gpointer)(intptr_t)drv);
 	g_object_set_data(G_OBJECT(item), "num", (gpointer)(intptr_t)num);
 	g_object_set_data(G_OBJECT(item), "menu-open", NULL);
 	return item;
 }
-GtkWidget *GUI::create_menu_item(GtkWidget *menu, CMsg::Id labelid, CbActivate cb_activate, CbShow cb_show, int drv, int num, guint key)
+GtkWidget *GUI::CreateMenuItem(GtkWidget *menu, CMsg::Id labelid, CbActivate cb_activate, CbShow cb_show, int drv, int num, gpointer user_data)
 {
 	const char *label = gMessages.Get(labelid);
-	return create_menu_item(menu, label, cb_activate, cb_show, drv, num, key);
+	return CreateMenuItem(menu, label, cb_activate, cb_show, drv, num, user_data);
+}
+GtkWidget *GUI::create_menu_item(GtkWidget *menu, const char *label, CbActivate cb_activate, CbShow cb_show, int drv, int num, guint key)
+{
+	GtkWidget *item = CreateMenuItem(menu, label, cb_activate, cb_show, drv, num, (gpointer)this);
+	add_accelerator(item, key);
+	return item;
+}
+GtkWidget *GUI::create_menu_item(GtkWidget *menu, CMsg::Id labelid, CbActivate cb_activate, CbShow cb_show, int drv, int num, guint key)
+{
+	GtkWidget *item = CreateMenuItem(menu, labelid, cb_activate, cb_show, drv, num, (gpointer)this);
+	add_accelerator(item, key);
+	return item;
 }
 
 //
@@ -1629,12 +1667,16 @@ GtkWidget *GUI::create_radio_menu_item(GtkWidget *menu, CMsg::Id labelid, CbActi
 }
 
 //
-GtkWidget *GUI::create_separator_menu(GtkWidget *menu)
+GtkWidget *GUI::CreateSeparatorMenu(GtkWidget *menu)
 {
 	GtkWidget *item;
 	item = gtk_separator_menu_item_new();
 	gtk_container_add(GTK_CONTAINER(menu), item);
 	return item;
+}
+GtkWidget *GUI::create_separator_menu(GtkWidget *menu)
+{
+	return CreateSeparatorMenu(menu);
 }
 
 //
@@ -2565,38 +2607,38 @@ void GUI::OnUpdateKeepImage(GtkWidget *widget, gpointer user_data)
 	gtk_check_menu_item_set_active(item, gui->GetKeepImageMode() == num);
 }
 #endif
-#ifdef USE_OPENGL
-void GUI::OnSelectUseOpenGL(GtkWidget *widget, gpointer user_data)
+void GUI::OnSelectDrawingMethod(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
 	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 
 	SKIP_WHEN_MENU_OPENING(widget);
-	gui->ChangeUseOpenGL(num);
+	gui->ChangeDrawingMethod(num);
 }
-void GUI::OnUpdateUseOpenGL(GtkWidget *widget, gpointer user_data)
+void GUI::OnUpdateDrawingMethod(GtkWidget *widget, gpointer user_data)
 {
-	GUI *gui = (GUI *)user_data;
+//	GUI *gui = (GUI *)user_data;
 	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
 
-	gtk_check_menu_item_set_active(item, gui->GetOpenGLMode() == num);
+	gtk_check_menu_item_set_active(item, pConfig->drawing_method == num);
 }
-void GUI::OnSelectOpenGLFilter(GtkWidget *widget, gpointer user_data)
+#if defined(USE_OPENGL) || defined(USE_SDL2)
+void GUI::OnSelectScreenFilter(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
 	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 
 	SKIP_WHEN_MENU_OPENING(widget);
-	gui->ChangeOpenGLFilter(num);
+	gui->ChangeScreenFilter(num);
 }
-void GUI::OnUpdateOpenGLFilter(GtkWidget *widget, gpointer user_data)
+void GUI::OnUpdateScreenFilter(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
 	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
 
-	gtk_check_menu_item_set_active(item, gui->GetOpenGLFilter() == num);
+	gtk_check_menu_item_set_active(item, gui->GetScreenFilter() == num);
 }
 #endif
 
@@ -2922,16 +2964,18 @@ void GUI::OnUpdateUseJoypad(GtkWidget *widget, gpointer user_data)
 void GUI::OnSelectEnableKey2Joypad(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
+	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 
 	SKIP_WHEN_MENU_OPENING(widget);
-	gui->ToggleEnableKey2Joypad();
+	gui->ToggleEnableKey2Joypad(num);
 }
 void GUI::OnUpdateEnableKey2Joypad(GtkWidget *widget, gpointer user_data)
 {
 	GUI *gui = (GUI *)user_data;
 	GtkCheckMenuItem *item = (GtkCheckMenuItem *)widget;
+	int num = (int)(intptr_t)g_object_get_data(G_OBJECT(widget),"num");
 
-	gtk_check_menu_item_set_active(item, gui->IsEnableKey2Joypad());
+	gtk_check_menu_item_set_active(item, gui->IsEnableKey2Joypad(num));
 }
 #endif
 void GUI::OnSelectJoySetting(GtkWidget *widget, gpointer user_data)

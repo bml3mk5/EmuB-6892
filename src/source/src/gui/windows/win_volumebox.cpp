@@ -19,7 +19,7 @@ namespace GUI_WIN
 {
 
 VolumeBox::VolumeBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_VOLUME, new_font, new_emu, new_gui)
+	: CDialogBox(hInst, IDD_VOLUME, new_emu, new_gui)
 {
 	int i = 0;
 	memset(volumes, 0, sizeof(volumes));

@@ -35,6 +35,7 @@ void AY38910::reset()
 #ifdef SUPPORT_AY_3_8910_PORT
 	port[0].first = port[1].first = true;
 	port[0].wreg = port[1].wreg = 0;//0xff;
+	port[0].rreg = port[1].rreg = 0xff;
 #ifdef AY_3_8910_PORT_MODE
 	mode = AY_3_8910_PORT_MODE;
 #else
@@ -265,9 +266,11 @@ bool AY38910::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return false;
 }
 
-void AY38910::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void AY38910::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
+	UTILITY::tcscpy(buffer, buffer_len, _T("AY-3-8910 ("));
+	UTILITY::tcscat(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
 	// psg
 	for(uint32_t i=0; i<14; i++) {
 		size_t pos = _tcslen(buffer);

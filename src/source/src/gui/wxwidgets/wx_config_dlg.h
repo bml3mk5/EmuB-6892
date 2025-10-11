@@ -24,6 +24,7 @@ class MyConfigDlg : public MyDialog
 {
 private:
 	MyCheckBox *chkPowerOff;
+	MyChoice *comPowerState;
 #if defined(_MBS1)
 	wxStaticText *staSysMode[2];
 	MyRadioButton *radSysMode[2];
@@ -37,8 +38,8 @@ private:
 	wxStaticText *staIOPort[IOPORT_NUMS];
 	MyCheckBox *chkIOPort[IOPORT_NUMS];
 	wxCheckBox *chkFDMount[4];
-	MyChoice *comGLUse;
-	MyChoice *comGLFilter;
+	MyChoice *comDrawing;
+	MyChoice *comFilter;
 	MyChoice *comLedShow;
 	MyChoice *comLedPos;
 	wxChoice *comDisptmg;

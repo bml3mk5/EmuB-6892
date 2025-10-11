@@ -412,7 +412,6 @@ int Logging::get_log(char *buffer, int buffer_size)
 		UTILITY::strcat(smsg, MESSAGE_BUFFER + 2, "\n");
 #endif
 		UTILITY::strcat(buffer, buffer_size, dmsg);
-		line++;
 	}
 	fplog->Fseek(0, FILEIO::SEEKEND);
 
@@ -671,7 +670,6 @@ int Logging::get_log(wchar_t *buffer, int buffer_size)
 		UTILITY::strcat(smsg, MESSAGE_BUFFER + 2, "\r\n");
 		UTILITY::conv_utf8_to_wcs(smsg, MESSAGE_BUFFER + 2, dmsg, MESSAGE_BUFFER + 2);
 		UTILITY::wcscat(buffer, buffer_size, dmsg);
-		line++;
 	}
 	fplog->Fseek(0, FILEIO::SEEKEND);
 

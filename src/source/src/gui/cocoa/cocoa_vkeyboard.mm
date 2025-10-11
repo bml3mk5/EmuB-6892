@@ -13,6 +13,7 @@
 #import "cocoa_basepanel.h"
 #import "../../emu.h"
 #import "../gui.h"
+#import "../../labels.h"
 #import "cocoa_key_trans.h"
 
 extern EMU *emu;
@@ -43,8 +44,13 @@ extern GUI *gui;
 - (void)drawRect:(NSRect)dirtyRect
 {
 	if (img != nil) {
+		NSRect dstRect = [self frame];	// resized size
+		NSRect srcRect;
+		srcRect.size = [img size];
+		srcRect.origin.x = 0;
+		srcRect.origin.y = 0;
 //		[img drawInRect:dirtyRect];
-		[img drawInRect:dirtyRect fromRect:dirtyRect operation:NSCompositingOperationCopy fraction:1.0 respectFlipped:NO hints:nil];
+		[img drawInRect:dstRect fromRect:srcRect operation:NSCompositingOperationCopy fraction:1.0 respectFlipped:NO hints:nil];
 	}
 	[self setNeedsDisplay:NO];
 }
@@ -89,8 +95,17 @@ extern GUI *gui;
 
 	re.origin.y = suf->h - re.size.height - re.origin.y;
 
-	[self setNeedsDisplayInRect:re];
+//	[self setNeedsDisplayInRect:re];
+	// always draw all frame in the view
+	[self setNeedsDisplay:YES];
 }
+#if 0
+- (void)viewWillStartLiveResize
+{
+//	NSRect wre = [[self window] frame];
+//	NSRect nre = [self frame];
+}
+#endif
 @end
 
 @implementation CocoaVKeyboard
@@ -99,31 +114,56 @@ extern GUI *gui;
 	[super init];
 
 	vkeyboard = obj;
+	popupMenu = nil;
+	if (suf) {
+		sufSize.width = suf->w;
+		sufSize.height = suf->h;
+	} else {
+		sufSize.width = 0;
+		sufSize.height = 0;
+	}
 
 	[self setTitle:@"Virtual Keyboard"];
+
+	// window style
+	NSUInteger style = [self styleMask];
+	style |= (NSWindowStyleMaskTitled | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable);
+	style &= ~(NSWindowStyleMaskFullScreen); // | NSWindowStyleMaskFullSizeContentView);
+	[self setStyleMask:style];
 
 	CocoaVKeyboardView *nview = [[CocoaVKeyboardView alloc] initWithSurface:suf];
 	// adjust view size in the window
 	NSRect nre = [nview frame];
-	NSRect ore = [[self contentView] frame];
-	NSRect wre = [self frame];
-	wre.size.width += (nre.size.width - ore.size.width);
-	wre.size.height += (nre.size.height - ore.size.height);
-	[self setFrame:wre display:YES];
+//	NSRect ore = [[self contentView] frame];
+//	NSRect wre = [self frame];
+	NSRect wre = [self frameRectForContentRect:nre];
+//	wre.size.width += (nre.size.width - ore.size.width);
+//	wre.size.height += (nre.size.height - ore.size.height);
 	[self setContentView:nview];
+	[self setFrame:wre display:YES];
 	[self setOpaque:YES];
+
+	// set minimum size
+	NSSize min_size = sufSize;
+	min_size.width *= 0.25;
+	min_size.height *= 0.25;
+	[self setContentMinSize:min_size];
+
+	// set maximum size
+//	NSSize max_size = sufSize;
+//	max_size.width *= 2.0;
+//	max_size.height *= 2.0;
+//	[self setContentMaxSize:max_size];
+
+	// disable fullscreen
+//	[self setMinFullScreenContentSize:min_size];
+//	[self setMaxFullScreenContentSize:max_size];
 
 	// always top  
 	[self setLevel:NSFloatingWindowLevel];
 
-	// window style
-	NSUInteger style = [self styleMask];
-	style |= (NSWindowStyleMaskTitled | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable);
-	style &= ~(NSWindowStyleMaskFullScreen | NSWindowStyleMaskResizable); // | NSWindowStyleMaskFullSizeContentView);
-	[self setStyleMask:style];
-
 	// set delegate
-//	[self setDelegate:[[CocoaVKeyboardDelegate alloc] init]];
+	[self setDelegate:[[CocoaVKeyboardDelegate alloc] init]];
 
 //	// hide
 //	[self orderOut:nil];
@@ -142,6 +182,7 @@ extern GUI *gui;
 	vkeyboard->SetDist();
 }
 
+/// left mouse button
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	NSPoint pt = [theEvent locationInWindow];
@@ -154,6 +195,12 @@ extern GUI *gui;
 	vkeyboard->MouseUp();
 }
 
+/// right mouse button
+- (void)rightMouseDown:(NSEvent *)theEvent
+{
+	[self showPopupMenu];
+}
+
 - (void)keyDown:(NSEvent *)theEvent
 {
 }
@@ -161,17 +208,82 @@ extern GUI *gui;
 - (void)keyUp:(NSEvent *)theEvent
 {
 }
-@end
-
-#if 0
-@implementation CocoaVKeyboardDelegate
-- (void)windowDidMove:(NSNotification *)notification
+- (void)changingWindow:(int)num :(NSSize *)size
 {
-	CocoaVKeyboard *vKbdWin = [notification object];
-	[vKbdWin setDist];
+	NSRect vre = [[self contentView] frame];
+	double magnify_x = (double)vre.size.width / sufSize.width;
+	double magnify_y = (double)vre.size.height / sufSize.height;
+#if 0
+	if (size) {
+//		NSRect wre = [self frame];
+//		NSSize margin;
+//		margin.width = wre.size.width - vre.size.width;
+//		margin.height = wre.size.height - vre.size.height;
+		if (magnify_x < 0.25) {
+			magnify_x = 0.25;
+//			vre.size.width = magnify_x * sufSize.width;
+//			size->width = vre.size.width + margin.width;
+		}
+		if (magnify_y < 0.25) {
+			magnify_y = 0.25;
+//			vre.size.height = magnify_y * sufSize.height;
+//			size->width = vre.size.height + margin.height;
+		}
+	}
+#endif
+	vkeyboard->set_magnify(magnify_x, magnify_y);
+}
+- (void)createPopupMenu
+{
+	if (popupMenu) return;
+
+	popupMenu = [CocoaMenu create_menu_by_id:CMsg::None_];
+	for(int i=0; LABELS::window_size[i].msg_id != CMsg::End; i++) {
+		if (LABELS::window_size[i].msg_id != CMsg::Null) {
+			[popupMenu add_menu_item_by_id:LABELS::window_size[i].msg_id :self :@selector(selectPopupMenuItem:) :0 :i :0];
+		} else {
+			[popupMenu addItem:[NSMenuItem separatorItem]];
+		}
+	}
+}
+- (void)showPopupMenu
+{
+	if (!popupMenu) {
+		[self createPopupMenu];
+	}
+	NSEvent *ev = [self currentEvent];
+	NSView *vw = [self contentView];
+	[NSMenu popUpContextMenu:popupMenu withEvent:ev forView:vw];
+}
+- (void)selectPopupMenuItem:(id)sender
+{
+	int num = [sender num];
+	vkeyboard->adjust_window_size((double)LABELS::window_size[num].percent / 100.0);
 }
 @end
-#endif
+
+
+@implementation CocoaVKeyboardDelegate
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
+{
+	CocoaVKeyboard *cwindow = (CocoaVKeyboard *)sender;
+	[cwindow changingWindow:0:&frameSize];
+	return frameSize;
+}
+- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize;
+{
+	CocoaVKeyboard *cwindow = (CocoaVKeyboard *)window;
+	[cwindow changingWindow:1:&proposedSize];
+	return proposedSize;
+}
+- (void)windowDidExitFullScreen:(NSNotification *)notification
+{
+	CocoaVKeyboard *cwindow = (CocoaVKeyboard *)[notification object];
+	NSSize frameSize = [cwindow frame].size;
+	[cwindow changingWindow:2:&frameSize];
+}
+@end
+
 
 void vkeyboard_set_owner_window(NSWindow *owner)
 {
@@ -299,6 +411,34 @@ void VKeyboard::update_window()
 			[vKbdWin display];
 		}
 	}
+}
+
+/// @note called by CocoaVKeyboard
+void VKeyboard::adjust_window_size(double mag)
+{
+	if (!pSurface) return;
+
+	NSSize sufSize;
+	sufSize.width = pSurface->Width();
+	sufSize.height = pSurface->Height();
+	magnify_x = mag;
+	magnify_y = mag;
+	NSView *vw = [vKbdWin contentView];
+	NSRect vre = [vw frame];
+	NSRect wre = [vKbdWin frame];
+	NSSize margin;
+	margin.width = wre.size.width - vre.size.width;
+	margin.height = wre.size.height - vre.size.height;
+	wre.size.width = sufSize.width * magnify_x + margin.width;
+	wre.size.height = sufSize.height * magnify_y + margin.height;
+	[vKbdWin setFrame:wre display:YES];
+}
+
+/// @note called by CocoaVKeyboard
+void VKeyboard::set_magnify(double magx, double magy)
+{
+	magnify_x = magx;
+	magnify_y = magy;
 }
 
 } /* namespace Vkbd */

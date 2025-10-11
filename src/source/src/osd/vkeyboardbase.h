@@ -158,6 +158,9 @@ protected:
 	int offset_x;
 	int offset_y;
 
+	double magnify_x;
+	double magnify_y;
+
 	bool prepared;
 	bool closed;
 

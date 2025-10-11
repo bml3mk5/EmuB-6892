@@ -17,6 +17,7 @@
 #include "gtk_dialogbox.h"
 #include "../../vm/vm_defs.h"
 #include "../../emu.h"
+#include "../../config.h"
 #include "gtk_keybindctrl.h"
 
 namespace GUI_GTK_X11
@@ -33,11 +34,18 @@ private:
 	GtkWidget *scale[MAX_JOYSTICKS][KEYBIND_JOY_BUTTONS];
 	GtkWidget *axis[MAX_JOYSTICKS][6];
 #endif
-#ifdef USE_PIAJOYSTICKBIT
+#ifdef USE_PIAJOYSTICK
+#ifdef USE_JOYSTICKBIT
 	GtkWidget *chkPiaJoyNeg;
-	GtkWidget *chkPiaJoyConn;
+	GtkWidget *radPiaJoyConn[Config::PIAJOY_CONN_TO_MAX];
 #else
 	GtkWidget *chkPiaJoyNoIrq;
+#endif
+#endif
+#ifdef USE_PSGJOYSTICK
+#ifdef USE_JOYSTICKBIT
+	GtkWidget *chkPsgJoyNeg;
+#endif
 #endif
 
 	bool SetData();

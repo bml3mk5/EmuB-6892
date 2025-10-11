@@ -33,6 +33,7 @@
 #elif defined(linux)
 # define USE_OPENGL_GLX
 # define USE_OPENGL_GLEXT
+# define USE_OPENGL_GLXEXT
 # define USE_OPENGL21
 # define USE_OPENGL33
 #endif
@@ -40,6 +41,12 @@
 #ifdef USE_OPENGL_GLEXT
 # ifndef GL_GLEXT_PROTOTYPES
 #  define GL_GLEXT_PROTOTYPES
+# endif
+#endif
+
+#ifdef USE_OPENGL_GLXEXT
+# ifndef GLX_GLXEXT_PROTOTYPES
+#  define GLX_GLXEXT_PROTOTYPES
 # endif
 #endif
 
@@ -77,6 +84,14 @@
 #  include <OpenGL/glext.h>
 # else
 #  include <GL/glext.h>
+# endif
+#endif
+
+#ifdef USE_OPENGL_GLXEXT
+# if defined(__APPLE__) && defined(__MACH__)
+#  include <OpenGL/glxext.h>
+# else
+#  include <GL/glxext.h>
 # endif
 #endif
 

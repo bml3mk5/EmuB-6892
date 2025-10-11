@@ -35,13 +35,8 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Filter Type");
 	msgs[i++] = _TX("Direct3D Filter");
 	msgs[i++] = _TX("OpenGL Filter");
-	msgs[i++] = _TX("Direct3D OFF");
-	msgs[i++] = _TX("Direct3D ON (Sync)");
-	msgs[i++] = _TX("Direct3D ON (Async)");
+	msgs[i++] = _TX("Drawing Method");
 	msgs[i++] = _TX("OpenGL");
-	msgs[i++] = _TX("OpenGL OFF");
-	msgs[i++] = _TX("OpenGL ON (Sync)");
-	msgs[i++] = _TX("OpenGL ON (Async)");
 	msgs[i++] = _TX(" (Need restart program)");
 	msgs[i++] = _TX(" (Need PowerOn)");
 	msgs[i++] = _TX("* Need restart program.");
@@ -115,8 +110,12 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Enable Joypad");
 	msgs[i++] = _TX("Enable Joypad (Key Assigned)");
 	msgs[i++] = _TX("Enable Joypad (PIA Type)");
+	msgs[i++] = _TX("Enable Joypad (PSG Type)");
 	msgs[i++] = _TX("Enable Key to Joypad");
+	msgs[i++] = _TX("Enable Key to Joypad (PIA Type)");
+	msgs[i++] = _TX("Enable Key to Joypad (PSG Type)");
 	msgs[i++] = _TX("Disable Joypad");
+	msgs[i++] = _TX("Disable Key to Joypad");
 	msgs[i++] = _TX("Enable Lightpen");
 	msgs[i++] = _TX("Disable Lightpen");
 	msgs[i++] = _TX("Enable Mouse");
@@ -245,6 +244,22 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Keepimage2");
 	msgs[i++] = _TX("Digital RGB");
 	msgs[i++] = _TX("Analog RGB");
+	msgs[i++] = _TX("Default Drawing");
+	msgs[i++] = _TX("Default Drawing\tAlt+Y");
+	msgs[i++] = _TX("Default (Double Buffering)");
+	msgs[i++] = _TX("Default (Double Buffering)\tAlt+Y");
+	msgs[i++] = _TX("Default(Sync)");
+	msgs[i++] = _TX("Default(Sync)\tAlt+Y");
+	msgs[i++] = _TX("Default(Async)");
+	msgs[i++] = _TX("Default(Async)\tAlt+Y");
+	msgs[i++] = _TX("Use Direct2D");
+	msgs[i++] = _TX("Use Direct2D\tAlt+Y");
+	msgs[i++] = _TX("Use Direct2D (Double Buffering)");
+	msgs[i++] = _TX("Use Direct2D (Double Buffering)\tAlt+Y");
+	msgs[i++] = _TX("Use Direct2D(Sync)");
+	msgs[i++] = _TX("Use Direct2D(Sync)\tAlt+Y");
+	msgs[i++] = _TX("Use Direct2D(Async)");
+	msgs[i++] = _TX("Use Direct2D(Async)\tAlt+Y");
 	msgs[i++] = _TX("Use Direct3D(Sync)");
 	msgs[i++] = _TX("Use Direct3D(Sync)\tAlt+Y");
 	msgs[i++] = _TX("Use Direct3D(Async)");
@@ -253,10 +268,10 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Use OpenGL(Sync)\tAlt+Y");
 	msgs[i++] = _TX("Use OpenGL(Async)");
 	msgs[i++] = _TX("Use OpenGL(Async)\tAlt+Y");
-	msgs[i++] = _TX("Nearest Neighbour");
-	msgs[i++] = _TX("Nearest Neighbour\tAlt+U");
-	msgs[i++] = _TX("Linear");
-	msgs[i++] = _TX("Linear\tAlt+U");
+	msgs[i++] = _TX("Nearest Neighbor");
+	msgs[i++] = _TX("Nearest Neighbor\tAlt+U");
+	msgs[i++] = _TX("Bilinear");
+	msgs[i++] = _TX("Bilinear\tAlt+U");
 	msgs[i++] = _TX("Sound");
 	msgs[i++] = _TX("Volume...");
 	msgs[i++] = _TX("Volume...\tAlt+V");
@@ -303,6 +318,8 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Use Joypad (Key Assigned)\tAlt+J");
 	msgs[i++] = _TX("Use Joypad (PIA Type)");
 	msgs[i++] = _TX("Use Joypad (PIA Type)\tAlt+J");
+	msgs[i++] = _TX("Use Joypad (PSG Type)");
+	msgs[i++] = _TX("Use Joypad (PSG Type)\tAlt+J");
 	msgs[i++] = _TX("Enable Lightpen\tAlt+Ctrl");
 	msgs[i++] = _TX("Use Mouse\tAlt+Ctrl");
 	msgs[i++] = _TX("Loosen Key Stroke (For Game)");
@@ -338,7 +355,12 @@ CMsg::CMsg()
 	msgs[i++] = _TX("CPU, Memory");
 	msgs[i++] = _TX("PowerOff");
 	msgs[i++] = _TX("PowerOn");
+	msgs[i++] = _TX("Behavior of Power On/Off");
 	msgs[i++] = _TX("Enable the state of power off");
+	msgs[i++] = _TX("Power State When Start Up:");
+	msgs[i++] = _TX("Inherit the state when shut down");
+	msgs[i++] = _TX("Always power on");
+	msgs[i++] = _TX("Always power off");
 	msgs[i++] = _TX("I/O Port Address (*)");
 	msgs[i++] = _TX("5.25inch FDC  $FF00 - $FF04");
 	msgs[i++] = _TX("3inch FDC  $FF18 - $FF20");
@@ -621,6 +643,7 @@ CMsg::CMsg()
 	msgs[i++] = _TX("R-axis");
 	msgs[i++] = _TX("U-axis");
 	msgs[i++] = _TX("V-axis");
+	msgs[i++] = _TX("Disable temporarily the following:");
 	msgs[i++] = _TX("kanji");
 	msgs[i++] = _TX("henkan");
 	msgs[i++] = _TX("muhenkan");
@@ -649,15 +672,21 @@ CMsg::CMsg()
 	msgs[i++] = _TX("PIA on S1");
 	msgs[i++] = _TX("Level3 Key");
 	msgs[i++] = _TX("PIA on L3");
+	msgs[i++] = _TX("PSG Port on L3");
 	msgs[i++] = _TX("Keyboard");
 	msgs[i++] = _TX("Joypad");
 	msgs[i++] = _TX("Joypad (Key Assigned)");
 	msgs[i++] = _TX("Joypad (PIA Type)");
+	msgs[i++] = _TX("Joypad (PSG Type)");
 	msgs[i++] = _TX("Key to Joypad");
+	msgs[i++] = _TX("Key to Joypad (PIA Type)");
+	msgs[i++] = _TX("Key to Joypad (PSG Type)");
 	msgs[i++] = _TX("Joypad%d");
 	msgs[i++] = _TX("Signals are negative logic");
 	msgs[i++] = _TX("Recognize as another key when pressed two buttons");
-	msgs[i++] = _TX("Connect to standard PIA A port");
+	msgs[i++] = _TX("Connect to ");
+	msgs[i++] = _TX("Standard PIA A port");
+	msgs[i++] = _TX("Extended PIA B port");
 	msgs[i++] = _TX("No interrupt caused by pressing the button");
 	msgs[i++] = _TX("Load Default");
 	msgs[i++] = _TX("Load Preset 1");
@@ -712,6 +741,7 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Floppy image on drive %d couldn't be opened.");
 	msgs[i++] = _TX("Floppy image on drive %d couldn't be saved.");
 	msgs[i++] = _TX("Floppy image on drive %d is saved as the new file: %s.");
+	msgs[i++] = _TX("It's not supported to write to the floppy image on drive %d.");
 	msgs[i++] = _TX("There is the same floppy disk in drive %d and %d.");
 	msgs[i++] = _TX("The density in track %d, side %d is different from specified one.");
 	msgs[i++] = _TX("The media type in drive %d is different from specified one.");
@@ -776,6 +806,10 @@ CMsg::CMsg()
 	msgs[i++] = _TX("Preferences...");
 	msgs[i++] = _TX("Language (*)");
 	msgs[i++] = _TX("Default");
+	msgs[i++] = _TX("Window Size x0.5");
+	msgs[i++] = _TX("Window Size x1.0");
+	msgs[i++] = _TX("Window Size x1.5");
+	msgs[i++] = _TX("Window Size x2.0");
 }
 
 CMsg::~CMsg()

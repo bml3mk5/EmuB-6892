@@ -93,6 +93,8 @@ protected:
 
 	bool now_showing;
 
+	uint8_t drawing_method;
+
 	const char *menu_str(const char *str);
 
 	// menu event handler
@@ -222,6 +224,8 @@ public:
 	virtual void PostProcessEvent();
 	virtual void ShowMenu();
 	virtual void HideMenu();
+	bool StoreDrawingMethod(uint8_t method);
+	bool RestoreDrawingMethod(uint8_t &method) const;
 
 	int ConfigLoad();
 	int ConfigSave();

@@ -34,9 +34,12 @@ MMF_REC_AUDIO::MMF_REC_AUDIO(EMU *new_emu, REC_AUDIO *new_audio)
 	streamIndex = 0;
 	sample_time = 0;
 	frame_duration = 0;
+	major_frame_duration = 0;
 	bytes_per_sample = 0;
 	write_error_count = 0;
 	sample_buffer_size = 0;
+	major_sample_buffer_size = 0;
+	first_writing = false;
 //	sample_is_multiple = 0;
 
 	sinkWriter = NULL;
@@ -187,11 +190,28 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 
 	rec_rate = sample_rate;
 	bytes_per_sample = channels * bits_per_sample / 8;
-	
-	sample_buffer_size = rec_rate / 10;	// 0.1s
+
+#if 0
+	// 0.2sec.
+	major_sample_buffer_size = rec_rate / 5;
+	sample_buffer_size = major_sample_buffer_size - 2;
 	// 100ns unit
-//	frame_duration = ((LONGLONG)1000 * sample_buffer_size / sample_rate) * 10 * 1000;
-	frame_duration = 1000 * 1000;	// sample_buffer_size / sample_rate = 0.1
+	major_frame_duration = (LONGLONG)1000 * 1000 * 10 * major_sample_buffer_size / sample_rate;
+	major_frame_duration_mod = (LONG)((LONGLONG)1000 * 1000 * 10 * major_sample_buffer_size - major_frame_duration * sample_rate);
+	frame_duration = (LONGLONG)1000 * 1000 * 10 * sample_buffer_size / sample_rate;
+	frame_duration_mod = (LONG)((LONGLONG)1000 * 1000 * 10 * sample_buffer_size - frame_duration * sample_rate);
+#else
+	// 1024 samples
+	major_sample_buffer_size = 1024;
+	sample_buffer_size = major_sample_buffer_size - 2;
+	// 100ns unit
+	major_frame_duration = (LONGLONG)1000 * 1000 * 10 * major_sample_buffer_size / sample_rate;
+	major_frame_duration_mod = (LONG)((LONGLONG)1000 * 1000 * 10 * major_sample_buffer_size - major_frame_duration * sample_rate);
+	frame_duration = (LONGLONG)1000 * 1000 * 10 * sample_buffer_size / sample_rate;
+	frame_duration_mod = (LONG)((LONGLONG)1000 * 1000 * 10 * sample_buffer_size - frame_duration * sample_rate);
+#endif
+	frame_duration_deci = 0;
+	first_writing = true;
 
 	logging->out_logf(LOG_DEBUG, _T("MMF_REC_AUDIO::Start: %d"), codTypeNum);
 
@@ -391,7 +411,7 @@ bool MMF_REC_AUDIO::Start(_TCHAR *path, size_t path_size, int sample_rate)
 
 	// create sample buffer
 	for(int n=0; n<BUFFER_COUNT; n++) {
-		hr = MMF_CreateMemoryBuffer(sample_buffer_size * bytes_per_sample, &mediaBuffers[n]);
+		hr = MMF_CreateMemoryBuffer(major_sample_buffer_size * bytes_per_sample, &mediaBuffers[n]);
 		if (FAILED(hr)) {
 			MMF_OutLog(LOG_ERROR, _T("MMF_CreateMemoryBuffer Failed."), hr);
 			goto FIN;
@@ -522,7 +542,6 @@ HRESULT MMF_REC_AUDIO::WriteSample()
 			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: IMFSample::SetSampleTime Failed."), hr); 
 			break;
 		}
-		sample_time += frame_duration;
 
 		hr = mediaSamples[buffer_idx]->SetSampleDuration(frame_duration);
 		if (FAILED(hr)) {
@@ -530,13 +549,26 @@ HRESULT MMF_REC_AUDIO::WriteSample()
 			break;
 		}
 
+		// calculate next time stamp
+		if (frame_duration_deci >= rec_rate) {
+			sample_time++;
+			frame_duration_deci -= rec_rate;
+		}
+		sample_time += frame_duration;
+		frame_duration_deci += frame_duration_mod;
+
+		if (first_writing) {
+			sample_buffer_size = major_sample_buffer_size;
+			frame_duration = major_frame_duration;
+			frame_duration_mod = major_frame_duration_mod;
+			first_writing = false;
+		}
+
 #if 0
 		MF_SINK_WRITER_STATISTICS streamStat;
-		do {
-			memset(&streamStat, 0, sizeof(streamStat));
-			streamStat.cb = sizeof(streamStat);
-			hr = sinkWriter->GetStatistics(streamIndex, &streamStat);
-		} while (streamStat.dwByteCountQueued > 0);
+		streamStat.cb = sizeof(streamStat);
+		sinkWriter->GetStatistics(streamIndex, &streamStat);
+		logging->out_logf(LOG_DEBUG, _T("< R:%d E:%d Q:%d"), streamStat.qwNumSamplesReceived, streamStat.qwNumSamplesEncoded, streamStat.dwByteCountQueued);
 #endif
 
 		hr = sinkWriter->WriteSample(streamIndex, mediaSamples[buffer_idx]);
@@ -548,6 +580,12 @@ HRESULT MMF_REC_AUDIO::WriteSample()
 			if (!write_error_count) MMF_OutLog(LOG_ERROR, _T("WriteSample: IMFSinkWriter::WriteSample Failed."), hr); 
 			break;
 		}
+
+#if 0
+		streamStat.cb = sizeof(streamStat);
+		sinkWriter->GetStatistics(streamIndex, &streamStat);
+		logging->out_logf(LOG_DEBUG, _T("> R:%d E:%d Q:%d"), streamStat.qwNumSamplesReceived, streamStat.qwNumSamplesEncoded, streamStat.dwByteCountQueued);
+#endif
 	} while(0);
 
 	return hr;

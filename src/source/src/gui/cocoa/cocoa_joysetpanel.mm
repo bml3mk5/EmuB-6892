@@ -19,7 +19,6 @@
 #import "../../keycode.h"
 #import "../../utility.h"
 #import "../gui_keybinddata.h"
-#import "cocoa_keybindctrl.h"
 #import "cocoa_key_trans.h"
 
 extern EMU *emu;
@@ -72,7 +71,7 @@ extern EMU *emu;
 				mash[i][k] = nil;
 				continue;
 			}
-			
+
 			hbox = [vbox addBox:HorizontalBox];
 			CMsg::Id titleid = (CMsg::Id)cVmJoyLabels[kk].id;
 			[CocoaLabel createI:hbox title:titleid align:NSTextAlignmentCenter width:tx height:sy];
@@ -126,19 +125,24 @@ extern EMU *emu;
 	tableViews = [NSMutableArray array];
 	for(int tab_num=tab_offset; tab_num<KeybindData::JS_TABS_MAX; tab_num++) {
 		CocoaTableView *tableView = [CocoaTableView createW:370 height:260 tabnum:tab_num cellWidth:100];
-		[tableView setJoyMask:&enable_axes];
+		[tableView setJoyMask:&joy_mask];
 		[tableViews addObject:tableView];
 	}
 
 	// create an item in the tab
 	for(int tab_num=0; tab_num<[tableViews count]; tab_num++) {
-		tab = [tabView addTabItemI:LABELS::joysetting_tab[tab_num]];
+//		tab = [tabView addTabItemI:LABELS::joysetting_tab[tab_num]];
+		UTILITY::sprintf(label, sizeof(label), "%d", tab_num + 1);
+		tab = [tabView addTabItemT:label];
 		view_in_tab = (CocoaView *)[tab view];
 		[box_tab setContentView:view_in_tab];
 
-		// table
 		box_sep = [box_tab addBox:VerticalBox :0 :0];
 
+		// title
+		[CocoaLabel createI:box_sep title:LABELS::joysetting_tab[tab_num]];
+
+		// table
 		CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
 		[box_sep addControl:tv width:370 height:260];
 
@@ -148,16 +152,29 @@ extern EMU *emu;
 			[CocoaLabel createT:box_sep title:""];
 		}
 #endif
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+		if (tab_num + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOY) {
+# ifdef USE_JOYSTICKBIT
+			// check box
+			chkPiaJoyNeg = [CocoaCheckBox createI:box_sep title:CMsg::Signals_are_negative_logic action:nil value:FLG_PIAJOY_NEGATIVE != 0];
+			CocoaLayout *hbox = [box_sep addBox:HorizontalBox :MiddlePos :0 :_T("ConnH")];
+			[CocoaLabel createI:hbox title:CMsg::Connect_to_];
+			radPiaJoyConn = [CocoaRadioGroup create:hbox width:360 cols:Config::PIAJOY_CONN_TO_MAX titleids:LABELS::joysetting_opts action:nil selidx:pConfig->piajoy_conn_to];
+# else
+			chkPiaJoyNoIrq = [CocoaCheckBox createI:box_sep title:CMsg::No_interrupt_caused_by_pressing_the_button action:nil value:FLG_PIAJOY_NOIRQ != 0];
+# endif
+		}
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+		if (tab_num + KeybindData::JS_TABS_MIN == Keybind::TAB_JOY2JOYB) {
+# ifdef USE_JOYSTICKBIT
+			// check box
+			chkPsgJoyNeg = [CocoaCheckBox createI:box_sep title:CMsg::Signals_are_negative_logic action:nil value:FLG_PSGJOY_NEGATIVE != 0];
+# endif
+		}
+#endif
 	}
 
-#ifdef USE_PIAJOYSTICKBIT
-	// check box
-
-	chkPiaJoyNeg = [CocoaCheckBox createI:box_vall title:CMsg::Signals_are_negative_logic action:nil value:FLG_PIAJOY_NEGATIVE != 0];
-	chkPiaJoyConn = [CocoaCheckBox createI:box_vall title:CMsg::Connect_to_standard_PIA_A_port action:nil value:pConfig->piajoy_conn_to != 0];
-#else
-	chkPiaJoyNoIrq = [CocoaCheckBox createI:box_vall title:CMsg::No_interrupt_caused_by_pressing_the_button action:nil value:FLG_PIAJOY_NOIRQ != 0];
-#endif
 
 	// button (lower)
 
@@ -183,13 +200,7 @@ extern EMU *emu;
 	}
 
 	// axes of joypad
-	
-	enable_axes = ~0;
-	CocoaLayout *hbox_joy = [box_vall addBox:HorizontalBox];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_Z_axis index:2 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_R_axis index:3 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_U_axis index:4 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0];
-	[CocoaCheckBox createI:hbox_joy title:CMsg::Enable_V_axis index:5 action:@selector(clickJoyAxis:) value:(enable_axes & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0];
+	[self createFooter:box_vall];
 
 	// button
 
@@ -202,100 +213,21 @@ extern EMU *emu;
 	return self;
 }
 
-- (NSInteger)runModal
-{
-	return [NSApp runModalForWindow:self];
-}
-
-- (void)close
-{
-	[NSApp stopModalWithCode:NSModalResponseCancel];
-	[super close];
-}
-
 - (void)dialogOk:(id)sender
 {
-	// OK button is pushed
-	for(int tab=0; tab<[tableViews count]; tab++) {
-		CocoaTableView *tv = [tableViews objectAtIndex:tab];
-		[tv SetData];
-	}
-
-	emu->save_keybind();
-
 	[self setData];
-
-	[NSApp stopModalWithCode:NSModalResponseOK];
-	[super close];
-}
-
-- (void)dialogCancel:(id)sender
-{
-	// Cancel button is pushed
-	[self close];
-}
-
-- (void)loadDefaultPreset:(id)sender
-{
-//	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	int tab_num = [tabView selectedTabViewItemIndex];
-	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
-	NSTableView *view = [tv documentView];
-	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[tv LoadDefaultPresetData];
-	[view reloadData];
-}
-
-- (void)loadPreset:(id)sender
-{
-	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	int tab_num = [tabView selectedTabViewItemIndex];
-	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
-	NSTableView *view = [tv documentView];
-	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[tv LoadPresetData:attr.idx];
-	[view reloadData];
-}
-
-- (void)savePreset:(id)sender
-{
-	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
-	int tab_num = [tabView selectedTabViewItemIndex];
-	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
-	NSTableView *view = [tv documentView];
-	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
-	[tv SavePresetData:attr.idx];
-	[view reloadData];
-}
-
-- (void)clickJoyAxis:(id)sender
-{
-	CocoaCheckBox *chk = (CocoaCheckBox *)sender;
-	Uint32 bits = 0;
-	switch([chk index]) {
-	case 2:
-		bits = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
-		break;
-	case 3:
-		bits = (JOYCODE_R_UP | JOYCODE_R_DOWN);
-		break;
-	case 4:
-		bits = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
-		break;
-	case 5:
-		bits = (JOYCODE_V_UP | JOYCODE_V_DOWN);
-		break;
-	}
-	BIT_ONOFF(enable_axes, bits, [chk state] == NSControlStateValueOn);
+	[super dialogOk:sender];
 }
 
 - (void)setData
 {
+	[super setData];
+
 #if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
 	for(int i=0; i<MAX_JOYSTICKS; i++) {
-#ifdef USE_JOYSTICK_TYPE
+# ifdef USE_JOYSTICK_TYPE
 		pConfig->joy_type[i] = (int)[pop[i] indexOfSelectedItem];
-#endif
+# endif
 		for(int k=0; k<KEYBIND_JOY_BUTTONS; k++) {
 			pConfig->joy_mashing[i][k] = [mash[i][k] intValue];
 		}
@@ -305,16 +237,23 @@ extern EMU *emu;
 	}
 	emu->modify_joy_mashing();
 	emu->modify_joy_threshold();
-#ifdef USE_JOYSTICK_TYPE
+# ifdef USE_JOYSTICK_TYPE
 	// will change joypad type in emu thread
 	emumsg.Send(EMUMSG_ID_MODIFY_JOYTYPE);
-#endif
-#ifdef USE_PIAJOYSTICKBIT
+# endif
+# if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+#  ifdef USE_JOYSTICKBIT
 	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, [chkPiaJoyNeg state] != NSControlStateValueOff);
-	pConfig->piajoy_conn_to = [chkPiaJoyConn state] != NSControlStateValueOff ? 1 : 0;
-#else
+	pConfig->piajoy_conn_to = (int)[radPiaJoyConn selectedColumn];
+#  else
 	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, [chkPiaJoyNoIrq state] != NSControlStateValueOff);
-#endif
+#  endif
+# endif
+# if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+#  ifdef USE_JOYSTICKBIT
+	BIT_ONOFF(pConfig->misc_flags, MSK_PSGJOY_NEGATIVE, [chkPsgJoyNeg state] != NSControlStateValueOff);
+#  endif
+# endif
 #endif
 }
 

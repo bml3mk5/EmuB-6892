@@ -17,7 +17,7 @@ namespace GUI_WIN
 {
 
 AboutBox::AboutBox(HINSTANCE hinst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hinst, IDD_ABOUTBOX, new_font, new_emu, new_gui)
+	: CDialogBox(hinst, IDD_ABOUTBOX, new_emu, new_gui)
 {
 }
 

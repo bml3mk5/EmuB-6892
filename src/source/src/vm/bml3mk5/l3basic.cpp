@@ -461,7 +461,11 @@ void L3Basic::PrintFloat(uint8_t *val, int siz)
 	double value = CalcFloat(val, siz);
 	FormatFloat(value, siz, buf, sizeof(buf));
 	CTchar nbuf(buf);
-	dc->Printf(_T(" = %s (&H%X)"), nbuf.Get(), ((int)value & 0xffff));
+	int ivalue = (int)value;
+	if (-32768 <= ivalue && ivalue < 32768) {
+		ivalue &= 0xffff;
+	}
+	dc->Printf(_T(" = %s (&H%X)"), nbuf.Get(), ivalue);
 }
 
 uint32_t L3Basic::CopyVariableValue(int type, uint32_t addr)

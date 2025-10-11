@@ -48,6 +48,7 @@ public:
 	scrntype *GetBuffer(int y);
 	void UngetBuffer();
 	int GetBufferSize();
+	int GetPitch();
 
 	bool IsEnable();
 

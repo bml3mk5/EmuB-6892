@@ -13,6 +13,7 @@
 #define QT_MAIN_H
 
 #include <QApplication>
+#include <QWidget>
 #include <QOpenGLContext>
 #include <QOpenGLWidget>
 #include <QThread>

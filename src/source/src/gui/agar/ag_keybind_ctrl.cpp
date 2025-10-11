@@ -56,9 +56,12 @@ void AG_KEYBIND_CTRL::Init(EMU *emu, AG_Notebook *nb, const char *title)
 
 	tab = AG_NotebookAddTab(nb, title, AG_BOX_HORIZ);
 
-	// table
 	AG_Box *vbox;
 	vbox = AG_BoxNewVert(tab, AG_BOX_VFILL);
+
+	InitHeaderControl(vbox);
+
+	// table
 	if (kbdata->m_devtype == KeybindData::DEVTYPE_JOYPAD) {
 		tbl = AG_TableNewPolled(vbox, AG_TABLE_EXPAND | AG_TABLE_NOAUTOSORT, OnUpdate, "%Cp", this);
 		AG_TableSetPollInterval(tbl, 250);
@@ -95,6 +98,11 @@ void AG_KEYBIND_CTRL::Init(EMU *emu, AG_Notebook *nb, const char *title)
 	AG_TableSetCellClickFn(tbl, OnClickCell, "%Cp", this);
 	AG_SetEvent(tbl, "key-down", OnKeyDown, "%Cp", this);
 
+	InitFooterControl(vbox);
+}
+
+void AG_KEYBIND_CTRL::InitFooterControl(AG_Box *vbox)
+{
 	// checkbox for joypad
 	AG_LabelNew(vbox, 0, " ");
 	if (LABELS::keybind_combi[m_tab_num] != CMsg::Null) {
@@ -158,7 +166,11 @@ void AG_KEYBIND_CTRL::Update()
 void AG_KEYBIND_CTRL::SetData()
 {
 	kbdata->SetData();
+	SetDataInControls();
+}
 
+void AG_KEYBIND_CTRL::SetDataInControls()
+{
 	if (chkCombi) {
 		kbdata->SetCombi(m_combi);
 	}

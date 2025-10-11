@@ -13,6 +13,9 @@
 
 #include "../common.h"
 #include "../vm/vm.h"
+#if defined(USE_QT)
+#include "../osd/qt/qt_restrict.h"
+#endif
 #include "../emu.h"
 #include "../osd/keybind.h"
 
@@ -120,6 +123,8 @@ public:
 		VM_TYPE_KEYASSIGN = 0,
 		VM_TYPE_PIOJOYASSIGN,
 		VM_TYPE_PIOBITASSIGN,
+		VM_TYPE_PSGJOYASSIGN,
+		VM_TYPE_PSGBITASSIGN,
 	};
 	int m_vm_type;	// 2:PIA(SKIPPER) 1:PIA(S1) 0:key
 	enum en_flags {
@@ -127,28 +132,32 @@ public:
 	};
 	int m_flags;
 
-	enum en_tabs {
-		TAB_KEY2KEY = 0,
-		TAB_JOY2KEY,
-		TAB_JOY2JOY,
-		TAB_KEY2JOY,
-		TABS_MAX,
-	};
 	enum en_keybind_tabs {
-		KB_TABS_MIN = TAB_KEY2KEY,
+		KB_TABS_MIN = Keybind::TAB_KEY2KEY,
 #if defined(USE_JOYSTICK)
 		KB_TAB_JOY2KEY,
 #endif
 		KB_TABS_MAX,
 	};
 	enum en_joysetting_tabs {
-#if defined(USE_PIAJOYSTICK)
-		JS_TABS_MIN = TAB_JOY2JOY,
-#if defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) && defined(USE_KEY2PIAJOYSTICK)
+		JS_TABS_MIN = Keybind::TAB_JOY2JOY,
 		JS_TAB_KEY2JOY,
+#elif defined(USE_PIAJOYSTICK)
+		JS_TABS_MIN = Keybind::TAB_JOY2JOY,
+#elif defined(USE_KEY2PIAJOYSTICK)
+		JS_TABS_MIN = Keybind::TAB_KEY2JOY,
 #endif
-#else
-		JS_TABS_MIN = TAB_KEY2JOY,
+#if defined(USE_PSGJOYSTICK) && defined(USE_KEY2PSGJOYSTICK)
+		JS_TAB_JOY2JOYB,
+		JS_TAB_KEY2JOYB,
+#elif defined(USE_PSGJOYSTICK)
+		JS_TAB_JOY2JOYB,
+#elif defined(USE_KEY2PSGJOYSTICK)
+		JS_TAB_KEY2JOYB,
+#endif
+#if 0
+		JS_TABS_MIN = Keybind::TAB_KEY2JOY,
 #endif
 		JS_TABS_MAX,
 	};

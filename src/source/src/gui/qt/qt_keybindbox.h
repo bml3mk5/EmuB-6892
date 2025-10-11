@@ -25,7 +25,7 @@ class MyKeybindBox;
 /**
 	@brief Keybind dialog box
 */
-class MyKeybindBox : public QDialog
+class MyKeybindBox : public MyKeybindBaseBox
 {
 	Q_OBJECT
 
@@ -34,20 +34,7 @@ public:
 	~MyKeybindBox();
 
 private:
-//	Ui::MyKeybindBox *ui;
-	std::vector<MyTableWidget *> tables;
-	MyTabWidget *tabWidget;
-	uint32_t joy_mask;
-
 	void setData();
-
-private slots:
-	void loadPreset();
-	void savePreset();
-	void accept();
-	void update();
-//	void tabChanged(int index);
-	void toggleAxis(bool checked);
 };
 
 #endif // QT_KEYBINDBOX_H

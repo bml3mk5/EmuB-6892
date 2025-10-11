@@ -754,3 +754,114 @@ extern EMU *emu;
 	return self;
 }
 @end
+
+/**
+	@brief Keybind base panel
+*/
+@implementation CocoaKeybindBasePanel
+- (id)init
+{
+	[super init];
+	joy_mask = ~0;
+	return self;
+}
+
+- (void)createFooter:(CocoaLayout *)box_all
+{
+	joy_mask = ~0;
+	CocoaLayout *hbox_joy = [box_all addBox:HorizontalBox];
+	[CocoaLabel createI:hbox_joy title:CMsg::Disable_temporarily_the_following_];
+	[CocoaCheckBox createI:hbox_joy title:CMsg::Z_axis index:2 action:@selector(clickJoyAxis:) value:(joy_mask & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) == 0];
+	[CocoaCheckBox createI:hbox_joy title:CMsg::R_axis index:3 action:@selector(clickJoyAxis:) value:(joy_mask & (JOYCODE_R_UP | JOYCODE_R_DOWN)) == 0];
+	[CocoaCheckBox createI:hbox_joy title:CMsg::U_axis index:4 action:@selector(clickJoyAxis:) value:(joy_mask & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) == 0];
+	[CocoaCheckBox createI:hbox_joy title:CMsg::V_axis index:5 action:@selector(clickJoyAxis:) value:(joy_mask & (JOYCODE_V_UP | JOYCODE_V_DOWN)) == 0];
+}
+
+- (NSInteger)runModal
+{
+	return [NSApp runModalForWindow:self];
+}
+
+- (void)close
+{
+	[NSApp stopModalWithCode:NSModalResponseCancel];
+	[super close];
+}
+
+- (void)dialogOk:(id)sender
+{
+	[NSApp stopModalWithCode:NSModalResponseOK];
+	[super close];
+}
+
+- (void)dialogCancel:(id)sender
+{
+	// Cancel button is pushed
+	[self close];
+}
+
+- (void)setData
+{
+	// OK button is pushed
+	for(int tab=0; tab<[tableViews count]; tab++) {
+		CocoaTableView *tv = [tableViews objectAtIndex:tab];
+		[tv SetData];
+	}
+
+	emu->save_keybind();
+}
+
+- (void)loadDefaultPreset:(id)sender
+{
+//	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
+	int tab_num = [tabView selectedTabViewItemIndex];
+	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
+	NSTableView *view = [tv documentView];
+	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
+	[tv LoadDefaultPresetData];
+	[view reloadData];
+}
+
+- (void)loadPreset:(id)sender
+{
+	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
+	int tab_num = [tabView selectedTabViewItemIndex];
+	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
+	NSTableView *view = [tv documentView];
+	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
+	[tv LoadPresetData:attr.idx];
+	[view reloadData];
+}
+
+- (void)savePreset:(id)sender
+{
+	CocoaButtonAttr *attr = (CocoaButtonAttr *)[sender relatedObject];
+	int tab_num = [tabView selectedTabViewItemIndex];
+	CocoaTableView *tv = [tableViews objectAtIndex:tab_num];
+	NSTableView *view = [tv documentView];
+	[view editColumn:0 row:[view selectedRow] withEvent:nil select:YES];
+	[tv SavePresetData:attr.idx];
+	[view reloadData];
+}
+
+- (void)clickJoyAxis:(id)sender
+{
+	CocoaCheckBox *chk = (CocoaCheckBox *)sender;
+	Uint32 bits = 0;
+	switch([chk index]) {
+	case 2:
+		bits = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
+		break;
+	case 3:
+		bits = (JOYCODE_R_UP | JOYCODE_R_DOWN);
+		break;
+	case 4:
+		bits = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
+		break;
+	case 5:
+		bits = (JOYCODE_V_UP | JOYCODE_V_DOWN);
+		break;
+	}
+	BIT_ONOFF(joy_mask, bits, [chk state] != NSControlStateValueOn);
+}
+@end

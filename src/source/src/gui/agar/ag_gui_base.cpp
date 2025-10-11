@@ -53,6 +53,8 @@ AG_GUI_BASE::AG_GUI_BASE(int argc, char **argv, EMU *new_emu) : GUI_BASE(argc, a
 #endif
 
 	now_showing = false;
+
+	drawing_method = pConfig->drawing_method;
 }
 
 AG_GUI_BASE::~AG_GUI_BASE()
@@ -257,6 +259,18 @@ void AG_GUI_BASE::HideMenu()
 {
 	AG_WindowHide(now_driver->win);
 	now_showing = false;
+}
+
+bool AG_GUI_BASE::StoreDrawingMethod(uint8_t method)
+{
+	drawing_method = method;
+	return false;
+}
+
+bool AG_GUI_BASE::RestoreDrawingMethod(uint8_t &method) const
+{
+	method = drawing_method;
+	return false;
 }
 
 /**

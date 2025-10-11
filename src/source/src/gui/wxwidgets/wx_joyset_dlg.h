@@ -18,32 +18,16 @@
 /**
 	@brief Joypad setting dialog box
 */
-class MyJoySettingDlg : public MyDialog
+class MyJoySettingDlg : public MyKeybindBaseDlg
 {
 private:
-	std::vector<MyKeybindListWindow *> ctrls;
-
-	uint32_t joy_mask;
-
-	MyNotebook *notebook;
-
-	void InitDialog();
-
-	void SetData();
-//	void OnChangeValue(wxCommandEvent &);
-
-	bool get_vmkeylabel(int code, wxString &label);
-	bool get_vkkeylabel(uint32_t code, wxString &label);
-	bool get_vkjoylabel(uint32_t code, wxString &label);
-	uint32_t translate_vkkey(uint32_t code);
-
-	void load_data(int tab, int num);
-	void save_data(int tab, int num);
-
 	wxWindow *CreateBook(wxWindow *parent, int tab, int tab_offset);
 
+	void InitDialog();
+	void SetData();
+
 public:
-	MyJoySettingDlg(wxWindow *, wxWindowID, EMU *, GUI_BASE *);
+	MyJoySettingDlg(MyFrame *, wxWindowID, EMU *, GUI_BASE *);
 	~MyJoySettingDlg();
 
 	int ShowModal();
@@ -51,24 +35,7 @@ public:
 	enum {
 		IDC_NOTEBOOK = 1,
 		IDC_LIST_0,
-
-		IDC_BUTTON_LOAD_DEFAULT0 = 20,
-		IDC_BUTTON_LOAD_DEFAULT4 = 24,
-
-		IDC_BUTTON_LOAD_PRESET00 = 100,
-		IDC_BUTTON_LOAD_PRESET44 = 144,
-
-		IDC_BUTTON_SAVE_PRESET00 = 200,
-		IDC_BUTTON_SAVE_PRESET44 = 244,
 	};
-
-//	void OnPageChanged(wxBookCtrlEvent &);
-
-	void OnLoadDefault(wxCommandEvent &);
-	void OnLoadPreset(wxCommandEvent &);
-	void OnSavePreset(wxCommandEvent &);
-
-	void OnClickAxis(wxCommandEvent &);
 
 	DECLARE_EVENT_TABLE()
 };

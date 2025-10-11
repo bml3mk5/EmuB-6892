@@ -23,15 +23,17 @@ private:
 	LOGFONT m_lf;		///< 論理フォント
 	HFONT   hFont;		///< フォントハンドル
 	COLORREF mColor;	///< フォントカラー
+	int		mDpi;		///< 論理フォントのDPI
 
-	void set_default_font();
+	void set_default_font(HWND hWnd);
 	void set_font(HWND hWnd, const _TCHAR *font_name, double font_size, LONG weight = FW_DONTCARE);
+	void recalc_font_height(HWND hWnd);
 
 public:
 	CFont();
 	~CFont();
 
-	void SetDefaultFont(HWND hWnd = NULL, const _TCHAR *font_name = NULL, double font_size = 9, COLORREF font_color = 0);
+	void SetDefaultFont(HWND hWnd = NULL, COLORREF font_color = 0);
 	void SetFont(HWND hWnd, const _TCHAR *font_name, double font_size, LONG weight = FW_DONTCARE, COLORREF font_color = 0);
 	HFONT GetFont() { return hFont; }
 	void GetFontName(_TCHAR *font_name, size_t name_len);
@@ -47,6 +49,7 @@ public:
 
 	void GetLogFontOnNonClientArea();
 	void GetFontSizeOnDC(HWND hWnd, SIZE *size);
+	void RecalcFontSize(HWND hWnd);
 
 	static LONG CalcHeightFromPoint(HWND hWnd, double font_size);
 	static double CalcPointFromHeight(HWND hWnd, LONG height);

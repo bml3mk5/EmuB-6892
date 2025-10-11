@@ -208,6 +208,7 @@ public:
 	uint64_t get_current_clock();
 	uint64_t get_passed_clock(uint64_t prev);
 	double get_passed_usec(uint64_t prev);
+	int  get_current_power();
 	void set_number_of_cpu(int nums);
 	uint32_t get_cpu_pc(int index);
 
@@ -239,7 +240,7 @@ public:
 	bool load_state(FILEIO *fio);
 
 #ifdef USE_DEBUGGER
-	void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
+	void debug_status_info(_TCHAR *buffer, size_t buffer_len);
 #endif
 };
 

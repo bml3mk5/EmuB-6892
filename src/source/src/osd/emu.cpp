@@ -549,12 +549,12 @@ void EMU::out_infoc_x(const _TCHAR* msg1, ...)
 		va_start(ap, msg1);
 #if defined(USE_QT)
 		UTILITY::tcscpy(buffer, max_len, QCoreApplication::translate(NULL, msg1).toUtf8().data());
-		for(size_t i=1; (src2 = va_arg(ap, const _TCHAR *)) != NULL; i++) {
+		while((src2 = va_arg(ap, const _TCHAR *)) != NULL) {
 			if (src2[0] != _T('\0')) UTILITY::tcscat(buffer, max_len, QCoreApplication::translate(NULL, src2).toUtf8().data());
 		}
 #else
 		UTILITY::tcscpy(buffer, max_len, _tgettext(msg1));
-		for(size_t i=1; (src2 = va_arg(ap, const _TCHAR *)) != NULL; i++) {
+		while((src2 = va_arg(ap, const _TCHAR *)) != NULL) {
 			if (src2[0] != _T('\0')) UTILITY::tcscat(buffer, max_len, _tgettext(src2));
 		}
 #endif
@@ -654,7 +654,7 @@ void EMU::out_infoc_x(CMsg::Id msg_id, ...)
 
 		va_start(ap, msg_id);
 		UTILITY::tcscpy(buffer, max_len, CMSGV(msg_id));
-		for(size_t i=1; (id2 = va_arg(ap, int)) != 0; i++) {
+		while((id2 = va_arg(ap, int)) != 0) {
 			if (id2 > 0 && id2 < CMsg::End) UTILITY::tcscat(buffer, max_len, CMSGV((CMsg::Id)id2));
 		}
 		va_end(ap);
@@ -1306,60 +1306,6 @@ uint64_t EMU::update_led()
 #endif
 }
 
-#if 0
-void EMU::show_led()
-{
-	if (ledbox) {
-		pConfig->misc_flags ^= MSK_SHOWLEDBOX;
-		ledbox->Show(FLG_LEDBOX_ALL);
-	}
-}
-
-void EMU::inside_led()
-{
-	if (ledbox) {
-		pConfig->misc_flags ^= MSK_INSIDELEDBOX;
-		ledbox->Show(FLG_LEDBOX_ALL);
-	}
-}
-
-void EMU::move_led()
-{
-	if (ledbox) {
-		ledbox->Move();
-	}
-}
-
-void EMU::change_pos_led(int num)
-{
-	if (ledbox) {
-		if (num == -1) {
-			pConfig->led_pos = (pConfig->led_pos + 1) % 4;
-		} else {
-			pConfig->led_pos = num;
-		}
-		ledbox->SetPos(pConfig->led_pos);
-	}
-}
-
-/// @param[in] id
-/// @return -1:ledbox is disable 0:false 1:true
-int EMU::is_shown_ledbox(int id)
-{
-	if (ledbox && ledbox->IsEnable()) {
-		switch(id) {
-			case 0:
-				return FLG_SHOWLEDBOX ? 1 : 0;
-				break;
-			case 1:
-				return FLG_INSIDELEDBOX ? 1 : 0;
-				break;
-		}
-	}
-	return -1;
-}
-#endif
-
 void EMU::show_message_board()
 {
 #ifdef USE_MESSAGE_BOARD
@@ -1384,33 +1330,64 @@ void EMU::change_use_joypad(int num)
 {
 #if defined(USE_JOYSTICK)
 	if (num < 0) {
-#if defined(USE_PIAJOYSTICK)
-		num = (FLG_USEJOYSTICK ? 1 : (FLG_USEPIAJOYSTICK ? 2 : 0));
-		num = (num + 1) % 3;
-#else
-		num = (FLG_USEJOYSTICK ? 1 : 0);
-		num = (num + 1) % 2;
-#endif
+		int divp = 2;
+		int mask = (1 << SEL_NOJOY);
+
+		num = 0;
+		mask |= (1 << SEL_JOY2KEY);
+		if (FLG_USEJOYSTICK) {
+			num = SEL_JOY2KEY;
+		}
+# if defined(USE_PIAJOYSTICK)
+		divp++;
+		mask |= (1 << SEL_JOY2PIAJOY);
+		if (FLG_USEPIAJOYSTICK) {
+			num = SEL_JOY2PIAJOY;
+		}
+# endif
+# if defined(USE_PSGJOYSTICK)
+		divp++;
+		mask |= (1 << SEL_JOY2PSGJOY);
+		if (FLG_USEPSGJOYSTICK) {
+			num = SEL_JOY2PSGJOY;
+		}
+# endif
+
+		do {
+			num = (num + 1) % divp;
+		} while((mask & (1 << num)) == 0); 
 	}
 
 	switch(num) {
-	case 1:
+	case SEL_JOY2KEY:
+		// use joystick to key
 		pConfig->misc_flags = ((pConfig->misc_flags & ~MSK_USEJOYSTICK_ALL) | MSK_USEJOYSTICK);
 		use_joystick = true;
+		joy2joy_curr_device = -1;
 		reset_joystick();
 		break;
-	case 2:
+	case SEL_JOY2PIAJOY:
+		// use joystick to PIA joyport
 		pConfig->misc_flags = ((pConfig->misc_flags & ~MSK_USEJOYSTICK_ALL) | MSK_USEPIAJOYSTICK);
 		use_joystick = true;
+		joy2joy_curr_device = DEV_PIAJOY;
+		reset_joystick();
+		break;
+	case SEL_JOY2PSGJOY:
+		// use joystick to PSG joyport
+		pConfig->misc_flags = ((pConfig->misc_flags & ~MSK_USEJOYSTICK_ALL) | MSK_USEPSGJOYSTICK);
+		use_joystick = true;
+		joy2joy_curr_device = DEV_PSGJOY;
 		reset_joystick();
 		break;
 	default:
 		pConfig->misc_flags = (pConfig->misc_flags & ~MSK_USEJOYSTICK_ALL);
 		release_joystick();
 		use_joystick = false;
+		joy2joy_curr_device = -1;
 		break;
 	}
-#else
+#else /* !USE_JOYSTICK */
 	num;
 #endif
 }
@@ -1418,34 +1395,54 @@ void EMU::change_use_joypad(int num)
 bool EMU::is_enable_joypad(int num)
 {
 	switch(num) {
-	case 1:
+	case SEL_JOY2KEY:
 		return (FLG_USEJOYSTICK != 0);
-	case 2:
+	case SEL_JOY2PIAJOY:
 		return (FLG_USEPIAJOYSTICK != 0);
+	case SEL_JOY2PSGJOY:
+		return (FLG_USEPSGJOYSTICK != 0);
 	default:
 		return (FLG_USEJOYSTICK_ALL != 0);
 	}
 }
 
-void EMU::toggle_enable_key2joy()
+void EMU::toggle_enable_key2joy(int dev)
 {
 #if defined(USE_KEY2JOYSTICK)
-	if (FLG_USEKEY2JOYSTICK) {
-		pConfig->misc_flags &= ~MSK_USEKEY2JOYSTICK;
-		release_key2joy();
-		key2joy_enabled = false;
+	if (key2joy_curr_device == dev) {
+		// disable
+		key2joy_curr_device = -1;
+		// clear joy status
+		release_key2joy(dev);
 	} else {
-		pConfig->misc_flags |= MSK_USEKEY2JOYSTICK;
-		key2joy_enabled = true;
+		if (key2joy_curr_device >= 0) {
+			// clear joy status
+			release_key2joy(key2joy_curr_device);
+		}
+		key2joy_curr_device = dev;
 		reset_key2joy();
+	}
+
+	pConfig->misc_flags &= ~MSK_USEKEY2JOY_ALL;
+	switch(key2joy_curr_device) {
+	case DEV_PIAJOY:
+		pConfig->misc_flags |= MSK_USEKEY2PIAJOY;
+		break;
+# if defined(USE_KEY2PSGJOYSTICK)
+	case DEV_PSGJOY:
+		pConfig->misc_flags |= MSK_USEKEY2PSGJOY;
+		break;
+# endif
+	default:
+		break;
 	}
 #endif
 }
 
-bool EMU::is_enable_key2joy()
+bool EMU::is_enable_key2joy(int dev)
 {
 #if defined(USE_KEY2JOYSTICK)
-	return key2joy_enabled;
+	return (key2joy_curr_device == dev);
 #else
 	return false;
 #endif

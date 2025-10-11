@@ -13,7 +13,6 @@
 
 #include "../../msgs.h"
 #include "../../cchar.h"
-#include "../../cptrlist.h"
 #include <QTabWidget>
 #include <QGroupBox>
 #include <QCheckBox>
@@ -23,6 +22,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QDialogButtonBox>
+#include "../../cptrlist.h"
 
 /**
 	@brief Tab control
@@ -35,6 +35,7 @@ public:
 	explicit MyTabWidget(QWidget *parent = nullptr);
 
 	int addTab(QWidget *page, CMsg::Id labelid);
+	int addTab(QWidget *page, const _TCHAR *label);
 };
 
 /**

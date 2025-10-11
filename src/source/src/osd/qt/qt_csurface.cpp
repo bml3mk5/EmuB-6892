@@ -241,6 +241,7 @@ bool CSurface::StretchBlitFlipped(const VmRectWH &src_re, CSurface &dst, const V
 void CSurface::DrawImage(QImage &src, const VmRectWH *reSrc, QImage &dst, const VmRectWH *reDst)
 {
 #ifndef USE_QPAINTER
+	// 4bytes(32bits) color only
 	const scrntype *pSrc;
 	scrntype *pDst;
 
@@ -269,15 +270,81 @@ void CSurface::DrawImage(QImage &src, const VmRectWH *reSrc, QImage &dst, const 
 		ds.bottom = dst.height();
 	}
 
-	for(int sy=rs.top, dy=ds.top; sy < rs.bottom && dy < ds.bottom; sy++, dy++) {
-		pSrc = reinterpret_cast<const scrntype *>(src.scanLine(sy));
-		pSrc += rs.left;
-		pDst = reinterpret_cast<scrntype *>(dst.scanLine(dy));
-		pDst += ds.left;
-//		memcpy(pDst, pSrc, (ds.right - ds.left) * sizeof(scrntype));
-		for(int sx=rs.left, dx=ds.left; sx < rs.right && dx < ds.right; sx++, dx++) {
-			*pDst++ = *pSrc++;
+	int format = 0;
+	switch(src.format()) {
+	case QImage::Format_RGB32:
+	case QImage::Format_ARGB32:
+		format |= 0x01;
+		break;
+	case QImage::Format_RGBX8888:
+	case QImage::Format_RGBA8888:
+		format |= 0x02;
+		break;
+	default:
+		break;
+	}
+	switch(dst.format()) {
+	case QImage::Format_RGB32:
+	case QImage::Format_ARGB32:
+		format |= 0x10;
+		break;
+	case QImage::Format_RGBX8888:
+	case QImage::Format_RGBA8888:
+		format |= 0x20;
+		break;
+	default:
+		break;
+	}
+	switch(format) {
+	case 0x12:
+		for(int sy=rs.top, dy=ds.top; sy < rs.bottom && dy < ds.bottom; sy++, dy++) {
+			pSrc = reinterpret_cast<const scrntype *>(src.scanLine(sy));
+			pSrc += rs.left;
+			pDst = reinterpret_cast<scrntype *>(dst.scanLine(dy));
+			pDst += ds.left;
+			for(int sx=rs.left, dx=ds.left; sx < rs.right && dx < ds.right; sx++, dx++) {
+#ifdef USE_BIG_ENDIAN
+				// s 0xRRGGBBAA -> d 0xAARRGGBB
+				*pDst = (((*pSrc & 0xff) << 24) | ((*pSrc & 0xffffff00) >> 8));
+#else
+				// s 0xAABBGGRR -> d 0xAARRGGBB
+				*pDst = (((*pSrc & 0xff) << 16) | ((*pSrc & 0xff0000) >> 16) | (*pSrc & 0xff00ff00));
+#endif
+				pDst++;
+				pSrc++;
+			}
 		}
+		break;
+	case 0x21:
+		for(int sy=rs.top, dy=ds.top; sy < rs.bottom && dy < ds.bottom; sy++, dy++) {
+			pSrc = reinterpret_cast<const scrntype *>(src.scanLine(sy));
+			pSrc += rs.left;
+			pDst = reinterpret_cast<scrntype *>(dst.scanLine(dy));
+			pDst += ds.left;
+			for(int sx=rs.left, dx=ds.left; sx < rs.right && dx < ds.right; sx++, dx++) {
+#ifdef USE_BIG_ENDIAN
+				// s 0xAARRGGBB -> d 0xRRGGBBAA
+				*pDst = (((*pSrc & 0xff000000) >> 24) | ((*pSrc & 0xffffff) << 8));
+#else
+				// s 0xAARRGGBB -> d 0xAABBGGRR
+				*pDst = (((*pSrc & 0xff) << 16) | ((*pSrc & 0xff0000) >> 16) | (*pSrc & 0xff00ff00));
+#endif
+				pDst++;
+				pSrc++;
+			}
+		}
+		break;
+	default:
+		for(int sy=rs.top, dy=ds.top; sy < rs.bottom && dy < ds.bottom; sy++, dy++) {
+			pSrc = reinterpret_cast<const scrntype *>(src.scanLine(sy));
+			pSrc += rs.left;
+			pDst = reinterpret_cast<scrntype *>(dst.scanLine(dy));
+			pDst += ds.left;
+			for(int sx=rs.left, dx=ds.left; sx < rs.right && dx < ds.right; sx++, dx++) {
+				*pDst++ = *pSrc++;
+			}
+		}
+		break;
 	}
 #else
 	QRect rs;

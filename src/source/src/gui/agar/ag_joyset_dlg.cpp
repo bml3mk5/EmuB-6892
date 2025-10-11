@@ -19,11 +19,78 @@
 namespace GUI_AGAR
 {
 
+//
+
+AG_JOYSET_CTRL::AG_JOYSET_CTRL(AG_DLG *parent, int tab_num, AG_GUI_BASE *parent_gui)
+	: AG_KEYBIND_CTRL(parent, tab_num, parent_gui)
+{
+}
+
+void AG_JOYSET_CTRL::InitHeaderControl(AG_Box *vbox)
+{
+	AG_LabelNewS(vbox, 0, CMSGV(LABELS::joysetting_tab[m_tab_num]));
+}
+
+void AG_JOYSET_CTRL::InitFooterControl(AG_Box *vbox)
+{
+	// check button
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+	if (m_tab_num == Keybind::TAB_JOY2JOY) {
+#ifdef USE_JOYSTICKBIT
+		iChkPiaJoyNeg = (FLG_PIAJOY_NEGATIVE != 0 ? 1 : 0);
+		AG_CheckboxNewInt(vbox, 0, CMSG(Signals_are_negative_logic), &iChkPiaJoyNeg);
+		AG_Box *hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
+		AG_LabelNewS(hbox, 0, CMSG(Connect_to_));
+		iRadPiaJoyConn = pConfig->piajoy_conn_to;
+		AG_Radio *rad = AG_RadioNewInt(hbox, AG_RADIO_EXPAND, NULL, &iRadPiaJoyConn);
+		for(int i=0; LABELS::joysetting_opts[i] != CMsg::End; i++) {
+			const char *p = CMSGV(LABELS::joysetting_opts[i]);
+			AG_RadioAddItemS(rad, p);
+		}
+#else
+		iChkPiaJoyNoIrq = (FLG_PIAJOY_NOIRQ != 0 ? 1 : 0);
+		AG_CheckboxNewInt(vbox, 0, CMSG(No_interrupt_caused_by_pressing_the_button), &iChkPiaJoyNoIrq);
+#endif
+	}
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	if (m_tab_num == Keybind::TAB_JOY2JOYB) {
+#ifdef USE_JOYSTICKBIT
+		iChkPsgJoyNeg = (FLG_PSGJOY_NEGATIVE != 0 ? 1 : 0);
+		AG_CheckboxNewInt(vbox, 0, CMSG(Signals_are_negative_logic), &iChkPsgJoyNeg);
+#endif
+	}
+#endif
+}
+
+void AG_JOYSET_CTRL::SetDataInControls()
+{
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
+	if (m_tab_num == Keybind::TAB_JOY2JOY) {
+#ifdef USE_JOYSTICKBIT
+		BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, iChkPiaJoyNeg != 0);
+		pConfig->piajoy_conn_to = iRadPiaJoyConn;
+#else
+		BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, iChkPiaJoyNoIrq != 0);
+#endif
+	}
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	if (m_tab_num == Keybind::TAB_JOY2JOYB) {
+#ifdef USE_JOYSTICKBIT
+		BIT_ONOFF(pConfig->misc_flags, MSK_PSGJOY_NEGATIVE, iChkPsgJoyNeg != 0);
+#endif
+	}
+#endif
+}
+
+//
+
 AG_JOYSET_DLG::AG_JOYSET_DLG(EMU *parent_emu, AG_GUI_BASE *parent_gui) : AG_DLG(parent_emu, parent_gui)
 {
 	int tab_offset = KeybindData::JS_TABS_MIN;
 	for(int tab_num=tab_offset; tab_num<KeybindData::JS_TABS_MAX; tab_num++) {
-		AG_KEYBIND_CTRL *kc = new AG_KEYBIND_CTRL(this, tab_num, parent_gui);
+		AG_JOYSET_CTRL *kc = new AG_JOYSET_CTRL(this, tab_num, parent_gui);
 		ctrls.Add(kc);
 	}
 }
@@ -32,7 +99,7 @@ AG_JOYSET_DLG::~AG_JOYSET_DLG()
 {
 }
 /*
- * create volume dialog
+ * create joypad setting dialog
  */
 void AG_JOYSET_DLG::Create()
 {
@@ -107,20 +174,10 @@ void AG_JOYSET_DLG::Create()
 	nb = AG_NotebookNew(vbox_nb, AG_NOTEBOOK_VFILL);
 
 	for(int tab_num=0; tab_num<ctrls.Count(); tab_num++) {
-		AG_KEYBIND_CTRL *ctrl = ctrls[tab_num];
-		ctrl->Init(emu, nb, CMSGV(LABELS::joysetting_tab[tab_num]));
+		AG_JOYSET_CTRL *ctrl = ctrls[tab_num];
+		UTILITY::sprintf(str, sizeof(str), "%d", tab_num + 1);
+		ctrl->Init(emu, nb, str);
 	}
-
-	// check button
-#ifdef USE_PIAJOYSTICKBIT
-	iChkPiaJoyNeg = (FLG_PIAJOY_NEGATIVE != 0 ? 1 : 0);
-	AG_CheckboxNewInt(vbox_nb, 0, CMSG(Signals_are_negative_logic), &iChkPiaJoyNeg);
-	iChkPiaJoyConn = (pConfig->piajoy_conn_to != 0 ? 1 : 0);
-	AG_CheckboxNewInt(vbox_nb, 0, CMSG(Connect_to_standard_PIA_A_port), &iChkPiaJoyConn);
-#else
-	iChkPiaJoyNoIrq = (FLG_PIAJOY_NOIRQ != 0 ? 1 : 0);
-	AG_CheckboxNewInt(vbox_nb, 0, CMSG(No_interrupt_caused_by_pressing_the_button), &iChkPiaJoyNoIrq);
-#endif
 
 	// right button
 	AG_ButtonNewFn(vbox_nb, AG_BUTTON_HFILL, CMSG(Load_Default), OnLoadDefault, "%Cp", this);
@@ -194,13 +251,6 @@ void AG_JOYSET_DLG::SetData()
 	}
 
 	emu->save_keybind();
-
-#ifdef USE_PIAJOYSTICKBIT
-	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NEGATIVE, iChkPiaJoyNeg != 0);
-	pConfig->piajoy_conn_to = (iChkPiaJoyConn != 0 ? 1 : 0);
-#else
-	BIT_ONOFF(pConfig->misc_flags, MSK_PIAJOY_NOIRQ, iChkPiaJoyNoIrq != 0);
-#endif
 }
 
 /*

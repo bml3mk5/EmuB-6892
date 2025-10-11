@@ -487,7 +487,10 @@ bool GUI::ShowJoySettingDialog()
 	bool rc = false;
 	PostEtSystemPause(true);
 	JoySettingBox dlg(hInstance, font, emu, this);
-	rc = (dlg.Show(hWindow) == IDOK);
+	if (dlg.Show(hWindow) == IDOK) {
+		emu->save_keybind();
+		rc = true;
+	}
 	PostEtSystemPause(false);
 	SetFocusToMainWindow();
 	return rc;
@@ -1420,43 +1423,53 @@ void GUI::update_screen_menu(HMENU hMenu)
 #ifdef _MBS1
 	CheckMenuRadioItem(hMenu, ID_SCREEN_DIGITAL, ID_SCREEN_ANALOG, ID_SCREEN_DIGITAL + GetRGBTypeMode(), MF_BYCOMMAND);
 #endif
-#if defined(USE_DIRECT3D)
-	CheckMenuItem(hMenu, ID_SCREEN_D3D_SYNC, (pConfig->use_direct3d & 1) ? MF_CHECKED : MF_UNCHECKED);
-	CheckMenuItem(hMenu, ID_SCREEN_D3D_ASYNC, (pConfig->use_direct3d & 2) ? MF_CHECKED : MF_UNCHECKED);
-	CheckMenuRadioItem(hMenu, ID_SCREEN_D3D_FILTER0, ID_SCREEN_D3D_FILTER2, ID_SCREEN_D3D_FILTER0 + GetDirect3DFilter(), MF_BYCOMMAND);
-	bool enable_d3d = emu->enabled_direct3d();
-	EnableMenuItem(hMenu, ID_SCREEN_D3D_SYNC, enable_d3d ? MF_ENABLED : MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_D3D_ASYNC, enable_d3d ? MF_ENABLED : MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_D3D_FILTER0, enable_d3d ? MF_ENABLED : MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_D3D_FILTER1, enable_d3d ? MF_ENABLED : MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_D3D_FILTER2, enable_d3d ? MF_ENABLED : MF_GRAYED);
-#elif defined(USE_OPENGL)
-	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, (GetOpenGLMode() & 1) ? MF_CHECKED : MF_UNCHECKED);
-	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, (GetOpenGLMode() & 2) ? MF_CHECKED : MF_UNCHECKED);
-	CheckMenuRadioItem(hMenu, ID_SCREEN_OPENGL_FILTER0, ID_SCREEN_OPENGL_FILTER2, ID_SCREEN_OPENGL_FILTER0 + GetOpenGLFilter(), MF_BYCOMMAND);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, MF_ENABLED);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, MF_ENABLED);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_FILTER0, MF_ENABLED);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_FILTER1, MF_ENABLED);
+	bool enable_drawing = false;
+#ifdef USE_SDL2
+	CheckMenuItem(hMenu, ID_SCREEN_DEFAULT_DRAW_S, (pConfig->drawing_method == DRAWING_METHOD_DEFAULT_S) ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_SCREEN_DEFAULT_DRAW_AS, (pConfig->drawing_method == DRAWING_METHOD_DEFAULT_AS) ? MF_CHECKED : MF_UNCHECKED);
 #else
-#if defined(ID_SCREEN_OPENGL_SYNC)
-	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, MF_UNCHECKED);
-	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, MF_UNCHECKED);
-	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_FILTER0, MF_UNCHECKED);
-	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_FILTER1, MF_UNCHECKED);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_FILTER0, MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_FILTER1, MF_GRAYED);
+	CheckMenuItem(hMenu, ID_SCREEN_DEFAULT_DRAW_AS, (pConfig->drawing_method == DRAWING_METHOD_DEFAULT_AS) ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_SCREEN_DEFAULT_DRAW_ASDB, (pConfig->drawing_method == DRAWING_METHOD_DEFAULT_ASDB) ? MF_CHECKED : MF_UNCHECKED);
+#endif
+#if defined(USE_DIRECT2D)
+	CheckMenuItem(hMenu, ID_SCREEN_D2D_SYNC, (pConfig->drawing_method == DRAWING_METHOD_DIRECT2D_S) ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_SCREEN_D2D_ASYNC, (pConfig->drawing_method == DRAWING_METHOD_DIRECT2D_AS) ? MF_CHECKED : MF_UNCHECKED);
+	enable_drawing = ((emu->get_enabled_drawing_method() & DRAWING_METHOD_DIRECT2D_MASK) != 0);
+	EnableMenuItem(hMenu, ID_SCREEN_D2D_SYNC, enable_drawing ? MF_ENABLED : MF_GRAYED);
+	EnableMenuItem(hMenu, ID_SCREEN_D2D_ASYNC, enable_drawing ? MF_ENABLED : MF_GRAYED);
+#else
+	CheckMenuItem(hMenu, ID_SCREEN_D2D_SYNC, MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_SCREEN_D2D_ASYNC, MF_UNCHECKED);
+	EnableMenuItem(hMenu, ID_SCREEN_D2D_SYNC, MF_GRAYED);
+	EnableMenuItem(hMenu, ID_SCREEN_D2D_ASYNC, MF_GRAYED);
+#endif
+#if defined(USE_DIRECT3D)
+	CheckMenuItem(hMenu, ID_SCREEN_D3D_SYNC, (pConfig->drawing_method == DRAWING_METHOD_DIRECT3D_S) ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_SCREEN_D3D_ASYNC, (pConfig->drawing_method == DRAWING_METHOD_DIRECT3D_AS) ? MF_CHECKED : MF_UNCHECKED);
+	enable_drawing = ((emu->get_enabled_drawing_method() & DRAWING_METHOD_DIRECT3D_MASK) != 0);
+	EnableMenuItem(hMenu, ID_SCREEN_D3D_SYNC, enable_drawing ? MF_ENABLED : MF_GRAYED);
+	EnableMenuItem(hMenu, ID_SCREEN_D3D_ASYNC, enable_drawing ? MF_ENABLED : MF_GRAYED);
 #else
 	CheckMenuItem(hMenu, ID_SCREEN_D3D_SYNC, MF_UNCHECKED);
 	CheckMenuItem(hMenu, ID_SCREEN_D3D_ASYNC, MF_UNCHECKED);
-	CheckMenuItem(hMenu, ID_SCREEN_D3D_FILTER, MF_UNCHECKED);
 	EnableMenuItem(hMenu, ID_SCREEN_D3D_SYNC, MF_GRAYED);
 	EnableMenuItem(hMenu, ID_SCREEN_D3D_ASYNC, MF_GRAYED);
-	EnableMenuItem(hMenu, ID_SCREEN_D3D_FILTER, MF_GRAYED);
 #endif
+#if defined(USE_OPENGL)
+	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, (pConfig->drawing_method == DRAWING_METHOD_OPENGL_S) ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, (pConfig->drawing_method == DRAWING_METHOD_OPENGL_AS) ? MF_CHECKED : MF_UNCHECKED);
+	enable_drawing = ((emu->get_enabled_drawing_method() & DRAWING_METHOD_OPENGL_MASK) != 0);
+	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, enable_drawing ? MF_ENABLED : MF_GRAYED);
+	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, enable_drawing ? MF_ENABLED : MF_GRAYED);
+#else
+	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, MF_UNCHECKED);
+	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_SYNC, MF_GRAYED);
+	EnableMenuItem(hMenu, ID_SCREEN_OPENGL_ASYNC, MF_GRAYED);
 #endif
+	CheckMenuRadioItem(hMenu, ID_SCREEN_FILTER0, ID_SCREEN_FILTER2, ID_SCREEN_FILTER0 + GetScreenFilter(), MF_BYCOMMAND);
+	EnableMenuItem(hMenu, ID_SCREEN_FILTER0, MF_ENABLED);
+	EnableMenuItem(hMenu, ID_SCREEN_FILTER1, MF_ENABLED);
 #ifdef USE_D3D
 	CheckMenuItem(hMenu, ID_SCREEN_WAIT_VSYNC, pConfig->wait_vsync ? MF_CHECKED : MF_UNCHECKED);
 #endif
@@ -1526,26 +1539,13 @@ void GUI::update_device_menu(HMENU hMenu)
 			// insert menu
 			for(int idx = 0; idx < uarts && idx < (ID_COMM0_PORT_BOTTOM - ID_COMM0_PORT1); idx++) {
 				_TCHAR buf[64];
-				GetUartDescription(idx, buf, sizeof(buf));
+				GetUartDescription(idx, buf, sizeof(buf)/sizeof(buf[0]));
 				DWORD id = ID_COMM0_PORT1 + drv * (ID_COMM1_PORT1 - ID_COMM0_PORT1) + idx;
 				DWORD flags = MF_STRING;
 				if (NowConnectingComm(drv, idx + 1)) {
 					flags |= MF_CHECKED;
 				}
 				AppendMenu(hSubMenu, flags, id, buf);
-
-//				MENUITEMINFO info;
-//				ZeroMemory(&info, sizeof(info));
-//				info.cbSize = sizeof(info);
-//				info.fMask = MIIM_TYPE | MIIM_ID;
-//				info.fType = MFT_STRING;
-//				info.wID = id;
-//				info.dwTypeData = buf;
-//				InsertMenuItem(hSubMenu, pos, TRUE, &info);
-//				pos++;
-//				if (NowConnectingComm(drv, idx + 1)) {
-//					CheckMenuItem(hSubMenu, id, MF_CHECKED);
-//				}
 			}
 		}
 	}
@@ -1566,12 +1566,18 @@ void GUI::update_option_menu(HMENU hMenu)
 	CheckMenuItem(hMenu, ID_OPTIONS_USE_DINPUT, NowUseDirectInput() ? MF_CHECKED : MF_UNCHECKED);
 	EnableMenuItem(hMenu, ID_OPTIONS_USE_DINPUT, IsEnableDirectInput() ? MF_ENABLED : MF_GRAYED);
 #endif
-	CheckMenuItem(hMenu, ID_OPTIONS_JOYPAD0, IsEnableJoypad(1) ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_OPTIONS_JOYPAD0, IsEnableJoypad(SEL_JOY2KEY) ? MF_CHECKED : MF_UNCHECKED);
 #ifdef USE_PIAJOYSTICK
-	CheckMenuItem(hMenu, ID_OPTIONS_JOYPAD1, IsEnableJoypad(2) ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(hMenu, ID_OPTIONS_JOYPAD1, IsEnableJoypad(SEL_JOY2PIAJOY) ? MF_CHECKED : MF_UNCHECKED);
 #endif
-#ifdef USE_KEY2JOYSTICK
-	CheckMenuItem(hMenu, ID_OPTIONS_KEY2JOYPAD, IsEnableKey2Joypad() ? MF_CHECKED : MF_UNCHECKED);
+#ifdef USE_PSGJOYSTICK
+	CheckMenuItem(hMenu, ID_OPTIONS_JOYPAD2, IsEnableJoypad(SEL_JOY2PSGJOY) ? MF_CHECKED : MF_UNCHECKED);
+#endif
+#ifdef USE_KEY2PIAJOYSTICK
+	CheckMenuItem(hMenu, ID_OPTIONS_KEY2JOYPAD0, IsEnableKey2Joypad(DEV_PIAJOY) ? MF_CHECKED : MF_UNCHECKED);
+#endif
+#ifdef USE_KEY2PSGJOYSTICK
+	CheckMenuItem(hMenu, ID_OPTIONS_KEY2JOYPAD1, IsEnableKey2Joypad(DEV_PSGJOY) ? MF_CHECKED : MF_UNCHECKED);
 #endif
 #ifdef USE_LIGHTPEN
 	CheckMenuItem(hMenu, ID_OPTIONS_LIGHTPEN, IsEnableLightpen() ? MF_CHECKED : MF_UNCHECKED);

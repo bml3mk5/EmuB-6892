@@ -28,6 +28,8 @@ void PIA::reset()
 	drb = 0;
 	ddra = 0;
 	ddrb = 0;
+	ora = 0;
+	orb = 0;
 
 	ca1 = ca2 = 0;
 	cb1 = cb2 = 0;
@@ -58,11 +60,14 @@ void PIA::write_io8(uint32_t addr, uint32_t data)
 		case 0:
 			// pia DRA or DDRA
 			if (cra & 0x04) {
-				dra = (data & ddra & 0xff);
+				// output data
+//				dra = (data & ddra & 0xff);
+				ora = (data & 0xff);
 				// output to device a
 				write_signals(&outputs_pa, data);
 
 			} else {
+				// direction (1 as output)
 				ddra = data & 0xff;
 			}
 			break;
@@ -81,7 +86,8 @@ void PIA::write_io8(uint32_t addr, uint32_t data)
 		case 2:
 			// pia DRB or DDRB
 			if (crb & 0x04) {
-				drb = (data & ddrb & 0xff);
+//				drb = (data & ddrb & 0xff);
+				orb = (data & 0xff);
 				// output to device b
 				write_signals(&outputs_pb, data);
 
@@ -94,6 +100,7 @@ void PIA::write_io8(uint32_t addr, uint32_t data)
 					}
 				}
 			} else {
+				// direction (1 as output)
 				ddrb = data & 0xff;
 			}
 			break;
@@ -124,7 +131,10 @@ uint32_t PIA::read_io8(uint32_t addr)
 		case 0:
 			// pia DRA or DDRA
 			if (cra & 0x04) {
-				data = (dra & (~ddra) & 0xff);
+//				data = (dra & (~ddra) & 0xff);
+				// if ddra is 1 (output),
+				// the logical AND of dra and ora is put on a bus   
+				data = (dra & (ora | ~ddra));
 				// clear IRQA in CRA
 				cra = cra & 0x3f;
 				set_irqa(false);
@@ -148,7 +158,11 @@ uint32_t PIA::read_io8(uint32_t addr)
 		case 2:
 			// pia DRB or DDRB
 			if (crb & 0x04) {
-				data = (drb & (~ddrb) & 0xff);
+//				data = (drb & (~ddrb) & 0xff);
+//				data = (drb & 0xff);
+				// if ddrb is 1 (output),
+				// drb is ignored and orb is put on a bus
+				data = ((drb | ddrb) & (orb | ~ddrb));
 				// clear IRQB in CRB
 				crb = crb & 0x3f;
 				set_irqb(false);
@@ -337,7 +351,7 @@ void PIA::save_state(FILEIO *fp)
 	struct vm_state_st vm_state;
 
 	//
-	vm_state_ident.version = Uint16_LE(1);
+	vm_state_ident.version = Uint16_LE(2);
 	vm_state_ident.size = Uint32_LE(sizeof(vm_state_ident) + sizeof(vm_state));
 
 	// copy values
@@ -355,6 +369,8 @@ void PIA::save_state(FILEIO *fp)
 	vm_state.cb = cb1 | (cb2 << 4);
 
 	vm_state.now_irq = (now_irqa ? 1 : 0) | (now_irqb ? 2 : 0);
+	vm_state.ora = ora;
+	vm_state.orb = orb;
 
 	fp->Fwrite(&vm_state_ident, sizeof(vm_state_ident), 1);
 	fp->Fwrite(&vm_state, sizeof(vm_state), 1);
@@ -384,6 +400,14 @@ bool PIA::load_state(FILEIO *fp)
 
 	now_irqa = (vm_state.now_irq & 1) ? true : false;
 	now_irqb = (vm_state.now_irq & 2) ? true : false;
+
+	if (Uint16_LE(vm_state_i.version) >= 2) {
+		ora = vm_state.ora;
+		orb = vm_state.orb;
+	} else {
+		ora = dra;
+		orb = drb;
+	}
 
 	return true;
 }
@@ -460,9 +484,11 @@ bool PIA::debug_write_reg(const _TCHAR *reg, uint32_t data)
 	return debug_write_reg(num, data);
 }
 
-void PIA::debug_regs_info(_TCHAR *buffer, size_t buffer_len)
+void PIA::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len)
 {
-	buffer[0] = _T('\0');
+	UTILITY::tcscpy(buffer, buffer_len, _T("HD6821/MC6821 ("));
+	UTILITY::tcscat(buffer, buffer_len, title);
+	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], ddra);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], cra);
 	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], ddrb);

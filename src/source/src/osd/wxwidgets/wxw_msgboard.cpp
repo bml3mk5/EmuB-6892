@@ -74,14 +74,7 @@ void MsgBoard::InitScreen(CPixelFormat *format, int width, int height)
 	CreateSurface(format, width, 128);
 
 	if (enable) {
-		// SDL_ttf 初期化
-//		if (!TTF_WasInit()) {
-//			if (TTF_Init() != -1) {
-				inited = true;
-//			} else {
-//				enable = false;
-//			}
-//		}
+		inited = true;
 	}
 	// メッセージ用フォントの設定
 	// 枠設定
@@ -124,50 +117,99 @@ bool MsgBoard::SetFont()
 	return enable;
 }
 
+/// 基準位置の計算
+void MsgBoard::calc_place(msg_data_t &data, VmRectWH &reDst)
+{
+	if (data.place & 1) {
+		reDst.x = szWin.cx + data.pt.x - data.sz.cx;
+		reDst.w = data.sz.cx;
+	} else {
+		reDst.x = data.pt.x;
+		reDst.w = data.sz.cx;
+	}
+	if (data.place & 2) {
+		reDst.y = szWin.cy + data.pt.y - data.sz.cy;
+		reDst.h = data.sz.cy;
+	} else {
+		reDst.y = data.pt.y;
+		reDst.h = data.sz.cy;
+	}
+}
+
 /// 文字列出力
-void MsgBoard::draw(CSurface *screen, msg_data_t &data)
+void MsgBoard::draw(CSurface &screen, msg_data_t &data)
 {
 	VmRectWH reDst;
 
 	data.mux->lock();
 
 	if (!data.lists.empty()) {
-//		list_t::iterator it = data.lists.begin();
-
 		// 基準位置の計算
-		if (data.place & 1) {
-			reDst.x = szWin.cx + data.pt.x - data.sz.cx;
-			reDst.w = data.sz.cx;
-		} else {
-			reDst.x = data.pt.x;
-			reDst.w = data.sz.cx;
-		}
-		if (data.place & 2) {
-			reDst.y = szWin.cy + data.pt.y - data.sz.cy;
-			reDst.h = data.sz.cy;
-		} else {
-			reDst.y = data.pt.y;
-			reDst.h = data.sz.cy;
-		}
+		calc_place(data, reDst);
 
 		// メインコンテキストにメッセージをコピー
 #ifdef USE_BG_TRANSPARENT
 		draw_text(screen, data, reDst.x, reDst.y);
 #else
-		sMainSuf->Blit(data.re, *screen, reDst);
+		sMainSuf->Blit(data.re, screen, reDst);
 #endif
 	}
 
 	data.mux->unlock();
 }
 
-void MsgBoard::Draw(CSurface *screen)
+#if defined(USE_OPENGL)
+void MsgBoard::draw(COpenGLTexture &texture, msg_data_t &data)
+{
+	VmRectWH reDst;
+
+	data.mux->lock();
+
+	if (!data.lists.empty()) {
+		// 基準位置の計算
+		calc_place(data, reDst);
+
+		// メインコンテキストにメッセージをコピー
+#ifdef USE_BG_TRANSPARENT
+		draw_text(screen, data, reDst.x, reDst.y);
+#else
+		scrntype *buf = sMainSuf->GetBufferOV();
+		buf += data.re.y * sMainSuf->Width();
+
+		float pyl_l = (float)reDst.x * 2.0f / (float)(szWin.cx) - 1.0f;
+		float pyl_r = (float)(reDst.x + reDst.w) * 2.0f / (float)(szWin.cx) - 1.0f;
+		float pyl_t = 1.0f - (float)reDst.y * 2.0f / (float)(szWin.cy);
+		float pyl_b = 1.0f - (float)(reDst.y + reDst.h) * 2.0f / (float)(szWin.cy);
+
+		float tex_r = (float)(data.sz.cx) / (float)sMainSuf->Width();
+		float tex_b = (float)(data.sz.cy) / 64.0f;
+
+		texture.SetPos(pyl_l, pyl_t, pyl_r, pyl_b, 0.0f, 0.0f, tex_r, tex_b);
+		texture.Render(sMainSuf->Width(), 64, buf);
+#endif
+	}
+
+	data.mux->unlock();
+}
+#endif
+
+void MsgBoard::Draw(CSurface &screen)
 {
 	if (!enable || !visible) return;
 
 	draw(screen, msg);
 	draw(screen, info);
 }
+
+#if defined(USE_OPENGL)
+void MsgBoard::Draw(COpenGLTexture &texture)
+{
+	if (!enable || !visible) return;
+
+	draw(texture, msg);
+	draw(texture, info);
+}
+#endif
 
 /// 文字列をバックバッファに描画
 ///
@@ -233,6 +275,8 @@ void MsgBoard::draw_text(CSurface *suf, msg_data_t &data, int left, int top)
 }
 
 /// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::Set(msg_data_t &data, const _TCHAR *str, int sec)
 {
 	item_t itm;
@@ -253,26 +297,44 @@ void MsgBoard::Set(msg_data_t &data, const _TCHAR *str, int sec)
 
 	data.mux->unlock();
 }
+/// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::Set(msg_data_t &data, CMsg::Id id, int sec)
 {
 	Set(data, gMessages.Get(id), sec);
 }
+/// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::SetMessage(const _TCHAR *str, int sec)
 {
 	Set(msg, str, sec);
 }
+/// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::SetMessage(CMsg::Id id, int sec)
 {
 	Set(msg, id, sec);
 }
+/// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::SetInfo(const _TCHAR *str, int sec)
 {
 	Set(info, str, sec);
 }
+/// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::SetInfo(CMsg::Id id, int sec)
 {
 	Set(info, id, sec);
 }
+/// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::SetMessageF(const _TCHAR *format, ...)
 {
 	_TCHAR buf[MSGBOARD_STR_SIZE];
@@ -285,6 +347,9 @@ void MsgBoard::SetMessageF(const _TCHAR *format, ...)
 
 	SetMessage(buf);
 }
+/// メッセージ設定
+///
+/// @note メインスレッドとエミュスレッドから呼ばれる
 void MsgBoard::SetInfoF(const _TCHAR *format, ...)
 {
 	_TCHAR buf[MSGBOARD_STR_SIZE];

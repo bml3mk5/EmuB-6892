@@ -57,7 +57,7 @@ AG_CONFIG_DLG::AG_CONFIG_DLG(EMU *parent_emu, AG_GUI_BASE *parent_gui) : AG_DLG(
 	param.disptmg_skew = pConfig->disptmg_skew;
 	param.curdisp_skew = pConfig->curdisp_skew;
 #endif
-	param.gl_filter_type = pConfig->gl_filter_type;
+	param.filter_type = pConfig->filter_type;
 	param.led_show = 0;
 	param.led_pos = pConfig->led_pos;
 	param.capture_type = pConfig->capture_type;
@@ -88,8 +88,9 @@ void AG_CONFIG_DLG::Create()
 	param.disptmg_skew = pConfig->disptmg_skew;
 	param.curdisp_skew = pConfig->curdisp_skew;
 #endif
-	param.use_opengl = pConfig->use_opengl;
-	param.gl_filter_type = pConfig->gl_filter_type;
+	LABELS::MakeDrawingMethodList(emu->get_enabled_drawing_method());
+	param.drawing_method_idx = LABELS::GetDrawingMethodIndex(pConfig->drawing_method);
+	param.filter_type = pConfig->filter_type;
 	param.led_show = gui->GetLedBoxPhase(-1);
 	param.led_pos = pConfig->led_pos;
 	param.capture_type = pConfig->capture_type;
@@ -300,19 +301,18 @@ void AG_CONFIG_DLG::Create()
 	vbox_base = AG_BoxNewVert(tabs[1], AG_BOX_EXPAND);
 	hbox_base = AG_BoxNewHoriz(vbox_base, AG_BOX_HFILL | AG_BOX_HOMOGENOUS);
 
-#ifdef USE_OPENGL
-	// GL Filter Type
 	vbox = AG_BoxNewVert(hbox_base, AG_BOX_FRAME);
 	AG_LabelNewS(vbox, AG_LABEL_HFILL, CMSG(Drawing));
 
+	// Drawing Method
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Method_ASTERISK));
-	UComboNew(hbox, LABELS::opengl_use, pConfig->use_opengl, OnChangeUseOpenGL);
+	UComboNew(hbox, LABELS::drawing_method, paramtmp->drawing_method_idx, OnChangeDrawingMethod);
 
+	// Filter Type
 	hbox = AG_BoxNewHoriz(vbox, AG_BOX_HFILL);
 	AG_LabelNewS(hbox, 0, CMSG(Filter_Type));
-	UComboNew(hbox, LABELS::opengl_filter, pConfig->gl_filter_type, OnChangeGLFilterType);
-#endif
+	UComboNew(hbox, LABELS::screen_filter, pConfig->filter_type, OnChangeGLFilterType);
 
 	// CRTC
 	vbox = AG_BoxNewVert(hbox_base, AG_BOX_FRAME);
@@ -688,8 +688,8 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	pConfig->curdisp_skew = param.curdisp_skew;
 	pConfig->exram_size_num = param.exram_size_num;
 #endif
-	pConfig->use_opengl = (uint8_t)param.use_opengl;
-	pConfig->gl_filter_type = (uint8_t)param.gl_filter_type;
+	pConfig->drawing_method = LABELS::drawing_method_idx[param.drawing_method_idx];
+	pConfig->filter_type = (uint8_t)param.filter_type;
 	pConfig->led_pos = param.led_pos;
 	pConfig->capture_type = param.capture_type;
 
@@ -817,9 +817,7 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	gui->ChangeLedBox(param.led_show);
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
 	pConfig->save();
-#ifdef USE_OPENGL
-	emu->change_opengl_attr();
-#endif
+	emu->set_screen_filter_type();
 
 	delete paramtmp;
 	paramtmp = NULL;
@@ -936,14 +934,14 @@ void AG_CONFIG_DLG::OnChangeCurdispSkew(AG_Event *event)
 	}
 }
 
-void AG_CONFIG_DLG::OnChangeUseOpenGL(AG_Event *event)
+void AG_CONFIG_DLG::OnChangeDrawingMethod(AG_Event *event)
 {
 	AG_CONFIG_DLG *dlg = (AG_CONFIG_DLG *)AG_PTR(1);
 	AG_TlistItem *item = (AG_TlistItem *)AG_PTR(2);
 	int state = AG_INT(3);
 
 	if (state) {
-		dlg->paramtmp->use_opengl = item->label;
+		dlg->paramtmp->drawing_method_idx = item->label;
 	}
 }
 
@@ -954,7 +952,7 @@ void AG_CONFIG_DLG::OnChangeGLFilterType(AG_Event *event)
 	int state = AG_INT(3);
 
 	if (state) {
-		dlg->paramtmp->gl_filter_type = item->label;
+		dlg->paramtmp->filter_type = item->label;
 	}
 }
 

@@ -20,7 +20,7 @@ namespace GUI_WIN
 {
 
 KeybindBox::KeybindBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_KEYBIND, new_font, new_emu, new_gui)
+	: KeybindBaseBox(hInst, IDD_KEYBIND, new_emu, new_gui)
 {
 }
 
@@ -38,11 +38,11 @@ INT_PTR KeybindBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CDialogBox::onInitDialog(message, wParam, lParam);
 
 	// create dialog
-	selected_tabctrl = 0;
+	m_selected_tabctrl = 0;
 
 	SIZE siz;
 	font->GetTextSize(hDlg, NULL, &siz);
-	// calcrate number of tabs
+	// calculate number of tabs
 	for(int tab_num=tab_offset; tab_num < KeybindData::KB_TABS_MAX; tab_num++) {
 		hCtrl =	CreateControl(NULL, _T("KeyBindCtrl"), IDC_CUSTOM0 + tab_num, 100, 380, WS_BORDER | WS_VSCROLL, 0, SM_CXVSCROLL);
 		KeybindControl *kc = KeybindControl::GetPtr(hCtrl);
@@ -50,12 +50,12 @@ INT_PTR KeybindBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 		kc->Init(emu, tab_num, font->GetFont());
 		kc->SetCellSize(siz.cx * 16 + padding * 2, siz.cy + padding * 2);
 		kc->MapDefaultVmKey();
-		kc->SetJoyMask(&enable_axes);
+		kc->SetJoyMask(&m_joy_mask);
 		kc->Update();
 
 		kc->SetTitleLabel(LABELS::keybind_col[tab_num][0], LABELS::keybind_col[tab_num][1]);
 
-		kbctl.push_back(kc);
+		m_kbctl.push_back(kc);
 	}
 
 	// tab control
@@ -66,12 +66,12 @@ INT_PTR KeybindBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	tcitm.mask = TCIF_TEXT;
 
-	for(int tab_num=0; tab_num<(int)kbctl.size(); tab_num++) {
+	for(int tab_num=0; tab_num<(int)m_kbctl.size(); tab_num++) {
 		UTILITY::tcscpy(label, KBLABEL_MAXLEN, CMSGVM(LABELS::keybind_tab[tab_num]));
 		tcitm.pszText = label;
 		TabCtrl_InsertItem(hTabCtrl , tab_num , &tcitm);
 	}
-	TabCtrl_SetCurSel(hTabCtrl, selected_tabctrl);
+	TabCtrl_SetCurSel(hTabCtrl, m_selected_tabctrl);
 
 	//
 	// adjust control size
@@ -79,12 +79,12 @@ INT_PTR KeybindBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	// kb control
 	CBox *box_hall0 = NULL;
-	for(int tab_num=0; tab_num<(int)kbctl.size(); tab_num++) {
+	for(int tab_num=0; tab_num<(int)m_kbctl.size(); tab_num++) {
 		CBox *box_hall = box_tab->AddBox(CBox::HorizontalBox);
 		CBox *box_kb = box_hall->AddBox(CBox::VerticalBox);
-		AdjustControl(box_kb, IDC_CUSTOM0 + tab_num, kbctl[tab_num]->GetWidth(), 380, SM_CXVSCROLL);
+		AdjustControl(box_kb, IDC_CUSTOM0 + tab_num, m_kbctl[tab_num]->GetWidth(), 380, SM_CXVSCROLL);
 
-		kbctl[tab_num]->AddCombiCheckButton(this, box_kb);
+		m_kbctl[tab_num]->AddCombiCheckButton(this, box_kb);
 
 		if (tab_num == 0) {
 			box_hall0 = box_hall;
@@ -104,13 +104,9 @@ INT_PTR KeybindBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 		CreateButton(box_vbtn, IDC_BTN_LOAD_DEFAULT + n, LABELS::keybind_btn[i], 8);
 		n++;
 	}
+
 	// joypad
-	enable_axes = ~0;
-	CBox *hbox = box_all->AddBox(CBox::HorizontalBox);
-	CreateCheckBox(hbox, IDC_CHK_AXIS3, CMsg::Enable_Z_axis, (enable_axes & (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT)) != 0);
-	CreateCheckBox(hbox, IDC_CHK_AXIS4, CMsg::Enable_R_axis, (enable_axes & (JOYCODE_R_UP | JOYCODE_R_DOWN)) != 0);
-	CreateCheckBox(hbox, IDC_CHK_AXIS5, CMsg::Enable_U_axis, (enable_axes & (JOYCODE_U_LEFT | JOYCODE_U_RIGHT)) != 0);
-	CreateCheckBox(hbox, IDC_CHK_AXIS6, CMsg::Enable_V_axis, (enable_axes & (JOYCODE_V_UP | JOYCODE_V_DOWN)) != 0);
+	create_dialog_footer(box_all);
 
 	// tab control size
 
@@ -127,135 +123,9 @@ INT_PTR KeybindBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	// dialog size
 	box_all->Realize(*this);
 
-	select_tabctrl(selected_tabctrl);
+	select_tabctrl(m_selected_tabctrl);
 
 	delete box_all;
-
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR KeybindBox::onCommand(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch(LOWORD(wParam)) {
-	case IDOK:
-	case IDCANCEL:
-		if (LOWORD(wParam) == IDOK) {
-			onClickOk();
-		}
-		::EndDialog(hDlg, LOWORD(wParam));
-		return (INT_PTR)TRUE;
-
-	case IDC_BTN_LOAD_DEFAULT:
-		return onClickLoadDefault();
-
-	case IDC_BTN_LOAD_PRESET1:
-	case IDC_BTN_LOAD_PRESET2:
-	case IDC_BTN_LOAD_PRESET3:
-	case IDC_BTN_LOAD_PRESET4:
-		return onClickLoadPreset(LOWORD(wParam) - IDC_BTN_LOAD_PRESET1);
-
-	case IDC_BTN_SAVE_PRESET1:
-	case IDC_BTN_SAVE_PRESET2:
-	case IDC_BTN_SAVE_PRESET3:
-	case IDC_BTN_SAVE_PRESET4:
-		return onClickSavePreset(LOWORD(wParam) - IDC_BTN_SAVE_PRESET1);
-
-	case IDC_CHK_AXIS1:
-	case IDC_CHK_AXIS2:
-	case IDC_CHK_AXIS3:
-	case IDC_CHK_AXIS4:
-	case IDC_CHK_AXIS5:
-	case IDC_CHK_AXIS6:
-		return onClickAxis(LOWORD(wParam));
-	}
-	return (INT_PTR)FALSE;
-}
-
-INT_PTR KeybindBox::onNotify(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	// change tab
-	LPNMHDR lpNmHdr = (NMHDR *)lParam;
-	int i;
-	if (lpNmHdr->idFrom == IDC_TAB1) {
-		switch (lpNmHdr->code) {
-		case TCN_SELCHANGE:
-			i = TabCtrl_GetCurSel(lpNmHdr->hwndFrom);
-			select_tabctrl(i);
-			break;
-		}
-	}
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR KeybindBox::onMouseWheel(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	SendDlgItemMessage(hDlg, IDC_CUSTOM0 + selected_tabctrl, message, wParam, lParam);
-	return (INT_PTR)TRUE;
-}
-
-#if 0
-INT_PTR KeybindBox::onControlColorStatic(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	HANDLE h = (HANDLE)GetStockObject(NULL_BRUSH);
-	SetBkMode((HDC)wParam, TRANSPARENT);
-	return (INT_PTR)h;
-}
-#endif
-
-INT_PTR KeybindBox::onClickOk()
-{
-	for(int tab_num=0; tab_num<(int)kbctl.size(); tab_num++) {
-		kbctl[tab_num]->SetData();
-	}
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR KeybindBox::onClickLoadDefault()
-{
-	int tab_num = selected_tabctrl;
-
-	kbctl[tab_num]->LoadDefaultPreset();
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR KeybindBox::onClickLoadPreset(int idx)
-{
-	int tab_num = selected_tabctrl;
-
-	kbctl[tab_num]->LoadPreset(idx);
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR KeybindBox::onClickSavePreset(int idx)
-{
-	int tab_num = selected_tabctrl;
-
-	kbctl[tab_num]->SavePreset(idx);
-	return (INT_PTR)TRUE;
-}
-
-INT_PTR KeybindBox::onClickAxis(int id)
-{
-	uint32_t bits = 0;
-
-	switch(id) {
-	case IDC_CHK_AXIS3:
-		bits = (JOYCODE_Z_LEFT | JOYCODE_Z_RIGHT);
-		break;
-	case IDC_CHK_AXIS4:
-		bits = (JOYCODE_R_UP | JOYCODE_R_DOWN);
-		break;
-	case IDC_CHK_AXIS5:
-		bits = (JOYCODE_U_LEFT | JOYCODE_U_RIGHT);
-		break;
-	case IDC_CHK_AXIS6:
-		bits = (JOYCODE_V_UP | JOYCODE_V_DOWN);
-		break;
-	default:
-		break;
-	}
-
-	BIT_ONOFF(enable_axes, bits, (IsDlgButtonChecked(hDlg, id) != 0));
 
 	return (INT_PTR)TRUE;
 }
@@ -264,10 +134,10 @@ void KeybindBox::select_tabctrl(int tab_num)
 {
 	HWND hCtrl;
 
-	selected_tabctrl = tab_num;
-	for(int i=0; i<(int)kbctl.size(); i++) {
+	m_selected_tabctrl = tab_num;
+	for(int i=0; i<(int)m_kbctl.size(); i++) {
 		hCtrl = GetDlgItem(hDlg, IDC_CUSTOM0 + i);
-		ShowWindow(hCtrl, i == selected_tabctrl ? SW_SHOW : SW_HIDE);
+		ShowWindow(hCtrl, i == m_selected_tabctrl ? SW_SHOW : SW_HIDE);
 	}
 
 	for(int id=IDC_CHK_COMBI1; id<=IDC_CHK_COMBI3; id++) {
@@ -276,7 +146,7 @@ void KeybindBox::select_tabctrl(int tab_num)
 			ShowWindow(hCtrl, SW_HIDE);
 		}
 	}
-	hCtrl = kbctl[tab_num]->GetCombiCheckButton();
+	hCtrl = m_kbctl[tab_num]->GetCombiCheckButton();
 	if (hCtrl) {
 		ShowWindow(hCtrl, SW_SHOW);
 	}

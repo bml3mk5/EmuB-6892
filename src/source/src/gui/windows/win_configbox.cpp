@@ -42,7 +42,7 @@ namespace GUI_WIN
 #endif
 
 ConfigBox::ConfigBox(HINSTANCE hInst, CFont *new_font, EMU *new_emu, GUI *new_gui)
-	: CDialogBox(hInst, IDD_CONFIGURE, new_font, new_emu, new_gui)
+	: CDialogBox(hInst, IDD_CONFIGURE, new_emu, new_gui)
 {
 	hInstance = hInst;
 
@@ -143,8 +143,12 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	CheckDlgButton(hDlg, IDC_RADIO_5FDD, fdd_type == FDD_TYPE_5FDD);
 	CheckDlgButton(hDlg, IDC_RADIO_5_8FDD, fdd_type == FDD_TYPE_58FDD);
 
+	// power status
+	CBox *box_pwr = CreateGroup(box_0lv, IDC_STATIC, CMsg::Behavior_of_Power_On_Off, CBox::VerticalBox);
 	// power off
-	CreateCheckBox(box_0lv, IDC_CHK_POWEROFF, CMsg::Enable_the_state_of_power_off, pConfig->use_power_off);
+	CreateCheckBox(box_pwr, IDC_CHK_POWEROFF, CMsg::Enable_the_state_of_power_off, pConfig->use_power_off);
+	// power state when start up
+	CreateComboBoxWithLabel(box_pwr, IDC_COMBO_POWER_STATE, CMsg::Power_State_When_Start_Up_, LABELS::power_state, pConfig->power_state_when_start_up, 12);
 
 	// I/O port address
 	CBox *box_0rv = box_0h->AddBox(CBox::VerticalBox, 0, 0, _T("0rv"));
@@ -172,32 +176,21 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 
 	CBox *box_1lv = box_1h->AddBox(CBox::VerticalBox, 0, 0, _T("1lv"));
 
-	// DirectX
-	CBox *box_d3d = CreateGroup(box_1lv, IDC_STATIC, CMsg::Drawing, CBox::HorizontalBox);
+	// Drawing
+	CBox *box_dw = CreateGroup(box_1lv, IDC_STATIC, CMsg::Drawing, CBox::VerticalBox);
+	CBox *box_dw_h = box_dw->AddBox(CBox::HorizontalBox, 0, 0, _T("dw_h"));
 
-	vbox = box_d3d->AddBox(CBox::VerticalBox, 0, 0, _T("d3d_tit"));
-#ifdef USE_DIRECT3D
+	vbox = box_dw_h->AddBox(CBox::VerticalBox, 0, 0, _T("dw_tit"));
 	CreateStatic(vbox, IDC_STATIC, CMsg::Method);
 	CreateStatic(vbox, IDC_STATIC, CMsg::Filter_Type);
-#endif
-#ifdef USE_OPENGL
-	CreateStatic(vbox, IDC_STATIC, CMsg::Method_ASTERISK);
-	CreateStatic(vbox, IDC_STATIC, CMsg::Filter_Type);
-#endif
 
-	vbox = box_d3d->AddBox(CBox::VerticalBox, 0, 0, _T("d3d_com"));
-#ifdef USE_DIRECT3D
-	// d3d use
-	CreateComboBox(vbox, IDC_COMBO_D3D_USE, LABELS::d3d_use, pConfig->use_direct3d, 6);
-	// d3d filter type
-	CreateComboBox(vbox, IDC_COMBO_D3D_FILTER, LABELS::d3d_filter, pConfig->d3d_filter_type, 6);
-#endif
-#ifdef USE_OPENGL
-	// opengl use
-	CreateComboBox(vbox, IDC_COMBO_OPENGL_USE, LABELS::opengl_use, pConfig->use_opengl, 6);
-	// opengl filter type
-	CreateComboBox(vbox, IDC_COMBO_OPENGL_FILTER, LABELS::opengl_filter, pConfig->gl_filter_type, 6);
-#endif
+	vbox = box_dw_h->AddBox(CBox::VerticalBox, 0, 0, _T("dw_com"));
+	// drawing method
+	uint8_t enable_type = emu->get_enabled_drawing_method();
+	LABELS::MakeDrawingMethodList(enable_type);
+	CreateComboBox(vbox, IDC_COMBO_DRAWING, LABELS::drawing_method, LABELS::GetDrawingMethodIndex(pConfig->drawing_method), 6);
+	// filter type
+	CreateComboBox(vbox, IDC_COMBO_SCREEN_FILTER, LABELS::screen_filter, pConfig->filter_type, 6);
 
 	// crtc
 	CBox *box_1rv = box_1h->AddBox(CBox::VerticalBox, 0, 0, _T("1rv"));
@@ -866,6 +859,9 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 	// power off
 	pConfig->use_power_off = (IsDlgButtonChecked(hDlg, IDC_CHK_POWEROFF) == BST_CHECKED);
 
+	// power state when start up
+	pConfig->power_state_when_start_up = (int)SendDlgItemMessage(hDlg, IDC_COMBO_POWER_STATE, CB_GETCURSEL, 0, 0);
+
 	// MODE switch
 #if defined(_MBS1)
 	if (IsDlgButtonChecked(hDlg, ID_DIPSWITCH1)) {
@@ -949,20 +945,10 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 	pConfig->curdisp_skew = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_CURDISP, CB_GETCURSEL, 0, 0);
 #endif
 
-#ifdef USE_DIRECT3D
-	// d3d use
-	pConfig->use_direct3d = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_D3D_USE, CB_GETCURSEL, 0, 0);
-
-	// d3d filter type
-	pConfig->d3d_filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_D3D_FILTER, CB_GETCURSEL, 0, 0);
-#endif
-#ifdef USE_OPENGL
-	// opengl use
-	pConfig->use_opengl = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_OPENGL_USE, CB_GETCURSEL, 0, 0);
-
-	// opengl filter type
-	pConfig->gl_filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_OPENGL_FILTER, CB_GETCURSEL, 0, 0);
-#endif
+	// drawing method
+	pConfig->drawing_method = LABELS::drawing_method_idx[(int)SendDlgItemMessage(hDlg, IDC_COMBO_DRAWING, CB_GETCURSEL, 0, 0)];
+	// filter type
+	pConfig->filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_SCREEN_FILTER, CB_GETCURSEL, 0, 0);
 
 #ifdef USE_LEDBOX
 	// led show
@@ -1108,7 +1094,11 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 #ifdef USE_MESSAGE_BOARD
 	MsgBoard *msgboard = emu->get_msgboard();
 	if (msgboard) {
+# ifdef USE_WIN
+		msgboard->SetFont(hMainWindow);
+# else
 		msgboard->SetFont();
+# endif
 	}
 #endif
 
@@ -1118,9 +1108,7 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 #endif
 
 	pConfig->save();
-#ifdef USE_OPENGL
-	emu->change_opengl_attr();
-#endif
+	emu->set_screen_filter_type();
 	emu->update_config();
 
 	return (INT_PTR)TRUE;

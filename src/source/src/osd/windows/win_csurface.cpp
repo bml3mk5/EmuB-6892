@@ -162,6 +162,13 @@ int CSurface::GetBufferSize()
 	return (int)bmi->bmiHeader.biSizeImage;
 }
 
+int CSurface::GetPitch()
+{
+	if (!hMainBuf) return 0;
+	LPBITMAPINFO bmi = (LPBITMAPINFO)hMainBuf;
+	return (int)bmi->bmiHeader.biWidth * bmi->bmiHeader.biBitCount / 8;
+}
+
 bool CSurface::IsEnable()
 {
 	return enable;

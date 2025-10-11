@@ -105,7 +105,12 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 		radFDD[i] = create_radio_box(hbox,radFDD,LABELS::fdd_type[i],i,fdd_type, G_CALLBACK(OnChangedFDD));
 	}
 
-	chkPowerOff = create_check_box(vboxl, CMsg::Enable_the_state_of_power_off, pConfig->use_power_off);
+	// power status
+	create_frame(vboxl, CMsg::Behavior_of_Power_On_Off, &vbox, &hbox);
+	// power off
+	chkPowerOff = create_check_box(vbox, CMsg::Enable_the_state_of_power_off, pConfig->use_power_off);
+	// power state when start up
+	comPowerState = create_combo_box(vbox, CMsg::Power_State_When_Start_Up_, LABELS::power_state, pConfig->power_state_when_start_up);
 
 	vboxr = create_vbox(hboxall);
 
@@ -135,20 +140,15 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 
 	hboxall = create_hbox(vboxall);
 
-	int use_opengl = 0;
-	int gl_filter_type = 0;
-#ifdef USE_OPENGL
-	use_opengl = pConfig->use_opengl;
-	gl_filter_type = pConfig->gl_filter_type;
-#endif
+	LABELS::MakeDrawingMethodList(emu->get_enabled_drawing_method());
+	int drawing_idx = LABELS::GetDrawingMethodIndex(pConfig->drawing_method);
+	int filter_type = 0;
+
+	filter_type = pConfig->filter_type;
 	create_frame(hboxall, CMsg::Drawing, &vbox, &hbox);
-	comUseOpenGL = create_combo_box(hbox,CMsg::Method_ASTERISK,LABELS::opengl_use,use_opengl);
+	comDrawingMethod = create_combo_box(hbox,CMsg::Method_ASTERISK,LABELS::drawing_method,drawing_idx);
 	hbox = create_hbox(vbox);
-	comGLFilter = create_combo_box(hbox,CMsg::Filter_Type,LABELS::opengl_filter,gl_filter_type);
-#ifndef USE_OPENGL
-	gtk_widget_set_sensitive(comUseOpenGL, FALSE);
-	gtk_widget_set_sensitive(comGLFilter, FALSE);
-#endif
+	comScreenFilter = create_combo_box(hbox,CMsg::Filter_Type,LABELS::screen_filter,filter_type);
 
 	create_frame(hboxall, CMsg::CRTC, &vbox, &hbox);
 #if defined(_MBS1)
@@ -436,7 +436,11 @@ bool ConfigBox::SetData()
 {
 	int val = 0;
 
+	// power off
 	pConfig->use_power_off = (get_check_state(chkPowerOff));
+	// power state when start up
+	pConfig->power_state_when_start_up = get_combo_sel_num(comPowerState);
+
 #if defined(_MBS1)
 	val = emu->get_parami(VM::ParamSysMode); 
 	val = (get_radio_state_idx(radSYS,2) ? val & ~1 : val | 1);
@@ -474,10 +478,10 @@ bool ConfigBox::SetData()
 	pConfig->option_hdd = (get_check_state(chkDelayHd2) ? MSK_DELAY_HDSEEK : 0);
 #endif
 
-#ifdef USE_OPENGL
-	pConfig->use_opengl = (uint8_t)get_combo_sel_num(comUseOpenGL);
-	pConfig->gl_filter_type = (uint8_t)get_combo_sel_num(comGLFilter);
-#endif
+	if (gui->StoreDrawingMethod((uint8_t)LABELS::drawing_method_idx[get_combo_sel_num(comDrawingMethod)])) {
+		gui->RestoreDrawingMethod(pConfig->drawing_method);
+	}
+	pConfig->filter_type = (uint8_t)get_combo_sel_num(comScreenFilter);
 
 #if defined(_MBS1)
 	pConfig->disptmg_skew = get_combo_sel_num(comDispSkew) - 2;
@@ -595,9 +599,7 @@ bool ConfigBox::SetData()
 	gui->ChangeLedBox(led_show);
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
 	pConfig->save();
-#ifdef USE_OPENGL
-	emu->change_opengl_attr();
-#endif
+	emu->set_screen_filter_type();
 	emu->update_config();
 
 	return true;

@@ -52,6 +52,7 @@ private:
 #endif
 	DEVICE *d_pia;
 	DEVICE *d_pia_ex2;
+	DEVICE *d_psg;
 
 	uint8_t* p_key_stat;
 	uint8_t  m_scan_code;
@@ -72,9 +73,13 @@ private:
 	uint32_t *p_joy_stat[MAX_JOYSTICKS];
 	uint32_t *p_joy_real_stat[MAX_JOYSTICKS];
 #endif
-#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2JOYSTICK)
+#if defined(USE_PIAJOYSTICK) || defined(USE_KEY2PIAJOYSTICK)
 	int		joy_pia_sel;
 	uint8_t joy_pia[MAX_JOYSTICKS];
+#endif
+#if defined(USE_PSGJOYSTICK) || defined(USE_KEY2PSGJOYSTICK)
+	int		joy_psg_sel;
+	uint8_t joy_psg[MAX_JOYSTICKS];
 #endif
 
 	int	m_counter;	// keyboard counter
@@ -94,15 +99,31 @@ private:
 	int event_counter;
 #endif
 
+	// keybind key -> key
 	uint32_key_assign_t scan2key_map[KEYBIND_KEYS];
 	uint32_key_assign_t scan2key_preset_map[KEYBIND_PRESETS][KEYBIND_KEYS];
+	// keybind joy -> key
 	uint32_key_assign_t joy2key_map[KEYBIND_KEYS];
 	uint32_key_assign_t joy2key_preset_map[KEYBIND_PRESETS][KEYBIND_KEYS];
-	uint32_key_assign_t sjoy2joy_map[KEYBIND_JOYS];
-	uint32_key_assign_t sjoy2joy_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
-#ifdef USE_KEY2JOYSTICK
-	uint32_key_assign_t scan2joy_map[KEYBIND_JOYS];
-	uint32_key_assign_t scan2joy_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
+#ifdef USE_PIAJOYSTICK
+	// keybind joy -> joy pia
+	uint32_key_assign_t sjoy2joya_map[KEYBIND_JOYS];
+	uint32_key_assign_t sjoy2joya_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
+# ifdef USE_KEY2PIAJOYSTICK
+	// keybind key -> joy pia
+	uint32_key_assign_t scan2joya_map[KEYBIND_JOYS];
+	uint32_key_assign_t scan2joya_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
+# endif
+#endif
+#ifdef USE_PSGJOYSTICK
+	// keybind joy -> joy psg
+	uint32_key_assign_t sjoy2joyb_map[KEYBIND_JOYS];
+	uint32_key_assign_t sjoy2joyb_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
+# ifdef USE_KEY2PIAJOYSTICK
+	// keybind key -> joy psg
+	uint32_key_assign_t scan2joyb_map[KEYBIND_JOYS];
+	uint32_key_assign_t scan2joyb_preset_map[KEYBIND_PRESETS][KEYBIND_JOYS];
+# endif
 #endif
 
 	//for resume
@@ -132,6 +153,8 @@ private:
 	void update_keyboard();
 	void reset_joy_pia();
 	void update_joy_pia();
+	void reset_joy_psg();
+	void update_joy_psg();
 
 	inline bool pressing_key(int);
 
@@ -181,6 +204,9 @@ public:
 	void set_context_pia_ex2(DEVICE* device) {
 		d_pia_ex2 = device;
 	}
+	void set_context_psg(DEVICE* device) {
+		d_psg = device;
+	}
 	uint8_t get_kb_mode();
 	void update_system_key();
 	void system_key_down(int code);
@@ -208,7 +234,7 @@ public:
 	void debug_event_frame();
 	bool debug_write_reg(uint32_t reg_num, uint32_t data);
 	bool debug_write_reg(const _TCHAR *reg, uint32_t data);
-	void debug_regs_info(_TCHAR *buffer, size_t buffer_len);
+	void debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len);
 #endif
 };
 

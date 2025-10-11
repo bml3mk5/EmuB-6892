@@ -10,7 +10,7 @@
 
 #include <wx/wx.h>
 #include "wx_about_dlg.h"
-#include <SDL.h>
+//#include <SDL.h>
 #include "../gui_base.h"
 #include "../../vm/vm.h"
 #include "../../version.h"

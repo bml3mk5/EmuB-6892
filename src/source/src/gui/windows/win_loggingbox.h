@@ -37,11 +37,12 @@ private:
 
 	bool m_initialized;
 
+	void SetSize(RECT &re);
 	void SetData();
 	void Alloc(int size);
 	void Free();
 
-	void AdjustButtonPosition();
+	int AdjustButtonPosition();
 
 public:
 	LoggingBox(HINSTANCE, CFont *, EMU *, GUI *);

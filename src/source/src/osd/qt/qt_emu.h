@@ -23,11 +23,7 @@
 #include "../windowmode.h"
 #include "qt_screenmode.h"
 #include <QDateTime>
-#ifdef USE_JOYSTICK
-#if QT_VERSION < 0x060000
-#define USE_QGAMEPAD
-#endif
-#endif
+#include "qt_restrict.h"
 #ifdef USE_QGAMEPAD
 #include <QtGamepad/QGamepad>
 #endif
@@ -112,15 +108,34 @@ private:
 	void EMU_SCREEN();
 	void initialize_screen();
 	void release_screen();
+	void restart_screen();
+	void change_pixel_format();
+	bool create_qt_texture();
+	bool create_qt_mixedtexture();
+	void reset_qt_texture();
+	void release_qt_texture();
+	void set_screen_filter_type();
+	inline void mix_screen_sub();
+	inline void calc_vm_screen_size();
+	inline void calc_vm_screen_size_sub(const VmRectWH &src_size, VmRectWH &vm_size);
+	void set_ledbox_position(bool now_window);
+	void set_msgboard_position();
+	bool create_mixedsurface();
+	bool create_recordingsurface();
+	void copy_surface_for_rec();
 
 #ifdef USE_OPENGL
 	void initialize_opengl();
-	void release_opengl();
-
+	void create_opengl();
 	void create_opengl_texture();
+	void create_opengl_mixedtexture();
+	void reset_opengl_texture();
 	void release_opengl_texture();
+	void release_opengl();
+	void terminate_opengl();
 
 	void set_opengl_attr();
+	void set_opengl_filter_type();
 	void set_opengl_poly(int width, int height);
 #endif /* USE_OPENGL */
 	//@}
@@ -128,10 +143,11 @@ private:
 	//@{
 	// screen settings
 	QRect  *screen;
-#ifdef USE_OPENGL
-	COpenGL *opengl;
-#endif
-	uint32_t screen_flags;
+	CSurface *texSource;
+	CSurface *texMixed;
+//	CSurface *texLedBox;
+//	CSurface *texMsgBoard;
+	uint32_t m_screen_flags;
 
 	VmSize mixed_max_size;	// for OpenGL
 
@@ -142,13 +158,21 @@ private:
 	VmRectWH reSuf;
 
 #ifdef USE_OPENGL
+	COpenGL *opengl;
+
 	COpenGLTexture *texGLMixed;
 //	GLuint mix_texture_name;
 	VmRect	rePyl;
 	float src_tex_l, src_tex_t, src_tex_r, src_tex_b;
 	float src_pyl_l, src_pyl_t, src_pyl_r, src_pyl_b;
-	int use_opengl;
-	uint8_t next_use_opengl;
+//	int use_opengl;
+//	uint8_t next_use_opengl;
+
+#ifdef USE_SCREEN_OPENGL_MIX_ON_RENDERER
+	CSurface *sufGLMain;
+	COpenGLTexture *texGLLedBox;
+	COpenGLTexture *texGLMsgBoard;
+#endif
 #endif
 #ifdef USE_LEDBOX
 	LedBox *ledbox;
@@ -249,13 +273,8 @@ public:
 	void capture_screen();
 	bool start_rec_video(int type, int fps_no, bool show_dialog);
 	void record_rec_video();
-#ifdef USE_OPENGL
-	void change_screen_use_opengl(int num);
-	void change_opengl_attr();
-	int now_use_opengl() const {
-		return use_opengl;
-	}
-#endif
+	void change_rec_video_size(int num);
+	void change_drawing_method(int method);
 	//@}
 	/// @name sound menu for ui
 	//@{
@@ -283,29 +302,21 @@ public:
 	//@{
 	void resume_window_placement();
 	bool create_screen(int disp_no, int x, int y, int width, int height, uint32_t flags);
-	void set_display_size(int width, int height, int power, bool now_window);
+	void set_display_size(int width, int height, double magnify, bool now_window);
 	void draw_screen();
-	bool mix_screen();
+//	bool mix_screen();
 	void update_screen_pa(QPainter *painter);
 	void update_screen_gl(QOpenGLContext *context);
 	void need_update_screen();
 # ifdef USE_OPENGL
 	void realize_opengl(QOpenGLWidget *widget);
 	void set_mode_opengl(QOpenGLWidget *widget, int w, int h);
-	void set_interval_opengl();
+	void set_opengl_interval();
 #endif
 
-	void set_window(int mode, int cur_width, int cur_height);
+	void set_window(int mode, int cur_width, int cur_height, int dpi = 0);
 	bool create_offlinesurface();
 
-#ifdef USE_OPENGL
-	int  get_use_opengl() const {
-		return use_opengl;
-	}
-	void set_use_opengl(int val) {
-		use_opengl = val;
-	}
-#endif
 	void set_qt_window(QMainWindow *window);
 	QMainWindow *get_qt_window();
 
@@ -342,6 +353,7 @@ public:
 	//@{
 	scrntype* screen_buffer(int y);
 	int screen_buffer_offset();
+	void set_vm_screen_size(int screen_width, int screen_height, int window_width, int window_height, int window_width_aspect, int window_height_aspect);
 	//@}
 	/// @name sound for vm
 	//@{
