@@ -368,6 +368,10 @@ const _TCHAR *EMU::application_path() const
 {
 	return app_path.Get();
 }
+const char *EMU::application_path_n()
+{
+	return app_path.GetN();
+}
 void EMU::initialize_path(char *path, int len) const
 {
 	ini_path.GetN(path, len);
@@ -1373,6 +1377,7 @@ void EMU::change_use_joypad(int num)
 		joy2joy_curr_device = DEV_PIAJOY;
 		reset_joystick();
 		break;
+# if defined(USE_PSGJOYSTICK)
 	case SEL_JOY2PSGJOY:
 		// use joystick to PSG joyport
 		pConfig->misc_flags = ((pConfig->misc_flags & ~MSK_USEJOYSTICK_ALL) | MSK_USEPSGJOYSTICK);
@@ -1380,6 +1385,7 @@ void EMU::change_use_joypad(int num)
 		joy2joy_curr_device = DEV_PSGJOY;
 		reset_joystick();
 		break;
+# endif
 	default:
 		pConfig->misc_flags = (pConfig->misc_flags & ~MSK_USEJOYSTICK_ALL);
 		release_joystick();
@@ -1399,8 +1405,10 @@ bool EMU::is_enable_joypad(int num)
 		return (FLG_USEJOYSTICK != 0);
 	case SEL_JOY2PIAJOY:
 		return (FLG_USEPIAJOYSTICK != 0);
+#if defined(USE_PSGJOYSTICK)
 	case SEL_JOY2PSGJOY:
 		return (FLG_USEPSGJOYSTICK != 0);
+#endif
 	default:
 		return (FLG_USEJOYSTICK_ALL != 0);
 	}

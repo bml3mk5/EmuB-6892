@@ -646,7 +646,7 @@ extern GUI *gui;
 	emu->set_parami(VM::ParamIOPort, val);
 #endif
 
-	pConfig->drawing_method = LABELS::drawing_method_idx[[popDrawingMethod indexOfSelectedItem]];
+	int selected_drawing_method = LABELS::drawing_method_idx[[popDrawingMethod indexOfSelectedItem]];
 	pConfig->filter_type = [popScreenFilter indexOfSelectedItem];
 
 	pConfig->led_pos = [popLEDPosition indexOfSelectedItem];
@@ -771,6 +771,7 @@ extern GUI *gui;
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
 	pConfig->save();
 	emu->set_screen_filter_type();
+	emu->change_drawing_method(selected_drawing_method);
 	emu->update_config();
 
 	// OK button is pushed

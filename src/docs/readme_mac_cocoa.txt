@@ -1,8 +1,8 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         SDL2 + Mac Cocoa edition
-                                                             Version 2.1.0
-                                                                2025/10/12
+                                                             Version 2.1.1
+                                                                2025/11/15
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ==============================================================================
@@ -1119,22 +1119,46 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ------------------------------------------------------------------------------
 
   ffmpegを使用する場合は、別途以下の要領でライブラリを入手してください。
-  ffmpegのバージョンは4系列が必要です。
+  ffmpegのバージョンは 6 系列が必要です。
+
+  1. ライブラリの入手
 
    方法1: Homebrewを使用してインストール。
-     Homebrewのページ: http://brew.sh/index_ja.html
-   ターミナルより以下のコマンドでインストールする。
-     $ sudo brew install ffmpeg@6
+       Homebrewのページ: http://brew.sh/index_ja.html
+     ターミナルより以下のコマンドでインストールする。
+
+         $ sudo brew install ffmpeg@6
+
+       成功すると /opt/homebrew/opt/ffmpeg@6/lib にライブラリがインストールされ
+     ます。
 
    方法2: ソースファイルからビルドします。ffmpeg-6.1.1を入手してください。
-     FFMpegのページ： http://www.ffmpeg.org/
-   ビルド方法は以下を参考：
-     CompilationGuide/MacOSX – FFmpeg:
-       http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/
+       FFMpegのページ： http://www.ffmpeg.org/
+     ビルド方法は以下を参考：
+       CompilationGuide/MacOSX – FFmpeg:
+         http://trac.ffmpeg.org/wiki/CompilationGuide/MacOSX/
 
-   ビルド時のオプションは、--disable-static --enable-sharedを追加して
-   sharedライブラリを作成します。
+     ビルド時のオプションは、--disable-static --enable-sharedを追加して
+     sharedライブラリを作成します。
 
+     ※ソースからビルドする場合、別途コーデック(libx264)なども入手しビルドする
+       必要があります。
+
+  2. ライブラリをコピー
+
+   以下の動的ライブラリ：
+
+       libavcodec.60.dylib
+       libavutil.58.dylib
+       libavformat.60.dylib
+       libswresample.4.dylib
+       libswscale.7.dylib
+
+   を、ROMパスで指定したフォルダ
+       本ソフトと同じフォルダ
+       ホームディレクトリ直下のlibディレクトリ
+
+   のいずれかにコピーまたはシンボリックリンクを作成してください。
 
 ------------------------------------------------------------------------------
 ● コマンドラインオプション

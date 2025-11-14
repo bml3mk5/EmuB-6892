@@ -115,6 +115,8 @@ void EMU_OSD::release_screen()
 
 	if (gui) {
 		gui->ReleaseLedBox();
+
+		gui->RestoreDrawingMethod(pConfig->drawing_method);
 	}
 
 	delete scrBmp;

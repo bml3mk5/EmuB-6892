@@ -235,6 +235,8 @@ void GUI_BASE::DecreaseUpdateScreenCount()
 	if (need_update_screen > 0) need_update_screen--;
 //	logging->out_logf(LOG_DEBUG, "GUI_BASE::Decrease %d",need_update_screen);
 }
+#endif
+
 /// @return true if changing immediately
 bool GUI_BASE::StoreDrawingMethod(uint8_t method)
 {
@@ -244,7 +246,6 @@ bool GUI_BASE::RestoreDrawingMethod(uint8_t &method) const
 {
 	return true;
 }
-#endif
 
 int GUI_BASE::CreateGlobalKeys()
 {

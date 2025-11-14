@@ -192,6 +192,9 @@
     <ClCompile Include="..\src\labels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\loadlibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\msgs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

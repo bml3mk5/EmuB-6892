@@ -236,12 +236,12 @@ void DISPLAY::load_font_rom_file()
 		}
 	}
 
-	if (!font_rom_loaded) {
+	if (font_rom_loaded == 0) {
 		if (!font_rom_loaded_at_first) {
 			logging->out_logf_x(LOG_WARN, CMsg::VSTR_couldn_t_be_loaded, _T("FONT.ROM"));
 		}
 		memset(chrfont, 0x10, sizeof(chrfont));
-	} else {
+	} else if (font_rom_loaded < 128) {
 		// convert font data to useful array data
 		for(int i = 0; i < 2; i++) {
 			for(int c = 0; c < 256; c++) {
@@ -250,6 +250,7 @@ void DISPLAY::load_font_rom_file()
 				}
 			}
 		}
+		font_rom_loaded += 128;
 	}
 	font_rom_loaded_at_first = true;
 }

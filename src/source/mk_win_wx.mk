@@ -59,12 +59,13 @@ EMUOBJS:=$(SRCDIR)/config.o \
 	$(SRCDIR)/curtime.o \
 	$(SRCDIR)/cpixfmt.o \
 	$(SRCDIR)/labels.o \
+	$(SRCDIR)/loadlibrary.o \
 	$(SRCDIR)/msgs.o \
 	$(SRCDIR)/simple_ini.o \
-	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/debugger_bpoint.o \
 	$(SRCDIR)/debugger_socket.o \
 	$(SRCDIR)/debugger_symbol.o \
+	$(SRCDIR)/ConvertUTF.o \
 	$(SRCDIR)/utility.o
 
 EMUOSDOBJS:=$(SRCOSDWX)/wxw_emu.o \

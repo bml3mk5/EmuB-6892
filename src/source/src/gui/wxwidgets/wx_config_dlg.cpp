@@ -176,7 +176,7 @@ void MyConfigDlg::InitDialog()
 	// Drawing Method
 	bszr = new wxBoxSizer(wxHORIZONTAL);
 	bszr->Add(new MyStaticText(page, wxID_ANY, CMsg::Method), flags);
-	comDrawing = new MyChoice(page, IDC_COMBO_DRAWING, wxDefaultPosition, wxDefaultSize, LABELS::GetDrawingMethodIndex(pConfig->drawing_method));
+	comDrawing = new MyChoice(page, IDC_COMBO_DRAWING, wxDefaultPosition, wxDefaultSize, LABELS::drawing_method, LABELS::GetDrawingMethodIndex(pConfig->drawing_method));
 	bszr->Add(comDrawing, flags);
 	szrDrawing->Add(bszr, flags);
 	// Filter Type
@@ -768,7 +768,7 @@ void MyConfigDlg::ModifyParam()
 	emu->set_parami(VM::ParamFddType, fdd_type);
 	emu->set_parami(VM::ParamIOPort, io_port);
 
-	pConfig->drawing_method = LABELS::drawing_method_idx[comDrawing->GetCurrentSelection()];
+	int selected_drawing_method = LABELS::drawing_method_idx[comDrawing->GetCurrentSelection()];
 	pConfig->filter_type = comFilter->GetCurrentSelection();
 
 #if defined(_MBS1)
@@ -879,6 +879,10 @@ void MyConfigDlg::ModifyParam()
 
 	gui->ChangeLedBox(comLedShow->GetCurrentSelection());
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
+	pConfig->save();
+	emu->set_screen_filter_type();
+	emu->change_drawing_method(selected_drawing_method);
+	emu->update_config();
 }
 
 void MyConfigDlg::change_fdd_type(int index)

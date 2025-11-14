@@ -627,6 +627,16 @@ void FLOPPY::initialize()
 		m_register_id[i] = -1;
 	}
 
+	for(int i = 0; i < MAX_FDC_NUMS; i++) {
+		m_drv_num[i] = 0;
+		m_drvsel[i] = 0;
+
+		m_motor_on_expand[i] = 0;
+
+		m_fdd5outreg[i] = 0x81;
+	}
+	m_fdd5outreg_delay = 0;
+
 	m_wav_fddtype = FLOPPY_WAV_FDD3;
 	m_wav_loaded_at_first = false;
 

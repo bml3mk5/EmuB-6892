@@ -820,6 +820,7 @@
     <ClCompile Include="..\src\gui\wxwidgets\wx_vkeyboard.cpp" />
     <ClCompile Include="..\src\gui\wxwidgets\wx_volume_dlg.cpp" />
     <ClCompile Include="..\src\labels.cpp" />
+    <ClCompile Include="..\src\loadlibrary.cpp" />
     <ClCompile Include="..\src\msgs.cpp" />
     <ClCompile Include="..\src\osd\SDL\sdl_sound.cpp" />
     <ClCompile Include="..\src\osd\d88_files.cpp" />

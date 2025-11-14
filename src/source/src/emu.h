@@ -612,6 +612,7 @@ public:
 	//@{
 	void    application_path(char *path, int len) const;
 	const _TCHAR *application_path() const;
+	const char *application_path_n();
 	void    initialize_path(char *path, int len) const;
 	const _TCHAR *initialize_path() const;
 	void    resource_path(char *path, int len) const;

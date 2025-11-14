@@ -84,7 +84,7 @@ bool MMF_LoadLibrary(int reffer_num)
 		i++;
 
 		// can load mmf_loader.dll
-		LOAD_LIB(hMMFLoader, "mmf_loader", 0);
+		LOAD_LIB(hMMFLoader, NULL, "mmf_loader", 0);
 
 		// mmf_loader.dll
 		GET_ADDR(F_MMF_Startup, HRESULT (*)(), hMMFLoader, "MMF_Startup");

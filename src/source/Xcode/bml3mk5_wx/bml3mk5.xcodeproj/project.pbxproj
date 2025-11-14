@@ -154,6 +154,7 @@
 		D9E35D591C11BFAB00BCB7FE /* fifo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9E35D581C11BFAB00BCB7FE /* fifo.cpp */; };
 		D9E42CA02646AA5A00C6E06F /* mac_uart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9E42C9E2646AA5A00C6E06F /* mac_uart.cpp */; };
 		D9E42CA22646AFF300C6E06F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9E42CA12646AFF300C6E06F /* IOKit.framework */; };
+		D9ECED7F2EA4DC5B00BCE690 /* loadlibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9ECED7E2EA4DC5B00BCE690 /* loadlibrary.cpp */; };
 		D9EFF8C7241E067F002F8BA1 /* opengl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9EFF8C5241E067E002F8BA1 /* opengl.cpp */; };
 		D9F141F5233CD5ED0025638D /* simple_ini.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F141F3233CD5ED0025638D /* simple_ini.cpp */; };
 		D9F1421B233CEE4C0025638D /* wx_recaud_dlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F14219233CEE4C0025638D /* wx_recaud_dlg.cpp */; };
@@ -504,6 +505,7 @@
 		D9E42C9E2646AA5A00C6E06F /* mac_uart.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mac_uart.cpp; sourceTree = "<group>"; };
 		D9E42C9F2646AA5A00C6E06F /* mac_uart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mac_uart.h; sourceTree = "<group>"; };
 		D9E42CA12646AFF300C6E06F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		D9ECED7E2EA4DC5B00BCE690 /* loadlibrary.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = loadlibrary.cpp; sourceTree = "<group>"; };
 		D9EFF8C5241E067E002F8BA1 /* opengl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = opengl.cpp; sourceTree = "<group>"; };
 		D9EFF8C6241E067F002F8BA1 /* opengl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = opengl.h; sourceTree = "<group>"; };
 		D9F141F3233CD5ED0025638D /* simple_ini.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simple_ini.cpp; sourceTree = "<group>"; };
@@ -915,6 +917,7 @@
 				D9F18DB426564BFD00765805 /* labels.cpp */,
 				D9F18DB526564BFD00765805 /* labels.h */,
 				D9388AC91DEEC63C00222B43 /* loadlibrary.h */,
+				D9ECED7E2EA4DC5B00BCE690 /* loadlibrary.cpp */,
 				D971DA271AF0A6EE00896525 /* logging.h */,
 				D9FDD1EE223A4B020055E9C7 /* main.h */,
 				D971DA291AF0A6EE00896525 /* msgboard.h */,
@@ -1215,6 +1218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9ECED7F2EA4DC5B00BCE690 /* loadlibrary.cpp in Sources */,
 				D902B8481FB331CB00EC8622 /* sdl_sound.cpp in Sources */,
 				D904D83C2E657A5500687034 /* disk_image.cpp in Sources */,
 				D904D83D2E657A5500687034 /* diskd88_image.cpp in Sources */,

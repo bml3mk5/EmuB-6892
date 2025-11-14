@@ -66,6 +66,7 @@ EMUOBJS:=$(SRCDIR)/config.o \
 	$(SRCDIR)/curtime.o \
 	$(SRCDIR)/cpixfmt.o \
 	$(SRCDIR)/labels.o \
+	$(SRCDIR)/loadlibrary.o \
 	$(SRCDIR)/msgs.o \
 	$(SRCDIR)/simple_ini.o \
 	$(SRCDIR)/debugger_bpoint.o \

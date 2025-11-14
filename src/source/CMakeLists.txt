@@ -47,12 +47,13 @@ add_executable(${PROJECT_NAME}
 	${SRCDIR}/curtime.cpp
 	${SRCDIR}/cpixfmt.cpp
 	${SRCDIR}/labels.cpp
+	${SRCDIR}/loadlibrary.cpp
 	${SRCDIR}/msgs.cpp
 	${SRCDIR}/simple_ini.cpp
-	${SRCDIR}/ConvertUTF.c
 	${SRCDIR}/debugger_bpoint.cpp
 	${SRCDIR}/debugger_socket.cpp
 	${SRCDIR}/debugger_symbol.cpp
+	${SRCDIR}/ConvertUTF.c
 	${SRCDIR}/utility.cpp
 
 	${SRCOSDSDL}/sdl_emu.cpp

@@ -224,6 +224,20 @@ const wchar_t *CNchar::GetWM()
 	return m_wbuf->Get();
 }
 
+/// @brief UTF-8文字に変換して渡す
+/// @return 文字列へのポインタ
+const char *CNchar::GetU()
+{
+#if defined(USE_UTF8_ON_MBCS) || !defined(_WIN32)
+	return Get();
+#else
+	delete m_wbuf;
+	m_wbuf = new CWchar(Length());
+	m_wbuf->SetN(Get(), Length());
+	return m_wbuf->GetU();
+#endif
+}
+
 /// @brief 大文字にする
 void CNchar::ToUpper()
 {
@@ -411,6 +425,17 @@ void CWchar::SetM(const wchar_t *src_str)
 const wchar_t *CWchar::GetWM() const
 {
 	return Get();
+}
+
+/// @brief UTF-8文字に変換して渡す
+/// @return 文字列
+const char *CWchar::GetU()
+{
+#ifdef _WIN32
+	return GetN(CP_UTF8);
+#else
+	return GetN();
+#endif
 }
 
 /// @brief 大文字にする

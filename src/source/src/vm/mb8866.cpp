@@ -186,12 +186,10 @@ void MB8866::write_io8(uint32_t addr, uint32_t data)
 	case 0:
 		// command reg
 #ifdef HAS_MB8876
-		cmdreg = (~data) & 0xff;
+		accept_cmd((~data) & 0xff);
 #else
-		cmdreg = data;
+		accept_cmd(data & 0xff);
 #endif
-		accept_cmd();
-//		process_cmd();
 		break;
 	case 1:
 		// track reg
@@ -724,12 +722,19 @@ void MB8866::event_callback(int event_id, int err)
 // command
 // ----------------------------------------------------------------------------
 
-void MB8866::accept_cmd()
+void MB8866::accept_cmd(uint8_t new_cmd)
 {
 	cancel_my_event(EVENT_STARTCMD);
 	cancel_my_event(EVENT_TYPE4);
 	set_irq(false);
-	status = FDC_ST_BUSY;
+
+	cmdreg = new_cmd;
+
+	// clear BUSY flag
+	// FDC has a delay time between a command is registered and start processing.
+	// The BUSY flag may not be set during the time.
+	status &= ~FDC_ST_BUSY;
+
 	switch(cmdreg & 0xf0) {
 	// type-1
 	case 0x00:
@@ -771,6 +776,7 @@ void MB8866::accept_cmd()
 	default:
 		break;
 	}
+	OUT_DEBUG(_T("FDC\tCMD=%2xh Type=%2xh accepted."), cmdreg, cmdtype);
 	register_my_event(EVENT_STARTCMD, START_COMMAND_DELAY_US);
 }
 

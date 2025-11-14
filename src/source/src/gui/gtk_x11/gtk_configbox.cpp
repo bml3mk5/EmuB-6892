@@ -181,13 +181,13 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 
 	hbox = create_hbox(vboxall);
 	txtMsgFontName = create_text_with_label(hbox, CMsg::Message_Font, pConfig->msgboard_msg_fontname.GetN(), 24);
-	sprintf(buf, "%d", pConfig->msgboard_msg_fontsize);
+	UTILITY::sprintf(buf, sizeof(buf), "%d", pConfig->msgboard_msg_fontsize);
 	txtMsgFontSize = create_text_with_label(hbox, CMsg::_Size, buf, 3);
 	create_button(hbox, CMsg::File_, G_CALLBACK(OnSelectMessageFont));
 
 	hbox = create_hbox(vboxall);
 	txtInfoFontName = create_text_with_label(hbox, CMsg::Info_Font, pConfig->msgboard_info_fontname.GetN(), 24);
-	sprintf(buf, "%d", pConfig->msgboard_info_fontsize);
+	UTILITY::sprintf(buf, sizeof(buf), "%d", pConfig->msgboard_info_fontsize);
 	txtInfoFontSize = create_text_with_label(hbox, CMsg::_Size, buf, 3);
 	create_button(hbox, CMsg::File_, G_CALLBACK(OnSelectInfoFont));
 
@@ -478,9 +478,8 @@ bool ConfigBox::SetData()
 	pConfig->option_hdd = (get_check_state(chkDelayHd2) ? MSK_DELAY_HDSEEK : 0);
 #endif
 
-	if (gui->StoreDrawingMethod((uint8_t)LABELS::drawing_method_idx[get_combo_sel_num(comDrawingMethod)])) {
-		gui->RestoreDrawingMethod(pConfig->drawing_method);
-	}
+	int selected_drawing_method = LABELS::drawing_method_idx[get_combo_sel_num(comDrawingMethod)];
+
 	pConfig->filter_type = (uint8_t)get_combo_sel_num(comScreenFilter);
 
 #if defined(_MBS1)
@@ -600,6 +599,7 @@ bool ConfigBox::SetData()
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
 	pConfig->save();
 	emu->set_screen_filter_type();
+	emu->change_drawing_method(selected_drawing_method);
 	emu->update_config();
 
 	return true;

@@ -11,6 +11,14 @@
 #include "win_apiex.h"
 #include <tchar.h>
 
+#if _MSC_VER >= 1920 && WINVER >= 0x0b00
+#define USE_INTERNAL_USER32_DLL
+#endif
+
+#ifdef USE_INTERNAL_USER32_DLL
+#pragma comment(lib, "User32.lib")
+#endif
+
 namespace WIN_API_EX
 {
 
@@ -75,7 +83,7 @@ void Unload()
 UINT GetDpiForSystem()
 {
 	UINT dpi = 0;
-#if _MSC_VER < 1920
+#ifndef USE_INTERNAL_USER32_DLL
 	if (f_GetDpiForSystem) {
 		dpi = f_GetDpiForSystem();
 	}
@@ -96,7 +104,7 @@ UINT GetDpiForSystem()
 UINT GetDpiForWindow(HWND hwnd)
 {
 	UINT dpi = 0;
-#if _MSC_VER < 1920
+#ifndef USE_INTERNAL_USER32_DLL
 	if (f_GetDpiForWindow && hwnd) {
 		dpi = f_GetDpiForWindow(hwnd);
 	}

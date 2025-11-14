@@ -12,6 +12,7 @@
 
 #if defined(USE_REC_VIDEO_FFMPEG) || defined(USE_REC_AUDIO_FFMPEG)
 
+#include "../../config.h"
 #include "../../emu.h"
 
 extern EMU *emu;
@@ -20,7 +21,7 @@ extern EMU *emu;
 #include "../../utility.h"
 
 #ifndef _WIN32
-#include <dlfcn.h>
+#include <dirent.h>
 #endif
 
 #ifndef USE_DYNAMIC_LOADING
@@ -320,13 +321,12 @@ enum en_ffmpeg_version_min {
 	LIBSWSCALE_VERSION_MAJOR_MIN = LIBSWSCALE_VERSION_MAJOR,
 };
 
-bool FFMPEG_LoadLibrary(int reffer_num)
+static bool load_libs(const char *app_path, int i)
 {
-	if (library_selnum >= 0) goto SUCCESS;
-
-	for(int i=0; dllvers[i].end != true; i++) {
+	bool rc = false;
+	do {
 		// Set entry points of AVUtil function
-		LOAD_LIB(hAVUtil, "avutil", dllvers[i].avutil);
+		LOAD_LIB(hAVUtil, app_path, "avutil", dllvers[i].avutil);
 		GET_ADDR(f_av_frame_alloc, AVFrame *(*)(void), hAVUtil, "av_frame_alloc");
 		GET_ADDR(f_av_frame_free, void (*)(AVFrame **), hAVUtil, "av_frame_free");
 		GET_ADDR(f_av_image_alloc, int (*)(uint8_t *[4], int [4], int, int, enum AVPixelFormat, int), hAVUtil, "av_image_alloc");
@@ -350,10 +350,10 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		CHECK_VERSION(AV_VERSION_MAJOR(f_avutil_version()), LIBAVUTIL_VERSION_MAJOR_MIN, "avutil");
 
 		// Set entry points of SWResample function (reference from avcodec)
-		LOAD_LIB(hSWScale, "swresample", dllvers[i].swresample);
+		LOAD_LIB(hSWScale, app_path, "swresample", dllvers[i].swresample);
 
 		// Set entry points of AVCodec function
-		LOAD_LIB(hAVCodec, "avcodec", dllvers[i].avcodec);
+		LOAD_LIB(hAVCodec, app_path, "avcodec", dllvers[i].avcodec);
 #if LIBAVCODEC_VERSION_MAJOR < 59
 		GET_ADDR(f_avcodec_register_all, void (*)(void), hAVCodec, "avcodec_register_all");
 #endif
@@ -379,7 +379,7 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		CHECK_VERSION(AV_VERSION_MAJOR(f_avcodec_version()), LIBAVCODEC_VERSION_MAJOR_MIN, "avcodec");
 
 		// Set entry points of AVFormat function
-		LOAD_LIB(hAVFormat, "avformat", dllvers[i].avformat);
+		LOAD_LIB(hAVFormat, app_path, "avformat", dllvers[i].avformat);
 #if LIBAVFORMAT_VERSION_MAJOR < 59
 		GET_ADDR(f_av_register_all, void (*)(void), hAVFormat, "av_register_all");
 #endif
@@ -405,7 +405,7 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 		CHECK_VERSION(AV_VERSION_MAJOR(f_avformat_version()), LIBAVFORMAT_VERSION_MAJOR_MIN, "avformat");
 
 		// Set entry points of SWScale function
-		LOAD_LIB(hSWScale, "swscale", dllvers[i].swscale);
+		LOAD_LIB(hSWScale, app_path, "swscale", dllvers[i].swscale);
 		GET_ADDR(f_sws_getContext, struct SwsContext *(*)(int srcW, int srcH, enum AVPixelFormat srcFormat,
 												   int dstW, int dstH, enum AVPixelFormat dstFormat,
 												   int flags, SwsFilter *srcFilter,
@@ -418,12 +418,43 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 
 		CHECK_VERSION(AV_VERSION_MAJOR(f_swscale_version()), LIBSWSCALE_VERSION_MAJOR_MIN, "swscale");
 
-		//
+		rc = true;
 
-		library_selnum = i;
-		break;
+	} while(0);
+	return rc;
+}
+
+bool FFMPEG_LoadLibrary(int reffer_num)
+{
+	// load rom
+	const char *search_path[4];
+	int search_path_count = 0;
+#if !defined(_WIN32)
+	char search_path_home[_MAX_PATH];
+#endif
+
+	if (library_selnum >= 0) goto SUCCESS;
+
+	search_path[search_path_count++] = pConfig->rom_path.GetN();
+#if !defined(_WIN32)
+	search_path[search_path_count++] = emu->application_path_n();
+	UTILITY::concat(search_path_home, _MAX_PATH, getenv("HOME"), "/lib/", NULL);
+	search_path[search_path_count++] = search_path_home;
+#endif
+	search_path[search_path_count++] = NULL;
+
+	for(int i=0; dllvers[i].end != true && library_selnum < 0; i++) {
+		for(int n=0; n<search_path_count; n++) {
+			if (load_libs(search_path[n], i)) {
+				library_selnum = i;
+				break;
+			}
+		}
 	}
-	if (library_selnum < 0) goto FAILED;
+	if (library_selnum < 0) {
+//		logging->out_log(LOG_ERROR, _T("Couldn't load FFmpeg library."));
+		return false;
+	}
 
 	// register all the codecs
 #if LIBAVFORMAT_VERSION_MAJOR < 59
@@ -438,12 +469,10 @@ bool FFMPEG_LoadLibrary(int reffer_num)
 #else
 	if (f_av_log_set_level) f_av_log_set_level(AV_LOG_INFO);
 #endif
+
 SUCCESS:
 	reffer |= reffer_num;
 	return true;
-FAILED:
-//	logging->out_log(LOG_ERROR, _T("Couldn't load FFmpeg library."));
-	return false;
 }
 
 void FFMPEG_UnloadLibrary(int reffer_num)

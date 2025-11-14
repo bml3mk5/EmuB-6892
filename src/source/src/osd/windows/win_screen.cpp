@@ -108,6 +108,8 @@ void EMU_OSD::release_screen()
 
 	if (gui) {
 		gui->ReleaseLedBox();
+
+		gui->RestoreDrawingMethod(pConfig->drawing_method);
 	}
 
 	EMU::release_screen();

@@ -129,9 +129,9 @@ public:
 #elif defined(USE_SDL) || defined(USE_SDL2) || defined(USE_QT) || defined(USE_WX) || defined(USE_WX2)
 	virtual void UpdateScreen();
 	virtual void DecreaseUpdateScreenCount();
+#endif
 	virtual bool StoreDrawingMethod(uint8_t method);
 	virtual bool RestoreDrawingMethod(uint8_t &method) const;
-#endif
 
 	virtual int CreateGlobalKeys();
 

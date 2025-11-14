@@ -3,7 +3,7 @@
 	Skelton for retropc emulator
 
 	@author Sasaji
-	@date   2016.11.10 -
+	@date   2025.10.19 -
 
 	@brief [ load dynamic library ]
 */
@@ -11,101 +11,28 @@
 #ifndef LOADLIBRARY_H
 #define LOADLIBRARY_H
 
-#ifndef _WIN32
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dlfcn.h>
 #endif
 
-#if defined(_WIN32)
+namespace LOAD_LIBRARY
+{
 
-#define LOAD_LIB(handle, lib_base, version) { \
-	char libname[64]; \
-	UTILITY::strcpy(libname, 64, lib_base); \
-	if (version) { \
-		UTILITY::sprintf(&libname[strlen(libname)], 64 - strlen(libname), "-%d", version); \
-	} \
-	UTILITY::strcat(libname, 64, ".dll"); \
-	handle = LoadLibraryA(libname); \
-	if (!handle) { \
-		logging->out_logf(LOG_DEBUG, "Cannot load %s.", libname); \
-		continue; \
-	} else { \
-		logging->out_logf(LOG_DEBUG, "Loaded %s.", libname); \
-	} \
-}
-#define GET_ADDR(func, func_type, handle, func_name) { \
-	func = (func_type) GetProcAddress(handle, func_name); \
-	if (!func) { \
-		logging->out_logf(LOG_DEBUG, "Cannot get address of %s.", func_name); \
-		continue; \
-	} \
-}
-#define GET_ADDR_OPTIONAL(func, func_type, handle, func_name) { \
-	func = (func_type) GetProcAddress(handle, func_name); \
-	if (!func) { \
-		logging->out_logf(LOG_DEBUG, "Cannot get address of %s.", func_name); \
-	} \
-}
-#define UNLOAD_LIB(handle) { \
-	if (handle) FreeLibrary(handle); \
-	handle = NULL; \
-}
+#define LOAD_LIB(handle, app_path, lib_base, version) \
+	handle = LOAD_LIBRARY::Load(app_path, lib_base, version); \
+	if (!handle) continue;
 
-#else /* !_WIN32 */
+#define GET_ADDR(func, func_type, handle, func_name) \
+	func = (func_type)LOAD_LIBRARY::GetAddr(handle, func_name); \
+	if (!func) continue;
 
-#if defined(__APPLE__) && defined(__MACH__)
-#define LOAD_LIB(handle, lib_base, version) { \
-	char libname[64]; \
-	UTILITY::strcpy(libname, 64, "lib"); \
-	UTILITY::strcat(libname, 64, lib_base); \
-	if (version) { \
-		UTILITY::sprintf(&libname[strlen(libname)], 64 - strlen(libname), ".%d", version); \
-	} \
-	UTILITY::strcat(libname, 64, ".dylib"); \
-	handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL); \
-	if (!handle) { \
-		logging->out_logf(LOG_DEBUG, _T("Cannot load %s."), libname); \
-		continue; \
-	} else { \
-		logging->out_logf(LOG_DEBUG, _T("Loaded %s."), libname); \
-	} \
-}
-#else
-#define LOAD_LIB(handle, lib_base, version) { \
-	char libname[64]; \
-	UTILITY::strcpy(libname, 64, "lib"); \
-	UTILITY::strcat(libname, 64, lib_base); \
-	UTILITY::strcat(libname, 64, ".so"); \
-	if (version) { \
-		UTILITY::sprintf(&libname[strlen(libname)], 64 - strlen(libname), ".%d", version); \
-	} \
-	handle = dlopen(libname, RTLD_NOW | RTLD_GLOBAL); \
-	if (!handle) { \
-		logging->out_logf(LOG_DEBUG, _T("Cannot load %s."), libname); \
-		continue; \
-	} else { \
-		logging->out_logf(LOG_DEBUG, _T("Loaded %s."), libname); \
-	} \
-}
-#endif
-#define GET_ADDR(func, func_type, handle, func_name) { \
-	func = (func_type)dlsym(handle, func_name); \
-	if (!func) { \
-		logging->out_logf(LOG_DEBUG, _T("Cannot get address of %s."), func_name); \
-		continue; \
-	} \
-}
-#define GET_ADDR_OPTIONAL(func, func_type, handle, func_name) { \
-	func = (func_type)dlsym(handle, func_name); \
-	if (!func) { \
-		logging->out_logf(LOG_DEBUG, _T("Cannot get address of %s."), func_name); \
-	} \
-}
-#define UNLOAD_LIB(handle) { \
-	if (handle) dlclose(handle); \
-	handle = NULL; \
-}
+#define GET_ADDR_OPTIONAL(func, func_type, handle, func_name) \
+	func = (func_type)LOAD_LIBRARY::GetAddr(handle, func_name);
 
-#endif
+#define UNLOAD_LIB(handle) \
+	LOAD_LIBRARY::Unload(&handle)
 
 #define CHECK_VERSION(current, require, libname) { \
 	if (current < require) { \
@@ -113,5 +40,21 @@
 		continue; \
 	} \
 }
+
+#if defined(_WIN32)
+
+extern HMODULE Load(const char *app_path, const char *lib_base, int version);
+extern FARPROC GetAddr(HMODULE handle, LPCSTR func_name);
+extern void Unload(HMODULE *handle);
+
+#else /* !_WIN32 */
+
+extern void *Load(const char *app_path, const char *lib_base, int version);
+extern void *GetAddr(void *handle, const char *func_name);
+extern void Unload(void **handle);
+
+#endif
+
+}; /* namespace LOAD_LIBRARY */
 
 #endif /* LOADLIBRARY_H */

@@ -193,7 +193,7 @@ private:
 	int get_clock_reach_index_hole();
 
 	// command
-	void accept_cmd();
+	void accept_cmd(uint8_t new_cmd);
 	void process_cmd();
 	void cmd_restore();
 	void cmd_seek();

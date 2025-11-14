@@ -954,7 +954,7 @@ void MyConfigBox::setDatas()
 	// Screen tab
 
 	// drawing method
-	pConfig->drawing_method = LABELS::drawing_method_idx[comDrawingMethod->currentIndex()];
+	int selected_drawing_method = LABELS::drawing_method_idx[comDrawingMethod->currentIndex()];
 	// opengl filter
 	pConfig->filter_type = comScreenFilter->currentIndex() & 0xf;
 #if defined(_MBS1)
@@ -1078,4 +1078,8 @@ void MyConfigBox::setDatas()
 
 	gui->ChangeLedBox(led_show);
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
+	pConfig->save();
+	emu->set_screen_filter_type();
+	emu->change_drawing_method(selected_drawing_method);
+	emu->update_config();
 }

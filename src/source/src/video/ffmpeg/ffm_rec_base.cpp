@@ -84,7 +84,8 @@ int FFM_REC_BASE::AddStream(enOutputType type, AVCodecID codec_id, const char *c
 
 	// open file for output
 //	CTchar crec_path(rec_path);
-	ret = f_avio_open(&avio, crec_path.GetN(), AVIO_FLAG_WRITE);
+	// filename must be set UTF-8 converted string
+	ret = f_avio_open(&avio, crec_path.GetU(), AVIO_FLAG_WRITE);
 	if (ret < 0) {
 		logging->out_logf(LOG_ERROR, _T("avio_open failed: %d"), ret);
 		return ret;
@@ -93,7 +94,7 @@ int FFM_REC_BASE::AddStream(enOutputType type, AVCodecID codec_id, const char *c
 	// decide output format by name or extension
 	const AVOutputFormat *ofmttmp = f_av_guess_format(codec_name, NULL, NULL);
 	if (!ofmttmp) {
-		ofmttmp = f_av_guess_format(NULL, crec_path.GetN(), NULL);
+		ofmttmp = f_av_guess_format(NULL, crec_path.GetU(), NULL);
 	}
 	if (!ofmttmp) {
 		logging->out_logf(LOG_ERROR, _T("av_guess_format: no format found"));

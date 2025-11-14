@@ -44,7 +44,7 @@ bool FolderBox::Show(const _TCHAR *title, _TCHAR *path, size_t len)
 		int n = 0;
 		while(F_SHCreateItemFromParsingName == NULL && n == 0) {
 			n++;
-			LOAD_LIB(hShell, _T("shell32"), 0);
+			LOAD_LIB(hShell, NULL, _T("shell32"), 0);
 			GET_ADDR(F_SHCreateItemFromParsingName, HRESULT (WINAPI *)(PCWSTR, IBindCtx*, REFIID, void**), hShell, _T("SHCreateItemFromParsingName"));
 		}
 	}

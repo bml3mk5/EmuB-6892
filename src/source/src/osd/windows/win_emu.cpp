@@ -62,18 +62,34 @@ void EMU_OSD::change_drawing_method(int method)
 	if (method >= 0) {
 		idx = LABELS::GetDrawingMethodIndex((uint8_t)method);
 	} else {
+		gui->RestoreDrawingMethod(prev_method);
 		idx = (LABELS::GetDrawingMethodIndex(prev_method) + 1) % count;
 	}
-	pConfig->drawing_method = LABELS::drawing_method_idx[idx];
+	uint8_t new_method = LABELS::drawing_method_idx[idx];
+
+	bool disp_msg = (new_method != prev_method);
+
+	// device will change
+	if (!gui->StoreDrawingMethod(new_method)) {
+		// restart this app to change drawing method
+		if (disp_msg) out_infoc_x(LABELS::drawing_method[idx], CMsg::LB_Need_restart_program_RB, 0);
+		return;
+	}
+
+	// change drawing method immediately
+
+	pConfig->drawing_method = new_method;
 
 	lock_screen();
 
 	create_mixedsurface();
 
 	switch(pConfig->drawing_method & DRAWING_METHOD_ALL_MASK) {
+#ifdef USE_DIRECT2D
 	case DRAWING_METHOD_DIRECT2D_MASK:
 		reset_d2drender(hMainWindow);
 		break;
+#endif
 
 	case DRAWING_METHOD_DIRECT3D_MASK:
 		set_d3dpresent_interval();
@@ -108,5 +124,5 @@ void EMU_OSD::change_drawing_method(int method)
 
 	set_msgboard_position();
 
-	out_infoc_x(LABELS::drawing_method[idx], 0);
+	if (disp_msg) out_infoc_x(LABELS::drawing_method[idx], 0);
 }

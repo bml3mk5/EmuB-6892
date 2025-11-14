@@ -121,6 +121,9 @@ class CNchar;
 class CWchar;
 
 /// @brief 文字列ナロー
+///
+/// @note 文字コード: Visual C++ MBCS環境ではMBCS、
+/// ただしUSE_UTF8_ON_MBCSをdefineするとUTF-8
 class CNchar : public CCharTemp<char>
 {
 private:
@@ -157,6 +160,8 @@ public:
 	virtual const char *GetM();
 	virtual void SetM(const char *src_str);
 	virtual const wchar_t *GetWM();
+
+	virtual const char *GetU();
 
 	virtual void ToUpper();
 	virtual void ToLower();
@@ -197,6 +202,8 @@ public:
 	virtual const wchar_t *GetM() const;
 	virtual void SetM(const wchar_t *src_str);
 	virtual const wchar_t *GetWM() const;
+
+	virtual const char *GetU();
 
 	virtual void ToUpper();
 	virtual void ToLower();

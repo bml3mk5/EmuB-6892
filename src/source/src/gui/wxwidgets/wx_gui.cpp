@@ -577,10 +577,6 @@ bool GUI::ShowConfigureDialog(void)
 	SystemPause(true);
 
 	int rc = dlg.ShowModal();
-	if (rc == wxID_OK) {
-		pConfig->save();
-		emu->set_screen_filter_type();
-	}
 	SystemPause(false);
 	return (rc == wxID_OK);
 }

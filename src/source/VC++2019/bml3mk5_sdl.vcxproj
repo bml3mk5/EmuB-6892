@@ -882,6 +882,7 @@
     <ClCompile Include="..\src\gui\windows\win_volumebox.cpp" />
     <ClCompile Include="..\src\gui\windows\winfont.cpp" />
     <ClCompile Include="..\src\labels.cpp" />
+    <ClCompile Include="..\src\loadlibrary.cpp" />
     <ClCompile Include="..\src\msgs.cpp" />
     <ClCompile Include="..\src\osd\SDL\sdl_cbitmap.cpp" />
     <ClCompile Include="..\src\osd\SDL\sdl_ccolor.cpp" />

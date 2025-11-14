@@ -688,7 +688,7 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	pConfig->curdisp_skew = param.curdisp_skew;
 	pConfig->exram_size_num = param.exram_size_num;
 #endif
-	pConfig->drawing_method = LABELS::drawing_method_idx[param.drawing_method_idx];
+	int selected_drawing_method = LABELS::drawing_method_idx[param.drawing_method_idx];
 	pConfig->filter_type = (uint8_t)param.filter_type;
 	pConfig->led_pos = param.led_pos;
 	pConfig->capture_type = param.capture_type;
@@ -818,6 +818,8 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	gui->ChangeLedBoxPosition(pConfig->led_pos);
 	pConfig->save();
 	emu->set_screen_filter_type();
+	emu->change_drawing_method(selected_drawing_method);
+	emu->update_config();
 
 	delete paramtmp;
 	paramtmp = NULL;

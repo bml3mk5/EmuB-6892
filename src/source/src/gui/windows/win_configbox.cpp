@@ -946,7 +946,7 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 #endif
 
 	// drawing method
-	pConfig->drawing_method = LABELS::drawing_method_idx[(int)SendDlgItemMessage(hDlg, IDC_COMBO_DRAWING, CB_GETCURSEL, 0, 0)];
+	int selected_drawing_method = LABELS::drawing_method_idx[(int)SendDlgItemMessage(hDlg, IDC_COMBO_DRAWING, CB_GETCURSEL, 0, 0)];
 	// filter type
 	pConfig->filter_type = (uint8_t)SendDlgItemMessage(hDlg, IDC_COMBO_SCREEN_FILTER, CB_GETCURSEL, 0, 0);
 
@@ -1109,6 +1109,7 @@ INT_PTR ConfigBox::onOK(UINT message, WPARAM wParam, LPARAM lParam)
 
 	pConfig->save();
 	emu->set_screen_filter_type();
+	emu->change_drawing_method(selected_drawing_method);
 	emu->update_config();
 
 	return (INT_PTR)TRUE;
