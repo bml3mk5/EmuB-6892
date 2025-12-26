@@ -247,6 +247,8 @@ bool ConfigBox::Show(GtkWidget *parent_window)
 	hbox = create_hbox(vbox);
 	chkDelayFd2 = create_check_box(hbox, CMsg::Ignore_delays_to_seek_track, FLG_DELAY_FDSEEK);
 	hbox = create_hbox(vbox);
+	chkDelayFd3 = create_check_box(hbox, CMsg::Ignore_delays_to_set_the_Busy_flag_in_FDC, FLG_DELAY_FDBUSY);
+	hbox = create_hbox(vbox);
 	chkFdDensity = create_check_box(hbox, CMsg::Suppress_checking_for_density, (FLG_CHECK_FDDENSITY == 0));
 	hbox = create_hbox(vbox);
 	chkFdMedia = create_check_box(hbox, CMsg::Suppress_checking_for_media_type, (FLG_CHECK_FDMEDIA == 0));
@@ -467,6 +469,7 @@ bool ConfigBox::SetData()
 	pConfig->mount_fdd = get_check_state_num(chkFDMount, USE_FLOPPY_DISKS);
 	pConfig->option_fdd = (get_check_state(chkDelayFd1) ? MSK_DELAY_FDSEARCH : 0)
 		| (get_check_state(chkDelayFd2) ? MSK_DELAY_FDSEEK : 0)
+		| (get_check_state(chkDelayFd3) ? MSK_DELAY_FDBUSY : 0)
 		| (get_check_state(chkFdDensity) ? 0 : MSK_CHECK_FDDENSITY)
 		| (get_check_state(chkFdMedia) ? 0 : MSK_CHECK_FDMEDIA)
 		| (get_check_state(chkFdSavePlain) ? MSK_SAVE_FDPLAIN : 0);

@@ -483,6 +483,9 @@ MyConfigBox::MyConfigBox(QWidget *parent) :
 	chkDelayFd2 = new MyCheckBox(CMsg::Ignore_delays_to_seek_track);
 	chkDelayFd2->setChecked(FLG_DELAY_FDSEEK != 0);
 	vboxFdd->addWidget(chkDelayFd2);
+	chkDelayFd3 = new MyCheckBox(CMsg::Ignore_delays_to_set_the_Busy_flag_in_FDC);
+	chkDelayFd3->setChecked(FLG_DELAY_FDBUSY != 0);
+	vboxFdd->addWidget(chkDelayFd3);
 	chkFdDensity = new MyCheckBox(CMsg::Suppress_checking_for_density);
 	chkFdDensity->setChecked(FLG_CHECK_FDDENSITY == 0);
 	vboxFdd->addWidget(chkFdDensity);
@@ -1019,6 +1022,7 @@ void MyConfigBox::setDatas()
 
 	pConfig->option_fdd = (chkDelayFd1->isChecked() ? MSK_DELAY_FDSEARCH : 0)
 		| (chkDelayFd2->isChecked() ? MSK_DELAY_FDSEEK : 0)
+		| (chkDelayFd3->isChecked() ? MSK_DELAY_FDBUSY : 0)
 		| (chkFdDensity->isChecked() ? 0 : MSK_CHECK_FDDENSITY)
 		| (chkFdMedia->isChecked() ? 0 : MSK_CHECK_FDMEDIA)
 		| (chkFdSavePlain->isChecked() ? MSK_SAVE_FDPLAIN : 0);

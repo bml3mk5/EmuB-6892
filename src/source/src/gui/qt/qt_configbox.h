@@ -100,6 +100,7 @@ private:
 	QCheckBox *chkDrive[USE_FLOPPY_DISKS];
 	QCheckBox *chkDelayFd1;
 	QCheckBox *chkDelayFd2;
+	QCheckBox *chkDelayFd3;
 	QCheckBox *chkFdDensity;
 	QCheckBox *chkFdMedia;
 	QCheckBox *chkFdSavePlain;

@@ -71,6 +71,7 @@ private:
 	GtkWidget *chkFDMount[USE_FLOPPY_DISKS];
 	GtkWidget *chkDelayFd1;
 	GtkWidget *chkDelayFd2;
+	GtkWidget *chkDelayFd3;
 	GtkWidget *chkFdDensity;
 	GtkWidget *chkFdMedia;
 	GtkWidget *chkFdSavePlain;

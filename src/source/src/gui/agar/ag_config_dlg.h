@@ -40,6 +40,7 @@ private:
 		int  mount_fdd;
 		int  delayfd1;
 		int  delayfd2;
+		int  delayfd3;
 		int  chk_fddensity;
 		int  chk_fdmedia;
 		int  save_fdplain;

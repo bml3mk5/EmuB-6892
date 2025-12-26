@@ -50,8 +50,9 @@ private:
 		EVENT_DRQ		= 7,
 		EVENT_RESTORE	= 8,
 		EVENT_STARTCMD	= 9,
+		EVENT_STARTBUSY	= 10,
 
-		MB8866_REGISTER_IDS	= 10
+		MB8866_REGISTER_IDS	= 11
 	};
 	/// @brief status
 	enum STATUS_MASKS {
@@ -165,8 +166,8 @@ private:
 		int register_id3[1];
 
 		// version 4
-		int register_id4[1];
-		char dummy[8];
+		int register_id4[2];
+		char dummy[4];
 	};
 #pragma pack()
 
@@ -194,6 +195,7 @@ private:
 
 	// command
 	void accept_cmd(uint8_t new_cmd);
+	void start_busy();
 	void process_cmd();
 	void cmd_restore();
 	void cmd_seek();

@@ -26,11 +26,11 @@
 #ifdef _DEBUG_MB8866_L2
 #define OUT_DEBUG2 logging->out_debugf
 #else
-#define OUT_DEBUG2 dummyf
+#define OUT_DEBUG2(...)
 #endif
 #else
-#define OUT_DEBUG  dummyf
-#define OUT_DEBUG2 dummyf
+#define OUT_DEBUG(...)
+#define OUT_DEBUG2(...)
 #endif
 
 #define DRIVE_MASK		(USE_FLOPPY_DISKS - 1)
@@ -42,6 +42,7 @@ static const int seek_wait[2][4] = {
 };
 
 #define ROUND_TIMEOUT (5 - 1)
+#define START_BUSY_DELAY_US		16
 #define START_COMMAND_DELAY_US	32
 
 #define SEARCH_SECTOR_IMMEDIATELY
@@ -715,6 +716,9 @@ void MB8866::event_callback(int event_id, int err)
 	case EVENT_STARTCMD:
 		process_cmd();
 		break;
+	case EVENT_STARTBUSY:
+		start_busy();
+		break;
 	}
 }
 
@@ -734,6 +738,11 @@ void MB8866::accept_cmd(uint8_t new_cmd)
 	// FDC has a delay time between a command is registered and start processing.
 	// The BUSY flag may not be set during the time.
 	status &= ~FDC_ST_BUSY;
+
+	if (FLG_DELAY_FDBUSY) {
+		// If ignore delays, set BUSY flag immediately.
+		start_busy();
+	}
 
 	switch(cmdreg & 0xf0) {
 	// type-1
@@ -778,6 +787,28 @@ void MB8866::accept_cmd(uint8_t new_cmd)
 	}
 	OUT_DEBUG(_T("FDC\tCMD=%2xh Type=%2xh accepted."), cmdreg, cmdtype);
 	register_my_event(EVENT_STARTCMD, START_COMMAND_DELAY_US);
+	register_my_event(EVENT_STARTBUSY, START_BUSY_DELAY_US);
+}
+
+void MB8866::start_busy()
+{
+	status = FDC_ST_BUSY;
+	switch(cmdreg & 0xf0) {
+	// type-1
+	case 0x00:
+	case 0x10:
+	case 0x20:
+	case 0x30:
+	case 0x40:
+	case 0x50:
+	case 0x60:
+	case 0x70:
+		now_seek = true;
+		break;
+	default:
+		break;
+	}
+	OUT_DEBUG(_T("FDC\tCMD=%2xh Start busy."), cmdreg);
 }
 
 void MB8866::process_cmd()
@@ -1315,6 +1346,7 @@ void MB8866::save_state(FILEIO *fp)
 	vm_state.register_id2[0] = Int32_LE(register_id[EVENT_DRQ]);
 	vm_state.register_id3[0] = Int32_LE(register_id[EVENT_RESTORE]);
 	vm_state.register_id4[0] = Int32_LE(register_id[EVENT_STARTCMD]);
+	vm_state.register_id4[1] = Int32_LE(register_id[EVENT_STARTBUSY]);
 
 	fp->Fwrite(&vm_state_ident, sizeof(vm_state_ident), 1);
 	fp->Fwrite(&vm_state, sizeof(vm_state), 1);
@@ -1353,6 +1385,7 @@ bool MB8866::load_state(FILEIO *fp)
 	}
 	if (Uint16_LE(vm_state_i.version) >= 4) {
 		register_id[EVENT_STARTCMD] = Int32_LE(vm_state.register_id4[0]);
+		register_id[EVENT_STARTBUSY] = Int32_LE(vm_state.register_id4[1]);
 	}
 
 	return true;

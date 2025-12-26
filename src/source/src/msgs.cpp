@@ -130,6 +130,7 @@ CMsg::CMsg()
 	msgs[i++] = _TX("When start up, mount disk at:");
 	msgs[i++] = _TX("Ignore delays to find sector.");
 	msgs[i++] = _TX("Ignore delays to seek track.");
+	msgs[i++] = _TX("Ignore delays to set the Busy flag in FDC.");
 	msgs[i++] = _TX("Suppress checking for density.");
 	msgs[i++] = _TX("Suppress checking for media type.");
 	msgs[i++] = _TX("Save a plain disk image as it is.");

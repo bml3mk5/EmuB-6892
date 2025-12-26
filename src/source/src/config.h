@@ -233,7 +233,8 @@ enum DRAWING_METHOD_ENUMS {
 enum OPTIONFDD_MASKS {
 	MSK_DELAY_FDSEARCH	= 0x0001,	///< bit0: ignore delay by searching sector
 	MSK_DELAY_FDSEEK	= 0x0002,	///< bit1: ignore delay by seeking track
-	MSK_DELAY_FD_MASK	= 0x0003,	///< delay fdd flags mask
+	MSK_DELAY_FDBUSY	= 0x0004,	///< bit2: ignore delay time to set the busy flag in FDC
+	MSK_DELAY_FD_MASK	= 0x0007,	///< delay fdd flags mask
 	MSK_DELAY_FD_SFT	= 0,		///< delay fdd flags shift
 	MSK_CHECK_FDDENSITY	= 0x0010,	///< bit4: check a difference of density in a floppy disk
 	MSK_CHECK_FDMEDIA	= 0x0020,	///< bit5: check a difference of media in a floppy disk
@@ -248,6 +249,7 @@ enum OPTIONFDD_MASKS {
 ///@{
 #define FLG_DELAY_FDSEARCH	(pConfig->option_fdd & MSK_DELAY_FDSEARCH)
 #define FLG_DELAY_FDSEEK	(pConfig->option_fdd & MSK_DELAY_FDSEEK)
+#define FLG_DELAY_FDBUSY	(pConfig->option_fdd & MSK_DELAY_FDBUSY)
 #define FLG_CHECK_FDDENSITY	(pConfig->option_fdd & MSK_CHECK_FDDENSITY)
 #define FLG_CHECK_FDMEDIA	(pConfig->option_fdd & MSK_CHECK_FDMEDIA)
 #define FLG_SAVE_FDPLAIN	(pConfig->option_fdd & MSK_SAVE_FDPLAIN)

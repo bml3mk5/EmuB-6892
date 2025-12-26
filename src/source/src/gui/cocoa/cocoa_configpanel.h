@@ -64,6 +64,7 @@
 	CocoaCheckBox *chkFddMount[USE_FLOPPY_DISKS];
 	CocoaCheckBox *chkDelayFd1;
 	CocoaCheckBox *chkDelayFd2;
+	CocoaCheckBox *chkDelayFd3;
 	CocoaCheckBox *chkFdDensity;
 	CocoaCheckBox *chkFdMedia;
 	CocoaCheckBox *chkFdSavePlain;

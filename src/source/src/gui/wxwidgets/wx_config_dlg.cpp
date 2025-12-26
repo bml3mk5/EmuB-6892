@@ -375,6 +375,8 @@ void MyConfigDlg::InitDialog()
 	szrFdd->Add(chkDelayFd1, flags);
 	chkDelayFd2 = new MyCheckBox(page, IDC_CHK_DELAYFD2, CMsg::Ignore_delays_to_seek_track);
 	szrFdd->Add(chkDelayFd2, flags);
+	chkDelayFd3 = new MyCheckBox(page, IDC_CHK_DELAYFD3, CMsg::Ignore_delays_to_set_the_Busy_flag_in_FDC);
+	szrFdd->Add(chkDelayFd3, flags);
 	chkFdDensity = new MyCheckBox(page, IDC_CHK_FDDENSITY, CMsg::Suppress_checking_for_density);
 	szrFdd->Add(chkFdDensity, flags);
 	chkFdMedia = new MyCheckBox(page, IDC_CHK_FDMEDIA, CMsg::Suppress_checking_for_media_type);
@@ -659,6 +661,7 @@ void MyConfigDlg::UpdateDialog()
 	}
 	chkDelayFd1->SetValue(FLG_DELAY_FDSEARCH != 0);
 	chkDelayFd2->SetValue(FLG_DELAY_FDSEEK != 0);
+	chkDelayFd3->SetValue(FLG_DELAY_FDBUSY != 0);
 	chkFdDensity->SetValue(FLG_CHECK_FDDENSITY == 0);
 	chkFdMedia->SetValue(FLG_CHECK_FDMEDIA == 0);
 	chkFdSavePlain->SetValue(FLG_SAVE_FDPLAIN != 0);
@@ -752,6 +755,7 @@ void MyConfigDlg::ModifyParam()
 	}
 	pConfig->option_fdd = (chkDelayFd1->GetValue() ? MSK_DELAY_FDSEARCH : 0)
 		| (chkDelayFd2->GetValue() ? MSK_DELAY_FDSEEK : 0)
+		| (chkDelayFd3->GetValue() ? MSK_DELAY_FDBUSY : 0)
 		| (chkFdDensity->GetValue() ? 0 : MSK_CHECK_FDDENSITY)
 		| (chkFdMedia->GetValue() ? 0 : MSK_CHECK_FDMEDIA)
 		| (chkFdDensity->GetValue() ? MSK_SAVE_FDPLAIN : 0);

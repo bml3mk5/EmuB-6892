@@ -65,6 +65,7 @@ private:
 	wxChoice *comWavSampleBits;
 	MyCheckBox *chkDelayFd1;
 	MyCheckBox *chkDelayFd2;
+	MyCheckBox *chkDelayFd3;
 	MyCheckBox *chkFdDensity;
 	MyCheckBox *chkFdMedia;
 	MyCheckBox *chkFdSavePlain;

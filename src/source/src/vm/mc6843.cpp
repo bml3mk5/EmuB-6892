@@ -22,7 +22,7 @@
 
 #define OUT_DEBUG logging->out_debugf
 #else
-#define OUT_DEBUG dummyf
+#define OUT_DEBUG(...)
 #endif
 
 #define DRIVE_MASK	(USE_FLOPPY_DISKS - 1)
@@ -573,13 +573,13 @@ void MC6843::accept_cmd(uint8_t cmd)
 
 void MC6843::process_cmd()
 {
-#ifdef _DEBUG
+#ifdef _DEBUG_MC6843
 	static const _TCHAR *cmdname[16]={ _T("?"), _T("?"), _T("STZ"), _T("SEK"), _T("SSR"), _T("SSW"), _T("RCR"), _T("SWD")
 									, _T("?"), _T("?"), _T("FFR"), _T("FFW"), _T("MSR"), _T("MSW"), _T("?"), _T("?") };
 #endif
 	stra &= ~(FDC_STA_BUSY | FDC_STA_DRQ);
 
-#ifdef _DEBUG
+#ifdef _DEBUG_MC6843
 	OUT_DEBUG(_T("MC6843: write CMR  %s cmr:%02x ctar:%02x sur:%02x sar:%02x gcr:%02x ccr:%02x ltar:%02x isr:%02x stra:%02x strb:%02x")
 	,cmdname[cmr & 15]
 	,cmr

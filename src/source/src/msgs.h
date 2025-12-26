@@ -142,6 +142,7 @@ public:
 		When_start_up_mount_disk_at_,
 		Ignore_delays_to_find_sector,
 		Ignore_delays_to_seek_track,
+		Ignore_delays_to_set_the_Busy_flag_in_FDC,
 		Suppress_checking_for_density,
 		Suppress_checking_for_media_type,
 		Save_a_plain_disk_image_as_it_is,

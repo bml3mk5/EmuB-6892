@@ -343,6 +343,7 @@ extern GUI *gui;
 
 	chkDelayFd1 = [CocoaCheckBox createI:vbox title:CMsg::Ignore_delays_to_find_sector action:nil value:(FLG_DELAY_FDSEARCH != 0)];
 	chkDelayFd2 = [CocoaCheckBox createI:vbox title:CMsg::Ignore_delays_to_seek_track action:nil value:(FLG_DELAY_FDSEEK != 0)];
+	chkDelayFd3 = [CocoaCheckBox createI:vbox title:CMsg::Ignore_delays_to_set_the_Busy_flag_in_FDC action:nil value:(FLG_DELAY_FDBUSY != 0)];
 	chkFdDensity = [CocoaCheckBox createI:vbox title:CMsg::Suppress_checking_for_density action:nil value:(FLG_CHECK_FDDENSITY == 0)];
 	chkFdMedia = [CocoaCheckBox createI:vbox title:CMsg::Suppress_checking_for_media_type action:nil value:(FLG_CHECK_FDMEDIA == 0)];
 	chkFdSavePlain = [CocoaCheckBox createI:vbox title:CMsg::Save_a_plain_disk_image_as_it_is action:nil value:(FLG_SAVE_FDPLAIN != 0)];
@@ -613,6 +614,7 @@ extern GUI *gui;
 	}
 	pConfig->option_fdd = ([chkDelayFd1 state] == NSControlStateValueOn ? MSK_DELAY_FDSEARCH : 0)
 		| ([chkDelayFd2 state] == NSControlStateValueOn ? MSK_DELAY_FDSEEK : 0)
+		| ([chkDelayFd3 state] == NSControlStateValueOn ? MSK_DELAY_FDBUSY : 0)
 		| ([chkFdDensity state] == NSControlStateValueOn ? 0 : MSK_CHECK_FDDENSITY)
 		| ([chkFdMedia state] == NSControlStateValueOn ? 0 : MSK_CHECK_FDMEDIA)
 		| ([chkFdSavePlain state] == NSControlStateValueOn ? MSK_SAVE_FDPLAIN : 0);

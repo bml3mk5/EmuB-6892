@@ -106,6 +106,7 @@ void AG_CONFIG_DLG::Create()
 	param.mount_fdd = pConfig->mount_fdd;
 	param.delayfd1 = FLG_DELAY_FDSEARCH ? 1 : 0;
 	param.delayfd2 = FLG_DELAY_FDSEEK ? 1 : 0;
+	param.delayfd3 = FLG_DELAY_FDBUSY ? 1 : 0;
 	param.chk_fddensity = FLG_CHECK_FDDENSITY ? 0 : 1;
 	param.chk_fdmedia = FLG_CHECK_FDMEDIA ? 0 : 1;
 	param.save_fdplain = FLG_SAVE_FDPLAIN ? 1 : 0;
@@ -445,6 +446,7 @@ void AG_CONFIG_DLG::Create()
 	// delay
 	AG_CheckboxNewInt(vbox, 0, CMSG(Ignore_delays_to_find_sector), &paramtmp->delayfd1);
 	AG_CheckboxNewInt(vbox, 0, CMSG(Ignore_delays_to_seek_track), &paramtmp->delayfd2);
+	AG_CheckboxNewInt(vbox, 0, CMSG(Ignore_delays_to_set_the_Busy_flag_in_FDC), &paramtmp->delayfd3);
 	// density media
 	AG_CheckboxNewInt(vbox, 0, CMSG(Suppress_checking_for_density), &paramtmp->chk_fddensity);
 	AG_CheckboxNewInt(vbox, 0, CMSG(Suppress_checking_for_media_type), &paramtmp->chk_fdmedia);
@@ -706,6 +708,7 @@ int AG_CONFIG_DLG::SetData(AG_Window *win)
 	pConfig->mount_fdd = param.mount_fdd;
 	pConfig->option_fdd = (param.delayfd1 ? MSK_DELAY_FDSEARCH : 0)
 		| (param.delayfd2 ? MSK_DELAY_FDSEEK : 0)
+		| (param.delayfd3 ? MSK_DELAY_FDBUSY : 0)
 		| (param.chk_fddensity ? 0 : MSK_CHECK_FDDENSITY)
 		| (param.chk_fdmedia ? 0 : MSK_CHECK_FDMEDIA)
 		| (param.save_fdplain ? MSK_SAVE_FDPLAIN : 0);

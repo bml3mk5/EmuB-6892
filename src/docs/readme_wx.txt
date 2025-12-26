@@ -1,8 +1,8 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
         wxWidgets edition
-                                                             Version 2.1.1
-                                                                2025/11/15
+                                                             Version 2.1.2
+                                                                2025/12/27
 
 Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 ==============================================================================
@@ -1046,6 +1046,12 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
 
    ●トラックシーク時の遅延を無視する。(Ignore delays to seek track.) ...
     これにチェックを入れるとディスクアクセスが速くなります。
+
+   ●FDCのBusyフラグをセットするまでの遅延を無視する。
+     (Ignore delays to set the Busy flag in FDC.) ...
+     FDCにコマンドを発行した後、Busyフラグがセットされるまで若干のタイムラグが
+    あります。
+     これにチェックを入れると、コマンドを発行した後直ちにフラグをセットします。
 
    ●密度のチェックを抑制する。(Suppress checking for density.) ...
     これにチェックを入れると単密度と倍密度の違いを無視します。
