@@ -1,7 +1,7 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2026 All Rights Reserved.
 ==============================================================================
 
 
@@ -46,7 +46,7 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
     5インチ2D                   ○対応
     8インチ2D                   未テスト
   ライトペン                    ○対応 マウスを使ってエミュレート
-  ジョイパッド                  ○対応
+  ジョイパッド                  ○対応 (PIA Aポート, 拡張PIA Bポート, PSG)
   拡張メモリ(64KB)              ○対応
   プリンタ                      ○対応
     増設プリンタカード          ○対応

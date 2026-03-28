@@ -111,15 +111,8 @@ private:
 	inline void set_display_cursor();
 
 public:
-	HD46505(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("HD46505");
-		init_output_signals(&outputs_disp);
-		init_output_signals(&outputs_vblank);
-		init_output_signals(&outputs_vsync);
-		init_output_signals(&outputs_hsync);
-		init_output_signals(&outputs_wregs);
-	}
-	~HD46505() {}
+	HD46505(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~HD46505();
 
 	// common functions
 	void initialize();

@@ -12,6 +12,9 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 
+#define SUPPORT_KANJI2	0
+#define VERSION_STRING	"0.1.2"
+
 #define BUFFER_SIZE	1024
 
 
@@ -29,7 +32,7 @@ static int  offset_y;
 static char txt_path[BUFFER_SIZE];
 static char out_path[BUFFER_SIZE];
 static char log_path[BUFFER_SIZE];
-
+static char keep_right_dots;
 
 static void make_bitmap_font(const char *, const char *);
 static void exit_program();
@@ -68,6 +71,8 @@ int main(int argc, char* argv[])
 	memset(out_path, '\0', BUFFER_SIZE);
 	strncpy(out_path, app_path, BUFFER_SIZE-1);
 
+	keep_right_dots = 0;
+
 	/* get options */
 	get_options(argc, argv);
 
@@ -103,7 +108,9 @@ int main(int argc, char* argv[])
 
 	/* convert font */
 	make_bitmap_font("kanji.txt", "KANJI.ROM");
-/*	make_bitmap_font("kanji2.txt", "KANJI2.ROM"); */
+#if SUPPORT_KANJI2 >= 1
+	make_bitmap_font("kanji2.txt", "KANJI2.ROM");
+#endif
 
 	/* Shutdown all subsystems */
 	exit(0);
@@ -150,6 +157,8 @@ static void make_bitmap_font(const char *txt_name, const char *out_name)
 	Uint32 d;
 
 	int working;
+
+	int right = keep_right_dots ? 16 : 15;
 
 	FILE*   fs = NULL;
 	FILE*   fd = NULL;
@@ -207,7 +216,7 @@ static void make_bitmap_font(const char *txt_name, const char *out_name)
 						} else {
 							c = 0;
 						}
-						if (c != 0 && (x != 15 || y != 0)) {
+						if (c != 0 && x != right) {
 							d |= (0x8000 >> x);
 							fprintf(fl, "o");
 						} else {
@@ -249,16 +258,18 @@ static void exit_program()
 
 static void usage()
 {
-	out_log("Make Kanji ROM image. SDL Version 0.1.1\n");
-	out_log("Usage: %s [-h] [-f <ttf font file>] [-p <font size>] [-n <index>] [-x <offset x>] [-y <offset y>] [-o <output path>] [-i <input path>]\n",app_name);
+	out_log("Make Kanji ROM image. SDL Version %s\n", VERSION_STRING);
+	out_log("Usage: %s [-h] [-k] [-f <ttf font file>] [-p <font size>] [-n <index>] [-x <offset x>] [-y <offset y>] [-o <output path>] [-i <input path>]\n",app_name);
 	out_log("Options: -h : Show this usage.\n");
 	out_log("         -f : Set the ttf or otf font file.\n");
 	out_log("         -p : Set font size. (default:16)(range:8-24)\n");
 	out_log("         -n : Set font index in ttf font file. (default:0)\n");
-	out_log("         -x : Set offset x on a charactor bitmap. (default:0)(range:0-8)\n");
-	out_log("         -y : Set offset y on a charactor bitmap. (default:0)(range:0-8)\n");
+	out_log("         -x : Set offset x on a character bitmap. (default:0)(range:0-8)\n");
+	out_log("         -y : Set offset y on a character bitmap. (default:0)(range:0-8)\n");
 	out_log("         -o : Set path for output.\n");
 	out_log("         -i : Set path where kanji.txt is stored in.\n");
+	out_log("         -k : Keep the most right dots of a character bitmap.\n");
+	out_log("              By default, erase the most right dots.\n");
 	exit(1);
 }
 
@@ -275,6 +286,7 @@ static const struct st_arg_list {
 	{ "-n", 1 },
 	{ "-x", 1 },
 	{ "-y", 1 },
+	{ "-k", 0 },
 	{ NULL }
 };
 
@@ -321,7 +333,7 @@ static int get_options(int ac, char *av[])
 	long val;
 	char *err;
 
-	while ((opt = getopt(ac, av, "hf:p:i:o:n:x:y:")) != -1) {
+	while ((opt = getopt(ac, av, "hkf:p:i:o:n:x:y:")) != -1) {
 		switch (opt) {
 		case 'f':
 			memset(font_path, '\0', BUFFER_SIZE);
@@ -366,6 +378,9 @@ static int get_options(int ac, char *av[])
 		case 'i':
 			memset(txt_path, '\0', BUFFER_SIZE);
 			strncpy(txt_path, optarg, BUFFER_SIZE-1);
+			break;
+		case 'k':
+			keep_right_dots = 1;
 			break;
 		case 'h':
 			usage();

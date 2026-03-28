@@ -22,6 +22,18 @@
 //#define PRINTER_DELAY_TIME (CPU_CLOCKS/19200)
 #define PRINTER_DELAY_SEC  (CPU_CLOCKS)
 
+PRINTER::PRINTER(VM* parent_vm, EMU* parent_emu, const char* identifier, int config_num)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("PRINTER");
+	d_ctrl = NULL;
+	cfg_num = config_num;
+}
+
+PRINTER::~PRINTER()
+{
+}
+
 void PRINTER::cancel_my_event(int &id)
 {
 	if(id != -1) {

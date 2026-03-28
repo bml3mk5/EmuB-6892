@@ -172,7 +172,7 @@ private:
 
 public:
 	YM2203(VM* parent_vm, EMU* parent_emu, const char* identifier);
-	~YM2203() {}
+	~YM2203();
 
 	// common functions
 	void initialize();

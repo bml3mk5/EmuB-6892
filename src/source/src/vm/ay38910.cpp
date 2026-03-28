@@ -16,6 +16,22 @@
 #include "../fileio.h"
 #include "../utility.h"
 
+AY38910::AY38910(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("AY38910");
+#ifdef SUPPORT_AY_3_8910_PORT
+	for (int i = 0; i < 2; i++) {
+		init_output_signals(&port[i].outputs);
+		port[i].wreg = port[i].rreg = 0;//0xff;
+	}
+#endif
+}
+
+AY38910::~AY38910()
+{
+}
+
 void AY38910::initialize()
 {
 	psg = new PSG(0x80);

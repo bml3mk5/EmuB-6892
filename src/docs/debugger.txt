@@ -1,7 +1,7 @@
 ==============================================================================
     HITACHI BASIC MASTER LEVEL3 MARK5 Emulator
 
-Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2011-2026 All Rights Reserved.
 ==============================================================================
 
 
@@ -122,8 +122,8 @@ Copyright(C) Common Source Code Project, Sasaji 2011-2025 All Rights Reserved.
   書式: RD <device name> [{<regno>|<regname>} <value>]
   <device name> - デバイス名
    以下のデバイス名を指定するとレジスタの表示/編集が出来ます：
-    PIA,ACIA,CRTC,KEYBOARD,CMT,TIMER,FDC3,FDC5,FDDUNIT,BOARD,PSG60,PSG61,
-    PSG90,PSG91,PSG92,PIAEX,ACIAEX,VIA,PIAEX2,RTC,MSM58321
+    PIA,ACIA,CRTC,KEYBOARD,CMT,TIMER,FDC3,FDC5,FDDUNIT,BOARD,PIAPSG,PSG60,
+    PSG61,VIAPSG,PSG90,PSG91,PSG92,PIAEX,ACIAEX,PIAEX2,RTC,MSM58321
    以下のデバイス名を指定すると状態が表示されます：
     FDDINFO,FDD0,FDD1,FDD2,FDD3,EVENT
   <regno> - レジスタ番号を指定

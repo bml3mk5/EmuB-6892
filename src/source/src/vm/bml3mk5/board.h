@@ -76,15 +76,8 @@ private:
 #pragma pack()
 
 public:
-	BOARD(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("BOARD");
-		init_output_signals(&outputs_reset);
-		init_output_signals(&outputs_nmi);
-		init_output_signals(&outputs_irq);
-		init_output_signals(&outputs_firq);
-		init_output_signals(&outputs_halt);
-	}
-	~BOARD() {}
+	BOARD(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~BOARD();
 
 	// common functions
 	void initialize();

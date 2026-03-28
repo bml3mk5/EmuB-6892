@@ -50,14 +50,8 @@ private:
 #pragma pack()
 
 public:
-	PSG9C(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("PSG9C");
-		d_psg[0] = NULL;
-		d_psg[1] = NULL;
-		d_psg[2] = NULL;
-		d_via = NULL;
-	}
-	~PSG9C() {}
+	PSG9C(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~PSG9C();
 
 	// common functions
 	void initialize();

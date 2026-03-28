@@ -1,6 +1,6 @@
 # HITACHI BASIC MASTER LEVEL3 MARK5 Emulator Qt edition
 
-#### Copyright(C) Common Source Code Project, Sasaji 2012-2025 All Rights Reserved.
+#### Copyright(C) Common Source Code Project, Sasaji 2012-2026 All Rights Reserved.
 
 ## ファイル構成
 

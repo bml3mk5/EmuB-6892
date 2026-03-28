@@ -23,6 +23,16 @@ const uint8_t KANJI::krom[32] = {
 	0x42,0x84,0x44,0x44,0x48,0x24,0x50,0x14,0x60,0x0c,0x7f,0xfc,0x00,0x00,0x00,0x00
 };
 
+KANJI::KANJI(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("KANJI");
+}
+
+KANJI::~KANJI()
+{
+}
+
 void KANJI::init_kanji_rom(uint8_t *rom, size_t size)
 {
 	for(size_t i=0; i<size; i++) {

@@ -14,6 +14,24 @@
 #include "../fileio.h"
 #include "../utility.h"
 
+VIA::VIA(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("VIA");
+	init_output_signals(&outputs_pa);
+	init_output_signals(&outputs_ca2);
+	init_output_signals(&outputs_pb);
+	init_output_signals(&outputs_cb1);
+	init_output_signals(&outputs_cb2);
+	init_output_signals(&outputs_irq);
+
+	clk_unit = 1;
+}
+
+VIA::~VIA()
+{
+}
+
 void VIA::initialize()
 {
 	ca2_register_id = -1;
@@ -29,6 +47,8 @@ void VIA::reset()
 	dra = 0;
 	ddrb = 0;
 	ddra = 0;
+	orb = 0;
+	ora = 0;
 
 	t1l = 0;
 	t1c = 0;
@@ -88,20 +108,21 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 	switch (addr_p) {
 		case 0:
 			// ORB
-			drb = (data & ddrb) | (drb & ~ddrb);
+//			drb = (data & ddrb) | (drb & ~ddrb);
+			orb = (data & 0xff);
 			// output to device b
 			write_signals(&outputs_pb, data);
 			// clear ifr bit4
-			ifr = ifr & 0xef;
-			if ((pcr & 0xa0) == 0x20) {
+			ifr = ifr & ~IFR_CB1;
+			if ((pcr & (PCR_CB2_INTE | PCR_CB2_DIR)) == PCR_CB2_INTE) {
 				// clear ifr bit3
-				ifr = ifr & 0xf7;
+				ifr = ifr & ~IFR_CB2;
 			}
 			// output to CB2
-			if ((pcr & 0xc0) == 0x80) {
+			if ((pcr & (PCR_CB2_RISE | PCR_CB2_DIR)) == PCR_CB2_DIR) {
 				// CB2 goes "low"
 				set_cb2(0);
-				if ((pcr & 0xe0) == 0xa0) {
+				if ((pcr & PCR_CB2_CTRL) == (PCR_CB2_INTE | PCR_CB2_DIR)) {
 					// CB2 returned "high" in one clock later.
 					register_event_by_clock(this, EVENT_VIA_CB2, clk_unit, false, &cb2_register_id);
 				}
@@ -110,25 +131,28 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 			break;
 		case 1:
 			// ORA
-			dra = (data & ddra) | (dra & ~ddra);
+			// [: through :]
+		case 15:
+			// ORA (no handshake)
+//			dra = (data & ddra) | (dra & ~ddra);
+			ora = (data & 0xff);
 			// output to device a
 			write_signals(&outputs_pa, data);
 			// clear ifr bit1
-			ifr = ifr & 0xfd;
-			if ((pcr & 0x0a) == 0x02) {
+			ifr = ifr & ~IFR_CA1;
+			if ((pcr & (PCR_CA2_INTE | PCR_CA2_DIR)) == PCR_CA2_INTE) {
 				// clear ifr bit0
-				ifr = ifr & 0xfe;
+				ifr = ifr & ~IFR_CA2;
 			}
 			// output to CA2
-			if ((pcr & 0x0c) == 0x08) {
+			if ((pcr & (PCR_CA2_RISE | PCR_CA2_DIR)) == PCR_CA2_DIR) {
 				// CA2 goes "low"
 				set_ca2(0);
-				if ((pcr & 0x0e) == 0x0a) {
+				if ((pcr & PCR_CA2_CTRL) == (PCR_CA2_INTE | PCR_CA2_DIR)) {
 					// CA2 returned "high" in one clock later.
 					register_event_by_clock(this, EVENT_VIA_CA2, clk_unit, false, &ca2_register_id);
 				}
 			}
-
 			break;
 		case 2:
 			// DDRB
@@ -148,12 +172,12 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 			t1l = ((data & 0xff) << 8) | (t1l & 0xff);
 			t1c = t1l;
 			// clear ifr bit6
-			ifr &= 0xbf;
-			if (ier & 0x40) {
-				set_irq(ifr, 0x40);
+			ifr &= ~IFR_T1;
+			if (ier & IFR_T1) {
+				set_irq(ifr, IFR_T1);
 			}
 			// start count down
-			if (acr & ddrb & 0x80) {
+			if (acr & ddrb & ACR_T1_PB7E) {
 				// PB7 goes "low"
 				// output to device b
 				write_signals(&outputs_pb, drb & 0x7f);
@@ -181,9 +205,9 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 			// set T2C High order
 			t2c = ((data & 0xff) << 8) | (t2l & 0xff);
 			// clear ifr bit5
-			ifr &= 0xdf;
-			if (ier & 0x20) {
-				set_irq(ifr, 0x20);
+			ifr &= ~IFR_T2;
+			if (ier & IFR_T2) {
+				set_irq(ifr, IFR_T2);
 			}
 			// start count down
 			t2_pb6 = 1;
@@ -191,7 +215,7 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 				cancel_event(this, t2_register_id);
 				t2_register_id = -1;
 			}
-			if ((acr & 0x20) == 0) {
+			if ((acr & ACR_T2_CTRL) == 0) {
 				// is not pulse mode
 				timer2_clock = get_current_clock();
 				register_event_by_clock(this, EVENT_VIA_TIMER2, (t2c + 1) * clk_unit, false, &t2_register_id);
@@ -207,15 +231,15 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 			// SR
 			sr = data & 0xff;
 			// clear ifr bit2
-			ifr &= 0xfb;
-			if (ier & 0x04) {
-				set_irq(ifr, 0x04);
+			ifr &= ~IFR_SR;
+			if (ier & IFR_SR) {
+				set_irq(ifr, IFR_SR);
 			}
 			// shift start count down
-			if (acr & 0x1c) {
+			if (acr & ACR_SR_CTRL) {
 				shift_count = 0;
 
-				if ((acr & 0x0c) != 0x0c) {
+				if ((acr & ACR_SR_MODE) != ACR_SR_MODE) {
 					// CB1 is output clock
 					if (s2_register_id != -1) {
 						cancel_event(this, s2_register_id);
@@ -231,13 +255,13 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 		case 12:
 			// PCR
 			pcr = data & 0xff;
-			if ((pcr & 0xc0) == 0xc0) {
+			if ((pcr & (PCR_CB2_RISE | PCR_CB2_DIR)) == (PCR_CB2_RISE | PCR_CB2_DIR)) {
 				// CB2 output mode
-				set_cb2((pcr & 0x20) ? 1 : 0);
+				set_cb2((pcr & PCR_CB2_INTE) ? 1 : 0);
 			}
-			if ((pcr & 0x0c) == 0x0c) {
+			if ((pcr & (PCR_CA2_RISE | PCR_CA2_DIR)) == (PCR_CA2_RISE | PCR_CA2_DIR)) {
 				// CA2 output mode
-				set_ca2((pcr & 0x02) ? 1 : 0);
+				set_ca2((pcr & PCR_CA2_INTE) ? 1 : 0);
 			}
 
 			break;
@@ -257,10 +281,6 @@ void VIA::write_io8(uint32_t addr, uint32_t data)
 			// update irq
 			set_irq((ifr & 0x7f), (ier & 0x7f));
 			break;
-		case 15:
-			// ORA (no handshake)
-			dra = (data & ddra) | (dra & ~ddra);
-			break;
 	}
 
 }
@@ -275,22 +295,41 @@ uint32_t VIA::read_io8(uint32_t addr)
 	switch (addr_p) {
 		case 0:
 			// IRB
-			data = (drb & 0xff);
+//			data = (drb & 0xff);
+			// if ddrb is 1 (output),
+			// drb is ignored and orb is put on a bus
+			data = ((drb | ddrb) & (orb | ~ddrb));
 			// clear ifr bit4
-			ifr = ifr & 0xef;
-			if ((pcr & 0xa0) == 0x20) {
+			ifr = ifr & ~IFR_CB1;
+			if ((pcr & (PCR_CB2_INTE | PCR_CB2_DIR)) == PCR_CB2_INTE) {
 				// clear ifr bit3
-				ifr = ifr & 0xf7;
+				ifr = ifr & ~IFR_CB2;
 			}
 			break;
 		case 1:
 			// IRA
-			data = (dra & 0xff);
+//			data = (dra & 0xff);
+			// if ddra is 1 (output),
+			// the logical AND of dra and ora is put on a bus   
+			data = (dra & (ora | ~ddra));
 			// clear ifr bit1
-			ifr = ifr & 0xfd;
-			if ((pcr & 0x0a) == 0x02) {
+			ifr = ifr & ~IFR_CA1;
+			if ((pcr & (PCR_CA2_INTE | PCR_CA2_DIR)) == PCR_CA2_INTE) {
 				// clear ifr bit0
-				ifr = ifr & 0xfe;
+				ifr = ifr & ~IFR_CA2;
+			}
+			break;
+		case 15:
+			// IRA (no handshake)
+//			data = (dra & 0xff);
+			// if ddra is 1 (output),
+			// the logical AND of dra and ora is put on a bus   
+			data = (dra_res & (ora | ~ddra));
+			// clear ifr bit1
+			ifr = ifr & ~IFR_CA1;
+			if ((pcr & (PCR_CA2_INTE | PCR_CA2_DIR)) == PCR_CA2_INTE) {
+				// clear ifr bit0
+				ifr = ifr & ~IFR_CA2;
 			}
 			break;
 		case 2:
@@ -380,10 +419,6 @@ uint32_t VIA::read_io8(uint32_t addr)
 			// IER
 			data = ier;
 			break;
-		case 15:
-			// IRA (no handshake)
-			data = (dra & 0xff);
-			break;
 	}
 
 //	logging->out_debugf("via r %04x=%02x",addr_p,data);
@@ -401,7 +436,7 @@ void VIA::write_signal(int id, uint32_t data, uint32_t mask)
 	switch (id) {
 		case SIG_VIA_PA:
 			// pa
-			if ((acr & 0x01) != 0 || (ifr & 0x02) == 0) {
+			if ((acr & ACR_PA_L_EN) != 0 || (ifr & IFR_CA1) == 0) {
 				// PA latch enable , but CA1 is not active.
 				dra_res = (data & mask & 0xff);
 			} else {
@@ -411,36 +446,36 @@ void VIA::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case SIG_VIA_CA1:
 			// ca1
-			ca_b = (pcr & 0x01) ? 1 : 0;
+			ca_b = (pcr & PCR_CA1_CTRL) ? 1 : 0;
 			if (ca1 != new_c && ca_b == new_c) {	// trigger on/off
 				// active edge
 				// set ifr bit1
-				ifr = ifr | 0x02;
+				ifr = ifr | IFR_CA1;
 				// set PA
 				dra = dra_res;
 
-				if (ier & 0x02) {
+				if (ier & IFR_CA1) {
 					// interrupt
-					set_irq(ifr, 0x02);
+					set_irq(ifr, IFR_CA1);
 				}
 			}
 			ca1 = new_c;
 			break;
 		case SIG_VIA_CA2:
 			// ca2
-			if (pcr & 0x08) {
+			if (pcr & PCR_CA2_DIR) {
 				// ca2 output mode
 
 
 			} else {
 				// ca2 input mode
-				ca_b = (pcr & 0x04) ? 1 : 0;
+				ca_b = (pcr & PCR_CA2_RISE) ? 1 : 0;
 				if (ca2 != new_c && ca_b == new_c) {	// trigger on/off
 					// set ifr bit0
-					ifr = ifr | 0x01;
-					if (ier & 0x01) {
+					ifr = ifr | IFR_CA2;
+					if (ier & IFR_CA2) {
 						// interrupt
-						set_irq(ifr, 0x01);
+						set_irq(ifr, IFR_CA2);
 					}
 				}
 				ca2 = new_c;
@@ -449,15 +484,17 @@ void VIA::write_signal(int id, uint32_t data, uint32_t mask)
 
 		case SIG_VIA_PB:
 			// pb
-			if ((acr & 0x02) != 0 || (ifr & 0x10) == 0) {
+			if ((acr & ACR_PB_L_EN) != 0 || (ifr & IFR_CB1) == 0) {
 				// PB latch enable , but CB1 is not active.
-				drb_res = (drb_res & ddrb) | (data & ~ddrb & mask);
+//				drb_res = (drb_res & ddrb) | (data & ~ddrb & mask);
+				drb = (data & mask & 0xff);
 			} else {
-				drb = (drb & ddrb) | (data & ~ddrb & mask);
+//				drb = (drb & ddrb) | (data & ~ddrb & mask);
+				drb = (data & mask & 0xff);
 				drb_res = drb;
 			}
 			// PB6 pulse in Timer2 mode
-			if (acr & 0x20) {
+			if (acr & ACR_T2_CTRL) {
 				int n_pb6 = (data & 0x40) ? 1 : 0;
 				if (t2_pb6 == 0 && n_pb6 == 1) {
 					// trigger on
@@ -468,9 +505,9 @@ void VIA::write_signal(int id, uint32_t data, uint32_t mask)
 						// finish
 
 						// set ifr bit5
-						ifr |= 0x20;
-						if (ier & 0x20) {
-							set_irq(ifr, 0x20);
+						ifr |= IFR_T2;
+						if (ier & IFR_T2) {
+							set_irq(ifr, IFR_T2);
 						}
 //						logging->out_debugf("via timer2_pluse finish t2c:%5d acr:%02x",t2c,acr);
 					}
@@ -481,20 +518,20 @@ void VIA::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case SIG_VIA_CB1:
 			// cb1
-			cb_b = (pcr & 0x10) ? 1 : 0;
+			cb_b = (pcr & PCR_CB1_CTRL) ? 1 : 0;
 			if (cb1 != new_c && cb_b == new_c) {	// trigger on/off
 				// active edge
 				// set ifr bit4
-				ifr = ifr | 0x10;
+				ifr = ifr | IFR_CB1;
 				// set PB
 				drb = drb_res;
 
-				if (ier & 0x10) {
+				if (ier & IFR_CB1) {
 					// interrupt
-					set_irq(ifr, 0x10);
+					set_irq(ifr, IFR_CB1);
 				}
 			}
-			if ((acr & 0x0c) == 0x0c) {
+			if ((acr & ACR_SR_MODE) == ACR_SR_MODE) {
 				// In shift mode using CB1 input clock
 				if (cb1 == 0 && new_c == 1) {
 					// CB1 trigger on.
@@ -505,19 +542,19 @@ void VIA::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case SIG_VIA_CB2:
 			// cb2
-			if (pcr & 0x80) {
+			if (pcr & PCR_CB2_DIR) {
 				// cb2 output mode
 
 
 			} else {
 				// cb2 input mode
-				cb_b = (pcr & 0x40) ? 1 : 0;
+				cb_b = (pcr & PCR_CB2_RISE) ? 1 : 0;
 				if (cb2 != new_c && cb_b == new_c) {	// trigger on/off
 					// set ifr bit3
-					ifr = ifr | 0x08;
-					if (ier & 0x08) {
+					ifr = ifr | IFR_CB2;
+					if (ier & IFR_CB2) {
 						// interrupt
-						set_irq(ifr, 0x08);
+						set_irq(ifr, IFR_CB2);
 					}
 				}
 				cb2 = new_c;
@@ -540,7 +577,7 @@ void VIA::set_ca2(uint8_t val)
 {
 	if (ca2 != val) {
 		ca2 = val;
-		if (pcr & 0x08) {
+		if (pcr & PCR_CA2_DIR) {
 			// ca2 is output
 			write_signals(&outputs_ca2, val ? 0xffffffff : 0);
 		}
@@ -560,7 +597,7 @@ void VIA::set_cb2(uint8_t val)
 {
 	if (cb2 != val) {
 		cb2 = val;
-		if ((pcr & 0x80) || (acr & 0x10)) {
+		if ((pcr & PCR_CB2_DIR) || (acr & ACR_SR_DIR)) {
 			// cb2 is output
 			write_signals(&outputs_cb2, val ? 0xffffffff : 0);
 		}
@@ -574,7 +611,7 @@ void VIA::set_irq(uint8_t data, uint8_t mask)
 	if (data & mask) {
 		if ((now_irq & data & mask) == 0) {
 			// set ifr bit7
-			ifr |= 0x80;
+			ifr |= IFR_SET_IRQ;
 			write_signals(&outputs_irq, 0xffffffff);
 		}
 		now_irq = now_irq | (data & mask);
@@ -585,7 +622,7 @@ void VIA::set_irq(uint8_t data, uint8_t mask)
 		// all clear
 		if (now_irq == 0) {
 			// clear ifr bit7
-			ifr &= 0x7f;
+			ifr &= IFR_CLR_IRQ;
 			write_signals(&outputs_irq, 0);
 		}
 
@@ -609,16 +646,16 @@ void VIA::calc_clock(int &tc, uint64_t &clock)
 void VIA::shift_low()
 {
 	// CB1 goes "low"
-	if ((acr & 0x0c) != 0x0c) {
+	if ((acr & ACR_SR_MODE) != ACR_SR_MODE) {
 		set_cb1(0);
 	}
 
 //	logging->out_debugf("via shift_low clk:%6d cnt:%d sr:%02x acr:%02x cb1:%02x cb2:%02x",get_current_clock(),shift_count,sr,acr,cb1,cb2);
 
-	if ((acr & 0x0c) == 0 || (acr & 0x0c) == 0x04) {
+	if ((acr & ACR_SR_MODE) == 0 || (acr & ACR_SR_MODE) == 0x04) {
 		// timer set from T2L
 		shift_timer = (t2l & 0xff) + 2;
-	} else if ((acr & 0x0c) == 0x08) {
+	} else if ((acr & ACR_SR_MODE) == 0x08) {
 		// timer set from CLK
 		shift_timer = 1;
 	}
@@ -630,7 +667,7 @@ void VIA::shift_low()
 
 void VIA::shift()
 {
-	if (acr & 0x10) {
+	if (acr & ACR_SR_DIR) {
 		// output to CB2
 		uint8_t bit = (sr & 1);
 		sr = (sr >> 1) | (bit << 7);
@@ -638,11 +675,11 @@ void VIA::shift()
 	}
 
 	// CB1 goes "high"
-	if ((acr & 0x0c) != 0x0c) {
+	if ((acr & ACR_SR_MODE) != ACR_SR_MODE) {
 		set_cb1(1);
 	}
 
-	if ((acr & 0x10) == 0) {
+	if ((acr & ACR_SR_DIR) == 0) {
 		// input from CB2
 		// shift into register
 		sr = (sr << 1) | (cb2 & 1);
@@ -652,18 +689,18 @@ void VIA::shift()
 
 //	logging->out_debugf("via shift clk:%6d cnt:%d sr:%02x acr:%02x cb1:%02x cb2:%02x",get_current_clock(),shift_count,sr,acr,cb1,cb2);
 
-	if (shift_count < 8 || (acr & 0x1c) == 0x10) {
+	if (shift_count < 8 || (acr & ACR_SR_CTRL) == 0x10) {
 		// continue
 
-		if ((acr & 0x0c) == 0 || (acr & 0x0c) == 0x04) {
+		if ((acr & ACR_SR_MODE) == 0 || (acr & ACR_SR_MODE) == 0x04) {
 			// timer set from T2L
 			shift_timer = (t2l & 0xff) + 2;
-		} else if ((acr & 0x0c) == 0x08) {
+		} else if ((acr & ACR_SR_MODE) == 0x08) {
 			// timer set from CLK
 			shift_timer = 1;
 		}
 
-		if ((acr & 0x0c) != 0x0c) {
+		if ((acr & ACR_SR_MODE) != ACR_SR_MODE) {
 			// CB1 clock output
 			if (s2_register_id != -1) {
 				cancel_event(this, s2_register_id);
@@ -673,7 +710,7 @@ void VIA::shift()
 	} else {
 		// last
 
-		if ((acr & 0x10) == 0) {
+		if ((acr & ACR_SR_DIR) == 0) {
 			// CB2 input mode
 			if (s2_register_id != -1) {
 				cancel_event(this, s2_register_id);
@@ -693,9 +730,9 @@ void VIA::set_shift_intr()
 //	logging->out_debugf("via set_shift_intr clk:%6d cnt:%d sr:%02x acr:%02x cb1:%02x cb2:%02x",get_current_clock(),shift_count,sr,acr,cb1,cb2);
 
 	// set ifr bit2
-	ifr |= 0x04;
-	if (ier & 0x04) {
-		set_irq(ifr, 0x04);
+	ifr |= IFR_SR;
+	if (ier & IFR_SR) {
+		set_irq(ifr, IFR_SR);
 	}
 	if (s2_register_id != -1) {
 		cancel_event(this, s2_register_id);
@@ -730,18 +767,18 @@ void VIA::event_callback(int event_id, int err)
 			t1_register_id = -1;
 
 			// set ifr bit6
-			ifr |= 0x40;
-			if (ier & 0x40) {
-				set_irq(ifr, 0x40);
+			ifr |= IFR_T1;
+			if (ier & IFR_T1) {
+				set_irq(ifr, IFR_T1);
 			}
 
 //			logging->out_debugf("via event_timer1 clk:%6d t1c:%5d acr:%02x pb7:%d",get_current_clock(),t1c,acr,t1_pb7);
 
-			if (acr & 0x40) {
+			if (acr & ACR_T1_FRUN) {
 				// free-run mode
 				t1c = t1l;
 				t1_pb7 = 1 - t1_pb7;
-				if (acr & ddrb & 0x80) {
+				if (acr & ddrb & ACR_T1_PB7E) {
 					// PB7 trigger edge
 					// output to device b
 					write_signals(&outputs_pb, t1_pb7 ? (drb | 0x80) : (drb & 0x7f));
@@ -761,9 +798,9 @@ void VIA::event_callback(int event_id, int err)
 			t2_register_id = -1;
 
 			// set ifr bit5
-			ifr |= 0x20;
-			if (ier & 0x20) {
-				set_irq(ifr, 0x20);
+			ifr |= IFR_T2;
+			if (ier & IFR_T2) {
+				set_irq(ifr, IFR_T2);
 			}
 
 //			logging->out_debugf("via event_timer2 clk:%6d t2c:%5d acr:%02x",get_current_clock(),t2c,acr);
@@ -800,7 +837,7 @@ void VIA::save_state(FILEIO *fp)
 	struct vm_state_st vm_state;
 
 	//
-	vm_state_ident.version = Uint16_LE(2);
+	vm_state_ident.version = Uint16_LE(3);
 	vm_state_ident.size = Uint32_LE(sizeof(vm_state_ident) + sizeof(vm_state));
 
 	// copy values
@@ -841,6 +878,10 @@ void VIA::save_state(FILEIO *fp)
 	vm_state.d.v2.timer1_clock = Uint64_LE(timer1_clock);
 	vm_state.d.v2.timer2_clock = Uint64_LE(timer2_clock);
 	vm_state.d.v2.shift_count = Int32_LE(shift_count);
+
+	// version 3
+	vm_state.orb = orb;
+	vm_state.ora = ora;
 
 	fp->Fwrite(&vm_state_ident, sizeof(vm_state_ident), 1);
 	fp->Fwrite(&vm_state, sizeof(vm_state), 1);
@@ -898,6 +939,14 @@ bool VIA::load_state(FILEIO *fp)
 		shift_count = Int32_LE(vm_state.d.v2.shift_count);
 	}
 
+	if (Uint16_LE(vm_state_i.version) >= 3) {
+		orb = vm_state.orb;
+		ora = vm_state.ora;
+	} else {
+		orb = drb;
+		ora = dra;
+	}
+
 	return true;
 }
 
@@ -914,11 +963,19 @@ uint32_t VIA::debug_read_io8(uint32_t addr)
 	switch (addr_p) {
 		case 0:
 			// IRB
-			data = (drb & 0xff);
+			// if ddrb is 1 (output),
+			// drb is ignored and orb is put on a bus
+			data = ((drb | ddrb) & (orb | ~ddrb));
 			break;
 		case 1:
 			// IRA
-			data = (dra & 0xff);
+			// the logical AND of dra and ora is put on a bus   
+			data = (dra & (ora | ~ddra));
+			break;
+		case 15:
+			// IRA (no handshake)
+			// the logical AND of dra and ora is put on a bus   
+			data = (dra_res & (ora | ~ddra));
 			break;
 		case 2:
 			// DDRB
@@ -969,19 +1026,17 @@ uint32_t VIA::debug_read_io8(uint32_t addr)
 			// IER
 			data = ier;
 			break;
-		case 15:
-			// IRA (no handshake)
-			data = (dra & 0xff);
-			break;
 	}
 	return data;
 }
 
 static const _TCHAR *c_reg_names[] = {
-	_T("IRB/ORB"),
-	_T("IRA/ORA"),
-	_T("DDRB"),
+	_T("IRA"),
+	_T("ORA"),
 	_T("DDRA"),
+	_T("IRB"),
+	_T("ORB"),
+	_T("DDRB"),
 	_T("T1L"),
 	_T("T1C"),
 	_T("T2L"),
@@ -998,29 +1053,42 @@ bool VIA::debug_write_reg(uint32_t reg_num, uint32_t data)
 {
 	switch(reg_num) {
 	case 0:
+		dra = data & 0xff;
+		dra_res = dra;
+		return true;
 	case 1:
+		write_io8(1, data);
+		return true;
 	case 2:
+		ddra = data & 0xff;
+		return true;
 	case 3:
-		write_io8(reg_num, data);
+		drb = data & 0xff;
+		drb_res = drb;
 		return true;
 	case 4:
-		t1l = data & 0xffff;
+		write_io8(0, data);
 		return true;
 	case 5:
-		t1c = data & 0xffff;
+		ddrb = data & 0xff;
 		return true;
 	case 6:
-		t2l = data & 0xffff;
+		t1l = data & 0xffff;
 		return true;
 	case 7:
-		t2c = data & 0xffff;
+		t1c = data & 0xffff;
 		return true;
 	case 8:
+		t2l = data & 0xffff;
+		return true;
 	case 9:
-	case 10:
+		t2c = data & 0xffff;
+		return true;
 	case 11:
 	case 12:
-		write_io8(reg_num+2, data);
+	case 13:
+	case 14:
+		write_io8(reg_num, data);
 		return true;
 	}
 	return false;
@@ -1037,21 +1105,25 @@ void VIA::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len
 	UTILITY::tcscpy(buffer, buffer_len, _T("MCS6522/MOS6522 ("));
 	UTILITY::tcscat(buffer, buffer_len, title);
 	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], drb);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], dra);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], ddrb);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 3, c_reg_names[3], ddra);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], dra);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], ora);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], ddra);
 	UTILITY::tcscat(buffer, buffer_len, _T("\n"));
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 4, c_reg_names[4], t1l);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 5, c_reg_names[5], t1c);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 6, c_reg_names[6], t2l);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 7, c_reg_names[7], t2c);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 3, c_reg_names[3], drb);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 4, c_reg_names[4], orb);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 5, c_reg_names[5], ddrb);
 	UTILITY::tcscat(buffer, buffer_len, _T("\n"));
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 8, c_reg_names[8], sr);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 9, c_reg_names[9], acr);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 10, c_reg_names[10], pcr);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 11, c_reg_names[11], ifr);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 12, c_reg_names[12], ier);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 6, c_reg_names[6], t1l);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 7, c_reg_names[7], t1c);
+	UTILITY::tcscat(buffer, buffer_len, _T("\n"));
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 8, c_reg_names[8], t2l);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%04X"), 9, c_reg_names[9], t2c);
+	UTILITY::tcscat(buffer, buffer_len, _T("\n"));
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 10, c_reg_names[10], sr);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 11, c_reg_names[11], acr);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 12, c_reg_names[12], pcr);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 13, c_reg_names[13], ifr);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 14, c_reg_names[14], ier);
 }
 
 #endif

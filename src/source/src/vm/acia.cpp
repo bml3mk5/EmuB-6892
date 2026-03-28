@@ -14,6 +14,21 @@
 #include "../fileio.h"
 #include "../utility.h"
 
+ACIA::ACIA(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("ACIA");
+	init_output_signals(&outputs_txd);
+	init_output_signals(&outputs_rts);
+	init_output_signals(&outputs_dtr);
+	init_output_signals(&outputs_irq);
+	init_output_signals(&outputs_res);
+}
+
+ACIA::~ACIA()
+{
+}
+
 void ACIA::initialize()
 {
 	clear();

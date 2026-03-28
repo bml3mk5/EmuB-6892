@@ -188,9 +188,9 @@ INT_PTR ConfigBox::onInitDialog(UINT message, WPARAM wParam, LPARAM lParam)
 	// drawing method
 	uint8_t enable_type = emu->get_enabled_drawing_method();
 	LABELS::MakeDrawingMethodList(enable_type);
-	CreateComboBox(vbox, IDC_COMBO_DRAWING, LABELS::drawing_method, LABELS::GetDrawingMethodIndex(pConfig->drawing_method), 6);
+	CreateComboBox(vbox, IDC_COMBO_DRAWING, LABELS::drawing_method, LABELS::GetDrawingMethodIndex(pConfig->drawing_method), 10);
 	// filter type
-	CreateComboBox(vbox, IDC_COMBO_SCREEN_FILTER, LABELS::screen_filter, pConfig->filter_type, 6);
+	CreateComboBox(vbox, IDC_COMBO_SCREEN_FILTER, LABELS::screen_filter, pConfig->filter_type, 10);
 
 	// crtc
 	CBox *box_1rv = box_1h->AddBox(CBox::VerticalBox, 0, 0, _T("1rv"));

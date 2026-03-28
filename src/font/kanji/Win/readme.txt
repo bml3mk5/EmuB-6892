@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
-  擬似漢字ROMイメージ作成プログラム Win Version 0.1.1
+  擬似漢字ROMイメージ作成プログラム Win Version 0.1.2
 
-Copyright(C) Common Source Code Project, Sasaji 2012,2025 All Rights Reserved.
+Copyright(C) Common Source Code Project, Sasaji 2012,2026 All Rights Reserved.
 ------------------------------------------------------------------------------
 
 フォント「ＭＳ ゴシック」を基にして擬似漢字ROMを作成するプログラムです。
@@ -25,6 +25,8 @@ Copyright(C) Common Source Code Project, Sasaji 2012,2025 All Rights Reserved.
         パスの末尾はパス区切り文字(\)で終わるようにしてください。
   -o : 出力ファイル先のパス (デフォルト: 現在のディレクトリ)
         パスの末尾はパス区切り文字(\)で終わるようにしてください。
+  -k : デフォルトでは各漢字ビットマップの右端ドットを消去しますが、
+       このオプションを指定すると消去しません。
 
 ● 免責事項
 
@@ -41,8 +43,9 @@ Copyright(C) Common Source Code Project, Sasaji 2012,2025 All Rights Reserved.
 ------------------------------------------------------------------------------
 
 Sasaji (sasaji@s-sasaji.ddo.jp)
-http://s-sasaji.ddo.jp/bml3mk5/
-(X(Twitter): https://x.com/bml3mk5)
+ * My WebPage: http://s-sasaji.ddo.jp/bml3mk5/
+ * GitHub:     https://github.com/bml3mk5/EmuB-6892
+ * X(Twitter): https://x.com/bml3mk5
 
 ------------------------------------------------------------------------------
 

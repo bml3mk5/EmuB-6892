@@ -15,7 +15,7 @@ DBG_CFLAGS=$(ARCH) -g -Wall -O0 $(shell sdl2-config --cflags)
 LD=gcc
 
 LIBDIR=/usr/lib
-SDLLIBDIR=/usr/local/lib
+SDLLIBDIR=/D/Devel/mingw64
 SDLLIBS=$(SDLLIBDIR)/libSDL2main.a $(SDLLIBDIR)/libSDL2.a $(SDLLIBDIR)/libSDL2_ttf.a $(SDLLIBDIR)/libfreetype.a
 
 SH_LDFLAGS=-s $(shell sdl2-config --libs) -lSDL2_ttf

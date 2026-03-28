@@ -14,6 +14,22 @@
 #include "../fileio.h"
 #include "../utility.h"
 
+PIA::PIA(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("PIA");
+	init_output_signals(&outputs_pa);
+	init_output_signals(&outputs_ca2);
+	init_output_signals(&outputs_irqa);
+	init_output_signals(&outputs_pb);
+	init_output_signals(&outputs_cb2);
+	init_output_signals(&outputs_irqb);
+}
+
+PIA::~PIA()
+{
+}
+
 void PIA::initialize()
 {
 	ca2_register_id = -1;
@@ -59,7 +75,7 @@ void PIA::write_io8(uint32_t addr, uint32_t data)
 	switch (addr_p) {
 		case 0:
 			// pia DRA or DDRA
-			if (cra & 0x04) {
+			if (cra & CRA_DDR_SEL) {
 				// output data
 //				dra = (data & ddra & 0xff);
 				ora = (data & 0xff);
@@ -73,28 +89,28 @@ void PIA::write_io8(uint32_t addr, uint32_t data)
 			break;
 		case 1:
 			// pia CRA
-			cra = data & 0x3f;
+			cra = data & CRA_IRQ_CLR;
 			// ca2 output
-			if ((cra & 0x30) == 0x30) {
-				set_ca2((cra & 0x08) ? 1 : 0);
+			if ((cra & (CRA_CA2_RISE | CRA_CA2_OUT)) == (CRA_CA2_RISE | CRA_CA2_OUT)) {
+				set_ca2((cra & CRA_CA2_IRQEN) ? 1 : 0);
 			}
 			// irq interrupt
-			if ((cra & 0x81) == 0x81 || (cra & 0x48) == 0x48) {
+			if ((cra & (CRA_IRQ1 | CRA_CA1_IRQEN)) == (CRA_IRQ1 | CRA_CA1_IRQEN) || (cra & (CRA_IRQ2 | CRA_CA2_IRQEN)) == (CRA_IRQ2 | CRA_CA2_IRQEN)) {
 				set_irqa(true);
 			}
 			break;
 		case 2:
 			// pia DRB or DDRB
-			if (crb & 0x04) {
+			if (crb & CRB_DDR_SEL) {
 //				drb = (data & ddrb & 0xff);
 				orb = (data & 0xff);
 				// output to device b
 				write_signals(&outputs_pb, data);
 
-				if ((crb & 0x30) == 0x20) {
+				if ((crb & (CRB_CB2_RISE | CRB_CB2_OUT)) == CRB_CB2_OUT) {
 					// cb2 output reset
 					set_cb2(0);
-					if (crb & 0x08) {
+					if (crb & CRB_CB2_IRQEN) {
 						// cb2 returned "high" in one clock later.
 						register_event_by_clock(this, EVENT_PIA_CB2, 1, false, &ca2_register_id);
 					}
@@ -106,13 +122,13 @@ void PIA::write_io8(uint32_t addr, uint32_t data)
 			break;
 		case 3:
 			// pia CRB
-			crb = data & 0x3f;
+			crb = data & CRB_IRQ_CLR;
 			// cb2 output
-			if ((crb & 0x30) == 0x30) {
-				set_cb2((crb & 0x08) ? 1 : 0);
+			if ((crb & (CRB_CB2_RISE | CRB_CB2_OUT)) == (CRB_CB2_RISE | CRB_CB2_OUT)) {
+				set_cb2((crb & CRB_CB2_IRQEN) ? 1 : 0);
 			}
 			// irq interrupt
-			if ((crb & 0x81) == 0x81 || (crb & 0x48) == 0x48) {
+			if ((crb & (CRB_IRQ1 | CRB_CB1_IRQEN)) == (CRB_IRQ1 | CRB_CB1_IRQEN) || (crb & (CRB_IRQ2 | CRB_CB2_IRQEN)) == (CRB_IRQ2 | CRB_CB2_IRQEN)) {
 				set_irqb(true);
 			}
 			break;
@@ -130,19 +146,19 @@ uint32_t PIA::read_io8(uint32_t addr)
 	switch (addr_p) {
 		case 0:
 			// pia DRA or DDRA
-			if (cra & 0x04) {
+			if (cra & CRA_DDR_SEL) {
 //				data = (dra & (~ddra) & 0xff);
 				// if ddra is 1 (output),
 				// the logical AND of dra and ora is put on a bus   
 				data = (dra & (ora | ~ddra));
 				// clear IRQA in CRA
-				cra = cra & 0x3f;
+				cra = cra & CRA_IRQ_CLR;
 				set_irqa(false);
 
-				if ((cra & 0x30) == 0x20) {
+				if ((cra & (CRA_CA2_OUT | CRA_CA2_RISE)) == CRA_CA2_OUT) {
 					// ca2 output reset
 					set_ca2(0);
-					if(cra & 0x08) {
+					if(cra & CRA_CA2_IRQEN) {
 						// ca2 returned "high" in one clock later.
 						register_event_by_clock(this, EVENT_PIA_CA2, 1, false, &cb2_register_id);
 					}
@@ -157,14 +173,14 @@ uint32_t PIA::read_io8(uint32_t addr)
 			break;
 		case 2:
 			// pia DRB or DDRB
-			if (crb & 0x04) {
+			if (crb & CRB_DDR_SEL) {
 //				data = (drb & (~ddrb) & 0xff);
 //				data = (drb & 0xff);
 				// if ddrb is 1 (output),
 				// drb is ignored and orb is put on a bus
 				data = ((drb | ddrb) & (orb | ~ddrb));
 				// clear IRQB in CRB
-				crb = crb & 0x3f;
+				crb = crb & CRB_IRQ_CLR;
 				set_irqb(false);
 
 			} else {
@@ -196,16 +212,16 @@ void PIA::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case SIG_PIA_CA1:
 			// ca1
-			ca_b = (cra & 0x02) ? 1 : 0;
+			ca_b = (cra & CRA_CA1_RISE) ? 1 : 0;
 			if (ca1 != new_c && ca_b == new_c) {	// trigger on/off
 				// set cra bit7 (IRQA)
-				cra = cra | 0x80;
-				if (cra & 0x01) {
+				cra = cra | CRA_IRQ1;
+				if (cra & CRA_CA1_IRQEN) {
 					// interrupt
 					set_irqa(true);
 				}
 			}
-			if (ca1 != new_c && (cra & 0x38) == 0x20) {
+			if (ca1 != new_c && (cra & CRA_CA2_CTRL) == CRA_CA2_OUT) {
 				// ca2 goes "high"
 				set_ca2(1);
 			}
@@ -213,17 +229,17 @@ void PIA::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case SIG_PIA_CA2:
 			// ca2
-			if (cra & 0x20) {
+			if (cra & CRA_CA2_OUT) {
 				// ca2 output mode
 
 
 			} else {
 				// ca2 input mode
-				ca_b = (cra & 0x10) ? 1 : 0;
+				ca_b = (cra & CRA_CA2_RISE) ? 1 : 0;
 				if (ca2 != new_c && ca_b == new_c) {	// trigger on/off
 					// set cra bit6 (IRQA)
-					cra = cra | 0x40;
-					if (cra & 0x08) {
+					cra = cra | CRA_IRQ2;
+					if (cra & CRA_CA2_IRQEN) {
 						// interrupt
 						set_irqa(true);
 					}
@@ -238,15 +254,15 @@ void PIA::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case SIG_PIA_CB1:
 			// cb1
-			cb_b = (crb & 0x02) ? 1 : 0;
+			cb_b = (crb & CRB_CB1_RISE) ? 1 : 0;
 			if (cb1 != new_c && cb_b == new_c) {	// trigger on/off
 				// set crb bit7 (IRQB)
-				crb = crb | 0x80;
-				if ((crb & 0x38) == 0x20) {
+				crb = crb | CRB_IRQ1;
+				if ((crb & CRB_CB2_CTRL) == CRB_CB2_OUT) {
 					// cb2 goes "high"
 					set_cb2(1);
 				}
-				if (crb & 0x01) {
+				if (crb & CRB_CB1_IRQEN) {
 					// interrupt
 					set_irqb(true);
 				}
@@ -255,17 +271,17 @@ void PIA::write_signal(int id, uint32_t data, uint32_t mask)
 			break;
 		case SIG_PIA_CB2:
 			// cb2
-			if (crb & 0x20) {
+			if (crb & CRB_CB2_OUT) {
 				// cb2 output mode
 
 
 			} else {
 				// cb2 input mode
-				cb_b = (crb & 0x10) ? 1 : 0;
+				cb_b = (crb & CRB_CB2_RISE) ? 1 : 0;
 				if (cb2 != new_c && cb_b == new_c) {	// trigger on/off
 					// set crb bit6 (IRQB)
-					crb = crb | 0x40;
-					if (crb & 0x08) {
+					crb = crb | CRB_IRQ2;
+					if (crb & CRB_CB2_IRQEN) {
 						// interrupt
 						set_irqb(true);
 					}
@@ -425,8 +441,10 @@ uint32_t PIA::debug_read_io8(uint32_t addr)
 	switch (addr_p) {
 		case 0:
 			// pia DRA or DDRA
-			if (cra & 0x04) {
-				data = (dra & (~ddra) & 0xff);
+			if (cra & CRA_DDR_SEL) {
+				// if ddra is 1 (output),
+				// the logical AND of dra and ora is put on a bus   
+				data = (dra & (ora | ~ddra));
 			} else {
 				data = ddra;
 			}
@@ -437,8 +455,10 @@ uint32_t PIA::debug_read_io8(uint32_t addr)
 			break;
 		case 2:
 			// pia DRB or DDRB
-			if (crb & 0x04) {
-				data = (drb & (~ddrb) & 0xff);
+			if (crb & CRB_DDR_SEL) {
+				// if ddrb is 1 (output),
+				// drb is ignored and orb is put on a bus
+				data = ((drb | ddrb) & (orb | ~ddrb));
 			} else {
 				data = ddrb;
 			}
@@ -452,8 +472,12 @@ uint32_t PIA::debug_read_io8(uint32_t addr)
 }
 
 static const _TCHAR *c_reg_names[] = {
+	_T("DRA"),
+	_T("ORA"),
 	_T("DDRA"),
 	_T("CRA"),
+	_T("DRB"),
+	_T("ORB"),
 	_T("DDRB"),
 	_T("CRB"),
 	NULL
@@ -463,15 +487,27 @@ bool PIA::debug_write_reg(uint32_t reg_num, uint32_t data)
 {
 	switch(reg_num) {
 	case 0:
-		ddra = data & 0xff;
+		dra = data & 0xff;
 		return true;
 	case 1:
-		write_io8(1, data);
+		ora = data & 0xff;
 		return true;
 	case 2:
-		ddrb = data & 0xff;
+		ddra = data & 0xff;
 		return true;
 	case 3:
+		write_io8(1, data);
+		return true;
+	case 4:
+		drb = data & 0xff;
+		return true;
+	case 5:
+		orb = data & 0xff;
+		return true;
+	case 6:
+		ddrb = data & 0xff;
+		return true;
+	case 7:
 		write_io8(3, data);
 		return true;
 	}
@@ -489,9 +525,14 @@ void PIA::debug_regs_info(const _TCHAR *title, _TCHAR *buffer, size_t buffer_len
 	UTILITY::tcscpy(buffer, buffer_len, _T("HD6821/MC6821 ("));
 	UTILITY::tcscat(buffer, buffer_len, title);
 	UTILITY::tcscat(buffer, buffer_len, _T(") Registers:\n"));
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], ddra);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], cra);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], ddrb);
-	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 3, c_reg_names[3], crb);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 0, c_reg_names[0], dra);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 1, c_reg_names[1], ora);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 2, c_reg_names[2], ddra);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 3, c_reg_names[3], cra);
+	UTILITY::tcscat(buffer, buffer_len, _T("\n"));
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 4, c_reg_names[4], drb);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 5, c_reg_names[5], orb);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 6, c_reg_names[6], ddrb);
+	UTILITY::sntprintf(buffer, buffer_len, _T(" %X(%s):%02X"), 7, c_reg_names[7], crb);
 }
 #endif

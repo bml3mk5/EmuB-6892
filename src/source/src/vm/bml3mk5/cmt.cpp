@@ -28,6 +28,17 @@
 
 static const _TCHAR *support_ext[6]={_T(".wav"), _T(".l3c"), _T(".l3b"), _T(".l3"), _T(".t9x"), NULL};
 
+CMT::CMT(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("CMT");
+	d_ctrl = NULL;
+}
+
+CMT::~CMT()
+{
+}
+
 void CMT::initialize()
 {
 	// data recorder

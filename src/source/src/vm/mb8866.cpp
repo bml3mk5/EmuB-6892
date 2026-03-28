@@ -48,6 +48,24 @@ static const int seek_wait[2][4] = {
 #define SEARCH_SECTOR_IMMEDIATELY
 #define SEARCH_ADDRESS_IMMEDIATELY
 
+MB8866::MB8866(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("MB8866");
+	init_output_signals(&outputs_irq);
+	init_output_signals(&outputs_drq);
+	d_fdd = NULL;
+	clk_num = 0;
+#ifdef _DEBUG_MB8866
+	d_cpu = NULL;
+#endif
+	channel = 0;
+}
+
+MB8866::~MB8866()
+{
+}
+
 void MB8866::cancel_my_event(int event)
 {
 	if(register_id[event] != -1) {

@@ -39,6 +39,29 @@ private:
 		EVENT_PIA_CA2	= 1,
 		EVENT_PIA_CB2	= 2,
 	};
+	/// @brief CR masks
+	enum CR_MASKS {
+		CRA_CA1_IRQEN = 0x01,
+		CRA_CA1_RISE = 0x02,
+		CRA_DDR_SEL = 0x04,
+		CRA_CA2_IRQEN = 0x08,
+		CRA_CA2_RISE = 0x10,
+		CRA_CA2_OUT = 0x20,
+		CRA_CA2_CTRL = 0x38,
+		CRA_IRQ2 = 0x40,
+		CRA_IRQ1 = 0x80,
+		CRA_IRQ_CLR = 0x3f,
+		CRB_CB1_IRQEN = 0x01,
+		CRB_CB1_RISE = 0x02,
+		CRB_DDR_SEL = 0x04,
+		CRB_CB2_IRQEN = 0x08,
+		CRB_CB2_RISE = 0x10,
+		CRB_CB2_OUT = 0x20,
+		CRB_CB2_CTRL = 0x38,
+		CRB_IRQ2 = 0x40,
+		CRB_IRQ1 = 0x80,
+		CRB_IRQ_CLR = 0x3f,
+	};
 
 private:
 	uint8_t	cra;	///< Control Register A
@@ -100,16 +123,8 @@ private:
 	void cancel_my_events();
 
 public:
-	PIA(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("PIA");
-		init_output_signals(&outputs_pa);
-		init_output_signals(&outputs_ca2);
-		init_output_signals(&outputs_irqa);
-		init_output_signals(&outputs_pb);
-		init_output_signals(&outputs_cb2);
-		init_output_signals(&outputs_irqb);
-	}
-	~PIA() {}
+	PIA(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~PIA();
 
 	// common functions
 	void initialize();

@@ -167,11 +167,8 @@ private:
 	static void save_ini_file_one(CSimpleIni *ini, const _TCHAR *section_name, int rows, const uint32_t *map, const uint32_t *preset);
 
 public:
-	KEYBOARD(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier)
-	{
-		set_class_name("KEYBOARD");
-	}
-	~KEYBOARD() {}
+	KEYBOARD(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~KEYBOARD();
 
 	// common functions
 	void initialize();

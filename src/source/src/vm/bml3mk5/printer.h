@@ -84,13 +84,8 @@ private:
 	void  disconnect_socket();
 
 public:
-	PRINTER(VM* parent_vm, EMU* parent_emu, const char* identifier, int config_num) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("PRINTER");
-		d_ctrl = NULL;
-		cfg_num = config_num;
-	}
-
-	~PRINTER() {}
+	PRINTER(VM* parent_vm, EMU* parent_emu, const char* identifier, int config_num);
+	~PRINTER();
 
 	// common functions
 	void initialize();

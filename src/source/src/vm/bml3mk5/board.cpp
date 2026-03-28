@@ -16,6 +16,24 @@
 #include "../../fileio.h"
 #include "../../utility.h"
 
+BOARD::BOARD(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("BOARD");
+	init_output_signals(&outputs_reset);
+	init_output_signals(&outputs_nmi);
+	init_output_signals(&outputs_irq);
+	init_output_signals(&outputs_firq);
+	init_output_signals(&outputs_halt);
+	d_cpu = NULL;
+	now_halt = now_nmi = now_irq = now_firq = now_wreset = 0;
+	wreset_register_id = preset_register_id = 0;
+}
+
+BOARD::~BOARD()
+{
+}
+
 void BOARD::initialize()
 {
 	wreset_register_id = -1;

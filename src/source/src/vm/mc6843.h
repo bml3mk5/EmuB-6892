@@ -259,13 +259,8 @@ private:
 //	void write_ibm3740_format();
 
 public:
-	MC6843(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("MC6843");
-		init_output_signals(&outputs_irq);
-		channel = 0;
-		clk_num = 0;
-	}
-	~MC6843() {}
+	MC6843(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~MC6843();
 
 	// common functions
 	void initialize();

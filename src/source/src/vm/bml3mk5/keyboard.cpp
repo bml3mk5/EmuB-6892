@@ -35,6 +35,16 @@
 
 #define KEYBIND_HEADER	"KEYBIND3"
 
+KEYBOARD::KEYBOARD(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("KEYBOARD");
+}
+
+KEYBOARD::~KEYBOARD()
+{
+}
+
 void KEYBOARD::initialize()
 {
 	p_key_stat = emu->key_buffer();

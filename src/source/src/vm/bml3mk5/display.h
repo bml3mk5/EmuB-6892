@@ -244,11 +244,8 @@ private:
 	void draw_screen_sub_afterimage1();
 	void draw_screen_sub_afterimage2();
 public:
-	DISPLAY(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier)
-	{
-		set_class_name("DISPLAY");
-	}
-	~DISPLAY() {}
+	DISPLAY(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~DISPLAY();
 
 	// common functions
 	void initialize();

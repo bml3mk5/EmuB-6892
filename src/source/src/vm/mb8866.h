@@ -214,18 +214,8 @@ private:
 	inline void set_drq(bool val);
 
 public:
-	MB8866(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("MB8866");
-		init_output_signals(&outputs_irq);
-		init_output_signals(&outputs_drq);
-		d_fdd = NULL;
-		clk_num = 0;
-#ifdef _DEBUG_MB8866
-		d_cpu = NULL;
-#endif
-		channel = 0;
-	}
-	~MB8866() {}
+	MB8866(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~MB8866();
 
 	// common functions
 	void initialize();

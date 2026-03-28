@@ -159,11 +159,8 @@ private:
 	void set_tape_direct(int16_t *w_data, int w_len);
 
 public:
-	CMT(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("CMT");
-		d_ctrl = NULL;
-	}
-	~CMT() {}
+	CMT(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~CMT();
 
 	// common functions
 	void initialize();

@@ -92,13 +92,8 @@ private:
 	void disconnect_all();
 
 public:
-	COMM(VM* parent_vm, EMU* parent_emu, const char* identifier, int config_num) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("COMM");
-		d_ctrl = NULL;
-		d_cmt = NULL;
-		m_cfg_num = config_num;
-	}
-	~COMM() {}
+	COMM(VM* parent_vm, EMU* parent_emu, const char* identifier, int config_num);
+	~COMM();
 
 	// common functions
 	void initialize();

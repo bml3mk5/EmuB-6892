@@ -27,6 +27,17 @@
 #define NOW_WRITEABLE	(SEL_WRITE && SEL_WRITEABLE)
 #define NOW_READABLE	(SEL_READ && SEL_READABLE)
 
+RTC::RTC(VM* parent_vm, EMU* parent_emu, const char* identifier)
+ : DEVICE(parent_vm, parent_emu, identifier)
+{
+	set_class_name("RTC");
+	d_rtc = NULL;
+}
+
+RTC::~RTC()
+{
+}
+
 void RTC::initialize()
 {
 	rtc_reg_sel = 0;

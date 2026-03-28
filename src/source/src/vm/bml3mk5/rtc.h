@@ -38,11 +38,8 @@ private:
 #pragma pack()
 
 public:
-	RTC(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("RTC");
-		d_rtc = NULL;
-	}
-	~RTC() {}
+	RTC(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~RTC();
 
 	// common functions
 	void initialize();

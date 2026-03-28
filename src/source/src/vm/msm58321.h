@@ -93,21 +93,8 @@ private:
 	void set_busy(bool val);
 
 public:
-	MSM58321(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier)
-	{
-#ifdef USE_MSM58321_OUTPUTS_DATA
-		init_output_signals(&outputs_data);
-#endif
-#ifndef HAS_MSM5832
-#ifdef USE_MSM58321_BUSY
-		init_output_signals(&outputs_busy);
-#endif
-		set_class_name("MSM58321");
-#else
-		set_class_name("MSM5832");
-#endif
-	}
-	~MSM58321() {}
+	MSM58321(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~MSM58321();
 
 	// common functions
 	void initialize();

@@ -167,10 +167,8 @@ private:
 	void set_widx();
 
 public:
-	SOUND(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("SOUND");
-	}
-	~SOUND() {}
+	SOUND(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~SOUND();
 
 	// common functions
 	void initialize();

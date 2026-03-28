@@ -74,6 +74,10 @@ EVENT::EVENT(VM* parent_vm, EMU* parent_emu, char* identifier)
 #endif
 }
 
+EVENT::~EVENT()
+{
+}
+
 void EVENT::initialize()
 {
 	// load config

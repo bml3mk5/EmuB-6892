@@ -45,12 +45,51 @@ private:
 		EVENT_VIA_SHIFT2_HIGH	= 6,
 		EVENT_VIA_SHIFT2_INTR	= 7,
 	};
+	/// @brief PCR masks
+	enum PCR_MASKS {
+		PCR_CA1_CTRL = 0x01,
+		PCR_CA2_CTRL = 0x0e,
+		PCR_CA2_INTE = 0x02,
+		PCR_CA2_RISE = 0x04,
+		PCR_CA2_DIR  = 0x08,
+		PCR_CB1_CTRL = 0x10,
+		PCR_CB2_CTRL = 0xe0,
+		PCR_CB2_INTE = 0x20,
+		PCR_CB2_RISE = 0x40,
+		PCR_CB2_DIR  = 0x80,
+	};
+	/// @brief ACR masks
+	enum ACR_MASKS {
+		ACR_PA_L_EN = 0x01,
+		ACR_PB_L_EN = 0x02,
+		ACR_SR_CTRL = 0x1c,
+		ACR_SR_MODE = 0x0c,
+		ACR_SR_DIR  = 0x10,
+		ACR_T2_CTRL = 0x20,
+		ACR_T1_CTRL = 0xc0,
+		ACR_T1_FRUN = 0x40,
+		ACR_T1_PB7E = 0x80,
+	};
+	/// @brief IFR masks
+	enum IFR_MASKS {
+		IFR_CA2 = 0x01,
+		IFR_CA1 = 0x02,
+		IFR_SR  = 0x04,
+		IFR_CB2 = 0x08,
+		IFR_CB1 = 0x10,
+		IFR_T2  = 0x20,
+		IFR_T1  = 0x40,
+		IFR_SET_IRQ = 0x80,
+		IFR_CLR_IRQ = 0x7f,
+	};
 
 private:
 	uint8_t	drb;	///< Data Register B (ORB/IRB)
 	uint8_t	dra;	///< Data Register A (ORA/IRA)
 	uint8_t	ddrb;	///< Data Direction Register B
 	uint8_t	ddra;	///< Data Direction Register A
+	uint8_t	orb;	///< Output Data Register B
+	uint8_t	ora;	///< Output Data Register A
 
 	int		t1l;	///< Timer 1 latches
 	int		t1c;	///< Timer 1 counter
@@ -154,7 +193,11 @@ private:
 			} v2;
 		} d;
 
-		char reserved[4];
+		// version 3
+		uint8_t orb;
+		uint8_t ora;
+		
+		char reserved[2];
 	};
 #pragma pack()
 
@@ -170,18 +213,8 @@ private:
 	void cancel_my_events();
 
 public:
-	VIA(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("VIA");
-		init_output_signals(&outputs_pa);
-		init_output_signals(&outputs_ca2);
-		init_output_signals(&outputs_pb);
-		init_output_signals(&outputs_cb1);
-		init_output_signals(&outputs_cb2);
-		init_output_signals(&outputs_irq);
-
-		clk_unit = 1;
-	}
-	~VIA() {}
+	VIA(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~VIA();
 
 	// common functions
 	void initialize();

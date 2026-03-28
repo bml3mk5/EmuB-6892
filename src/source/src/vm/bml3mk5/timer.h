@@ -51,10 +51,8 @@ private:
 	void update_timer_clock();
 
 public:
-	TIMER(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier) {
-		set_class_name("TIMER");
-	}
-	~TIMER() {}
+	TIMER(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~TIMER();
 
 	// common functions
 	void initialize();

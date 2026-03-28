@@ -57,11 +57,8 @@ private:
 	static const uint8_t krom[32];
 
 public:
-	KANJI(VM* parent_vm, EMU* parent_emu, const char* identifier) : DEVICE(parent_vm, parent_emu, identifier)
-	{
-		set_class_name("KANJI");
-	}
-	~KANJI() {}
+	KANJI(VM* parent_vm, EMU* parent_emu, const char* identifier);
+	~KANJI();
 
 	// common functions
 	void initialize();

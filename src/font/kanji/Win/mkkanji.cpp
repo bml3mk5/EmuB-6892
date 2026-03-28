@@ -6,6 +6,9 @@
 #include <string.h>
 #include <tchar.h>
 
+#define SUPPORT_KANJI2	0
+#define VERSION_STRING	"0.1.2"
+
 #if (_MSC_VER >= 1400)
 #pragma warning( disable : 4819 )
 #pragma warning( disable : 4995 )
@@ -23,6 +26,7 @@ int font_size;
 TCHAR font_name[32];
 TCHAR input_path[MAX_PATH];
 TCHAR output_path[MAX_PATH];
+bool keep_right_dots;
 
 void create_dib()
 {
@@ -180,7 +184,9 @@ int make_bitmap_font(const TCHAR *in_name, const TCHAR *out_name)
 			d |= pat[12] ? 0x08 : 0;
 			d |= pat[13] ? 0x04 : 0;
 			d |= pat[14] ? 0x02 : 0;
-			d |= pat[15] ? 0x01 : 0;
+			if (keep_right_dots) {
+				d |= pat[15] ? 0x01 : 0;
+			}
 			fputc(d, fd);
 		}
 	}
@@ -196,6 +202,7 @@ enum en_subargs {
 	SUBARG_INPUT,
 	SUBARG_OUTPUT,
 	SUBARG_FSIZE,
+	SUBARG_KEEPDOT,
 };
 
 static const struct st_arg_list {
@@ -208,18 +215,21 @@ static const struct st_arg_list {
 	{ _T("-i"), SUBARG_INPUT, 0 },
 	{ _T("-o"), SUBARG_OUTPUT, 0 },
 	{ _T("-p"), SUBARG_FSIZE, 0 },
+	{ _T("-k"), SUBARG_KEEPDOT, 0 },
 	{ NULL }
 };
 
 void usage()
 {
-	_tprintf(_T("Make Kanji ROM image. Win Version 0.1.1\n")); 
-	_tprintf(_T("Usage: mkkanji.exe [-h] [-f \"<font name>\"] [-p <font size>] [-i <input path>] [-o <output path>]\n"));
+	_tprintf(_T("Make Kanji ROM image. Win Version %s\n"), _T(VERSION_STRING)); 
+	_tprintf(_T("Usage: mkkanji.exe [-h] [-k] [-f \"<font name>\"] [-p <font size>] [-i <input path>] [-o <output path>]\n"));
 	_tprintf(_T("Options: -h : Show this usage.\n"));
 	_tprintf(_T("         -f : Set font name Windows installed.\n"));
 	_tprintf(_T("         -p : Set font size. (default:16)(range:8-24)\n"));
 	_tprintf(_T("         -o : Set path for output.\n"));
 	_tprintf(_T("         -i : Set path where kanji.txt is stored in.\n"));
+	_tprintf(_T("         -k : Keep the most right dots of a character bitmap.\n"));
+	_tprintf(_T("              By default, erase the most right dots.\n"));
 }
 
 int parse_options(int argc, TCHAR *argv[])
@@ -244,6 +254,14 @@ int parse_options(int argc, TCHAR *argv[])
 				break;
 			}
 			subarg = arg_list[match].subarg;
+			switch(subarg) {
+			case SUBARG_KEEPDOT:
+				keep_right_dots = true;
+				subarg = 0;
+				break;
+			default:
+				break;
+			}
 		} else {
 			switch(subarg) {
 			case SUBARG_FONT:
@@ -285,6 +303,7 @@ int _tmain(int argc, TCHAR* argv[])
 	font_size = 16;
 	memset(input_path, 0, sizeof(input_path));
 	memset(output_path, 0, sizeof(output_path));
+	keep_right_dots = false;
 
 	// parse options
 	if (!parse_options(argc, argv)) {
@@ -300,7 +319,9 @@ int _tmain(int argc, TCHAR* argv[])
 	// convert font
 	int rc = 0;
 	rc |= make_bitmap_font(_T("kanji.txt"), _T("KANJI.ROM"));
-//	rc |= make_bitmap_font(_T("kanji2.txt"), _T("KANJI2.ROM"));
+#if SUPPORT_KANJI2 >= 1
+	rc |= make_bitmap_font(_T("kanji2.txt"), _T("KANJI2.ROM"));
+#endif
 
 	// release
 	release_font();

@@ -327,7 +327,7 @@ private:
 
 public:
 	FLOPPY(VM* parent_vm, EMU* parent_emu, const char* identifier);
-	~FLOPPY() {}
+	~FLOPPY();
 
 	// common functions
 	void initialize();

@@ -589,6 +589,10 @@ FLOPPY::FLOPPY(VM* parent_vm, EMU* parent_emu, const char* identifier)
 	}
 }
 
+FLOPPY::~FLOPPY()
+{
+}
+
 void FLOPPY::cancel_my_event(int event_no)
 {
 	if(m_register_id[event_no] != -1) {

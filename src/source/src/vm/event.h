@@ -177,7 +177,7 @@ private:
 
 public:
 	EVENT(VM* parent_vm, EMU* parent_emu, char* identifier);
-	~EVENT() {}
+	~EVENT();
 
 	// common functions
 	void initialize();

@@ -51,6 +51,10 @@ YM2203::YM2203(VM* parent_vm, EMU* parent_emu, const char* identifier)
 	base_decibel_fm = base_decibel_psg = 0;
 }
 
+YM2203::~YM2203()
+{
+}
+
 void YM2203::initialize()
 {
 	register_vline_event(this);
